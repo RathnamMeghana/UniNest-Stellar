@@ -1,0 +1,11 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+
+# Extra IDE metadata (usually inside .idea/)
+misc.xml
+compiler.xml
+migrations.xml
+deploymentTargetSelector.xml
+vcs.xml
