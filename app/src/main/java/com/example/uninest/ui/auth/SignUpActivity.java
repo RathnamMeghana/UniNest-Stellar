@@ -1,7 +1,7 @@
 package com.example.uninest.ui.auth;
 
 import android.os.Bundle;
-
+import android.content.Intent;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -17,8 +17,12 @@ import android.util.Patterns;
 import android.widget.AutoCompleteTextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import com.example.uninest.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -26,11 +30,17 @@ public class SignUpActivity extends AppCompatActivity {
     private AutoCompleteTextView actvCompanyName;
     private EditText etCompanyEmail, etPassword, etConfirmPassword;
     private Button btnSignUp;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        // Initialize Firebase instances
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         // connect XML views to Java
         actvCompanyName = findViewById(R.id.actvCompanyName);
@@ -58,6 +68,8 @@ public class SignUpActivity extends AppCompatActivity {
             String email = etCompanyEmail.getText().toString().trim();
             String password = etPassword.getText().toString();
             String confirm = etConfirmPassword.getText().toString();
+            //role 1 for letting agent view
+            int role = 1;
 
             if (email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
                 Toast.makeText(SignUpActivity.this,
@@ -79,7 +91,37 @@ public class SignUpActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
+            signUp(email, password,  company, String.valueOf(role));
 
-        });
+            });
+
+        };
+
+        private void signUp (String email, String password, String company, String role) {
+
+
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            // Save user info in Firestore
+                            Map<String, Object> userMap = new HashMap<>();
+                            userMap.put("company", company);
+                            userMap.put("email", email);
+                            userMap.put("role", role);
+
+                            db.collection("users").document(user.getUid())
+                                    .set(userMap)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(this, "Signup Successful", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(this, "Error saving user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        } else {
+                            Toast.makeText(this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
-}
