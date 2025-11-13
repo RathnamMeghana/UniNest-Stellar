@@ -1,10 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.auth.SignUpActivity">
+    android:background="#F4F1F7">
+
+    <!-- Top purple header -->
+    <TextView
+        android:id="@+id/tvAppTitle"
+        android:layout_width="0dp"
+        android:layout_height="96dp"
+        android:background="#C59AD8"
+        android:gravity="center"
+        android:text="Uninest"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/opensans_bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Card container -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSignUp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="56dp"
+        app:cardCornerRadius="8dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/tvAppTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Sign Up title -->
+            <TextView
+                android:id="@+id/tvSignUpTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Sign Up"
+                android:textColor="@android:color/black"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/opensans_bold"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Letting Company (dropdown) -->
+            <TextView
+                android:id="@+id/tvCompanyLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Letting Company"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCompany"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actvCompanyName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- Company Email -->
+            <TextView
+                android:id="@+id/tvCompanyEmailLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Company Email"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etCompanyEmail"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:background="@android:drawable/editbox_background"
+                android:inputType="textEmailAddress"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:hint="JonesE@DngDuffy.ie" />
+
+            <!-- Password -->
+            <TextView
+                android:id="@+id/tvPasswordLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Password"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:background="@android:drawable/editbox_background"
+                android:inputType="textPassword"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+
+            <!-- Confirm Password -->
+            <TextView
+                android:id="@+id/tvConfirmPasswordLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Confirm Password"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:background="@android:drawable/editbox_background"
+                android:inputType="textPassword"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+
+            <!-- Sign Up button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="24dp"
+                android:text="Sign Up"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                app:cornerRadius="9dp"
+                android:backgroundTint="#00C9F7" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
