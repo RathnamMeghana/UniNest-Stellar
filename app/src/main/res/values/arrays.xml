@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="letting_companies">
+        <item>DNGDuffy</item>
+        <item>MacFar</item>
+        <item>Sherry FitzGerald</item>
+        <item>Lisney</item>
+    </string-array>
+</resources>
