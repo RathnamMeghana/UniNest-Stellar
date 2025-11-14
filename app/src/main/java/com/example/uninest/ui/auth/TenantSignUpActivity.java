@@ -21,6 +21,9 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+
 public class TenantSignUpActivity extends AppCompatActivity {
 
     private EditText etHouseCode, etTenantEmail, etTenantPassword, etTenantConfirmPassword;
@@ -87,9 +90,8 @@ public class TenantSignUpActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
 
-                        // Save user info in Firebase
+                        // Save user info in Firestore
                         Map<String, Object> userMap = new HashMap<>();
-
                         userMap.put("email", email);
                         userMap.put("role", role);
                         userMap.put("houseCode", houseCode);
@@ -97,13 +99,36 @@ public class TenantSignUpActivity extends AppCompatActivity {
                         db.collection("users").document(user.getUid())
                                 .set(userMap)
                                 .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, "Signup Successful", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, "Signup Successful! Welcome.", Toast.LENGTH_LONG).show();
+
                                 })
                                 .addOnFailureListener(e -> {
-                                    Toast.makeText(this, "Error saving user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    // When Auth worked but Firestore failed
+                                    Toast.makeText(this, "Signup Failed: Could not save profile information. Please contact support.", Toast.LENGTH_LONG).show();
                                 });
                     } else {
-                        Toast.makeText(this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        // Handle Authentication Failure
+                        Exception exception = task.getException();
+
+                        String errorMessage = "Authentication failed. Please try again.";
+
+                        if (exception != null) {
+                            if (exception instanceof FirebaseAuthUserCollisionException) {
+                                // Error for "The email address is already used"
+                                errorMessage = "That email address is already registered.";
+                                etTenantEmail.setError(errorMessage);
+                            } else if (exception instanceof FirebaseAuthWeakPasswordException) {
+                                // Error for "The password must be 6 characters long or more."
+                                FirebaseAuthWeakPasswordException weakPasswordException = (FirebaseAuthWeakPasswordException) exception;
+                                errorMessage = "Weak password: " + weakPasswordException.getReason();
+                                etTenantPassword.setError(errorMessage);
+                            } else {
+                                // Catch other exceptions like network problems
+                                errorMessage = "Signup failed: " + exception.getLocalizedMessage();
+                            }
+                        }
+
+                        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
                     }
                 });
     }
