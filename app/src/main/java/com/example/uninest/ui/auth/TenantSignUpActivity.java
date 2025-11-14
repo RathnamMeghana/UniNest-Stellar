@@ -9,15 +9,25 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.uninest.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TenantSignUpActivity extends AppCompatActivity {
 
     private EditText etHouseCode, etTenantEmail, etTenantPassword, etTenantConfirmPassword;
     private Button btnTenantSignUp;
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +41,19 @@ public class TenantSignUpActivity extends AppCompatActivity {
         etTenantConfirmPassword = findViewById(R.id.etTenantConfirmPassword);
         btnTenantSignUp = findViewById(R.id.btnTenantSignUp);
 
+        // Initialize Firebase instances
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+
         // Button click
         btnTenantSignUp.setOnClickListener(v -> {
             String houseCode = etHouseCode.getText().toString().trim();
             String email = etTenantEmail.getText().toString().trim();
             String password = etTenantPassword.getText().toString();
             String confirm = etTenantConfirmPassword.getText().toString();
+            int role = 2;
+
 
             if (houseCode.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
                 Toast.makeText(TenantSignUpActivity.this,
@@ -58,7 +75,37 @@ public class TenantSignUpActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-
+            signUp(email, password, String.valueOf(role), houseCode);
         });
     }
+
+
+    private void signUp(String email, String password, String role, String houseCode) {
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+
+                        // Save user info in Firebase
+                        Map<String, Object> userMap = new HashMap<>();
+
+                        userMap.put("email", email);
+                        userMap.put("role", role);
+                        userMap.put("houseCode", houseCode);
+
+                        db.collection("users").document(user.getUid())
+                                .set(userMap)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, "Signup Successful", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Error saving user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    } else {
+                        Toast.makeText(this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }
+
