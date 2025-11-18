@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "UniNest"
 include(":app")
+include(":Backend")
+project(":Backend").projectDir = file("Backend")
