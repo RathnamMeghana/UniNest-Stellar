@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.google.api.core.ApiFuture;
+import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -20,12 +21,14 @@ public class ApartmentService {
     public String ApartmentService(ApartmentRequests request) {
         Firestore db = FirestoreClient.getFirestore();
 
+        Timestamp time = Timestamp.now();
+
         Apartment apartment = new Apartment();
         apartment.setBuildingId(request.getBuildingId());
         apartment.setName(request.getName());
         apartment.setCode(request.getCode());
         apartment.setLandlordId(request.getLandlordId());
-        apartment.setCreatedAt(request.getCreatedAt());
+        apartment.setCreatedAt(time);
         apartment.setActive(request.getActive());
 
         db.collection("apartment").add(apartment);
