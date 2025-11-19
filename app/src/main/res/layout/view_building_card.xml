@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/bg_building_card"
+    android:clipToOutline="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!-- LEFT: purple info section -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#D4BAF1"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvBuildingName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Building name"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/tvApartmentInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="0 Apartments"
+                android:textSize="14sp"
+                android:textColor="#6A6A6A" />
+        </LinearLayout>
+
+        <!-- RIGHT: building image -->
+        <ImageView
+            android:id="@+id/imgBuilding"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/building_placeholder"
+            android:contentDescription="@string/building_image" />
+    </LinearLayout>
+
+</FrameLayout>
