@@ -12,9 +12,6 @@ public class ApartmentRequests {
     private String name;
 
     @NotBlank
-    private String code;
-
-    @NotBlank
     private String landlordId;
 
     @NotBlank
