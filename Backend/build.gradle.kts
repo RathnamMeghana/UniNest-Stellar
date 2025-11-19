@@ -20,9 +20,7 @@ configurations {
 	}
 }
 
-repositories {
-	mavenCentral()
-}
+// Repositories are defined in the root `settings.gradle.kts` via dependencyResolutionManagement
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
