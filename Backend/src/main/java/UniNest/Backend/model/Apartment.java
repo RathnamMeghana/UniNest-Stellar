@@ -1,7 +1,7 @@
 package UniNest.Backend.model;
 
 import lombok.Data;
-import java.sql.Timestamp;
+import com.google.cloud.Timestamp;
 
 @Data
 public class Apartment {
@@ -11,6 +11,8 @@ public class Apartment {
     private String code;
     private String landlordId;
     private Timestamp createdAt;
+    private String description;
+    private Double rentPrice;
     private Boolean active;
 
 }

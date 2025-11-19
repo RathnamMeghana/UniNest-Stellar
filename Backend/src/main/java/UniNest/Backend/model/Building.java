@@ -1,9 +1,6 @@
 package UniNest.Backend.model;
 
-import java.time.LocalDateTime;
-
 import com.google.cloud.Timestamp;
-
 import lombok.Data;
 
 @Data

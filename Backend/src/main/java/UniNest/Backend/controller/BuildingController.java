@@ -16,15 +16,14 @@ public class BuildingController {
     @Autowired
     private BuildingService buildingService;
 
-    @PostMapping
+    @PostMapping("/create")
     public String createBuilding(@RequestBody BuildingRequest request) {
         return buildingService.createBuilding(request);
     }
 
-
-    @GetMapping
+    @GetMapping("/getAll")
     public List<Building> getAllBuildings() {
         return buildingService.getAllBuildings();
-}
+    }
 
 }

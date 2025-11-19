@@ -11,14 +11,14 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
-
 import UniNest.Backend.dto.ApartmentRequests;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.model.Building;
 
+
 @Service
 public class ApartmentService {
-    public String ApartmentService(ApartmentRequests request) {
+    public String createApartment(ApartmentRequests request) {
         Firestore db = FirestoreClient.getFirestore();
 
         Timestamp time = Timestamp.now();
@@ -31,7 +31,7 @@ public class ApartmentService {
         apartment.setCreatedAt(time);
         apartment.setActive(request.getActive());
 
-        db.collection("apartment").add(apartment);
+        db.collection("apartments").add(apartment);
 
         return "Apartment created successfully";
     };
