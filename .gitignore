@@ -15,3 +15,15 @@
 local.properties
 .serviceAccounts.json
 .Backend/src/main/resources/serviceAccountKey.json
+
+# Gradle build output
+**/build/
+.gradle/
+
+# IDE files
+.idea/
+*.iml
+
+# Firebase service account (NEVER commit)
+Backend/src/main/resources/serviceAccountKey.json
+Backend/build/resources/main/serviceAccountKey.json
