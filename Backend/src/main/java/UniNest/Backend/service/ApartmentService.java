@@ -59,14 +59,16 @@ public class ApartmentService {
             Timestamp time = Timestamp.now();
 
             Apartment apartment = new Apartment();
-
+            apartment.setName(request.getName());
             // Set the unique code
             apartment.setCode(uniqueCode);
-
-            apartment.setBuildingId(request.getBuildingId());
-            apartment.setName(request.getName());
             apartment.setLandlordId(request.getLandlordId());
             apartment.setCreatedAt(time);
+            apartment.setBuildingId(request.getBuildingId());
+            apartment.setDescription(request.getDescription());
+            apartment.setRentPrice(request.getRentPrice());
+
+
             apartment.setActive(request.getActive());
 
             db.collection("apartments").add(apartment);

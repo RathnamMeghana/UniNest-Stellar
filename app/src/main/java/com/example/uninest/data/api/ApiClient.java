@@ -12,7 +12,7 @@ public class ApiClient {
 
     // If running backend on your laptop with emulator:
     private static final String BASE_URL = "http://192.168.1.71:8080";
-    // For physical phone, change to "http://<your-laptop-ip>:8080"
+    // For physical phone, change to "http://<your-ip>:8080"
 
     private static Retrofit retrofit;
 
@@ -33,5 +33,24 @@ public class ApiClient {
                     .build();
         }
         return retrofit.create(BuildingApi.class);
+    }
+
+    public static ApartmentApi getApartmentApi(){
+        if (retrofit == null) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(logging)
+                    .build();
+
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .client(client)
+                    .addConverterFactory(retrofit2.converter.scalars.ScalarsConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit.create(ApartmentApi.class);
     }
 }
