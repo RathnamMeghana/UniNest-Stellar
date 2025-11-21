@@ -108,7 +108,15 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         } else {
             card.setBuildingImage(R.drawable.building_placeholder); // if you have one
         }
-
+        //  Tap building card -> open Apartments screen with that building name
+        card.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    LettingAgentBuildingsActivity.this,
+                    LettingAgentApartmentsActivity.class
+            );
+            intent.putExtra("EXTRA_BUILDING_NAME", building.getName());
+            startActivity(intent);
+        });
         buildingList.addView(card);
     }
 }
