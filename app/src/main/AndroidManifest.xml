@@ -15,34 +15,44 @@
         android:theme="@style/Theme.UniNest"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
-        <!-- Add Building (opened from Buildings screen) -->
+<!--        <activity-->
+<!--            android:name=".ui.auth.TenantLoginActivity"-->
+<!--            android:exported="false" />-->
+<!--        <activity-->
+<!--            android:name=".ui.auth.LettingAgentLoginActivity"-->
+<!--            android:exported="false" />-->
+        <activity
+            android:name=".ui.auth.TenantCardView"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ApartmentTenantsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LettingAgentApartmentsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.AddApartmentActivity"
+            android:exported="false" /> <!-- Add Building (opened from Buildings screen) -->
         <activity
             android:name=".ui.auth.AddBuildingActivity"
-            android:exported="false" />
-
-        <!-- BUILDINGS = TEMP LAUNCHER SCREEN -->
+            android:exported="false" /> <!-- BUILDINGS = TEMP LAUNCHER SCREEN -->
         <activity
-            android:name=".ui.auth.LettingAgentBuildingsActivity"
+            android:name=".ui.auth.LettingAgentLoginActivity"
             android:exported="true">
 
             <!-- This makes it the first screen when app starts -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Tenant sign-up kept, but NOT launcher now -->
+        </activity> <!-- Tenant sign-up kept, but NOT launcher now -->
         <activity
             android:name=".ui.auth.TenantSignUpActivity"
-            android:exported="false" />
-
-        <!-- MainActivity still exists but not launcher -->
+            android:exported="false" /> <!-- MainActivity still exists but not launcher -->
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>
