@@ -2,16 +2,30 @@ package com.example.uninest.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
+import com.example.uninest.data.api.ApiClient;
+import com.example.uninest.data.api.BuildingApi;
+import com.example.uninest.model.Building;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LettingAgentBuildingsActivity extends AppCompatActivity {
 
     private LinearLayout buildingList;
+    private BuildingApi buildingApi;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,8 +35,10 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         buildingList = findViewById(R.id.layoutBuildingList);
         Button btnNewBuilding = findViewById(R.id.btnNewBuilding);
 
-        // For now: adding hard-coded buildings using the reusable component
-        addDummyBuildings();
+        buildingApi = ApiClient.getBuildingApi();
+
+        // 🔥 Instead of addDummyBuildings():
+        loadBuildingsFromApi();
 
         // New Building button -> open AddBuildingActivity (design only)
         btnNewBuilding.setOnClickListener(v -> {
@@ -48,25 +64,51 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         });
     }
 
-    private void addDummyBuildings() {
-        // Green Park
-        BuildingCardView card1 = new BuildingCardView(this);
-        card1.setBuildingName("Green Park Student Accommodation");
-        card1.setApartmentCount(40);
-        card1.setBuildingImage(R.drawable.green_park_placeholder);
-        card1.setOnClickListener(v -> {
-            // TODO open Apartments list for Green Park
-        });
-        buildingList.addView(card1);
+    private void loadBuildingsFromApi() {
+        buildingList.removeAllViews();
+        buildingList.setVisibility(View.VISIBLE);
 
-        // Mourne View
-        BuildingCardView card2 = new BuildingCardView(this);
-        card2.setBuildingName("Mourne View Student Accommodation");
-        card2.setApartmentCount(20);
-        card2.setBuildingImage(R.drawable.mourne_view_placeholder);
-        card2.setOnClickListener(v -> {
-            // TODO open Apartments list for Mourne View
+        buildingApi.getAllBuildings().enqueue(new Callback<List<Building>>() {
+            @Override
+            public void onResponse(Call<List<Building>> call,
+                                   Response<List<Building>> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(LettingAgentBuildingsActivity.this,
+                            "Failed to load buildings", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                List<Building> buildings = response.body();
+                for (Building b : buildings) {
+                    addBuildingCard(b);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Building>> call, Throwable t) {
+                Log.e("Buildings", "Error", t);
+                Toast.makeText(LettingAgentBuildingsActivity.this,
+                        "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
-        buildingList.addView(card2);
+    }
+
+    private void addBuildingCard(Building building) {
+        BuildingCardView card = new BuildingCardView(this);
+        card.setBuildingName(building.getName());
+        card.setApartmentCount(0); // you'll hook real count later
+
+        // Simple placeholder logic so UI works
+        if (building.getName() != null &&
+                building.getName().toLowerCase().contains("green")) {
+            card.setBuildingImage(R.drawable.green_park_placeholder);
+        } else if (building.getName() != null &&
+                building.getName().toLowerCase().contains("mourne")) {
+            card.setBuildingImage(R.drawable.mourne_view_placeholder);
+        } else {
+            card.setBuildingImage(R.drawable.building_placeholder); // if you have one
+        }
+
+        buildingList.addView(card);
     }
 }

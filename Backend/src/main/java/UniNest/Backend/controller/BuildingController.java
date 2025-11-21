@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/buildings")
+
+
 public class BuildingController {
 
     @Autowired

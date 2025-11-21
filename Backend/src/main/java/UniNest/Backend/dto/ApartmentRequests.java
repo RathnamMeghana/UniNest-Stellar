@@ -1,5 +1,8 @@
 package UniNest.Backend.dto;
 
+
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 
@@ -8,13 +11,12 @@ public class ApartmentRequests {
     @NotBlank
     private String buildingId;
 
-    @NotBlank
+
     private String name;
 
-    @NotBlank
     private String landlordId;
 
-    @NotBlank
+    @NotNull
     private Boolean active;
 
 }
