@@ -9,6 +9,7 @@ public class Building {
     private String country;
     private String landlordId;
     private Boolean active;
+    
 
 
     // Getters & setters

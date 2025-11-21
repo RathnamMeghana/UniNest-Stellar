@@ -29,5 +29,8 @@ public class BuildingRequest {
     public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
 
     public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
 }
