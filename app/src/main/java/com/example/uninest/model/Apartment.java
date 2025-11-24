@@ -6,6 +6,7 @@ public class Apartment {
 
     private String buildingId;
     private String name;
+    private String totalRooms;
     private String code; // set in backend
     private String landlordId;
     private Timestamp createdAt; // set in backend
@@ -21,6 +22,9 @@ public class Apartment {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getTotalRooms() { return totalRooms; }
+    public void setTotalRooms(String totalRooms) { this.totalRooms = totalRooms; }
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
