@@ -41,6 +41,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
 
 
         btnLogin.setOnClickListener(v -> login());
+        //btnLogin.setOnClickListener(v -> resetPassword());
     }
     private void login() {
         String email = etEmail.getText().toString().trim();
@@ -87,7 +88,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
         }
 
         String role = doc.getString("role");
-        String company = doc.getString("company"); // Not used yet, but kept
+        String company = doc.getString("company");
 
         if (role != null) {
             Log.d("LoginActivity", "User Role Retrieved: " + role);
@@ -121,4 +122,34 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
 
 
         }
+
+
+    private void resetPassword() {
+
+        String email = etEmail.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            etEmail.setError("Please enter your email");
+            etEmail.requestFocus();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Please enter a valid email");
+            etEmail.requestFocus();
+            return;
+        }
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Password reset email sent!", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
+
+
+}

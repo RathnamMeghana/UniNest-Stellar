@@ -15,6 +15,7 @@ public class ApartmentRequests {
 
     @NotBlank
     private String name;
+    private String totalRooms;
     private String code;
     private String landlordId;
     private Timestamp createdAt;

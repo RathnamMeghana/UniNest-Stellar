@@ -60,6 +60,8 @@ public class ApartmentService {
 
             Apartment apartment = new Apartment();
             apartment.setName(request.getName());
+            apartment.setTotalRooms(request.getTotalRooms());
+
             // Set the unique code
             apartment.setCode(uniqueCode);
             apartment.setLandlordId(request.getLandlordId());

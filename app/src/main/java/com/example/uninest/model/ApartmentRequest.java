@@ -1,14 +1,20 @@
 package com.example.uninest.model;
+import com.example.uninest.data.api.BuildingApi;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class ApartmentRequest implements Serializable {
 
-        private String buildingId;
-        private String name;
-        private String description;
-        private Double rentPrice;
-        private Boolean active;
+    private String buildingId;
+    private String name;
+    private String totalRooms;
+    private String code; // set in backend
+    private String landlordId;
+    private Timestamp createdAt; // set in backend
+    private String description;
+    private Double rentPrice;
+    private Boolean active;
 
     public String getBuildingId() { return buildingId; }
     public void setBuildingId(String buildingId) { this.buildingId = buildingId; }
@@ -16,6 +22,10 @@ public class ApartmentRequest implements Serializable {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
+    public String getTotalRooms() { return totalRooms; }
+    public void setTotalRooms(String totalRooms) { this.totalRooms = totalRooms; }
+    public String getLandlordId() { return landlordId; }
+    public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
