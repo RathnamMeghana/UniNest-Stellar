@@ -64,21 +64,21 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         // Apartment 1
         ApartmentCardView card1 = new ApartmentCardView(this);
         card1.setApartmentName("Apartment 1");
-        card1.setTenantInfo(5, 5);   // 5/5 Tenants
+        card1.setTenantInfo("5", "5");   // 5/5 Tenants
         card1.setOnClickListener(v -> openApartmentTenants("Apartment 1"));
         apartmentList.addView(card1);
 
         // Apartment 2
         ApartmentCardView card2 = new ApartmentCardView(this);
         card2.setApartmentName("Apartment 2");
-        card2.setTenantInfo(3, 5);   // 3/5 Tenants
+        card2.setTenantInfo("3", "5");   // 3/5 Tenants
         card2.setOnClickListener(v -> openApartmentTenants("Apartment 2"));
         apartmentList.addView(card2);
 
         // Apartment 3
         ApartmentCardView card3 = new ApartmentCardView(this);
         card3.setApartmentName("Apartment 3");
-        card3.setTenantInfo(4, 5);
+        card3.setTenantInfo("4", "5");
         card3.setOnClickListener(v -> openApartmentTenants("Apartment 3"));
         apartmentList.addView(card3);
     }

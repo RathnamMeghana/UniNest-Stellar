@@ -37,7 +37,7 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
 
         buildingApi = ApiClient.getBuildingApi();
 
-        // 🔥 Instead of addDummyBuildings():
+        // Instead of addDummyBuildings():
         loadBuildingsFromApi();
 
         // New Building button -> open AddBuildingActivity (design only)

@@ -101,13 +101,13 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish(); // Close login screen
             } else if ("1".equals(role)) {
-                // Role 1: letting agent   -
+                // Role 1: letting agent
                 Toast.makeText(this, "Agent Login successful!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, LettingAgentApartmentsActivity.class);
+                Intent intent = new Intent(this, LettingAgentBuildingsActivity.class);
                 startActivity(intent);
-                finish(); // Close login screen
-
-            } else {
+                finish();
+            }
+            else {
                 // Role found, but it's an unrecognized value
                 Toast.makeText(this, "Unrecognized user role.", Toast.LENGTH_LONG).show();
                 // Optionally sign the user out if their role is invalid

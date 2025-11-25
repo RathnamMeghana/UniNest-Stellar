@@ -18,7 +18,6 @@ public class ApartmentCardView extends FrameLayout {
 
     private TextView tvApartmentName;
     private TextView tvTenantInfo;
-    private ImageView imgApartment;
 
     public ApartmentCardView(Context context) {
         super(context);
@@ -48,7 +47,7 @@ public class ApartmentCardView extends FrameLayout {
         tvApartmentName.setText(name);
     }
 
-    public void setTenantInfo(int occupied, int capacity) {
+    public void setTenantInfo(String occupied, String capacity) {
         tvTenantInfo.setText(occupied + "/" + capacity + " Tenants");
     }
 
@@ -56,8 +55,6 @@ public class ApartmentCardView extends FrameLayout {
         tvTenantInfo.setText(text);
     }
 
-    public void setApartmentImage(@DrawableRes int resId) {
-        imgApartment.setImageResource(resId);
-    }
+
 
 }
