@@ -15,12 +15,25 @@
         android:theme="@style/Theme.UniNest"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".ui.auth.TenantLoginActivity"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".ui.auth.LettingAgentLoginActivity"-->
-<!--            android:exported="false" />-->
+        <activity
+            android:name=".ui.auth.WelcomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.Onboarding3Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.Onboarding2Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.Onboarding1Activity"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".ui.auth.SplashActivity" -->
+        <!-- android:exported="false" /> -->
+        <activity
+            android:name=".ui.auth.TenantLoginActivity"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".ui.auth.LettingAgentLoginActivity" -->
+        <!-- android:exported="false" /> -->
         <activity
             android:name=".ui.auth.TenantCardView"
             android:exported="false" />
@@ -37,7 +50,7 @@
             android:name=".ui.auth.AddBuildingActivity"
             android:exported="false" /> <!-- BUILDINGS = TEMP LAUNCHER SCREEN -->
         <activity
-            android:name=".ui.auth.LettingAgentLoginActivity"
+            android:name=".ui.auth.SplashActivity"
             android:exported="true">
 
             <!-- This makes it the first screen when app starts -->
