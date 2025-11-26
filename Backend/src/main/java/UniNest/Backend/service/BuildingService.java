@@ -55,6 +55,7 @@ public class BuildingService {
 
             for (QueryDocumentSnapshot doc : documents) {
                 Building building = doc.toObject(Building.class);
+                building.setId(doc.getId());
                 buildings.add(building);
             }
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import UniNest.Backend.dto.ApartmentRequests;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.service.ApartmentService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @ComponentScan
@@ -28,6 +29,8 @@ public class ApartmentController {
 
     @GetMapping("/getAll")
     public List<Apartment> getAllApartments() {
+
+
         return apartmentService.getAllApartments();
     }
 }

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class Building {
-
+    private String id;
     private String name;
     private String addressLine1;
     private String city;

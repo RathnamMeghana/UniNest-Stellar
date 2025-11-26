@@ -2,18 +2,35 @@ package com.example.uninest.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
+import com.example.uninest.data.api.ApiClient;
+import com.example.uninest.data.api.ApartmentApi;
+import com.example.uninest.model.Apartment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.http.Query;
 
 public class LettingAgentApartmentsActivity extends AppCompatActivity {
 
     private LinearLayout apartmentList;
-    private String buildingName;   //  store so we can use it in click listeners
+    private ApartmentApi apartmentApi;
+
+    private String buildingName;
+    private String buildingId; // received from previous activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,73 +41,119 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         Button btnNewApartment = findViewById(R.id.btnNewApartment);
         TextView tvBuildingName = findViewById(R.id.tvBuildingName);
 
-        // 1️Get building name passed from LettingAgentBuildingsActivity
-        buildingName = getIntent().getStringExtra("EXTRA_BUILDING_NAME");
+        apartmentApi = ApiClient.getApartmentApi();
 
+        // Get data from previous screen
+        buildingName = getIntent().getStringExtra("EXTRA_BUILDING_NAME");
+        buildingId = getIntent().getStringExtra("EXTRA_BUILDING_ID");
+
+        // Update title
         if (buildingName != null && !buildingName.isEmpty()) {
             tvBuildingName.setText(buildingName);
         } else {
             tvBuildingName.setText("Apartments");
         }
 
-        // For now: add hard-coded apartments (dummy data)
-        addDummyApartments();
+        // Load apartments
+        loadApartments();
 
-        // New Apt button -> open AddApartmentActivity (design only for now)
+        // New Apartment button → open AddApartmentActivity
         btnNewApartment.setOnClickListener(v -> {
             Intent intent = new Intent(
                     LettingAgentApartmentsActivity.this,
                     AddApartmentActivity.class
             );
+            intent.putExtra("EXTRA_BUILDING_ID", buildingId);
             startActivity(intent);
         });
 
-        // Bottom nav clicks
-        findViewById(R.id.navTickets).setOnClickListener(v -> {
-            // TODO navigate to TicketsActivity
-        });
+        // Bottom nav
+        findViewById(R.id.navTickets).setOnClickListener(v -> {});
+        findViewById(R.id.navApartments).setOnClickListener(v -> apartmentList.scrollTo(0, 0));
+        findViewById(R.id.navProfile).setOnClickListener(v -> {});
+    }
 
-        findViewById(R.id.navApartments).setOnClickListener(v -> {
-            // current screen – maybe scroll to top
-            apartmentList.scrollTo(0, 0);
-        });
+    // ------------------------
+    // Load & filter apartments
+    // ------------------------
+    private void loadApartments() {
+        apartmentList.removeAllViews();
+        apartmentList.setVisibility(View.VISIBLE);
 
-        findViewById(R.id.navProfile).setOnClickListener(v -> {
-            // TODO navigate to ProfileActivity
+
+        apartmentApi.getAllApartments().enqueue(new Callback<List<Apartment>>() {
+            @Override
+            public void onResponse(Call<List<Apartment>> call,
+                                   Response<List<Apartment>> response) {
+
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(LettingAgentApartmentsActivity.this,
+                            "Failed to load apartments", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                List<Apartment> allApartments = response.body();
+                List<Apartment> filtered = new ArrayList<>();
+
+                // Filter by buildingId (since backend does not filter)
+                for (Apartment a : allApartments) {
+                    if (a.getBuildingId() != null &&
+                            a.getBuildingId().equals(buildingId)) {
+                        filtered.add(a);
+                    }
+                }
+
+                if (filtered.isEmpty()) {
+                    Toast.makeText(LettingAgentApartmentsActivity.this,
+                            "No apartments found for this building",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                for (Apartment apartment : filtered) {
+                    addApartmentCard(apartment);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Apartment>> call, Throwable t) {
+                Log.e("ApartmentAPI", "Error loading apartments", t);
+                Toast.makeText(LettingAgentApartmentsActivity.this,
+                        "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
-    private void addDummyApartments() {
-        // Apartment 1
-        ApartmentCardView card1 = new ApartmentCardView(this);
-        card1.setApartmentName("Apartment 1");
-        card1.setTenantInfo("5", "5");   // 5/5 Tenants
-        card1.setOnClickListener(v -> openApartmentTenants("Apartment 1"));
-        apartmentList.addView(card1);
+    // ------------------------
+    // Add card to UI
+    // ------------------------
+    private void addApartmentCard(Apartment apartment) {
+        ApartmentCardView card = new ApartmentCardView(this);
 
-        // Apartment 2
-        ApartmentCardView card2 = new ApartmentCardView(this);
-        card2.setApartmentName("Apartment 2");
-        card2.setTenantInfo("3", "5");   // 3/5 Tenants
-        card2.setOnClickListener(v -> openApartmentTenants("Apartment 2"));
-        apartmentList.addView(card2);
+        // Set apartment details
+        card.setApartmentName(apartment.getName());
+        card.setTenantInfo(
+                apartment.getTotalRooms(),
+                apartment.getTotalRooms()
+        );
 
-        // Apartment 3
-        ApartmentCardView card3 = new ApartmentCardView(this);
-        card3.setApartmentName("Apartment 3");
-        card3.setTenantInfo("4", "5");
-        card3.setOnClickListener(v -> openApartmentTenants("Apartment 3"));
-        apartmentList.addView(card3);
+        card.setOnClickListener(v -> openApartmentTenants(apartment));
+
+        apartmentList.addView(card);
     }
 
-    //  Reusable method to navigate to tenants screen
-    private void openApartmentTenants(String apartmentName) {
+    // ------------------------
+    // Navigate to tenant list
+    // ------------------------
+    private void openApartmentTenants(Apartment apartment) {
         Intent intent = new Intent(
                 LettingAgentApartmentsActivity.this,
                 ApartmentTenantsActivity.class
         );
+
         intent.putExtra("EXTRA_BUILDING_NAME", buildingName);
-        intent.putExtra("EXTRA_APARTMENT_NAME", apartmentName);
+        intent.putExtra("EXTRA_APARTMENT_NAME", apartment.getName());
+        intent.putExtra("EXTRA_APARTMENT_ID", apartment.getCode());
+
         startActivity(intent);
     }
 }
