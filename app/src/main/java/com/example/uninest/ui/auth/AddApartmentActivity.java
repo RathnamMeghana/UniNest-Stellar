@@ -13,6 +13,8 @@ import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.ApartmentRequest;
 import com.example.uninest.model.BuildingRequest;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.sql.Timestamp;
 
@@ -27,6 +29,9 @@ public class AddApartmentActivity extends AppCompatActivity {
     private ApartmentApi apartmentApi;
     private Button btnSave;
 
+    private String buildingId; // Store Building ID passed via Intent
+    private FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,18 @@ public class AddApartmentActivity extends AppCompatActivity {
 
 
         btnSave = findViewById(R.id.btnSaveApartment);
+
+        // Retrieve Building ID from Intent
+        buildingId = getIntent().getStringExtra("EXTRA_BUILDING_ID");
+        if (buildingId == null) {
+            Toast.makeText(this, "Error: Building ID not provided.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
         // Retrofit API
         apartmentApi = ApiClient.getApartmentApi();
 
@@ -75,15 +92,23 @@ public class AddApartmentActivity extends AppCompatActivity {
             etTotalRooms.setError("Please enter a valid number");
             return;
         }
+        FirebaseUser user = mAuth.getCurrentUser();
+        String landlordId;
 
+        if (user != null) {
+            landlordId = user.getUid();
+        } else {
+            Toast.makeText(this, "Error: Landlord is not logged in.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         ApartmentRequest request = new ApartmentRequest();
-        request.setBuildingId("123");
+        request.setBuildingId(buildingId);
         request.setName(name);
         request.setTotalRooms(totalRoomsText); // Use the validated string value
 
 
-        request.setLandlordId("123");  // later: from logged-in user
+        request.setLandlordId(landlordId);  // later: from logged-in user
         request.setDescription("apt test");                   // replace later
         request.setRentPrice(2000.00);                     // replace later
         request.setActive(true);
@@ -115,8 +140,12 @@ public class AddApartmentActivity extends AppCompatActivity {
                 String msg = response.body() != null
                         ? response.body()
                         : "Apartment created successfully";
-                Toast.makeText(AddApartmentActivity.this, msg, Toast.LENGTH_SHORT).show();
+                // Intent to go back to the apartments list for the current building
                 Intent intent = new Intent(AddApartmentActivity.this, LettingAgentApartmentsActivity.class);
+                // We MUST pass the buildingId back so the list loads correctly
+                intent.putExtra("EXTRA_BUILDING_ID", buildingId);
+                // Note: The previous activity should be updated to handle a refresh on resume,
+                // but this ensures the next screen gets the context it needs.
                 startActivity(intent);
                 finish();
             }

@@ -37,7 +37,7 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
 
         buildingApi = ApiClient.getBuildingApi();
 
-        // 🔥 Instead of addDummyBuildings():
+
         loadBuildingsFromApi();
 
         // New Building button -> open AddBuildingActivity (design only)
@@ -115,6 +115,7 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
                     LettingAgentApartmentsActivity.class
             );
             intent.putExtra("EXTRA_BUILDING_NAME", building.getName());
+            intent.putExtra("EXTRA_BUILDING_ID", building.getId());
             startActivity(intent);
         });
         buildingList.addView(card);

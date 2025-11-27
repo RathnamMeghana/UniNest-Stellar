@@ -28,4 +28,5 @@ public class BuildingController {
         return buildingService.getAllBuildings();
     }
 
+
 }

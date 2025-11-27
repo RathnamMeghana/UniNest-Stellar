@@ -30,10 +30,14 @@
         <!-- android:name=".ui.auth.SplashActivity" -->
         <!-- android:exported="false" /> -->
         <activity
+            android:name=".ui.auth.LettingAgentBuildingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.auth.TenantLoginActivity"
-            android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".ui.auth.LettingAgentLoginActivity" -->
-        <!-- android:exported="false" /> -->
+            android:exported="false" />
+         <activity
+         android:name=".ui.auth.LettingAgentLoginActivity"
+         android:exported="false" />
         <activity
             android:name=".ui.auth.TenantCardView"
             android:exported="false" />
@@ -50,7 +54,7 @@
             android:name=".ui.auth.AddBuildingActivity"
             android:exported="false" /> <!-- BUILDINGS = TEMP LAUNCHER SCREEN -->
         <activity
-            android:name=".ui.auth.SplashActivity"
+            android:name=".ui.auth.SignUpActivity"
             android:exported="true">
 
             <!-- This makes it the first screen when app starts -->

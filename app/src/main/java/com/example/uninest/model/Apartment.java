@@ -1,6 +1,7 @@
 package com.example.uninest.model;
 
-import java.sql.Timestamp;
+
+import com.google.firebase.Timestamp;
 
 public class Apartment {
 

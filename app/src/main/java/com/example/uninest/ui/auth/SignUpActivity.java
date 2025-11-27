@@ -97,31 +97,36 @@ public class SignUpActivity extends AppCompatActivity {
 
         };
 
-        private void signUp (String email, String password, String company, String role) {
+    private void signUp(String email, String password, String company, String role) {
 
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, task -> {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
+                        // Save user info in Firestore
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("company", company);
+                        userMap.put("email", email);
+                        userMap.put("role", role);
 
-                            // Save user info in Firestore
-                            Map<String, Object> userMap = new HashMap<>();
-                            userMap.put("company", company);
-                            userMap.put("email", email);
-                            userMap.put("role", role);
+                        db.collection("users").document(user.getUid())
+                                .set(userMap)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, "Signup Successful!", Toast.LENGTH_SHORT).show();
 
-                            db.collection("users").document(user.getUid())
-                                    .set(userMap)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Toast.makeText(this, "Signup Successful", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(this, "Error saving user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    });
-                        } else {
-                            Toast.makeText(this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
+                                    // ➜ Go to Login
+                                    Intent intent = new Intent(SignUpActivity.this, LettingAgentLoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Error saving user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    } else {
+                        Toast.makeText(this, "Authentication failed: " +
+                                task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
+}

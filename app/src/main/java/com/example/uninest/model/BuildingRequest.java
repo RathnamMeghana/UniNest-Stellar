@@ -1,7 +1,7 @@
 package com.example.uninest.model;
 
 public class BuildingRequest {
-
+    private String id;
     private String name;
     private String addressLine1;
     private String city;
@@ -32,5 +32,8 @@ public class BuildingRequest {
     public void setActive(Boolean active) {
         this.active = active;
     }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
 }
