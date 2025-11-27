@@ -70,10 +70,10 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
                 android:background="@android:drawable/editbox_background"
-                android:inputType="number"
+                android:hint="2381810"
+                android:inputType="text"
                 android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:hint="2381810" />
+                android:paddingEnd="12dp" />
 
             <!-- Email -->
             <TextView
