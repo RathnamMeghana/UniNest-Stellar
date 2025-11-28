@@ -25,10 +25,12 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
     private ApartmentApi apartmentApi;
     private String apartmentId;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apartment_tenants);
+
 
         tenantList = findViewById(R.id.layoutTenantList);
         TextView tvBuildingName = findViewById(R.id.tvBuildingName);
@@ -117,12 +119,12 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
 
             card.setRoomLabel("Room");
 
+            card.setOnDeleteClickListener(v -> removeTenant(tenant.getEmail()));
+
             // Add the card to the container
             tenantList.addView(card);
         }
     }
-
-
 
         private void addDummyTenants() {
             TenantCardView t1 = new TenantCardView(this);
@@ -140,5 +142,31 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
             t3.setRoomLabel("Room 3");
             tenantList.addView(t3);
         }
+    private void removeTenant(String email) {
+        Call<Void> call = apartmentApi.removeTenant(email);
+
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(ApartmentTenantsActivity.this, "Tenant removed", Toast.LENGTH_SHORT).show();
+                    // Refresh the tenant list
+                    if (apartmentId != null) {
+                        fetchTenants(apartmentId);
+                    }
+                } else {
+                    Toast.makeText(ApartmentTenantsActivity.this, "Failed to remove tenant", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ApartmentTenantsActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                Log.e("API_CALL", "Failed to remove tenant", t);
+            }
+        });
     }
+
+}
 
