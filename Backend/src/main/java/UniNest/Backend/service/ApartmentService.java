@@ -105,4 +105,36 @@ public class ApartmentService {
         }
     }
 
+    public void removeTenantFromApartment(String email) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            // Step 1 — find the user doc by email (or houseCode)
+            ApiFuture<QuerySnapshot> q = db.collection("users")
+                    .whereEqualTo("email", email)
+                    .get();
+
+            List<QueryDocumentSnapshot> docs = q.get().getDocuments();
+            if (docs.isEmpty()) {
+                throw new RuntimeException("User not found");
+            }
+
+            // Step 2 — Get Firestore document ID
+            String userId = docs.get(0).getId();
+
+            // Step 3 — update fields
+            db.collection("users").document(userId)
+                    .update(
+                            "apartmentId", null,
+                            "houseCode", null
+                    );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to remove tenant: " + e.getMessage());
+        }
+    }
 }
+
+
+
+
