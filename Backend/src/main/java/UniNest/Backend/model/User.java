@@ -1,0 +1,11 @@
+package UniNest.Backend.model;
+import lombok.Data;
+
+@Data
+public class User {
+    private String apartmentId;
+    private String email;
+    private String houseCode;
+    private String role;
+
+}

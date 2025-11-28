@@ -1,5 +1,6 @@
 package com.example.uninest.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -105,6 +106,10 @@ public class TenantSignUpActivity extends AppCompatActivity {
                                 .set(userMap)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(this, "Signup Successful! Welcome.", Toast.LENGTH_LONG).show();
+                                    // ➜ Go to Login
+                                    Intent intent = new Intent(TenantSignUpActivity.this, LettingAgentLoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(this, "Signup Failed: Could not save profile information.", Toast.LENGTH_LONG).show();
