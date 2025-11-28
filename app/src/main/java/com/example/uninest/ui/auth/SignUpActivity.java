@@ -117,6 +117,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                                     // ➜ Go to Login
                                     Intent intent = new Intent(SignUpActivity.this, LettingAgentLoginActivity.class);
+
                                     startActivity(intent);
                                     finish();
                                 })
