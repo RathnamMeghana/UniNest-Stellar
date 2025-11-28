@@ -89,6 +89,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
 
         String role = doc.getString("role");
         String company = doc.getString("company");
+        String apartmentId = doc.getString("houseCode");
 
         if (role != null) {
             Log.d("LoginActivity", "User Role Retrieved: " + role);
@@ -98,6 +99,17 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                 // Role 2: Tenent
                 Toast.makeText(this, "Agent Login successful!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, ApartmentTenantsActivity.class);
+                if (apartmentId != null && !apartmentId.isEmpty()) {
+                    intent.putExtra("EXTRA_APARTMENT_ID", apartmentId);
+                    // Optionally pass name details if available on the document
+                    // intent.putExtra("EXTRA_BUILDING_NAME", doc.getString("buildingName"));
+                    // intent.putExtra("EXTRA_APARTMENT_NAME", doc.getString("apartmentName"));
+                } else {
+                    Toast.makeText(this, "Apartment ID missing in user profile.", Toast.LENGTH_LONG).show();
+                    Log.e("LoginActivity", "User with role 2 is missing apartmentId.");
+                    // You might choose to stop here or send them to an error/setup screen
+                }
+
                 startActivity(intent);
                 finish(); // Close login screen
             } else if ("1".equals(role)) {

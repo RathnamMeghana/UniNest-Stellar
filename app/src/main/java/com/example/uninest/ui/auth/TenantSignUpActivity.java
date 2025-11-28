@@ -1,5 +1,6 @@
 package com.example.uninest.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -78,59 +79,82 @@ public class TenantSignUpActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-            signUp(email, password, String.valueOf(role), houseCode);
+            validateHouseCode(houseCode, email, password, String.valueOf(role));
+            //signUp(email, password, String.valueOf(role), houseCode);
         });
     }
 
 
-    private void signUp(String email, String password, String role, String houseCode) {
+    private void signUp(String email, String password, String role, String houseCode, String apartmentId) {
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
 
-                        // Save user info in Firestore
+                        // Save tenant info in Firestore
                         Map<String, Object> userMap = new HashMap<>();
                         userMap.put("email", email);
                         userMap.put("role", role);
                         userMap.put("houseCode", houseCode);
+                        userMap.put("apartmentId", apartmentId);
+
+
+
 
                         db.collection("users").document(user.getUid())
                                 .set(userMap)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(this, "Signup Successful! Welcome.", Toast.LENGTH_LONG).show();
-
+                                    // ➜ Go to Login
+                                    Intent intent = new Intent(TenantSignUpActivity.this, LettingAgentLoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
                                 })
                                 .addOnFailureListener(e -> {
-                                    // When Auth worked but Firestore failed
-                                    Toast.makeText(this, "Signup Failed: Could not save profile information. Please contact support.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(this, "Signup Failed: Could not save profile information.", Toast.LENGTH_LONG).show();
                                 });
+
                     } else {
-                        // Handle Authentication Failure
                         Exception exception = task.getException();
 
                         String errorMessage = "Authentication failed. Please try again.";
 
-                        if (exception != null) {
-                            if (exception instanceof FirebaseAuthUserCollisionException) {
-                                // Error for "The email address is already used"
-                                errorMessage = "That email address is already registered.";
-                                etTenantEmail.setError(errorMessage);
-                            } else if (exception instanceof FirebaseAuthWeakPasswordException) {
-                                // Error for "The password must be 6 characters long or more."
-                                FirebaseAuthWeakPasswordException weakPasswordException = (FirebaseAuthWeakPasswordException) exception;
-                                errorMessage = "Weak password: " + weakPasswordException.getReason();
-                                etTenantPassword.setError(errorMessage);
-                            } else {
-                                // Catch other exceptions like network problems
-                                errorMessage = "Signup failed: " + exception.getLocalizedMessage();
-                            }
+                        if (exception instanceof FirebaseAuthUserCollisionException) {
+                            errorMessage = "That email address is already registered.";
+                            etTenantEmail.setError(errorMessage);
+                        } else if (exception instanceof FirebaseAuthWeakPasswordException) {
+                            FirebaseAuthWeakPasswordException weakPasswordException = (FirebaseAuthWeakPasswordException) exception;
+                            errorMessage = "Weak password: " + weakPasswordException.getReason();
+                            etTenantPassword.setError(errorMessage);
+                        } else {
+                            errorMessage = "Signup failed: " + exception.getLocalizedMessage();
                         }
 
                         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
                     }
                 });
     }
+
+
+
+    private void validateHouseCode(String houseCode, String email, String password, String role) {
+        db.collection("apartments")
+                .whereEqualTo("code", houseCode)
+                .limit(1)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        // Apartment exists proceed with signup
+                        String apartmentId = task.getResult().getDocuments().get(0).getId();
+                        signUp(email, password, role, houseCode, apartmentId);
+                    } else {
+                        Toast.makeText(TenantSignUpActivity.this,
+                                "Invalid apartment code. Please check and try again.",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
 }
 
