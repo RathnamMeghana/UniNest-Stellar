@@ -44,7 +44,15 @@ public class TenantCardView extends FrameLayout {
         tvRoomLabel = findViewById(R.id.tvRoomLabel);
         imgTenantAvatar = findViewById(R.id.imgTenantAvatar);
         deleteButton = findViewById(R.id.btnDeleteTenant);
+
+
     }
+    public void showDeleteButton(boolean canDelete) {
+        if (deleteButton != null) {
+            deleteButton.setVisibility(canDelete ? VISIBLE : GONE);
+        }
+    }
+
 
     public void setTenantName(String name) {
         tvTenantName.setText(name);
