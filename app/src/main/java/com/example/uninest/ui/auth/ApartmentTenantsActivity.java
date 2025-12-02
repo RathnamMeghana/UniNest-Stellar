@@ -1,5 +1,6 @@
 package com.example.uninest.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
@@ -22,6 +23,10 @@ import retrofit2.Response;
 public class ApartmentTenantsActivity extends AppCompatActivity {
 
     private LinearLayout tenantList;
+    private LinearLayout roomsList;
+    private TextView tvBuildingName;
+    private TextView tvApartmentName;
+    private TextView tvTenantCount;
     private ApartmentApi apartmentApi;
     private String apartmentId;
 
@@ -31,9 +36,10 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_apartment_tenants);
 
         tenantList = findViewById(R.id.layoutTenantList);
-        TextView tvBuildingName = findViewById(R.id.tvBuildingName);
-        TextView tvApartmentName = findViewById(R.id.tvApartmentName);
-        TextView tvTenantCount = findViewById(R.id.tvTenantCount);
+        roomsList = findViewById(R.id.layoutRoomsList);
+        tvBuildingName = findViewById(R.id.tvBuildingName);
+        tvApartmentName = findViewById(R.id.tvApartmentName);
+        tvTenantCount = findViewById(R.id.tvTenantCount);
 
         apartmentApi = ApiClient.getApartmentApi();
         // Get extras from previous screen (later, when we wire navigation)
@@ -69,6 +75,18 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         //int occupied = 3;  // number of dummy tenants
         //int capacity = 5;  // just an example
         //tvTenantCount.setText(occupied + "/" + capacity + " Tenants");
+
+        // Rooms: open "New Apartment / Rooms setup" screen
+        findViewById(R.id.btnNewRoom).setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    ApartmentTenantsActivity.this,
+                    SetupApartmentRoomsActivity.class   // screen 2
+            );
+            startActivity(intent);
+        });
+
+        // For now, show some dummy room types
+        addDummyRooms();
 
     }
 
@@ -123,6 +141,47 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
     }
 
 
+    private void addDummyRooms() {
+        roomsList.removeAllViews();
+
+        String[] roomTypes = new String[] {
+                "Bedrooms",
+                "Bath Rooms",
+                "Kitchens",
+                "Living Rooms"
+        };
+
+        for (String type : roomTypes) {
+            RoomTypeCardView card = new RoomTypeCardView(this);
+            card.setRoomTypeName(type);
+
+            card.setOnClickListener(v -> {
+                Intent intent = new Intent(
+                        ApartmentTenantsActivity.this,
+                        RoomTypeDetailActivity.class
+                );
+                intent.putExtra("EXTRA_ROOM_TYPE_NAME", type);
+                intent.putExtra("EXTRA_APARTMENT_NAME",
+                        tvApartmentName.getText().toString());
+
+                // TODO: replace these dummy numbers with real counts from screen 2
+                if (type.equals("Bedrooms")) {
+                    intent.putExtra("EXTRA_ROOM_COUNT", 3);
+                } else if (type.equals("Bath Rooms")) {
+                    intent.putExtra("EXTRA_ROOM_COUNT", 2);
+                } else if (type.equals("Kitchens")) {
+                    intent.putExtra("EXTRA_ROOM_COUNT", 2);
+                } else if (type.equals("Living Rooms")) {
+                    intent.putExtra("EXTRA_ROOM_COUNT", 1);
+                }
+
+                startActivity(intent);
+            });
+
+            roomsList.addView(card);
+        }
+
+    }
 
         private void addDummyTenants() {
             TenantCardView t1 = new TenantCardView(this);
