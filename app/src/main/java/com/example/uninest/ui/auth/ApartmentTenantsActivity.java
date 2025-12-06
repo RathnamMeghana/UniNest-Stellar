@@ -24,12 +24,14 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
     private LinearLayout tenantList;
     private ApartmentApi apartmentApi;
     private String apartmentId;
+    private String userRole;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apartment_tenants);
+        Log.d("ROLE_CHECK", "User role received: " + userRole);
 
 
         tenantList = findViewById(R.id.layoutTenantList);
@@ -42,6 +44,10 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         String buildingName = getIntent().getStringExtra("EXTRA_BUILDING_NAME");
         String apartmentName = getIntent().getStringExtra("EXTRA_APARTMENT_NAME");
         apartmentId = getIntent().getStringExtra("EXTRA_APARTMENT_ID");
+        userRole = getIntent().getStringExtra("EXTRA_USER_ROLE");
+
+
+
 
         if (buildingName != null && !buildingName.isEmpty()) {
             tvBuildingName.setText(buildingName);
@@ -61,6 +67,7 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         if (apartmentId != null && !apartmentId.isEmpty()) {
             fetchTenants(apartmentId);
         }
+
         else {
             // Handle error: ID is missing, cannot fetch tenants
             Log.e("TENANTS_ACTIVITY", "Apartment ID is missing.");
@@ -111,20 +118,30 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         TextView tvTenantCount = findViewById(R.id.tvTenantCount);
         tvTenantCount.setText(occupied + "/" + capacity + " Tenants");
 
-        for (User tenant : tenants) {
-            TenantCardView card = new TenantCardView(this);
+
+            for (User tenant : tenants) {
+                TenantCardView card = new TenantCardView(this);
+
+                card.setTenantName(tenant.getEmail());
+                card.setRoomLabel("Room");
+
+                // Hide delete button if user is NOT a letting agent (role 1)
 
 
-            card.setTenantName(tenant.getEmail());
 
-            card.setRoomLabel("Room");
+                boolean canDelete = "1".equals(userRole);
+                card.showDeleteButton(canDelete);
 
-            card.setOnDeleteClickListener(v -> removeTenant(tenant.getEmail()));
 
-            // Add the card to the container
-            tenantList.addView(card);
+
+                if (canDelete) {
+                    card.setOnDeleteClickListener(v -> removeTenant(tenant.getEmail()));
+                }
+
+                tenantList.addView(card);
+            }
+
         }
-    }
 
         private void addDummyTenants() {
             TenantCardView t1 = new TenantCardView(this);

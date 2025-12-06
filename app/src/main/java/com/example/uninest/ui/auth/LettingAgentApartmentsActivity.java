@@ -15,6 +15,8 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.model.Apartment;
+import com.example.uninest.SessionManager;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +33,16 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
 
     private String buildingName;
     private String buildingId; // received from previous activity
+    private String loggedInRole;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_letting_agent_apartments);
+
+        SessionManager session = new SessionManager(this);
+        loggedInRole = session.getUserRole();
 
         apartmentList = findViewById(R.id.layoutApartmentList);
         Button btnNewApartment = findViewById(R.id.btnNewApartment);
@@ -123,6 +130,8 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         });
     }
 
+
+
     // ------------------------
     // Add card to UI
     // ------------------------
@@ -148,11 +157,15 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         Intent intent = new Intent(
                 LettingAgentApartmentsActivity.this,
                 ApartmentTenantsActivity.class
+
         );
 
         intent.putExtra("EXTRA_BUILDING_NAME", buildingName);
         intent.putExtra("EXTRA_APARTMENT_NAME", apartment.getName());
         intent.putExtra("EXTRA_APARTMENT_ID", apartment.getCode());
+        intent.putExtra("EXTRA_USER_ROLE", loggedInRole);
+
+
 
         startActivity(intent);
     }
