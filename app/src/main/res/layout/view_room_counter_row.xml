@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/bg_room_counter_outer"
+    android:layout_marginBottom="16dp"
+    android:padding="16dp"
+    android:gravity="center_vertical">
+
+    <!-- Label -->
+    <TextView
+        android:id="@+id/tvRoomLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Bed Rooms"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <!-- Stepper: - 3 + -->
+    <LinearLayout
+        android:id="@+id/layoutStepper"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/btnMinus"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="-"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:background="@drawable/bg_stepper_minus" />
+
+        <TextView
+            android:id="@+id/tvRoomCount"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="3"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:background="@drawable/bg_stepper_middle" />
+
+        <TextView
+            android:id="@+id/btnPlus"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="+"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:background="@drawable/bg_stepper_plus" />
+    </LinearLayout>
+
+</LinearLayout>

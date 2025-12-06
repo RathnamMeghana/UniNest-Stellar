@@ -1,5 +1,6 @@
 package com.example.uninest.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
@@ -22,6 +23,10 @@ import retrofit2.Response;
 public class ApartmentTenantsActivity extends AppCompatActivity {
 
     private LinearLayout tenantList;
+    private LinearLayout roomsList;
+    private TextView tvBuildingName;
+    private TextView tvApartmentName;
+    private TextView tvTenantCount;
     private ApartmentApi apartmentApi;
     private String apartmentId;
     private String userRole;
@@ -35,9 +40,10 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
 
 
         tenantList = findViewById(R.id.layoutTenantList);
-        TextView tvBuildingName = findViewById(R.id.tvBuildingName);
-        TextView tvApartmentName = findViewById(R.id.tvApartmentName);
-        TextView tvTenantCount = findViewById(R.id.tvTenantCount);
+        roomsList = findViewById(R.id.layoutRoomsList);
+        tvBuildingName = findViewById(R.id.tvBuildingName);
+        tvApartmentName = findViewById(R.id.tvApartmentName);
+        tvTenantCount = findViewById(R.id.tvTenantCount);
 
         apartmentApi = ApiClient.getApartmentApi();
         // Get extras from previous screen (later, when we wire navigation)
@@ -78,6 +84,18 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         //int occupied = 3;  // number of dummy tenants
         //int capacity = 5;  // just an example
         //tvTenantCount.setText(occupied + "/" + capacity + " Tenants");
+
+        // Rooms: open "New Apartment / Rooms setup" screen
+        findViewById(R.id.btnNewRoom).setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    ApartmentTenantsActivity.this,
+                    SetupApartmentRoomsActivity.class   // screen 2
+            );
+            startActivity(intent);
+        });
+
+        // For now, show some dummy room types
+        addDummyRooms();
 
     }
 
