@@ -29,11 +29,15 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
     private TextView tvTenantCount;
     private ApartmentApi apartmentApi;
     private String apartmentId;
+    private String userRole;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apartment_tenants);
+        Log.d("ROLE_CHECK", "User role received: " + userRole);
+
 
         tenantList = findViewById(R.id.layoutTenantList);
         roomsList = findViewById(R.id.layoutRoomsList);
@@ -46,6 +50,10 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         String buildingName = getIntent().getStringExtra("EXTRA_BUILDING_NAME");
         String apartmentName = getIntent().getStringExtra("EXTRA_APARTMENT_NAME");
         apartmentId = getIntent().getStringExtra("EXTRA_APARTMENT_ID");
+        userRole = getIntent().getStringExtra("EXTRA_USER_ROLE");
+
+
+
 
         if (buildingName != null && !buildingName.isEmpty()) {
             tvBuildingName.setText(buildingName);
@@ -65,6 +73,7 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         if (apartmentId != null && !apartmentId.isEmpty()) {
             fetchTenants(apartmentId);
         }
+
         else {
             // Handle error: ID is missing, cannot fetch tenants
             Log.e("TENANTS_ACTIVITY", "Apartment ID is missing.");
@@ -127,61 +136,30 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         TextView tvTenantCount = findViewById(R.id.tvTenantCount);
         tvTenantCount.setText(occupied + "/" + capacity + " Tenants");
 
-        for (User tenant : tenants) {
-            TenantCardView card = new TenantCardView(this);
+
+            for (User tenant : tenants) {
+                TenantCardView card = new TenantCardView(this);
+
+                card.setTenantName(tenant.getEmail());
+                card.setRoomLabel("Room");
+
+                // Hide delete button if user is NOT a letting agent (role 1)
 
 
-            card.setTenantName(tenant.getEmail());
 
-            card.setRoomLabel("Room");
-
-            // Add the card to the container
-            tenantList.addView(card);
-        }
-    }
+                boolean canDelete = "1".equals(userRole);
+                card.showDeleteButton(canDelete);
 
 
-    private void addDummyRooms() {
-        roomsList.removeAllViews();
 
-        String[] roomTypes = new String[] {
-                "Bedrooms",
-                "Bath Rooms",
-                "Kitchens",
-                "Living Rooms"
-        };
-
-        for (String type : roomTypes) {
-            RoomTypeCardView card = new RoomTypeCardView(this);
-            card.setRoomTypeName(type);
-
-            card.setOnClickListener(v -> {
-                Intent intent = new Intent(
-                        ApartmentTenantsActivity.this,
-                        RoomTypeDetailActivity.class
-                );
-                intent.putExtra("EXTRA_ROOM_TYPE_NAME", type);
-                intent.putExtra("EXTRA_APARTMENT_NAME",
-                        tvApartmentName.getText().toString());
-
-                // TODO: replace these dummy numbers with real counts from screen 2
-                if (type.equals("Bedrooms")) {
-                    intent.putExtra("EXTRA_ROOM_COUNT", 3);
-                } else if (type.equals("Bath Rooms")) {
-                    intent.putExtra("EXTRA_ROOM_COUNT", 2);
-                } else if (type.equals("Kitchens")) {
-                    intent.putExtra("EXTRA_ROOM_COUNT", 2);
-                } else if (type.equals("Living Rooms")) {
-                    intent.putExtra("EXTRA_ROOM_COUNT", 1);
+                if (canDelete) {
+                    card.setOnDeleteClickListener(v -> removeTenant(tenant.getEmail()));
                 }
 
-                startActivity(intent);
-            });
+                tenantList.addView(card);
+            }
 
-            roomsList.addView(card);
         }
-
-    }
 
         private void addDummyTenants() {
             TenantCardView t1 = new TenantCardView(this);
@@ -199,5 +177,31 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
             t3.setRoomLabel("Room 3");
             tenantList.addView(t3);
         }
+    private void removeTenant(String email) {
+        Call<Void> call = apartmentApi.removeTenant(email);
+
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(ApartmentTenantsActivity.this, "Tenant removed", Toast.LENGTH_SHORT).show();
+                    // Refresh the tenant list
+                    if (apartmentId != null) {
+                        fetchTenants(apartmentId);
+                    }
+                } else {
+                    Toast.makeText(ApartmentTenantsActivity.this, "Failed to remove tenant", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ApartmentTenantsActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                Log.e("API_CALL", "Failed to remove tenant", t);
+            }
+        });
     }
+
+}
 

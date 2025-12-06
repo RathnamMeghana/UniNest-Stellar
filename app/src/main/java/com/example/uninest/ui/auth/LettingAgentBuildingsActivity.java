@@ -116,6 +116,7 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
             );
             intent.putExtra("EXTRA_BUILDING_NAME", building.getName());
             intent.putExtra("EXTRA_BUILDING_ID", building.getId());
+
             startActivity(intent);
         });
         buildingList.addView(card);

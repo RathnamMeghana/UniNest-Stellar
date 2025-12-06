@@ -49,6 +49,18 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="#6C2BA4" />
+
+        <Button
+            android:id="@+id/btnDeleteTenant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="Remove"
+            android:textColor="@android:color/white" />
+
+
     </LinearLayout>
 
 </FrameLayout>

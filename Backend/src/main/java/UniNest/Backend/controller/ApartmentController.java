@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,4 +55,13 @@ public class ApartmentController {
 
         return ResponseEntity.ok(users);
     }
+
+    @DeleteMapping("/tenants/{email}/remove")
+    public ResponseEntity<?> removeTenant(@PathVariable String email) {
+        apartmentService.removeTenantFromApartment(email);
+        return ResponseEntity.ok("Tenant removed from apartment.");
+    }
+
+
+
 }

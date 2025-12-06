@@ -3,7 +3,9 @@ package com.example.uninest.ui.auth;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +19,8 @@ public class TenantCardView extends FrameLayout {
     private TextView tvTenantName;
     private TextView tvRoomLabel;
     private ImageView imgTenantAvatar;
+    private Button deleteButton;
+
 
     public TenantCardView(Context context) {
         super(context);
@@ -39,7 +43,16 @@ public class TenantCardView extends FrameLayout {
         tvTenantName = findViewById(R.id.tvTenantName);
         tvRoomLabel = findViewById(R.id.tvRoomLabel);
         imgTenantAvatar = findViewById(R.id.imgTenantAvatar);
+        deleteButton = findViewById(R.id.btnDeleteTenant);
+
+
     }
+    public void showDeleteButton(boolean canDelete) {
+        if (deleteButton != null) {
+            deleteButton.setVisibility(canDelete ? VISIBLE : GONE);
+        }
+    }
+
 
     public void setTenantName(String name) {
         tvTenantName.setText(name);
@@ -51,5 +64,10 @@ public class TenantCardView extends FrameLayout {
 
     public ImageView getAvatarImageView() {
         return imgTenantAvatar; // for loading real profile pics later
+    }
+    public void setOnDeleteClickListener(OnClickListener listener) {
+        if (deleteButton != null) {
+            deleteButton.setOnClickListener(listener);
+        }
     }
 }
