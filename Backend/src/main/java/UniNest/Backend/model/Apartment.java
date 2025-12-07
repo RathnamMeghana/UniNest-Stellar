@@ -3,6 +3,8 @@ package UniNest.Backend.model;
 import lombok.Data;
 import com.google.cloud.Timestamp;
 
+import java.util.List;
+
 @Data
 public class Apartment {
 
@@ -15,6 +17,7 @@ public class Apartment {
     private String description;
     private Double rentPrice;
     private Boolean active;
+    private List<Room> rooms;
 
 
 }

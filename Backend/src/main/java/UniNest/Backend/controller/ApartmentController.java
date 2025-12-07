@@ -54,4 +54,5 @@ public class ApartmentController {
 
         return ResponseEntity.ok(users);
     }
+
 }
