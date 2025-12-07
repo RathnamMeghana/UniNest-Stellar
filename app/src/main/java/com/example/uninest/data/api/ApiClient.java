@@ -12,7 +12,7 @@ public class ApiClient {
 
     // If running backend on your laptop with emulator:
     //private static final String BASE_URL = "http://192.168.1.71:8080";
-    private static final String BASE_URL = " http://127.0.0.1:8080";
+    private static final String BASE_URL = " http://127.0.0.1:8080/";
 
     // For physical phone, change to "http://<your-ip>:8080"
 

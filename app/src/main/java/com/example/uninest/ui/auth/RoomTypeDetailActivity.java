@@ -46,6 +46,7 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
         roomTypeName = getIntent().getStringExtra("EXTRA_ROOM_TYPE_NAME");
         String apartmentName = getIntent().getStringExtra("EXTRA_APARTMENT_NAME");
 
+
         if (apartmentName != null) tvApartmentHeader.setText(apartmentName);
         if (roomTypeName != null) tvRoomTypeTitle.setText(roomTypeName);
 
@@ -64,7 +65,7 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
 
         //for (int i = 1; i <= roomCount; i++) {
         //    addRoomCard(roomTypeName + " " + i);
-       // }
+        // }
 
 
     }
@@ -85,6 +86,7 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
         Room room = new Room();
         room.setType(roomTypeName);
         room.setLabel(label);
+
 
         api.createRoom(houseCode, room).enqueue(new Callback<String>() {
             @Override
@@ -108,7 +110,7 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    displayRooms(response.body());
+                    displayFilteredRooms(response.body());
                 } else {
                     Log.e("ROOMS", "Failed to fetch rooms: " + response.code());
                 }
@@ -125,8 +127,64 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
         roomInstancesLayout.removeAllViews(); // clear any previous cards
 
         for (Room room : rooms) {
-            addRoomCard(room.getLabel());
+            addRoomCard(room.getType());
         }
     }
 
+
+    private void displayFilteredRooms(List<Room> rooms) {
+        // 1. Clear UI and reset counter
+        roomInstancesLayout.removeAllViews();
+        roomCounter = 0;
+
+
+        final String targetRoomTypeName = roomTypeName != null ? roomTypeName.trim() : "";
+
+        if (targetRoomTypeName.isEmpty()) {
+            Log.e("ROOMS_ERROR", "roomTypeName is null or empty. Cannot filter.");
+            return;
+        }
+
+        //  singular version for filtering
+        String singularTarget = targetRoomTypeName;
+        if (targetRoomTypeName.endsWith("s")) {
+            // Simple heuristic: remove trailing 's' if the type is pluralized
+            singularTarget = targetRoomTypeName.substring(0, targetRoomTypeName.length() - 1);
+            Log.d("ROOMS_DEBUG", "Plural detected. Filtering with singular form: " + singularTarget);
+        }
+
+        final String finalTarget = singularTarget;
+        Log.d("ROOMS_DEBUG", "Filtering for normalized target type: " + targetRoomTypeName +
+                " (or singular: " + finalTarget + ")");
+
+
+        for (Room room : rooms) {
+            String roomApiType = room.getType();
+
+            boolean isMatch = roomApiType != null &&
+                    (roomApiType.equalsIgnoreCase(targetRoomTypeName) ||
+                            roomApiType.equalsIgnoreCase(finalTarget));
+
+            if (isMatch) {
+
+                Log.d("ROOMS_DEBUG", "SUCCESS: Found a match for type " + roomApiType);
+
+                roomCounter++;
+
+
+                String cardLabel = room.getLabel();
+
+                // If the API didn't get a label add one using the original roomTypeName
+                if (cardLabel == null || cardLabel.isEmpty()) {
+                    cardLabel = targetRoomTypeName + " " + roomCounter;
+                }
+
+
+                addRoomCard(cardLabel);
+            } else {
+                Log.d("ROOMS_DEBUG", "FAIL: Skipped room with type: " + roomApiType +
+                        ". Target was: " + targetRoomTypeName);
+            }
+        }
+    }
 }
