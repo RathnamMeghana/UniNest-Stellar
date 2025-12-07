@@ -40,7 +40,7 @@ public class RoomService {
     }
 
     // -------------------------
-    // GET ALL ROOMS IN APARTMENT
+    // GET ALL ROOMS in an APARTMENT
     // -------------------------
     public List<Room> getRooms(String houseCode) {
         List<Room> list = new ArrayList<>();

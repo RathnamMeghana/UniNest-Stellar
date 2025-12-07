@@ -17,6 +17,8 @@ public class SetupApartmentRoomsActivity extends AppCompatActivity {
         View btnNext = findViewById(R.id.btnNextRooms);
         btnNext.setOnClickListener(v -> {
             // later you can return selected room counts via setResult(...)
+
+
             finish();
         });
     }
