@@ -1,44 +1,70 @@
 package UniNest.Backend.service;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.Query;
-import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import org.springframework.stereotype.Service;
+import UniNest.Backend.model.Room;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import UniNest.Backend.model.Room;
-
-@service
+@Service
 public class RoomService {
 
+    // -------------------------
+    // ADD ROOM TO APARTMENT
+    // -------------------------
+    public String addRoom(String houseCode, Room room) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            room.setHouseCode(houseCode);
+            // Generate ID for the room
 
+            DocumentReference newRoomRef = db.collection("apartments")
+                    .document(houseCode)
+                    .collection("rooms")
+                    .document();  // Auto-generated ID
 
-    public String addRoom(String apartmentId, Room room ){
-        Firestore db = FirestoreClient.getFirestore();
-        DocumentReference docRef = db.collection("apartments")
-                .document(apartmentId)
-                .collection("rooms")
-                .document();
+            room.setId(newRoomRef.getId());
 
-        room.setId(docRef.getId());
-        docRef.set(room);
-        return room.getId();
+            ApiFuture<WriteResult> writeResult = newRoomRef.set(room);
+            writeResult.get();
 
+            return "Room added successfully!";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error adding room: " + e.getMessage();
+        }
     }
-    public List<Room> getRooms(String apartmentId) throws ExecutionException, InterruptedException {
-        Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> future = db
-                .collection("apartments")
-                .document(apartmentId)
-                .collection("rooms")
-                .get();
-        return future.get().toObjects(Room.class);
+
+    // -------------------------
+    // GET ALL ROOMS IN APARTMENT
+    // -------------------------
+    public List<Room> getRooms(String houseCode) {
+        List<Room> list = new ArrayList<>();
+
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            CollectionReference roomsRef = db.collection("apartments")
+                    .document(houseCode)
+                    .collection("rooms");
+
+            ApiFuture<QuerySnapshot> future = roomsRef.get();
+            List<QueryDocumentSnapshot> docs = future.get().getDocuments();
+
+            for (DocumentSnapshot doc : docs) {
+                Room room = doc.toObject(Room.class);
+                room.setId(doc.getId());
+                list.add(room);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
-
-
-
 }

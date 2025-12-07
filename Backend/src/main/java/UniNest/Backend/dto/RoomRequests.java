@@ -6,7 +6,7 @@ import lombok.Data;
 public class RoomRequests {
 
     private String id;
-    private String apartmentId;
+    private String houseCode;
     private String type;
     private String label;
 }
