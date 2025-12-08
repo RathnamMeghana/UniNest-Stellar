@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
+import com.example.uninest.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -90,6 +91,8 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
         String role = doc.getString("role");
         String company = doc.getString("company");
         String apartmentId = doc.getString("houseCode");
+        SessionManager session = new SessionManager(this);
+        session.saveUserSession(mAuth.getCurrentUser().getEmail(), role);
 
         if (role != null) {
             Log.d("LoginActivity", "User Role Retrieved: " + role);
