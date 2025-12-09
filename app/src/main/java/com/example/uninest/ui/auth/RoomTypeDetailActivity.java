@@ -133,58 +133,31 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
 
 
     private void displayFilteredRooms(List<Room> rooms) {
-        // 1. Clear UI and reset counter
         roomInstancesLayout.removeAllViews();
         roomCounter = 0;
 
-
-        final String targetRoomTypeName = roomTypeName != null ? roomTypeName.trim() : "";
-
-        if (targetRoomTypeName.isEmpty()) {
+        if (roomTypeName == null || roomTypeName.isEmpty()) {
             Log.e("ROOMS_ERROR", "roomTypeName is null or empty. Cannot filter.");
             return;
         }
 
-        //  singular version for filtering
-        String singularTarget = targetRoomTypeName;
-        if (targetRoomTypeName.endsWith("s")) {
-            // Simple heuristic: remove trailing 's' if the type is pluralized
-            singularTarget = targetRoomTypeName.substring(0, targetRoomTypeName.length() - 1);
-            Log.d("ROOMS_DEBUG", "Plural detected. Filtering with singular form: " + singularTarget);
-        }
-
-        final String finalTarget = singularTarget;
-        Log.d("ROOMS_DEBUG", "Filtering for normalized target type: " + targetRoomTypeName +
-                " (or singular: " + finalTarget + ")");
-
+        String target = roomTypeName.trim();
 
         for (Room room : rooms) {
-            String roomApiType = room.getType();
-
-            boolean isMatch = roomApiType != null &&
-                    (roomApiType.equalsIgnoreCase(targetRoomTypeName) ||
-                            roomApiType.equalsIgnoreCase(finalTarget));
-
-            if (isMatch) {
-
-                Log.d("ROOMS_DEBUG", "SUCCESS: Found a match for type " + roomApiType);
-
+            if (room.getType() != null && room.getType().trim().equalsIgnoreCase(target)) {
                 roomCounter++;
 
-
-                String cardLabel = room.getLabel();
-
-                // If the API didn't get a label add one using the original roomTypeName
-                if (cardLabel == null || cardLabel.isEmpty()) {
-                    cardLabel = targetRoomTypeName + " " + roomCounter;
+                String label = room.getLabel();
+                if (label == null || label.isEmpty()) {
+                    label = target + " " + roomCounter; // fallback label
                 }
 
-
-                addRoomCard(cardLabel);
-            } else {
-                Log.d("ROOMS_DEBUG", "FAIL: Skipped room with type: " + roomApiType +
-                        ". Target was: " + targetRoomTypeName);
+                addRoomCard(label);
             }
+        }
+
+        if (roomCounter == 0) {
+            Log.d("ROOMS_DEBUG", "No rooms found for type: " + target);
         }
     }
 }

@@ -12,9 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.uninest.R;
 import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.data.api.ApiClient;
+import com.example.uninest.model.Room;
 import com.example.uninest.model.User;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,13 +34,13 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
     private String apartmentId;
     private String userRole;
 
+    // Hard-coded house code
+    private String houseCode = "APT-709F22C";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apartment_tenants);
-        Log.d("ROLE_CHECK", "User role received: " + userRole);
-
 
         tenantList = findViewById(R.id.layoutTenantList);
         roomsList = findViewById(R.id.layoutRoomsList);
@@ -46,150 +49,139 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         tvTenantCount = findViewById(R.id.tvTenantCount);
 
         apartmentApi = ApiClient.getApartmentApi();
-        // Get extras from previous screen (later, when we wire navigation)
+
+        // Get extras from previous screen
         String buildingName = getIntent().getStringExtra("EXTRA_BUILDING_NAME");
         String apartmentName = getIntent().getStringExtra("EXTRA_APARTMENT_NAME");
         apartmentId = getIntent().getStringExtra("EXTRA_APARTMENT_ID");
         userRole = getIntent().getStringExtra("EXTRA_USER_ROLE");
 
+        // Set building/apartment names
+        tvBuildingName.setText(buildingName != null ? buildingName : "Apartments");
+        tvApartmentName.setText(apartmentName != null ? apartmentName : "Apartment");
 
-
-
-        if (buildingName != null && !buildingName.isEmpty()) {
-            tvBuildingName.setText(buildingName);
-        } else {
-            tvBuildingName.setText("Apartments");
-        }
-
-        if (apartmentName != null && !apartmentName.isEmpty()) {
-            tvApartmentName.setText(apartmentName);
-        } else {
-            tvApartmentName.setText("Apartment");
-        }
-
-        // For now: hard-coded dummy tenants
-        //addDummyTenants();
-        // Check if ID is available before fetching
+        // Fetch tenants and rooms if apartmentId is available
         if (apartmentId != null && !apartmentId.isEmpty()) {
             fetchTenants(apartmentId);
-        }
-
-        else {
-            // Handle error: ID is missing, cannot fetch tenants
+            fetchRooms(houseCode);
+        } else {
             Log.e("TENANTS_ACTIVITY", "Apartment ID is missing.");
             tvTenantCount.setText("Error: ID Missing");
         }
 
-        // Update tenant count text based on dummy list
-        //int occupied = 3;  // number of dummy tenants
-        //int capacity = 5;  // just an example
-        //tvTenantCount.setText(occupied + "/" + capacity + " Tenants");
-
-        // Rooms: open "New Apartment / Rooms setup" screen
+        // Setup "New Room" button
         findViewById(R.id.btnNewRoom).setOnClickListener(v -> {
             Intent intent = new Intent(
                     ApartmentTenantsActivity.this,
-                    SetupApartmentRoomsActivity.class   // screen 2
+                    SetupApartmentRoomsActivity.class
             );
             startActivity(intent);
         });
-
-        // For now, show some dummy room types
-        addDummyRooms();
-
     }
 
+    // Fetch tenants
     private void fetchTenants(String id) {
-
-
-        // Call the endpoint: GET /api/v1/apartments/{apartmentId}/users
-        Call<List<User>> call = apartmentApi.getUsersForApartment(id);
-
-        call.enqueue(new Callback<List<User>>() {
+        apartmentApi.getUsersForApartment(id).enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<User> tenants = response.body();
-                    displayTenants(tenants);
+                    displayTenants(response.body());
                 } else {
                     Log.e("API_CALL", "Failed to fetch tenants: " + response.code());
-                    // Optionally show a failure message to the user
                 }
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
                 Log.e("API_CALL", "Network error fetching tenants", t);
-                // Optionally show a network error message
             }
         });
     }
 
+    // Display tenants
     private void displayTenants(List<User> tenants) {
-        // Clear the hard-coded views first
         tenantList.removeAllViews();
 
-        // Update the tenant count
         int occupied = tenants.size();
-
-        int capacity = 5; // Hard-coded for now
-        TextView tvTenantCount = findViewById(R.id.tvTenantCount);
+        int capacity = 5; // hard-coded for now
         tvTenantCount.setText(occupied + "/" + capacity + " Tenants");
 
+        for (User tenant : tenants) {
+            TenantCardView card = new TenantCardView(this);
+            card.setTenantName(tenant.getEmail());
+            card.setRoomLabel("Room");
 
-            for (User tenant : tenants) {
-                TenantCardView card = new TenantCardView(this);
+            boolean canDelete = "1".equals(userRole);
+            card.showDeleteButton(canDelete);
 
-                card.setTenantName(tenant.getEmail());
-                card.setRoomLabel("Room");
-
-                // Hide delete button if user is NOT a letting agent (role 1)
-
-
-
-                boolean canDelete = "1".equals(userRole);
-                card.showDeleteButton(canDelete);
-
-
-
-                if (canDelete) {
-                    card.setOnDeleteClickListener(v -> removeTenant(tenant.getEmail()));
-                }
-
-                tenantList.addView(card);
+            if (canDelete) {
+                card.setOnDeleteClickListener(v -> removeTenant(tenant.getEmail()));
             }
 
+            tenantList.addView(card);
         }
+    }
 
-        private void addDummyTenants() {
-            TenantCardView t1 = new TenantCardView(this);
-            t1.setTenantName("Maya Smith");
-            t1.setRoomLabel("Room 1");
-            tenantList.addView(t1);
+    // Fetch rooms
+    private void fetchRooms(String houseCode) {
+        apartmentApi.getRooms(houseCode).enqueue(new Callback<List<Room>>() {
+            @Override
+            public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    displayRoomTypes(response.body());
+                } else {
+                    Log.e("ROOMS", "Failed to fetch rooms: " + response.code());
+                }
+            }
 
-            TenantCardView t2 = new TenantCardView(this);
-            t2.setTenantName("Ruth Mainland");
-            t2.setRoomLabel("Room 2");
-            tenantList.addView(t2);
+            @Override
+            public void onFailure(Call<List<Room>> call, Throwable t) {
+                Log.e("ROOMS", "Network error fetching rooms", t);
+            }
+        });
+    }
 
-            TenantCardView t3 = new TenantCardView(this);
-            t3.setTenantName("Sarah Williams");
-            t3.setRoomLabel("Room 3");
-            tenantList.addView(t3);
+    // Display unique room types
+    private void displayRoomTypes(List<Room> rooms) {
+        roomsList.removeAllViews();
+        if (rooms == null || rooms.isEmpty()) return;
+
+        Set<String> addedTypes = new HashSet<>();
+
+        for (Room room : rooms) {
+            String type = room.getType();
+            if (type == null || type.isEmpty()) continue;
+
+            if (!addedTypes.contains(type)) {
+                addedTypes.add(type);
+
+                RoomTypeCardView card = new RoomTypeCardView(this);
+                card.setRoomTypeName(type);
+
+                // Open detail activity on click
+                card.setOnClickListener(v -> openRoomDetail(type));
+                roomsList.addView(card);
+            }
         }
+    }
+
+    // Open RoomTypeDetailActivity for selected type
+    private void openRoomDetail(String roomType) {
+        Intent intent = new Intent(this, RoomTypeDetailActivity.class);
+        intent.putExtra("EXTRA_ROOM_TYPE_NAME", roomType);
+        intent.putExtra("EXTRA_APARTMENT_NAME", tvApartmentName.getText().toString());
+        intent.putExtra("EXTRA_HOUSE_CODE", houseCode);
+        startActivity(intent);
+    }
+
+    // Remove tenant
     private void removeTenant(String email) {
-        Call<Void> call = apartmentApi.removeTenant(email);
-
-
-        call.enqueue(new Callback<Void>() {
+        apartmentApi.removeTenant(email).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(ApartmentTenantsActivity.this, "Tenant removed", Toast.LENGTH_SHORT).show();
-                    // Refresh the tenant list
-                    if (apartmentId != null) {
-                        fetchTenants(apartmentId);
-                    }
+                    if (apartmentId != null) fetchTenants(apartmentId);
                 } else {
                     Toast.makeText(ApartmentTenantsActivity.this, "Failed to remove tenant", Toast.LENGTH_SHORT).show();
                 }
@@ -202,6 +194,4 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
             }
         });
     }
-
 }
-
