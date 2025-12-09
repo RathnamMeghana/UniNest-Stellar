@@ -43,6 +43,7 @@ public class SetupApartmentRoomsActivity extends AppCompatActivity {
 
         // get extras
         houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
+
         userRole = getIntent().getStringExtra("EXTRA_USER_ROLE");
 
 
@@ -67,10 +68,13 @@ public class SetupApartmentRoomsActivity extends AppCompatActivity {
             // assign room type
             tvLabel.setText(roomTypes[i]);
 
+            tvCount.setText("0");
+
             // plus button
             btnPlus.setOnClickListener(v -> {
                 int count = Integer.parseInt(tvCount.getText().toString());
                 tvCount.setText(String.valueOf(count + 1));
+
             });
 
             // minus button

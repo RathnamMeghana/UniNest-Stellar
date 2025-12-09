@@ -24,7 +24,7 @@ import retrofit2.Response;
 
 public class RoomTypeDetailActivity extends AppCompatActivity {
 
-    private String houseCode = "APT-709F22C";
+    private String houseCode;
     private String roomTypeName;
     private int roomCounter = 0; // current number of rooms
     private ApartmentApi api;
@@ -36,6 +36,7 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_type_detail);
         userRole = getIntent().getStringExtra("EXTRA_USER_ROLE");
+        houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
 
         // UI references
         TextView tvApartmentHeader = findViewById(R.id.tvHeaderApartmentName);
@@ -60,7 +61,13 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
         // Back button
         findViewById(R.id.btnBack).setOnClickListener(v -> onBackPressed());
 
-        fetchRooms();
+        if (houseCode != null && !houseCode.isEmpty()) {
+            fetchRooms(houseCode);
+        } else {
+            Log.e("TENANTS_ACTIVITY", "House code is missing for fetching rooms");
+        }
+
+
 
         // Load initial rooms based on intent or default
         //int defaultCount = 2;
@@ -112,7 +119,7 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
     }
 
 
-    private void fetchRooms() {
+    private void fetchRooms(String houseCode) {
         api.getRooms(houseCode).enqueue(new Callback<List<Room>>() {
             @Override
             public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {

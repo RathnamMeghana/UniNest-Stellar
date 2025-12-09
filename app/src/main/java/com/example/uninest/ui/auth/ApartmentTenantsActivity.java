@@ -36,7 +36,7 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
     private String userRole;
 
     // Hard-coded house code
-    private String houseCode = "APT-709F22C";
+    private String houseCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +54,7 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         // Get extras from previous screen
         String buildingName = getIntent().getStringExtra("EXTRA_BUILDING_NAME");
         String apartmentName = getIntent().getStringExtra("EXTRA_APARTMENT_NAME");
+        houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
         apartmentId = getIntent().getStringExtra("EXTRA_APARTMENT_ID");
         userRole = getIntent().getStringExtra("EXTRA_USER_ROLE");
 
@@ -64,7 +65,14 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         // Fetch tenants and rooms if apartmentId is available
         if (apartmentId != null && !apartmentId.isEmpty()) {
             fetchTenants(apartmentId);
-            fetchRooms(houseCode);
+
+            // ONLY fetch rooms if houseCode is also present
+            if (houseCode != null && !houseCode.isEmpty()) {
+                fetchRooms(houseCode);
+            } else {
+                Log.e("TENANTS_ACTIVITY", "House Code is missing. Rooms will not load.");
+                // Optional: Show a message to the user that room data is unavailable
+            }
         } else {
             Log.e("TENANTS_ACTIVITY", "Apartment ID is missing.");
             tvTenantCount.setText("Error: ID Missing");
@@ -79,8 +87,10 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
                         ApartmentTenantsActivity.this,
                         SetupApartmentRoomsActivity.class
                 );
-                intent.putExtra("EXTRA_HOUSE_CODE", houseCode); // Pass house code
-                intent.putExtra("EXTRA_USER_ROLE", userRole);   // Pass user role
+
+                intent.putExtra("EXTRA_HOUSE_CODE", houseCode);
+                intent.putExtra("EXTRA_USER_ROLE", userRole);
+
                 startActivity(intent);
             });
         } else { // tenant
@@ -183,7 +193,6 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         intent.putExtra("EXTRA_APARTMENT_NAME", tvApartmentName.getText().toString());
         intent.putExtra("EXTRA_HOUSE_CODE", houseCode);
         intent.putExtra("EXTRA_USER_ROLE", userRole);
-
         startActivity(intent);
     }
 
