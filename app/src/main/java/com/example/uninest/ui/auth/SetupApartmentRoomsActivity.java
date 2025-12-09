@@ -93,14 +93,24 @@ public class SetupApartmentRoomsActivity extends AppCompatActivity {
 
         for (int i = 0; i < layoutRoomCounters.getChildCount(); i++) {
             View row = layoutRoomCounters.getChildAt(i);
+            TextView tvCount = row.findViewById(R.id.tvRoomCount);
+            totalRooms += Integer.parseInt(tvCount.getText().toString());
+        }
+
+
+        // Second pass: Create rooms with unique labels
+        for (int i = 0; i < layoutRoomCounters.getChildCount(); i++) {
+            View row = layoutRoomCounters.getChildAt(i);
             TextView tvLabel = row.findViewById(R.id.tvRoomLabel);
             TextView tvCount = row.findViewById(R.id.tvRoomCount);
 
+            String type = tvLabel.getText().toString();
             int count = Integer.parseInt(tvCount.getText().toString());
-            totalRooms += count;
 
+            // Loop from 1 up to the count to assign "1", "2", "3", etc.
             for (int j = 1; j <= count; j++) {
-                createRoom(tvLabel.getText().toString(), totalRooms);
+                // 🌟 CHANGE: Pass 'j' (the room number) to createRoom
+                createRoom(type, j, totalRooms);
             }
         }
     }
@@ -108,10 +118,14 @@ public class SetupApartmentRoomsActivity extends AppCompatActivity {
 
     private int roomsAdded = 0;
 
-    private void createRoom(String type, int totalRooms) {
+    private void createRoom(String type, int roomNumber, int totalRooms) {
+
+        // 🌟 CONSTRUCT THE NEW LABEL: e.g., "Bedroom 1", "Kitchen 1"
+        String roomLabel = type + " " + roomNumber;
+
         Room room = new Room();
         room.setType(type);
-        room.setLabel(type);
+        room.setLabel(roomLabel); // 🌟 SET THE NEW, UNIQUE LABEL
 
         api.createRoom(houseCode, room).enqueue(new retrofit2.Callback<String>() {
             @Override
@@ -140,5 +154,4 @@ public class SetupApartmentRoomsActivity extends AppCompatActivity {
 
         });
     }
-
-}
+    }
