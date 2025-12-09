@@ -46,6 +46,9 @@
         <activity
             android:name=".ui.auth.RoomTypeDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.auth.SetupApartmentRoomsActivity"
+            android:exported="false" />
 
 
         <activity

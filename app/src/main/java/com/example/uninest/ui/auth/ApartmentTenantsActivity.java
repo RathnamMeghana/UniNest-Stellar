@@ -3,6 +3,7 @@ package com.example.uninest.ui.auth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,13 +71,23 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         }
 
         // Setup "New Room" button
-        findViewById(R.id.btnNewRoom).setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    ApartmentTenantsActivity.this,
-                    SetupApartmentRoomsActivity.class
-            );
-            startActivity(intent);
-        });
+        View btnNewRoom = findViewById(R.id.btnNewRoom);
+        if ("1".equals(userRole)) { // letting agent
+            btnNewRoom.setVisibility(View.VISIBLE);
+            btnNewRoom.setOnClickListener(v -> {
+                Intent intent = new Intent(
+                        ApartmentTenantsActivity.this,
+                        SetupApartmentRoomsActivity.class
+                );
+                intent.putExtra("EXTRA_HOUSE_CODE", houseCode); // Pass house code
+                intent.putExtra("EXTRA_USER_ROLE", userRole);   // Pass user role
+                startActivity(intent);
+            });
+        } else { // tenant
+            btnNewRoom.setVisibility(View.GONE);
+        }
+
+
     }
 
     // Fetch tenants
@@ -171,6 +182,8 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         intent.putExtra("EXTRA_ROOM_TYPE_NAME", roomType);
         intent.putExtra("EXTRA_APARTMENT_NAME", tvApartmentName.getText().toString());
         intent.putExtra("EXTRA_HOUSE_CODE", houseCode);
+        intent.putExtra("EXTRA_USER_ROLE", userRole);
+
         startActivity(intent);
     }
 

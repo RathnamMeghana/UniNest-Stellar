@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,11 +29,13 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
     private int roomCounter = 0; // current number of rooms
     private ApartmentApi api;
     private LinearLayout roomInstancesLayout;
+    private String userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_type_detail);
+        userRole = getIntent().getStringExtra("EXTRA_USER_ROLE");
 
         // UI references
         TextView tvApartmentHeader = findViewById(R.id.tvHeaderApartmentName);
@@ -45,6 +48,7 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
         //houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
         roomTypeName = getIntent().getStringExtra("EXTRA_ROOM_TYPE_NAME");
         String apartmentName = getIntent().getStringExtra("EXTRA_APARTMENT_NAME");
+
 
 
         if (apartmentName != null) tvApartmentHeader.setText(apartmentName);
@@ -80,30 +84,33 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
 
     // Call backend API to create a new room
     private void addNewRoom() {
-        roomCounter++;
-        String label = roomTypeName + " " + roomCounter;
+        roomCounter++; // increment the counter
+        String label = roomTypeName + " " + roomCounter; // like Bedroom 1
 
         Room room = new Room();
         room.setType(roomTypeName);
         room.setLabel(label);
 
-
         api.createRoom(houseCode, room).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
-                    addRoomCard(label); // update UI
+                    addRoomCard(label); // update UI immediately
+                    Toast.makeText(RoomTypeDetailActivity.this, "Room added", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e("API_CALL", "Failed to add room: " + response.code());
+                    Toast.makeText(RoomTypeDetailActivity.this, "Failed to add room", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("API_CALL", "Network failure: " + t.getMessage());
+                Toast.makeText(RoomTypeDetailActivity.this, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void fetchRooms() {
         api.getRooms(houseCode).enqueue(new Callback<List<Room>>() {
