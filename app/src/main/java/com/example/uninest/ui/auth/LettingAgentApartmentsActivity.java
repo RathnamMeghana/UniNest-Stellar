@@ -164,6 +164,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         intent.putExtra("EXTRA_APARTMENT_NAME", apartment.getName());
         intent.putExtra("EXTRA_APARTMENT_ID", apartment.getCode());
         intent.putExtra("EXTRA_USER_ROLE", loggedInRole);
+        intent.putExtra("EXTRA_HOUSE_CODE", apartment.getCode());
 
 
 

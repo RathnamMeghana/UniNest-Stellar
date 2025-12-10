@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import UniNest.Backend.dto.ApartmentRequests;
 import UniNest.Backend.model.Apartment;
+import UniNest.Backend.model.Room;
 import UniNest.Backend.model.User;
 import UniNest.Backend.service.ApartmentService;
 import UniNest.Backend.service.UserService;
+import UniNest.Backend.service.RoomService;
 
 
 @RestController
@@ -27,8 +29,11 @@ public class ApartmentController {
     @Autowired
     private ApartmentService apartmentService;
 
-    @Autowired // <--- ADD THIS ANNOTATION
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoomService roomService;
 
     @PostMapping("/create")
     public String createApartment(@RequestBody ApartmentRequests request) {
@@ -56,12 +61,36 @@ public class ApartmentController {
         return ResponseEntity.ok(users);
     }
 
+
+    @PostMapping("/{houseCode}/addRoom")
+    public ResponseEntity<String> addRoom(
+            @PathVariable String houseCode,
+            @RequestBody Room room
+    ) {
+        try {
+            String roomId = roomService.addRoom(houseCode, room);
+            return ResponseEntity.ok("Room added with ID: " + roomId);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error adding room: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{houseCode}/rooms")
+    public ResponseEntity<List<Room>> getRooms(@PathVariable String houseCode) {
+        try {
+            List<Room> rooms = roomService.getRooms(houseCode);
+            if (rooms.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(rooms);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @DeleteMapping("/tenants/{email}/remove")
     public ResponseEntity<?> removeTenant(@PathVariable String email) {
         apartmentService.removeTenantFromApartment(email);
         return ResponseEntity.ok("Tenant removed from apartment.");
     }
-
-
-
 }

@@ -14,6 +14,7 @@ public class RoomTypeCardView extends FrameLayout {
     private TextView tvRoomTypeName;
     private ImageView imgChevron;
 
+
     public RoomTypeCardView(Context context) {
         super(context);
         init(context);
