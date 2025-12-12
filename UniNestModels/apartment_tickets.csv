@@ -1,0 +1,87 @@
+ticket_id,category,room,description,priority
+1,Heating ,unit,Heating system failing to maintain consistent temperature.,Medium
+2,Safety,unit,Apartment front door not locking.,High
+3,Plumbing,bathroom,Toilet not flushing toilet bocked.,Medium
+4,Other,living room,living room not being cleaned.,Low
+5,Plumbing,bathroom,Water leaking from toilet.,Medium
+7,Plumbing,bathroom,Water is leaking from from the ceiling in the bathroom.,High
+9,Maintenance,living room,Light in living room not turing on,Low
+10,Appliance ,kitchen,Oven not turning on.,Medium
+12,Maintenance,living room,mold growing in the living room under the window,Medium
+13,Plumbing,kitchen,Kitchen sink leaking water into the sink.,Medium
+14,Heating,bedroom,radiator making loud nosies but still heating up.,Low
+15,Maintenance,bathroom,Mold growing in the bathroom near shower.,Medium
+16,Electrical,living room,Outlet in living room not working.,Low
+17,Electrical,living room,Bulb in the living room is bLown.,Low
+22,Plumbing,bathroom,Bathroom sink drain clogged and causing slow drainage.,Low
+23,Other,bathroom,Bathroom not being cleaned ,Low
+24,Heating ,unit,Heating system failing to maintain consistent temperature.,High
+25,Appliance,kitchen,Oven hob ring not heating up.,Low
+27,Maintenance,kitchen,Dishwasher leaking from the bottom of it ,High
+28,Other,kitchen,Kitchen not being cleaned and bins overfLowing.,Low
+29,Plumbing,kitchen,Water leak in kitchen near sink.,High
+31,Plumbing,kitchen,Mold is growing on the  wall behind the kitchen cabinets ,Medium
+32,Appliance,kitchen,Freezer overfLowing with ice ,Low
+35,Appliance,kitchen,Refrigerator is making loud noises and not  staying cold. ,Medium
+37,Maintenance,living room,Broken window latch on living room window,Low
+40,Plumbing,bathroom,Water leaking in the bathroom from the sink ,High
+41,Maintenance,bathroom,Paint in the bathroom chiping,Low
+42,Safety,kitchen,Broken floor tile in kitchen ,Medium
+50,Electrical,kitchen,Outlet in kitchen sparks when something is plugged in. ,High
+60,Heating,unit,Heating system is cycling on and off and not heating up the apartment.,Medium
+62,Pest Control ,bedroom,Mouse or rat dropings seen in bedroom 3,High
+68,Plumbing,unit,No water to the whole apartment,High
+71,Other,kitchen,Bins not being taken out by roommates ,Low
+76,Heating,unit,Heater making funny noise still working normily ,Medium
+106,Other,kitchen,roommate is not Other the kitchen,Low
+107,Plumbing,bathroom,Toilet not flushing in bathroom 2,Medium
+108,Heating,unit,Heating not turning on ,High
+145,Pest Control ,kitchen,flys all over the kitchen ,Low
+146,Appliance,bathroom,Shower not turning on,Medium
+486,Electrical,bedroom,Electrical outlet sparking when something is pluged in in bedroom 4,High
+519,Other,unit,Common area not being Other.,Low
+520,Maintenance,living room,Paint of living room is chiped ,Low
+955,Plumbing,kitchen,Leaky tap in kitchen ,Low
+956,Electrical,bedroom,Light flickering in bedroom 4 ,Low
+957,Maintenance ,unit,Doorbell not working for apartment ,Low
+960,Plumbing,bathroom,Bathroom flooding ,High
+965,Heating,living room,Radiator in living room not heating up also making a strange noise,Medium
+976,Heating,unit,Heating not turning on.,High
+977,Maintenance,bedroom,Bedroom door lock not working ,High
+978,Plumbing,bathroom,Tap in bathroom 2 is not turing off,Medium
+1008,Safety,bedroom,Window latch not closing or locking on bedroom window,Medium
+1009,Plumbing,bathroom,Only very very hot water when using the shower ,High
+1016,Plumbing,bathroom,No hot water in shower of bathroom 2,High
+1025,Safety,unit,Door to apartment not locking ,High
+1026,Maintenance,bedroom,blinds in bedroom 3 not opening,Medium
+1034,Maintenance,unit,Fire alarm keeps going off ,High
+1035,Heating,unit,Heating not turning on.,High
+1036,Heating ,unit,Heating system failing to maintain consistent temperature. ,Medium
+1037,Pest Control ,Kitchen,Mouse seen in kitcken also mouse dropping on kitchen floor.,High
+1038,Heating,bedroom,Radiator in bedroom 1 not heating up and is making strange noises,Medium
+1039,Heating,bedroom,Radiator in bedroom 1 making strange noises ,Medium
+1040,Plumbing,bathroom,sink dripping water ,Low
+1041,Maintenance,bedroom,blinds in bedroom 1 not closing,Medium
+1042,Plumbing,bathroom,Toilet blocked in bathroom 2,Medium
+1043,Pest Control ,bedroom,mouse seen in bedroom and hear at night ,High
+1044,Maintenance,living room,musty odor and visible black mildew growth found on the baseboard and carpet in the living room,Medium
+1045,Maintenance,bedroom,Hole in the drywall of bedroom 3,Low
+1046,Electrical,kitchen,The kitchen outlet next to the sink is not working,Low
+1047,Electrical,living room,The outlet next to the couch is not working,Low
+1049,Appliance,kitchen,Hob not turning on ,Medium
+1050,Appliance,bathroom,Shower not heating up,Medium
+1051,Other,bathroom,Bathroom not being cleaned ,Medium
+1052,Maintenance,bedroom,Paint in the bathroom is chiping and dull,Low
+1048,Plumbing,bathroom,sink dripping water in bathroom,Low
+1055,Plumbing,kitchen,sink in kitchen is dripping water,Low
+1056,Plumbing,bathroom,Toilet blocked ,Medium
+1057,Maintenance,bedroom,visible black mildew growth found on the baseboard and carpet in bedroom 2,Medium
+1058,Plumbing,kitchen,Small leak under the kitchen sink,High
+1059,Maintenance,bathroom,Mold and Mildew visible on the ceiling above the shower,Medium
+1060,Maintenance,bedroom,Smoke detector in the second bedroom is chirping constantly,Low
+1061,Appliance,kitchen,Refrigerator is not cooling properly,Medium
+1061,Plumbing,bathroom,Toilet in bathroom 2 is backing up and overflowing,High
+1062,Maintenance,bathroom,Grout in the shower stall is cracking and discoloured.,Low
+1063,Plumbing,unit,no hot water in apartment 3.,High
+1064,Maintenance,bedroom,Bedroom window is very drafty and difficult to lock.,Medium
+1065,Other,unit,"Loud, intermittent knocking/hammering sound coming from the wall/ceiling above the bedroom.",Medium
