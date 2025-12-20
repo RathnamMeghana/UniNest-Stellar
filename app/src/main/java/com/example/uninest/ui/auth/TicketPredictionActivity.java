@@ -3,6 +3,7 @@ package com.example.uninest.ui.auth;
 import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,13 +49,13 @@ public class TicketPredictionActivity extends AppCompatActivity {
     private static final String TAG = "TicketPrediction";
 
 
-
     private static final String BASE_URL = "http://127.0.0.1:8080/";
 
     // UI Components
     private TextView resultTextView;
     private EditText descriptionEditText, buildingEditText, apartmentEditText;
     private Spinner roomSpinner, typeSpinner;
+    private Button predictButton;
 
     // ML Components
     private Interpreter tflite;
@@ -62,7 +63,7 @@ public class TicketPredictionActivity extends AppCompatActivity {
 
     // ML Mappings
     private static final Map<String, Integer> CATEGORY_MAP = new HashMap<String, Integer>() {{
-        put("Plumbing", 0); put("Electrical", 1); put("Heating", 2); put("Appliance", 3); put("General", 4);
+        put("Plumbing", 0); put("Electrical", 1); put("Heating", 2); put("Appliance", 3); put("Pest Control",4); put("Safety", 5); put("Other", 6);
     }};
     private static final Map<String, Integer> ROOM_MAP = new HashMap<String, Integer>() {{
         put("Kitchen", 0); put("Bathroom", 1); put("Bedroom", 2); put("Living Room", 3); put("Other", 4);
@@ -86,8 +87,6 @@ public class TicketPredictionActivity extends AppCompatActivity {
         initTFLite();
     }
 
-    // ================= UI SETUP =================
-
     private void initUI() {
         resultTextView = findViewById(R.id.resultText);
         descriptionEditText = findViewById(R.id.descriptionInput);
@@ -95,23 +94,23 @@ public class TicketPredictionActivity extends AppCompatActivity {
         apartmentEditText = findViewById(R.id.apartmentInput);
         roomSpinner = findViewById(R.id.roomSpinner);
         typeSpinner = findViewById(R.id.typeSpinner);
-        Button predictButton = findViewById(R.id.predictButton);
+        predictButton = findViewById(R.id.predictButton);
 
         setupSpinners();
-        predictButton.setOnClickListener(v -> runWorkflow());
+        predictButton.setOnClickListener(v -> runHiddenPriorityWorkflow());
     }
 
     private void setupSpinners() {
-        String[] rooms = {"Kitchen", "Bathroom", "Bedroom", "Living Room", "Other"};
-        String[] categories = {"Plumbing", "Electrical", "Heating", "Appliance", "General"};
+        String[] rooms = {"Kitchen", "Bathroom", "Bedroom", "Living Room", "Unit", "Other"};
+        String[] categories = {"Plumbing", "Electrical", "Heating", "Appliance", "Pest Control","Safety", "Other"};
 
         roomSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, rooms));
         typeSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories));
     }
 
-    // ================= WORKFLOW: ML -> BACKEND =================
 
-    private void runWorkflow() {
+
+    private void runHiddenPriorityWorkflow() {
         final String description = descriptionEditText.getText().toString().trim();
         final String building = buildingEditText.getText().toString().trim();
         final String apartment = apartmentEditText.getText().toString().trim();
@@ -123,22 +122,22 @@ public class TicketPredictionActivity extends AppCompatActivity {
             return;
         }
 
-        resultTextView.setText("Analyzing...");
+        // Disable button and show loading status to user
+        predictButton.setEnabled(false);
+        resultTextView.setText("Processing your request...");
 
         new Thread(() -> {
             try {
-                // 1. Text Preprocessing (Python)
+                // 1. ML Preprocessing & Inference (Same as before)
                 PyObject pyTokens = predictorModule.callAttr("preprocess_text", description);
                 int[] tokens = pyTokens.toJava(int[].class);
                 int[][] textInput = new int[1][300];
                 for (int i = 0; i < 300; i++) textInput[0][i] = tokens[i];
 
-                // 2. Feature Extraction
-                float rawUrgent = countKeywords(description, new String[]{"leak", "flood", "burst", "fire", "gas"});
-                float rawMed = countKeywords(description, new String[]{"noise", "flicker", "mildev"});
-                float rawLow = countKeywords(description, new String[]{"cosmetic", "minor", "scratch"});
+                float rawUrgent = countKeywords(description, new String[]{"flood", "flooding", "fire", "gas","mouse", "pest", "rat"});
+                float rawMed = countKeywords(description, new String[]{"mildew","not turning on","strange noise","flickering"});
+                float rawLow = countKeywords(description, new String[]{"cosmetic","minor","scratch","loose","paint","dripping","lightbulb"});
 
-                // 3. Inference (TFLite)
                 Object[] inputs = {
                         new int[][]{{CATEGORY_MAP.getOrDefault(category, 0)}},
                         new float[][]{{(rawUrgent - MU_URGENT) / SIGMA_URGENT}},
@@ -153,16 +152,22 @@ public class TicketPredictionActivity extends AppCompatActivity {
                 outputs.put(0, output);
                 tflite.runForMultipleInputsOutputs(inputs, outputs);
 
-                // 4. Map Output to Priority String
-                String priority = (output[0][0] > 0.55f) ? "High" : (output[0][2] > 0.60f) ? "Medium" : "Low";
+                // 2. Determine Priority (Calculated but NOT displayed)
+                String priority = (output[0][0] > 0.40f) ? "High" : (output[0][2] > 0.50f) ? "Medium" : "Low";
 
-                // 5. Send to Spring Boot Backend
-                runOnUiThread(() -> resultTextView.setText("Priority: " + priority + " (Saving...)"));
+                // 3. HARD OVERRIDE: If pest or safety keywords exist, FORCE "High"
+                if (rawUrgent > 0) {
+                    priority = "High";
+                }
+                // 3. Send to Backend
                 sendToBackend(description, building, apartment, room, category, priority);
 
             } catch (Exception e) {
                 Log.e(TAG, "Workflow error", e);
-                runOnUiThread(() -> resultTextView.setText("Error: " + e.getMessage()));
+                runOnUiThread(() -> {
+                    resultTextView.setText("System error occurred.");
+                    predictButton.setEnabled(true);
+                });
             }
         }).start();
     }
@@ -174,9 +179,9 @@ public class TicketPredictionActivity extends AppCompatActivity {
         ticket.setApartmentId(apt);
         ticket.setRoom(rm);
         ticket.setCategory(cat);
-        ticket.setPriority(prio);
+        ticket.setPriority(prio); // Priority is saved here
         ticket.setStatus("Open");
-        ticket.setUserId("android_user_1");
+        ticket.setUserId("user_android_client");
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -188,22 +193,35 @@ public class TicketPredictionActivity extends AppCompatActivity {
         api.createTicket(ticket).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
-                    resultTextView.setText("Success! Priority: " + prio);
-                    Toast.makeText(TicketPredictionActivity.this, "Ticket Created!", Toast.LENGTH_SHORT).show();
-                } else {
-                    resultTextView.setText("Backend error code: " + response.code());
-                }
+                runOnUiThread(() -> {
+                    predictButton.setEnabled(true);
+                    if (response.isSuccessful()) {
+                        resultTextView.setText("Ticket submitted successfully!");
+                        Toast.makeText(TicketPredictionActivity.this, "Maintenance has been notified.", Toast.LENGTH_LONG).show();
+                        clearInputs();
+                    } else {
+                        resultTextView.setText("Submission failed (Error: " + response.code() + ")");
+                    }
+                });
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                resultTextView.setText("Network Failure: " + t.getMessage());
+                runOnUiThread(() -> {
+                    predictButton.setEnabled(true);
+                    resultTextView.setText("Network error. Please check your connection.");
+                    Log.e(TAG, "Network Failure", t);
+                });
             }
         });
     }
 
-    // ================= PYTHON & TFLITE INITIALIZATION =================
+    private void clearInputs() {
+        descriptionEditText.setText("");
+        apartmentEditText.setText("");
+    }
+
+    // ================= ML INITIALIZATION =================
 
     private void initPython() {
         if (!Python.isStarted()) Python.start(new AndroidPlatform(this));
