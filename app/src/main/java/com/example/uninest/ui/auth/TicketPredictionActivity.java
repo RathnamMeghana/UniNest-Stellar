@@ -3,7 +3,6 @@ package com.example.uninest.ui.auth;
 import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +16,7 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.example.uninest.R;
+import com.example.uninest.data.api.TicketApi;
 import com.example.uninest.model.Ticket;
 
 import org.tensorflow.lite.Interpreter;
@@ -35,21 +35,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.POST;
-
-// --- Retrofit API Interface ---
-interface TicketApi {
-    @POST("api/tickets/create")
-    Call<String> createTicket(@Body Ticket ticket);
-}
 
 public class TicketPredictionActivity extends AppCompatActivity {
 
     private static final String TAG = "TicketPrediction";
+    private String houseCode;
+    //private String userId;
 
-
-    private static final String BASE_URL = "http://127.0.0.1:8080/";
+    private static final String BASE_URL = "http://127.0.0.1:8080";
 
     // UI Components
     private TextView resultTextView;
@@ -82,6 +75,10 @@ public class TicketPredictionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_prediction);
 
+        //houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
+        houseCode = "123";
+        //userId = getIntent().getStringExtra("EXTRA_USER_ID");
+
         initUI();
         initPython();
         initTFLite();
@@ -91,7 +88,7 @@ public class TicketPredictionActivity extends AppCompatActivity {
         resultTextView = findViewById(R.id.resultText);
         descriptionEditText = findViewById(R.id.descriptionInput);
         buildingEditText = findViewById(R.id.buildingInput);
-        apartmentEditText = findViewById(R.id.apartmentInput);
+        //apartmentEditText = findViewById(R.id.apartmentInput);
         roomSpinner = findViewById(R.id.roomSpinner);
         typeSpinner = findViewById(R.id.typeSpinner);
         predictButton = findViewById(R.id.predictButton);
@@ -113,11 +110,10 @@ public class TicketPredictionActivity extends AppCompatActivity {
     private void runHiddenPriorityWorkflow() {
         final String description = descriptionEditText.getText().toString().trim();
         final String building = buildingEditText.getText().toString().trim();
-        final String apartment = apartmentEditText.getText().toString().trim();
         final String room = roomSpinner.getSelectedItem().toString();
         final String category = typeSpinner.getSelectedItem().toString();
 
-        if (description.isEmpty() || building.isEmpty() || apartment.isEmpty()) {
+        if (description.isEmpty() || building.isEmpty() ) {
             Toast.makeText(this, "Please fill in all details", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -128,7 +124,7 @@ public class TicketPredictionActivity extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                // 1. ML Preprocessing & Inference (Same as before)
+                //  AI Preprocessing & Inference
                 PyObject pyTokens = predictorModule.callAttr("preprocess_text", description);
                 int[] tokens = pyTokens.toJava(int[].class);
                 int[][] textInput = new int[1][300];
@@ -152,15 +148,15 @@ public class TicketPredictionActivity extends AppCompatActivity {
                 outputs.put(0, output);
                 tflite.runForMultipleInputsOutputs(inputs, outputs);
 
-                // 2. Determine Priority (Calculated but NOT displayed)
+                //  Determine Priority  not displayed
                 String priority = (output[0][0] > 0.40f) ? "High" : (output[0][2] > 0.50f) ? "Medium" : "Low";
 
-                // 3. HARD OVERRIDE: If pest or safety keywords exist, FORCE "High"
+                //  HARD OVERRIDE: If pest or safety keywords exist, FORCE "High"
                 if (rawUrgent > 0) {
                     priority = "High";
                 }
-                // 3. Send to Backend
-                sendToBackend(description, building, apartment, room, category, priority);
+                // Send to Backend
+                sendToBackend(description, building, houseCode, room, category, priority);
 
             } catch (Exception e) {
                 Log.e(TAG, "Workflow error", e);
@@ -172,11 +168,11 @@ public class TicketPredictionActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void sendToBackend(String desc, String bld, String apt, String rm, String cat, String prio) {
+    private void sendToBackend(String desc, String bld, String houseCode, String rm, String cat, String prio) {
         Ticket ticket = new Ticket();
         ticket.setDescription(desc);
         ticket.setBuilding(bld);
-        ticket.setApartmentId(apt);
+        ticket.setApartmentId(houseCode);
         ticket.setRoom(rm);
         ticket.setCategory(cat);
         ticket.setPriority(prio); // Priority is saved here
