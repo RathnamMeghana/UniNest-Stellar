@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +16,7 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.example.uninest.R;
+import com.example.uninest.model.Ticket;
 
 import org.tensorflow.lite.Interpreter;
 
@@ -26,43 +28,51 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
+
+// --- Retrofit API Interface ---
+interface TicketApi {
+    @POST("api/tickets/create")
+    Call<String> createTicket(@Body Ticket ticket);
+}
+
 public class TicketPredictionActivity extends AppCompatActivity {
 
     private static final String TAG = "TicketPrediction";
 
-    // UI
+
+
+    private static final String BASE_URL = "http://127.0.0.1:8080/";
+
+    // UI Components
     private TextView resultTextView;
-    private EditText descriptionEditText;
+    private EditText descriptionEditText, buildingEditText, apartmentEditText;
     private Spinner roomSpinner, typeSpinner;
 
-    // ML
+    // ML Components
     private Interpreter tflite;
     private PyObject predictorModule;
 
-    // ===== CATEGORY / ROOM ENCODING =====
+    // ML Mappings
     private static final Map<String, Integer> CATEGORY_MAP = new HashMap<String, Integer>() {{
-        put("Plumbing", 0);
-        put("Electrical", 1);
-        put("Heating", 2);
-        put("Appliance", 3);
-        put("General", 4);
+        put("Plumbing", 0); put("Electrical", 1); put("Heating", 2); put("Appliance", 3); put("General", 4);
     }};
-
     private static final Map<String, Integer> ROOM_MAP = new HashMap<String, Integer>() {{
-        put("Kitchen", 0);
-        put("Bathroom", 1);
-        put("Bedroom", 2);
-        put("Living Room", 3);
-        put("Other", 4);
+        put("Kitchen", 0); put("Bathroom", 1); put("Bedroom", 2); put("Living Room", 3); put("Other", 4);
     }};
 
-    // ===== NORMALIZATION CONSTANTS =====
+    // Normalization Constants
     private static final float MU_URGENT = 0.16049382f;
     private static final float SIGMA_URGENT = 0.36706358f;
-
     private static final float MU_MED = 0.0617284f;
     private static final float SIGMA_MED = 0.2406616f;
-
     private static final float MU_LOW = 0.16049382f;
     private static final float SIGMA_LOW = 0.36706358f;
 
@@ -76,67 +86,141 @@ public class TicketPredictionActivity extends AppCompatActivity {
         initTFLite();
     }
 
-    // ================= UI =================
+    // ================= UI SETUP =================
 
     private void initUI() {
         resultTextView = findViewById(R.id.resultText);
         descriptionEditText = findViewById(R.id.descriptionInput);
+        buildingEditText = findViewById(R.id.buildingInput);
+        apartmentEditText = findViewById(R.id.apartmentInput);
         roomSpinner = findViewById(R.id.roomSpinner);
         typeSpinner = findViewById(R.id.typeSpinner);
         Button predictButton = findViewById(R.id.predictButton);
 
         setupSpinners();
-        predictButton.setOnClickListener(v -> runInference());
+        predictButton.setOnClickListener(v -> runWorkflow());
     }
 
     private void setupSpinners() {
         String[] rooms = {"Kitchen", "Bathroom", "Bedroom", "Living Room", "Other"};
         String[] categories = {"Plumbing", "Electrical", "Heating", "Appliance", "General"};
 
-        roomSpinner.setAdapter(new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_dropdown_item, rooms));
-        typeSpinner.setAdapter(new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_dropdown_item, categories));
+        roomSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, rooms));
+        typeSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories));
     }
 
-    // ================= PYTHON =================
+    // ================= WORKFLOW: ML -> BACKEND =================
 
-    private void initPython() {
-        if (!Python.isStarted()) {
-            Python.start(new AndroidPlatform(this));
+    private void runWorkflow() {
+        final String description = descriptionEditText.getText().toString().trim();
+        final String building = buildingEditText.getText().toString().trim();
+        final String apartment = apartmentEditText.getText().toString().trim();
+        final String room = roomSpinner.getSelectedItem().toString();
+        final String category = typeSpinner.getSelectedItem().toString();
+
+        if (description.isEmpty() || building.isEmpty() || apartment.isEmpty()) {
+            Toast.makeText(this, "Please fill in all details", Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        resultTextView.setText("Analyzing...");
+
+        new Thread(() -> {
+            try {
+                // 1. Text Preprocessing (Python)
+                PyObject pyTokens = predictorModule.callAttr("preprocess_text", description);
+                int[] tokens = pyTokens.toJava(int[].class);
+                int[][] textInput = new int[1][300];
+                for (int i = 0; i < 300; i++) textInput[0][i] = tokens[i];
+
+                // 2. Feature Extraction
+                float rawUrgent = countKeywords(description, new String[]{"leak", "flood", "burst", "fire", "gas"});
+                float rawMed = countKeywords(description, new String[]{"noise", "flicker", "mildev"});
+                float rawLow = countKeywords(description, new String[]{"cosmetic", "minor", "scratch"});
+
+                // 3. Inference (TFLite)
+                Object[] inputs = {
+                        new int[][]{{CATEGORY_MAP.getOrDefault(category, 0)}},
+                        new float[][]{{(rawUrgent - MU_URGENT) / SIGMA_URGENT}},
+                        new int[][]{{ROOM_MAP.getOrDefault(room, 0)}},
+                        textInput,
+                        new float[][]{{(rawMed - MU_MED) / SIGMA_MED}},
+                        new float[][]{{(rawLow - MU_LOW) / SIGMA_LOW}}
+                };
+
+                float[][] output = new float[1][3];
+                Map<Integer, Object> outputs = new HashMap<>();
+                outputs.put(0, output);
+                tflite.runForMultipleInputsOutputs(inputs, outputs);
+
+                // 4. Map Output to Priority String
+                String priority = (output[0][0] > 0.55f) ? "High" : (output[0][2] > 0.60f) ? "Medium" : "Low";
+
+                // 5. Send to Spring Boot Backend
+                runOnUiThread(() -> resultTextView.setText("Priority: " + priority + " (Saving...)"));
+                sendToBackend(description, building, apartment, room, category, priority);
+
+            } catch (Exception e) {
+                Log.e(TAG, "Workflow error", e);
+                runOnUiThread(() -> resultTextView.setText("Error: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    private void sendToBackend(String desc, String bld, String apt, String rm, String cat, String prio) {
+        Ticket ticket = new Ticket();
+        ticket.setDescription(desc);
+        ticket.setBuilding(bld);
+        ticket.setApartmentId(apt);
+        ticket.setRoom(rm);
+        ticket.setCategory(cat);
+        ticket.setPriority(prio);
+        ticket.setStatus("Open");
+        ticket.setUserId("android_user_1");
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        TicketApi api = retrofit.create(TicketApi.class);
+        api.createTicket(ticket).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    resultTextView.setText("Success! Priority: " + prio);
+                    Toast.makeText(TicketPredictionActivity.this, "Ticket Created!", Toast.LENGTH_SHORT).show();
+                } else {
+                    resultTextView.setText("Backend error code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                resultTextView.setText("Network Failure: " + t.getMessage());
+            }
+        });
+    }
+
+    // ================= PYTHON & TFLITE INITIALIZATION =================
+
+    private void initPython() {
+        if (!Python.isStarted()) Python.start(new AndroidPlatform(this));
         Python py = Python.getInstance();
         predictorModule = py.getModule("predictor");
 
         try (InputStream is = getAssets().open("tokenizer.json")) {
             Scanner s = new Scanner(is).useDelimiter("\\A");
-            String jsonStr = s.hasNext() ? s.next() : "";
-            predictorModule.callAttr("load_tokenizer", jsonStr);
+            predictorModule.callAttr("load_tokenizer", s.hasNext() ? s.next() : "");
         } catch (Exception e) {
             Log.e(TAG, "Failed to load tokenizer", e);
         }
     }
 
-    // ================= TFLITE =================
-
     private void initTFLite() {
         try {
-            Interpreter.Options options = new Interpreter.Options();
-            options.setAllowFp16PrecisionForFp32(true);
-
-            tflite = new Interpreter(loadModelFile(), options);
-
-            // Log input tensor specs (sanity check)
-            for (int i = 0; i < tflite.getInputTensorCount(); i++) {
-                Log.d(TAG,
-                        "Input " + i + " → " +
-                                tflite.getInputTensor(i).name() + " | " +
-                                tflite.getInputTensor(i).dataType());
-            }
-
-            Log.d(TAG, "TFLite initialized successfully");
-
+            tflite = new Interpreter(loadModelFile(), new Interpreter.Options().setAllowFp16PrecisionForFp32(true));
         } catch (Exception e) {
             Log.e(TAG, "TFLite initialization failed", e);
         }
@@ -145,94 +229,7 @@ public class TicketPredictionActivity extends AppCompatActivity {
     private MappedByteBuffer loadModelFile() throws Exception {
         AssetFileDescriptor afd = getAssets().openFd("model.tflite");
         FileInputStream fis = new FileInputStream(afd.getFileDescriptor());
-        FileChannel channel = fis.getChannel();
-        return channel.map(FileChannel.MapMode.READ_ONLY,
-                afd.getStartOffset(), afd.getDeclaredLength());
-    }
-
-    // ================= INFERENCE =================
-
-    private void runInference() {
-        final String description = descriptionEditText.getText().toString().trim();
-        final String room = roomSpinner.getSelectedItem().toString();
-        final String category = typeSpinner.getSelectedItem().toString();
-
-        if (description.isEmpty()) {
-            resultTextView.setText("Please enter a description");
-            return;
-        }
-
-        new Thread(() -> {
-            try {
-                // ---- TEXT ----
-                PyObject pyTokens = predictorModule.callAttr(
-                        "preprocess_text", description);
-                int[] tokens = pyTokens.toJava(int[].class);
-
-                int[][] textInput = new int[1][300];
-                for (int i = 0; i < 300; i++) {
-                    textInput[0][i] = tokens[i];
-                }
-
-
-                // ---- CATEGORY / ROOM (INT32) ----
-                int[][] categoryInput = {{
-                        CATEGORY_MAP.getOrDefault(category, 0)
-                }};
-                int[][] roomInput = {{
-                        ROOM_MAP.getOrDefault(room, 0)
-                }};
-
-                // ---- KEYWORD FEATURES ----
-                float rawUrgent = countKeywords(description,
-                        new String[]{"leak", "flood", "burst", "fire", "gas"});
-                float rawMed = countKeywords(description,
-                        new String[]{"noise", "flicker", "mildew"});
-                float rawLow = countKeywords(description,
-                        new String[]{"cosmetic", "minor", "scratch"});
-
-                float[][] urgentInput = {{
-                        (rawUrgent - MU_URGENT) / SIGMA_URGENT
-                }};
-                float[][] medInput = {{
-                        (rawMed - MU_MED) / SIGMA_MED
-                }};
-                float[][] lowInput = {{
-                        (rawLow - MU_LOW) / SIGMA_LOW
-                }};
-
-                // ---- INPUTS (ORDER MATTERS) ----
-                Object[] inputs = new Object[6];
-                inputs[0] = categoryInput;
-                inputs[1] = urgentInput;
-                inputs[2] = roomInput;
-                inputs[3] = textInput;
-                inputs[4] = medInput;
-                inputs[5] = lowInput;
-
-                float[][] output = new float[1][3];
-                Map<Integer, Object> outputs = new HashMap<>();
-                outputs.put(0, output);
-
-                tflite.runForMultipleInputsOutputs(inputs, outputs);
-
-                float high = output[0][0];
-                float low = output[0][1];
-                float med = output[0][2];
-
-                String priority =
-                        high > 0.55f ? "High" :
-                                med > 0.60f ? "Medium" : "Low";
-
-                runOnUiThread(() ->
-                        resultTextView.setText("Priority: " + priority));
-
-            } catch (Exception e) {
-                Log.e(TAG, "Inference error", e);
-                runOnUiThread(() ->
-                        resultTextView.setText("Error: " + e.getMessage()));
-            }
-        }).start();
+        return fis.getChannel().map(FileChannel.MapMode.READ_ONLY, afd.getStartOffset(), afd.getDeclaredLength());
     }
 
     private int countKeywords(String text, String[] keys) {
