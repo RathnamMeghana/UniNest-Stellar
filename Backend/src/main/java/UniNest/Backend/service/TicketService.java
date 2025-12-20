@@ -60,4 +60,18 @@ public class TicketService {
                 .map(doc -> doc.toObject(Ticket.class))
                 .collect(Collectors.toList());
     }
+
+    public List<Ticket> getTicketsByApartment(String houseCode) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+
+        ApiFuture<QuerySnapshot> future = db.collection("tickets")
+                .whereEqualTo("apartmentId", houseCode)
+                .get();
+
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        return documents.stream()
+                .map(doc -> doc.toObject(Ticket.class))
+                .collect(Collectors.toList());
+    }
 }

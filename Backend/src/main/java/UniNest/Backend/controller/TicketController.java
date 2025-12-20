@@ -17,7 +17,7 @@ import UniNest.Backend.model.Ticket;
 import UniNest.Backend.service.TicketService;
 
 @RestController
-@RequestMapping("/api/tickets")
+@RequestMapping("/tickets")
 public class TicketController {
 
     private final TicketService ticketService;
@@ -44,6 +44,16 @@ public class TicketController {
     public ResponseEntity<List<Ticket>> getTicketsByBuilding(@RequestParam String name) {
         try {
             List<Ticket> tickets = ticketService.getTicketsByBuilding(name);
+            return new ResponseEntity<>(tickets, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/apartment")
+    public ResponseEntity<List<Ticket>> getTicketsByApartment(@RequestParam String name) {
+        try {
+            List<Ticket> tickets = ticketService.getTicketsByApartment(name);
             return new ResponseEntity<>(tickets, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
