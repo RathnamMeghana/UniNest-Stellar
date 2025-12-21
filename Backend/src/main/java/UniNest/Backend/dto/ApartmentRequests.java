@@ -29,7 +29,7 @@ public class ApartmentRequests {
     @Min(value = 0, message = "Rent price cannot be negative")
     private Double rentPrice;
 
-    @NotBlank(message = "Room type is required")
+    @NotNull(message = "Room type is required")
     private Boolean active;
 
 }

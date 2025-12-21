@@ -18,6 +18,7 @@ import UniNest.Backend.model.Ticket;
 import UniNest.Backend.service.TicketService;
 import UniNest.Backend.dto.UpdateTicketPriorityRequest;
 import UniNest.Backend.dto.UpdateTicketStatusRequest;
+import UniNest.Backend.util.SanitizationUtil;
 import jakarta.validation.Valid;
 
 @RestController
@@ -35,6 +36,7 @@ public class TicketController {
     @PostMapping("/create")
     public ResponseEntity<String> createTicket(@RequestBody Ticket ticket) {
         try {
+            ticket.sanitize();
             String result = ticketService.createTicket(ticket);
             return new ResponseEntity<>(result, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -67,6 +69,8 @@ public class TicketController {
     @PutMapping("/status")
     public ResponseEntity<String> updateTicketStatus(@Valid @RequestBody UpdateTicketStatusRequest request) {
         try {
+            request.setTicketId(SanitizationUtil.sanitize(request.getTicketId()));
+            request.setStatus(SanitizationUtil.sanitize(request.getStatus()));
             String result = ticketService.updateTicketStatus(
                     request.getTicketId(),
                     request.getStatus()
@@ -86,6 +90,8 @@ public class TicketController {
             @Valid @RequestBody UpdateTicketPriorityRequest request) {
 
         try {
+            request.setTicketId(SanitizationUtil.sanitize(request.getTicketId()));
+            request.setPriority(SanitizationUtil.sanitize(request.getPriority()));
             return new ResponseEntity<>(
                     ticketService.updateTicketPriority(
                             request.getTicketId(),

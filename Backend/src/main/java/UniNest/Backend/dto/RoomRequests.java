@@ -14,4 +14,12 @@ public class RoomRequests {
     private String type;
     @NotBlank(message = "Label is required")
     private String label;
+
+
+    public void sanitize() {
+        this.id = UniNest.Backend.util.SanitizationUtil.sanitize(this.id);
+        this.houseCode = UniNest.Backend.util.SanitizationUtil.sanitize(this.houseCode);
+        this.type = UniNest.Backend.util.SanitizationUtil.sanitize(this.type);
+        this.label = UniNest.Backend.util.SanitizationUtil.sanitize(this.label);
+    }
 }
