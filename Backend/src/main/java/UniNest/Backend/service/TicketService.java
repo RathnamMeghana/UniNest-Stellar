@@ -74,4 +74,51 @@ public class TicketService {
                 .map(doc -> doc.toObject(Ticket.class))
                 .collect(Collectors.toList());
     }
+
+    public String updateTicketStatus(String ticketId, String status)
+            throws ExecutionException, InterruptedException {
+
+        Firestore db = FirestoreClient.getFirestore();
+
+        // Find ticket by ID field
+        ApiFuture<QuerySnapshot> future = db.collection("tickets")
+                .whereEqualTo("id", ticketId)
+                .get();
+
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        if (documents.isEmpty()) {
+            throw new IllegalArgumentException("Ticket not found");
+        }
+
+        // Update first matching document
+        QueryDocumentSnapshot doc = documents.get(0);
+
+        doc.getReference().update("status", status);
+
+        return "Ticket status updated successfully";
+    }
+
+
+    public String updateTicketPriority(String ticketId, String priority)
+            throws ExecutionException, InterruptedException {
+
+        Firestore db = FirestoreClient.getFirestore();
+
+        ApiFuture<QuerySnapshot> future = db.collection("tickets")
+                .whereEqualTo("id", ticketId)
+                .get();
+
+        List<QueryDocumentSnapshot> docs = future.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            throw new IllegalArgumentException("Ticket not found");
+        }
+
+        docs.get(0).getReference().update("priority", priority);
+
+        return "Ticket priority updated successfully";
+    }
+
+
 }
