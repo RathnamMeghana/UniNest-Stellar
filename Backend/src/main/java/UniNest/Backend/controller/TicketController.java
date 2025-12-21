@@ -18,6 +18,7 @@ import UniNest.Backend.model.Ticket;
 import UniNest.Backend.service.TicketService;
 import UniNest.Backend.dto.UpdateTicketPriorityRequest;
 import UniNest.Backend.dto.UpdateTicketStatusRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/tickets")
@@ -64,7 +65,7 @@ public class TicketController {
     }
 
     @PutMapping("/status")
-    public ResponseEntity<String> updateTicketStatus( @RequestBody UpdateTicketStatusRequest request) {
+    public ResponseEntity<String> updateTicketStatus(@Valid @RequestBody UpdateTicketStatusRequest request) {
         try {
             String result = ticketService.updateTicketStatus(
                     request.getTicketId(),
@@ -82,7 +83,7 @@ public class TicketController {
     }
     @PutMapping("/priority")
     public ResponseEntity<String> updateTicketPriority(
-            @RequestBody UpdateTicketPriorityRequest request) {
+            @Valid @RequestBody UpdateTicketPriorityRequest request) {
 
         try {
             return new ResponseEntity<>(
