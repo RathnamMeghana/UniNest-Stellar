@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import UniNest.Backend.dto.ApartmentRequests;
+import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.model.Room;
 import UniNest.Backend.model.User;
 import UniNest.Backend.service.ApartmentService;
 import UniNest.Backend.service.UserService;
 import UniNest.Backend.service.RoomService;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -36,7 +38,7 @@ public class ApartmentController {
     private RoomService roomService;
 
     @PostMapping("/create")
-    public String createApartment(@RequestBody ApartmentRequests request) {
+    public String createApartment( @Valid @RequestBody ApartmentRequests request) {
         return apartmentService.createApartment(request);
     }
 
@@ -65,15 +67,22 @@ public class ApartmentController {
     @PostMapping("/{houseCode}/addRoom")
     public ResponseEntity<String> addRoom(
             @PathVariable String houseCode,
-            @RequestBody Room room
+            @Valid @RequestBody RoomRequests roomRequest
     ) {
         try {
+            // Convert DTO to Room model if needed
+            Room room = new Room();
+            room.setType(roomRequest.getType());
+            room.setLabel(roomRequest.getLabel());
+
             String roomId = roomService.addRoom(houseCode, room);
             return ResponseEntity.ok("Room added with ID: " + roomId);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error adding room: " + e.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body("Error adding room: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/{houseCode}/rooms")
     public ResponseEntity<List<Room>> getRooms(@PathVariable String houseCode) {
