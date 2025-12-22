@@ -1,5 +1,7 @@
 package UniNest.Backend.controller;
 
+import com.google.cloud.Timestamp;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,10 @@ import UniNest.Backend.service.ApartmentService;
 import UniNest.Backend.service.UserService;
 import UniNest.Backend.service.RoomService;
 import jakarta.validation.Valid;
-
+import UniNest.Backend.util.SanitizationUtil;
 
 @RestController
-@ComponentScan
+
 @RequestMapping("/apartments")
 
 public class ApartmentController {
@@ -39,6 +41,17 @@ public class ApartmentController {
 
     @PostMapping("/create")
     public String createApartment( @Valid @RequestBody ApartmentRequests request) {
+        request.setName(SanitizationUtil.sanitize(request.getName()));
+        request.setBuildingId(SanitizationUtil.sanitize(request.getBuildingId()));
+        request.setCode(SanitizationUtil.sanitize(request.getCode()));
+        request.setLandlordId(SanitizationUtil.sanitize(request.getLandlordId()));
+        request.setDescription(SanitizationUtil.sanitize(request.getDescription()));
+        request.setTotalRooms(SanitizationUtil.sanitize(request.getTotalRooms()));
+
+        if(request.getCreatedAt() == null){
+            request.setCreatedAt(Timestamp.now());
+        }
+
         return apartmentService.createApartment(request);
     }
 
@@ -70,6 +83,8 @@ public class ApartmentController {
             @Valid @RequestBody RoomRequests roomRequest
     ) {
         try {
+            // Sanitize RoomRequest fields
+            roomRequest.sanitize();
             // Convert DTO to Room model if needed
             Room room = new Room();
             room.setType(roomRequest.getType());
