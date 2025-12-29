@@ -26,11 +26,17 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.google.firebase:firebase-admin:9.2.0")
+	implementation ("org.springframework.boot:spring-boot-starter-validation")
+	implementation ("org.apache.commons:commons-text:1.10.0")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	testImplementation ("org.springframework.boot:spring-boot-starter-test")
+	testImplementation ("org.mockito:mockito-core:5.5.0")
+	testImplementation ("org.mockito:mockito-junit-jupiter:5.5.0")
 	
 }
 
