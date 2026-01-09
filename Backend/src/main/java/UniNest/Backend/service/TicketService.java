@@ -33,6 +33,8 @@ public class TicketService {
         ticket.setRoom(request.getRoom());
         ticket.setBuilding(request.getBuilding());
         ticket.setApartmentId(request.getApartmentId());
+        ticket.setLandlordId(request.getLandlordId());
+        ticket.setApartmentName(request.getApartmentName());
         ticket.setCategory(request.getCategory());
         ticket.setPriority(request.getPriority());
         ticket.setStatus(request.getStatus());
@@ -120,5 +122,19 @@ public class TicketService {
         return "Ticket priority updated successfully";
     }
 
+    public List<Ticket> getTicketsByLandlord(String landlordId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+
+        // Fetch all tickets where landlordId matches the logged-in agent
+        ApiFuture<QuerySnapshot> future = db.collection("tickets")
+                .whereEqualTo("landlordId", landlordId)
+                .get();
+
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        return documents.stream()
+                .map(doc -> doc.toObject(Ticket.class))
+                .collect(Collectors.toList());
+    }
 
 }
