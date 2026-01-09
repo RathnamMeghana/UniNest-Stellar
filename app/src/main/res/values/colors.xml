@@ -2,4 +2,25 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="border_high">#E4572E</color>
+    <color name="border_medium">#F2A100</color>
+    <color name="border_low">#2ECC71</color>
+
+    <color name="chip_high_bg">#FFE3E3</color>
+    <color name="chip_high_text">#C0392B</color>
+
+    <color name="chip_medium_bg">#FFF0D6</color>
+    <color name="chip_medium_text">#D35400</color>
+
+    <color name="chip_low_bg">#DFF8F0</color>
+    <color name="chip_low_text">#1E8449</color>
+
+    <color name="glow_high_soft">#66E4572E</color>
+    <color name="glow_medium_soft">#66F2A100</color>
+    <color name="glow_low_soft">#662ECC71</color>
+
+    <color name="state_raised">#FF6B6B</color>
+    <color name="state_in_progress">#FFB84D</color>
+    <color name="state_solved">#2ECC71</color>
+
 </resources>
