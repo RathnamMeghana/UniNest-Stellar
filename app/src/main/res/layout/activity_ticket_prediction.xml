@@ -10,17 +10,37 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- Title -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ticket Priority Prediction"
+            android:text="Submit Maintenance Ticket"
             android:textSize="22sp"
             android:textStyle="bold"
             android:gravity="center"
             android:paddingBottom="16dp" />
 
-        <!-- Description Input -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Building Name"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/buildingInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g., North Hall"
+            android:inputType="text"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Apartment / Unit ID"
+            android:textStyle="bold" />
+
+
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,12 +53,12 @@
             android:layout_height="wrap_content"
             android:minLines="4"
             android:gravity="top"
-            android:hint="Describe the issue..."
+            android:hint="Describe the issue (e.g., water leak under sink)..."
             android:inputType="textMultiLine"
             android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:background="@android:drawable/editbox_background_normal"/>
 
-        <!-- Room Spinner -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,45 +69,38 @@
             android:id="@+id/roomSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:minHeight="48dp" />
 
-        <!-- Ticket Type Spinner -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ticket Type"
+            android:text="Ticket Category"
             android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/typeSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Buttons -->
-        <Button
-            android:id="@+id/sampleButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Load Sample Ticket"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="24dp"
+            android:minHeight="48dp" />
 
         <Button
             android:id="@+id/predictButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Predict Priority"
+            android:text="Analyze &amp; Submit Ticket"
             android:textStyle="bold"
             android:layout_marginBottom="24dp" />
 
-        <!-- Result -->
         <TextView
             android:id="@+id/resultText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Priority: -"
+            android:text="Status: Ready"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_dark"
             android:gravity="center"
             android:paddingTop="12dp" />
 
