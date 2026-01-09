@@ -9,17 +9,31 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
+import com.example.uninest.SessionManager;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 
 public class TenantLoginActivity extends AppCompatActivity {
 
     private EditText etTenantEmail, etTenantPassword;
     private MaterialButton btnTenantLogin;
 
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private SessionManager sessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tenant_login);
+
+        // Init Firebase & Session
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        sessionManager = new SessionManager(this);
 
         etTenantEmail = findViewById(R.id.etTenantEmail);
         etTenantPassword = findViewById(R.id.etTenantPassword);
@@ -39,25 +53,69 @@ public class TenantLoginActivity extends AppCompatActivity {
             }
 
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(
-                        TenantLoginActivity.this,
-                        "Please enter a valid email address",
-                        Toast.LENGTH_SHORT
-                ).show();
+                etTenantEmail.setError("Invalid email address");
                 return;
             }
 
-            // Design-only success
-            Toast.makeText(
-                    TenantLoginActivity.this,
-                    "Tenant login successful (design only)",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-            // TODO: replace MainActivity with real tenant home when we have it
-            // Intent intent = new Intent(TenantLoginActivity.this, TenantHomeActivity.class);
-            // startActivity(intent);
-            // finish();
+            performLogin(email, password);
         });
+    }
+
+    private void performLogin(String email, String password) {
+        // Disable button
+        btnTenantLogin.setEnabled(false);
+        btnTenantLogin.setText("Signing In...");
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Login successful, now check role and get houseCode
+                        fetchUserData(mAuth.getCurrentUser().getUid(), email);
+                    } else {
+                        btnTenantLogin.setEnabled(true);
+                        btnTenantLogin.setText("Login");
+                        Toast.makeText(this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void fetchUserData(String uid, String email) {
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+
+                        // Check if user is actually a Tenant (Role "2")
+                        if ("2".equals(role)) {
+                            String houseCode = documentSnapshot.getString("houseCode");
+
+                            // SAVE SESSION: Critical for RaiseTicketActivity
+                            sessionManager.saveUserSession(email, role, houseCode);
+
+                            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+
+                            // Navigate to Raise Ticket Screen
+                            Intent intent = new Intent(TenantLoginActivity.this, RaiseTicketActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Prevent going back to login
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // User is an agent trying to login as tenant
+                            mAuth.signOut();
+                            btnTenantLogin.setEnabled(true);
+                            btnTenantLogin.setText("Login");
+                            Toast.makeText(this, "Access Denied: Not a Tenant account", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        btnTenantLogin.setEnabled(true);
+                        btnTenantLogin.setText("Login");
+                        Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    btnTenantLogin.setEnabled(true);
+                    btnTenantLogin.setText("Login");
+                    Toast.makeText(this, "Error fetching data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }
