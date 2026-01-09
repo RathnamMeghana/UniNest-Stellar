@@ -11,7 +11,8 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 
 public interface BuildingApi {
@@ -21,4 +22,11 @@ public interface BuildingApi {
 
     @POST("/buildings/create")
     Call<String> createBuilding(@Body BuildingRequest request);
+
+    @GET("/buildings/byLandlord")
+    Call<List<Building>> getBuildingsByLandlord(@Query("landlordId") String landlordId);
+
+    @GET("buildings/{id}")
+    Call<Building> getBuilding(@Path("id") String buildingId);
+
 }
