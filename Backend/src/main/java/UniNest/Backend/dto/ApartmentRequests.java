@@ -18,7 +18,7 @@ public class ApartmentRequests {
     private String name;
     @NotBlank(message = "total rooms is required")
     private String totalRooms;
-    @NotBlank(message = "House Code is required")
+
     private String code;
     @NotBlank(message = "landlord id is required")
     private String landlordId;
