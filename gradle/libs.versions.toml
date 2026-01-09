@@ -11,6 +11,8 @@ playServicesMeasurementApi = "23.0.0"
 firebaseAuth = "24.0.1"
 firebaseFirestore = "26.0.2"
 firebaseDatabase = "22.0.1"
+litert = "2.1.0"
+kotlin = "1.9.24"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -24,7 +26,8 @@ play-services-measurement-api = { group = "com.google.android.gms", name = "play
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+litert = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "litert" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
