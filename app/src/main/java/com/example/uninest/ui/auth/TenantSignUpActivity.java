@@ -79,6 +79,9 @@ public class TenantSignUpActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
+            btnTenantSignUp.setEnabled(false);
+            btnTenantSignUp.setText("Creating Account...");
+
             validateHouseCode(houseCode, email, password, String.valueOf(role));
             //signUp(email, password, String.valueOf(role), houseCode);
         });
@@ -107,7 +110,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(this, "Signup Successful! Welcome.", Toast.LENGTH_LONG).show();
                                     // ➜ Go to Login
-                                    Intent intent = new Intent(TenantSignUpActivity.this, LettingAgentLoginActivity.class);
+                                    Intent intent = new Intent(TenantSignUpActivity.this, TenantLoginActivity.class);
                                     startActivity(intent);
                                     finish();
                                 })
@@ -116,6 +119,10 @@ public class TenantSignUpActivity extends AppCompatActivity {
                                 });
 
                     } else {
+
+                        btnTenantSignUp.setEnabled(true);
+                        btnTenantSignUp.setText("Sign Up");
+
                         Exception exception = task.getException();
 
                         String errorMessage = "Authentication failed. Please try again.";
@@ -148,11 +155,21 @@ public class TenantSignUpActivity extends AppCompatActivity {
                         // Apartment exists proceed with signup
                         String apartmentId = task.getResult().getDocuments().get(0).getId();
                         signUp(email, password, role, houseCode, apartmentId);
-                    } else {
+                    }
+                    else {
+
+                        btnTenantSignUp.setEnabled(true);
+                        btnTenantSignUp.setText("Sign Up");
+
                         Toast.makeText(TenantSignUpActivity.this,
                                 "Invalid apartment code. Please check and try again.",
                                 Toast.LENGTH_LONG).show();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    btnTenantSignUp.setEnabled(true);
+                    btnTenantSignUp.setText("Sign Up");
+                    Toast.makeText(TenantSignUpActivity.this, "Network Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 

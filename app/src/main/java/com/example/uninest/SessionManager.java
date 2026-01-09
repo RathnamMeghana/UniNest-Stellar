@@ -8,6 +8,7 @@ public class SessionManager {
     private static final String PREF_NAME = "user_session";
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_USER_ROLE = "user_role";
+    private static final String KEY_HOUSE_CODE = "house_code";
 
     SharedPreferences pref;
     SharedPreferences.Editor editor;
@@ -18,10 +19,15 @@ public class SessionManager {
     }
 
     // Save login session
-    public void saveUserSession(String email, String role) {
+    public void saveUserSession(String email, String role, String houseCode) {
         editor.putString(KEY_USER_EMAIL, email);
         editor.putString(KEY_USER_ROLE, role);
+        editor.putString(KEY_HOUSE_CODE, houseCode);
         editor.apply();
+    }
+
+    public void saveUserSession(String email, String role) {
+        saveUserSession(email, role, "");
     }
 
     // Get user email
@@ -32,6 +38,10 @@ public class SessionManager {
     // Get user role
     public String getUserRole() {
         return pref.getString(KEY_USER_ROLE, "-1"); // -1 means not logged in
+    }
+
+    public String fetchHouseCode() {
+        return pref.getString(KEY_HOUSE_CODE, null);
     }
 
     // Clear session

@@ -13,6 +13,8 @@ public class Ticket {
     private String room;
     private String building;
     private String apartmentId;
+    private String landlordId;
+    private String apartmentName;
     private String category;
     private String priority;
     private String status;
@@ -29,6 +31,8 @@ public class Ticket {
         this.priority = SanitizationUtil.sanitize(this.priority);
         this.status = SanitizationUtil.sanitize(this.status);
         this.userId = SanitizationUtil.sanitize(this.userId);
+        this.landlordId = SanitizationUtil.sanitize(this.landlordId);
+        this.apartmentName = SanitizationUtil.sanitize(this.apartmentName);
     }
 
 }

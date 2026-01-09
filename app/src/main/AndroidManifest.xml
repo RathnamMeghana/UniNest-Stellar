@@ -31,9 +31,21 @@
         <activity
             android:name=".ui.auth.LettingAgentBuildingsActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.auth.TenantLoginActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".ui.auth.TenantLoginActivity"-->
+<!--            android:exported="false" />-->
+
+<!--        <activity-->
+<!--            android:name=".ui.auth.TicketPredictionActivity"-->
+<!--            android:exported="false" />-->
+
+<!--        <activity-->
+<!--            android:name=".ui.auth.DisplayTicketsbyBuilding"-->
+<!--            android:exported="false" />-->
+<!--        <activity-->
+<!--            android:name=".ui.auth.LettingAgentTicketsActivity"-->
+<!--            android:exported="false" />-->
+
 
         <activity
             android:name=".ui.auth.LettingAgentLoginActivity"
@@ -66,14 +78,21 @@
         <activity
             android:name=".ui.auth.AddBuildingActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.auth.SignUpActivity"
-            android:exported="false">
-        </activity>
 
         <activity
-            android:name=".ui.auth.TenantSignUpActivity"
+            android:name=".ui.auth.LettingAgentTicketsActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.auth.RaiseTicketActivity"
+            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".ui.auth.LettingAgentLoginActivity"-->
+<!--            android:exported="false">-->
+<!--        </activity>-->
+
+<!--        <activity-->
+<!--            android:name=".ui.auth.TenantSignUpActivity"-->
+<!--            android:exported="false" />-->
 
         <activity
             android:name=".MainActivity"

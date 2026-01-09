@@ -24,6 +24,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+
 public class ApartmentTenantsActivity extends AppCompatActivity {
 
     private LinearLayout tenantList;
@@ -38,6 +42,9 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
     // Hard-coded house code
     private String houseCode;
 
+    private TextView tvHouseCode;
+    private View btnShareCode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +55,9 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         tvBuildingName = findViewById(R.id.tvBuildingName);
         tvApartmentName = findViewById(R.id.tvApartmentName);
         tvTenantCount = findViewById(R.id.tvTenantCount);
+
+        tvHouseCode = findViewById(R.id.tvHouseCode);
+        btnShareCode = findViewById(R.id.btnShareCode);
 
         apartmentApi = ApiClient.getApartmentApi();
 
@@ -97,7 +107,38 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
             btnNewRoom.setVisibility(View.GONE);
         }
 
+        setupHouseCodeDisplay();
+    }
 
+    private void setupHouseCodeDisplay() {
+        if (houseCode != null && !houseCode.isEmpty()) {
+            tvHouseCode.setText(houseCode);
+
+            // 1. Click text to Copy to Clipboard
+            tvHouseCode.setOnClickListener(v -> {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("House Code", houseCode);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(this, "Code copied to clipboard", Toast.LENGTH_SHORT).show();
+            });
+
+            // 2. Click button to Share via WhatsApp/SMS/Email
+            btnShareCode.setOnClickListener(v -> {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+
+                String shareBody = "Download the UniNest app and join my apartment using this code: " + houseCode;
+
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Join my Apartment on UniNest");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+
+                startActivity(Intent.createChooser(shareIntent, "Share Code via"));
+            });
+
+        } else {
+            tvHouseCode.setText("N/A");
+            btnShareCode.setVisibility(View.GONE);
+        }
     }
 
     // Fetch tenants

@@ -43,7 +43,7 @@ public class ApartmentController {
     public String createApartment( @Valid @RequestBody ApartmentRequests request) {
         request.setName(SanitizationUtil.sanitize(request.getName()));
         request.setBuildingId(SanitizationUtil.sanitize(request.getBuildingId()));
-        request.setCode(SanitizationUtil.sanitize(request.getCode()));
+//        request.setCode(SanitizationUtil.sanitize(request.getCode()));
         request.setLandlordId(SanitizationUtil.sanitize(request.getLandlordId()));
         request.setDescription(SanitizationUtil.sanitize(request.getDescription()));
         request.setTotalRooms(SanitizationUtil.sanitize(request.getTotalRooms()));

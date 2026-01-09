@@ -2,6 +2,8 @@ package com.example.uninest.model;
 
 import com.google.firebase.Timestamp;
 
+import java.util.Date;
+
 public class Ticket {
     private String id;
     private String description;
@@ -12,7 +14,10 @@ public class Ticket {
     private String priority;
     private String status;
     private String userId;
-    private Timestamp createdAt; // set in backend
+    private Object createdAt; // set in backend
+    private String landlordId;
+    private String apartmentName;
+
 
     // Getters and Setters
     public String getId() { return id; }
@@ -41,5 +46,14 @@ public class Ticket {
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
+
+    public Object getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Object createdAt) { this.createdAt = createdAt; }
+
+    public String getLandlordId() { return landlordId; }
+    public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
+
+    public String getApartmentName() { return apartmentName; }
+    public void setApartmentName(String apartmentName) { this.apartmentName = apartmentName; }
 
 }
