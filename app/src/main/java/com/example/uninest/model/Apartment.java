@@ -10,7 +10,7 @@ public class Apartment {
     private String totalRooms;
     private String code; // set in backend
     private String landlordId;
-    private Timestamp createdAt; // set in backend
+    private Object createdAt;
     private String description;
     private Double rentPrice;
     private Boolean active;
@@ -33,8 +33,8 @@ public class Apartment {
     public String getLandlordId() { return landlordId; }
     public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
 
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public Object getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Object createdAt) { this.createdAt = createdAt; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
