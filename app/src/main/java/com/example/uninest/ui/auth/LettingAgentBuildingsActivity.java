@@ -21,16 +21,38 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+
+
 public class LettingAgentBuildingsActivity extends AppCompatActivity {
 
     private LinearLayout buildingList;
     private BuildingApi buildingApi;
 
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener authListener;
+
+
+    //  Refresh only when AddBuildingActivity returns RESULT_OK
+    private final ActivityResultLauncher<Intent> addBuildingLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    loadBuildingsFromApi(); // refresh immediately
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_letting_agent_buildings);
+
+        mAuth = FirebaseAuth.getInstance();
+
 
         buildingList = findViewById(R.id.layoutBuildingList);
         Button btnNewBuilding = findViewById(R.id.btnNewBuilding);
@@ -38,20 +60,15 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         buildingApi = ApiClient.getBuildingApi();
 
 
-        loadBuildingsFromApi();
-
-        // New Building button -> open AddBuildingActivity (design only)
         btnNewBuilding.setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    LettingAgentBuildingsActivity.this,
-                    AddBuildingActivity.class
-            );
-            startActivity(intent);
+            Intent intent = new Intent(LettingAgentBuildingsActivity.this, AddBuildingActivity.class);
+            addBuildingLauncher.launch(intent);
         });
 
         // Bottom nav clicks
         findViewById(R.id.navTickets).setOnClickListener(v -> {
-            // TODO navigate to TicketsActivity
+            Intent intent = new Intent(LettingAgentBuildingsActivity.this, LettingAgentTicketsActivity.class);
+            startActivity(intent);
         });
 
         findViewById(R.id.navApartments).setOnClickListener(v -> {
@@ -64,24 +81,59 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         });
     }
 
-    private void loadBuildingsFromApi() {
-        buildingList.removeAllViews();
-        buildingList.setVisibility(View.VISIBLE);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // This listener handles the initial load when the user logs in or app starts
+        if (authListener == null) {
+            authListener = firebaseAuth -> {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    loadBuildingsFromApi();
+                }
+            };
+        }
+        mAuth.addAuthStateListener(authListener);
+    }
 
-        buildingApi.getAllBuildings().enqueue(new Callback<List<Building>>() {
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authListener != null) mAuth.removeAuthStateListener(authListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    private void loadBuildingsFromApi() {
+
+        String landlordId = com.google.firebase.auth.FirebaseAuth.getInstance().getUid();
+        if (landlordId == null) {
+            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        buildingApi.getBuildingsByLandlord(landlordId).enqueue(new Callback<List<Building>>() {
             @Override
-            public void onResponse(Call<List<Building>> call,
-                                   Response<List<Building>> response) {
+            public void onResponse(Call<List<Building>> call, Response<List<Building>> response) {
                 if (!response.isSuccessful() || response.body() == null) {
                     Toast.makeText(LettingAgentBuildingsActivity.this,
                             "Failed to load buildings", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
+                buildingList.removeAllViews();
+
                 List<Building> buildings = response.body();
-                for (Building b : buildings) {
-                    addBuildingCard(b);
+                if (buildings.isEmpty()) {
+                    Toast.makeText(LettingAgentBuildingsActivity.this,
+                            "No buildings yet. Tap + New Building", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                for (Building b : buildings) addBuildingCard(b);
             }
 
             @Override
@@ -92,6 +144,7 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void addBuildingCard(Building building) {
         BuildingCardView card = new BuildingCardView(this);
