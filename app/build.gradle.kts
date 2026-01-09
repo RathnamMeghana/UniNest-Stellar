@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
 
+    alias(libs.plugins.kotlin.android)
+
 
     id("com.google.gms.google-services")
 
@@ -81,9 +83,13 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.play.services.measurement.api)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-database")
+
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore:1.1.1")
 
 
 
@@ -107,4 +113,3 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
-
