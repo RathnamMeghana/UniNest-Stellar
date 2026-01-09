@@ -5,6 +5,7 @@ import UniNest.Backend.model.Building;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.cloud.FirestoreClient;
 
@@ -22,7 +23,7 @@ import java.util.List;
 public class BuildingService {
 
     public String createBuilding(BuildingRequest request) {
-
+try{
         Firestore db = FirestoreClient.getFirestore();
 
         Timestamp time = Timestamp.now();
@@ -38,10 +39,14 @@ public class BuildingService {
         building.setUpdatedAt(time);
         building.setActive(request.getActive());
 
-        db.collection("buildings").add(building);
+        db.collection("buildings").add(building).get();
 
         return "Building created successfully";
 
+    }
+catch (Exception e) {
+    throw new RuntimeException("Failed to create building: " + e.getMessage());
+}
     }
 
     public List<Building> getAllBuildings() {
@@ -66,4 +71,45 @@ public class BuildingService {
         }
     }
 
+    public List<Building> getBuildingsByLandlord(String landlordId) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            ApiFuture<QuerySnapshot> future = db.collection("buildings")
+                    .whereEqualTo("landlordId", landlordId)
+                    .get();
+
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+            List<Building> buildings = new ArrayList<>();
+            for (QueryDocumentSnapshot doc : documents) {
+                Building b = doc.toObject(Building.class);
+                b.setId(doc.getId());
+                buildings.add(b);
+            }
+            return buildings;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch buildings by landlordId: " + e.getMessage());
+        }
+    }
+
+    public Building getBuildingById(String buildingId) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            // Fetch specific document by ID
+            DocumentSnapshot document = db.collection("buildings").document(buildingId).get().get();
+
+            if (document.exists()) {
+                Building building = document.toObject(Building.class);
+                building.setId(document.getId()); // Ensure ID is set
+                return building;
+            } else {
+                return null; // Handle not found in controller
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch building: " + e.getMessage());
+        }
+    }
 }
