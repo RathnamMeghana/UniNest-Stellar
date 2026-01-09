@@ -31,15 +31,21 @@ public class AddBuildingActivity extends AppCompatActivity {
     private BuildingApi buildingApi;
     private FirebaseAuth mAuth;
 
+    // prevents double submits -> avoids duplicate buildings
+    private boolean isSubmitting = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_building);
 
+        mAuth = FirebaseAuth.getInstance();
+
         etBuildingName = findViewById(R.id.etBuildingName);
-        imgPreview      = findViewById(R.id.imgPreview);
-        btnCancel       = findViewById(R.id.btnCancel);
-        btnSave         = findViewById(R.id.btnSaveBuilding);
+        imgPreview = findViewById(R.id.imgPreview);
+        btnCancel = findViewById(R.id.btnCancel);
+        btnSave = findViewById(R.id.btnSaveBuilding);
 
         // Retrofit API
         buildingApi = ApiClient.getBuildingApi();
@@ -54,64 +60,65 @@ public class AddBuildingActivity extends AppCompatActivity {
     }
 
     private void saveBuilding() {
+        if (isSubmitting) return;
+        isSubmitting = true;
+        btnSave.setEnabled(false);
+
         String name = etBuildingName.getText().toString().trim();
 
         if (name.isEmpty()) {
+            isSubmitting = false;
+            btnSave.setEnabled(true);
             etBuildingName.setError("Please enter a building name");
             return;
         }
 
+
         // --- FIX: Get the currently logged-in user's ID ---
         FirebaseUser user = mAuth.getCurrentUser();
-        String landlordId;
-
-        if (user != null) {
-            // Use the real Firebase User ID (UID)
-            landlordId = user.getUid();
-        } else {
-            // Handle case where user is not logged in (should not happen in production)
+        if (user == null) {
+            isSubmitting = false;
+            btnSave.setEnabled(true);
             Toast.makeText(this, "Error: User is not logged in.", Toast.LENGTH_LONG).show();
             return;
         }
 
+        String landlordId = user.getUid();
+
+
         // TODO: once you add more fields to the layout, read them here
         BuildingRequest request = new BuildingRequest();
         request.setName(name);
-        request.setAddressLine1("Dummy address line 1"); // replace later
-        request.setCity("Dummy city");                   // replace later
-        request.setPostcode("0000");                     // replace later
-        request.setCountry("Ireland");                   // replace later
-        request.setLandlordId(landlordId);               // NOW using the real logged-in user ID
+        request.setAddressLine1("Dummy address line 1");
+        request.setCity("Dummy city");
+        request.setPostcode("0000");
+        request.setCountry("Ireland");
+        request.setLandlordId(landlordId);
         request.setActive(true);
-
-        btnSave.setEnabled(false);
 
         buildingApi.createBuilding(request).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+                isSubmitting = false;
                 btnSave.setEnabled(true);
 
                 if (!response.isSuccessful()) {
-                    // Log the error body if available for debugging
-                    String errorBody = response.errorBody() != null ? response.errorBody().toString() : "";
-                    Log.e("AddBuildingActivity", "Failed to create building: " + response.code() + ", Body: " + errorBody);
                     Toast.makeText(AddBuildingActivity.this,
                             "Failed to create building: " + response.code(),
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                String msg = response.body() != null
-                        ? response.body()
-                        : "Building created successfully";
-
-                Toast.makeText(AddBuildingActivity.this, msg, Toast.LENGTH_SHORT).show();
-                finish(); // go back to buildings list
+                Toast.makeText(AddBuildingActivity.this, "Building created!", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
+                finish();
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
+                isSubmitting = false;
                 btnSave.setEnabled(true);
+
                 Log.e("AddBuildingActivity", "API Error", t);
                 Toast.makeText(AddBuildingActivity.this,
                         "Error: " + t.getMessage(),
