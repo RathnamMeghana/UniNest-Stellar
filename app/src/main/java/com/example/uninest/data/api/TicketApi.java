@@ -21,4 +21,7 @@ public interface TicketApi {
 
     @GET("tickets/apartment")
     Call<List<Ticket>> getTicketsByApartment(@Query("name") String houseCode);
+
+    @GET("tickets/landlord")
+    Call<List<Ticket>> getTicketsByLandlord(@Query("id") String landlordId);
 }
