@@ -66,6 +66,16 @@ public class TicketController {
         }
     }
 
+    @GetMapping("/landlord")
+    public ResponseEntity<List<Ticket>> getTicketsByLandlord(@RequestParam String id) {
+        try {
+            List<Ticket> tickets = ticketService.getTicketsByLandlord(id);
+            return new ResponseEntity<>(tickets, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PutMapping("/status")
     public ResponseEntity<String> updateTicketStatus(@Valid @RequestBody UpdateTicketStatusRequest request) {
         try {
