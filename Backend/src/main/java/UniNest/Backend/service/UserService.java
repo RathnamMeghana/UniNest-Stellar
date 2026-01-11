@@ -11,25 +11,30 @@ import java.util.concurrent.ExecutionException;
 import java.util.ArrayList;
 import java.util.List;
 
+import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.User;
 import org.springframework.stereotype.Service;
+
 
 
 @Service
 public class UserService {
     /**
      * Retrieves all users associated with a specific apartment ID.
+     *
      * @param apartmentId The ID of the apartment to search within.
      * @return A list of User objects belonging to that apartment.
      */
-    public List<User> getUsersForApartment(String houseCode) {
+    public List<User> getUsersForApartment(String houseCode) throws UserServiceException {
+        if (houseCode == null || houseCode.isBlank()) {
+            throw new IllegalArgumentException("houseCode cannot be null or empty");
+        }
         try {
             Firestore db = FirestoreClient.getFirestore();
 
             // select all documents from 'users' where apartmentId == given ID
             Query query = db.collection("users")
                     .whereEqualTo("houseCode", houseCode);
-
 
 
             // Execute the query asynchronously
@@ -47,9 +52,9 @@ public class UserService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Query for users interrupted.", e);
+            throw new UserServiceException("User query interrupted", e);
         } catch (ExecutionException e) {
-            throw new RuntimeException("Failed to fetch users from Firestore.", e);
+            throw new UserServiceException("Firestore query failed", e);
         }
     }
 }

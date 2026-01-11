@@ -1,5 +1,6 @@
 package UniNest.Backend.controller;
 
+import UniNest.Backend.exception.TicketServiceException;
 import UniNest.Backend.model.Ticket;
 import UniNest.Backend.service.TicketService;
 import UniNest.Backend.dto.UpdateTicketStatusRequest;
@@ -48,7 +49,7 @@ public class TicketControllerTest {
 
     // Create Ticket Success
     @Test
-    public void testCreateTicket_Success() throws Exception {
+    public void testCreateTicket_Success()  {
         when(ticketService.createTicket(any(Ticket.class))).thenReturn("Ticket created");
 
         ResponseEntity<String> response = ticketController.createTicket(testTicket);
@@ -60,7 +61,7 @@ public class TicketControllerTest {
     }
 
     @Test
-    public void testCreateTicket_ServiceThrowsException() throws Exception {
+    public void testCreateTicket_ServiceThrowsException() {
         when(ticketService.createTicket(any(Ticket.class))).thenThrow(new RuntimeException("DB error"));
 
         ResponseEntity<String> response = ticketController.createTicket(testTicket);
@@ -71,7 +72,7 @@ public class TicketControllerTest {
 
     //  Get Tickets by Building Success
     @Test
-    public void testGetTicketsByBuilding_Success() throws ExecutionException, InterruptedException {
+    public void testGetTicketsByBuilding_Success()  {
         List<Ticket> tickets = List.of(testTicket);
         when(ticketService.getTicketsByBuilding("Building A")).thenReturn(tickets);
 
@@ -84,7 +85,7 @@ public class TicketControllerTest {
 
     //  Get Tickets by Building Exception
     @Test
-    public void testGetTicketsByBuilding_Exception() throws ExecutionException, InterruptedException {
+    public void testGetTicketsByBuilding_Exception()  {
         when(ticketService.getTicketsByBuilding("Building A")).thenThrow(new RuntimeException("DB error"));
 
         ResponseEntity<List<Ticket>> response = ticketController.getTicketsByBuilding("Building A");
@@ -95,7 +96,7 @@ public class TicketControllerTest {
 
     // Get Tickets by Apartment Success
     @Test
-    public void testGetTicketsByApartment_Success() throws ExecutionException, InterruptedException {
+    public void testGetTicketsByApartment_Success()  {
         List<Ticket> tickets = List.of(testTicket);
         when(ticketService.getTicketsByApartment("Apartment101")).thenReturn(tickets);
 
@@ -108,7 +109,7 @@ public class TicketControllerTest {
 
     // Update Ticket Status Success
     @Test
-    public void testUpdateTicketStatus_Success() throws ExecutionException, InterruptedException {
+    public void testUpdateTicketStatus_Success()  {
         UpdateTicketStatusRequest request = new UpdateTicketStatusRequest();
         request.setTicketId("ticket1");
         request.setStatus("Closed");
@@ -123,7 +124,7 @@ public class TicketControllerTest {
 
     // Update Ticket Status not found
     @Test
-    public void testUpdateTicketStatus_NotFound() throws ExecutionException, InterruptedException {
+    public void testUpdateTicketStatus_NotFound()  {
         UpdateTicketStatusRequest request = new UpdateTicketStatusRequest();
         request.setTicketId("invalid");
         request.setStatus("Closed");
@@ -139,7 +140,7 @@ public class TicketControllerTest {
 
     //  Update Ticket Priority Success
     @Test
-    public void testUpdateTicketPriority_Success() throws ExecutionException, InterruptedException {
+    public void testUpdateTicketPriority_Success()  {
         UpdateTicketPriorityRequest request = new UpdateTicketPriorityRequest();
         request.setTicketId("ticket1");
         request.setPriority("Low");
@@ -154,7 +155,7 @@ public class TicketControllerTest {
 
     //  Update Ticket Priority Not Found
     @Test
-    public void testUpdateTicketPriority_NotFound() throws ExecutionException, InterruptedException {
+    public void testUpdateTicketPriority_NotFound()  {
         UpdateTicketPriorityRequest request = new UpdateTicketPriorityRequest();
         request.setTicketId("invalid");
         request.setPriority("High");
@@ -176,5 +177,55 @@ public class TicketControllerTest {
 
         // make sure description was sanitized
         assertFalse(testTicket.getDescription().contains("<script>"));
+    }
+
+    @Test
+    public void TestGetTicketsByLandlord_Success() throws ExecutionException, InterruptedException {
+        // set up
+        String landlordId = "landlord123";
+        testTicket.setLandlordId(landlordId);
+        List<Ticket> tickets = List.of(testTicket);
+
+        when(ticketService.getTicketsByLandlord(landlordId)).thenReturn(tickets);
+
+
+        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord(landlordId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals(landlordId, response.getBody().get(0).getLandlordId());
+        verify(ticketService, times(1)).getTicketsByLandlord(landlordId);
+
+    }
+
+    @Test
+    public void TestGetTicketsByLandlord_NotFound() throws ExecutionException, InterruptedException {
+        // set up
+        String landlordId = "empty_landlord";
+        when(ticketService.getTicketsByLandlord(landlordId)).thenReturn(List.of());
+
+
+        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord(landlordId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().isEmpty());
+
+    }
+
+    @Test
+    public void TestGetTicketsByLandlord_NotLandLord() throws ExecutionException, InterruptedException {
+        //set up
+        String landlordId = "landlord123";
+        when(ticketService.getTicketsByLandlord(landlordId))
+                .thenThrow(new TicketServiceException("Firestore unavailable", null));
+
+        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord(landlordId);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }

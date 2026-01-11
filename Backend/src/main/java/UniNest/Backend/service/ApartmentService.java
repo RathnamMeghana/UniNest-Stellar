@@ -9,13 +9,16 @@ import org.springframework.stereotype.Service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreException;
 import com.google.cloud.firestore.Query;
 
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 import UniNest.Backend.dto.ApartmentRequests;
+import UniNest.Backend.exception.TenantNotFoundException;
 import UniNest.Backend.model.Apartment;
+import UniNest.Backend.exception.ApartmentServiceException;
 
 @Service
 public class ApartmentService {
@@ -27,6 +30,7 @@ public class ApartmentService {
     }
 
     private String getUniqueCode() throws InterruptedException, ExecutionException {
+        try{
         Firestore db = FirestoreClient.getFirestore();
         String uniqueCode;
         boolean exists;
@@ -48,11 +52,29 @@ public class ApartmentService {
 
         return uniqueCode;
     }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApartmentServiceException("Apartment code generation interrupted", e);
+        } catch (ExecutionException e) {
+            throw new ApartmentServiceException("Failed to generate unique apartment code", e);
+        } catch (FirestoreException e) {
+            throw new ApartmentServiceException("Firestore unavailable", e);
+        }
+    }
 
     public String createApartment(ApartmentRequests request) {
+        if (request == null) throw new IllegalArgumentException("Request cannot be null");
         try {
             Firestore db = FirestoreClient.getFirestore();
+            var landlordDoc = db.collection("users").document(request.getLandlordId()).get().get();
 
+            if (!landlordDoc.exists()) {
+                throw new ApartmentServiceException("Landlord with ID " + request.getLandlordId() + " does not exist.", null);
+            }
+            String role = landlordDoc.getString("role");
+            if (!"1".equalsIgnoreCase(role)) {
+                throw new ApartmentServiceException("User exists but is not authorized as a Landlord.", null);
+            }
             // Assign the guaranteed unique code
             String uniqueCode = getUniqueCode();
 
@@ -73,14 +95,17 @@ public class ApartmentService {
 
             apartment.setActive(request.getActive());
 
-            db.collection("apartments").add(apartment);
+            db.collection("apartments").add(apartment).get();
 
             return "Apartment created successfully with code: " + uniqueCode;
 
-        } catch (InterruptedException | ExecutionException e) {
-            // Handle the exception if the Firestore call fails
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Failed to generate unique apartment code or save apartment.", e);
+            throw new ApartmentServiceException("Apartment creation interrupted", e);
+        } catch (ExecutionException e) {
+            throw new ApartmentServiceException("Failed to create apartment", e);
+        } catch (FirestoreException e) {
+            throw new ApartmentServiceException("Firestore unavailable", e);
         }
     }
 
@@ -100,12 +125,18 @@ public class ApartmentService {
 
             return apartments;
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch apartments: " + e.getMessage());
+        }  catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApartmentServiceException("Fetching apartments interrupted", e);
+        } catch (ExecutionException e) {
+            throw new ApartmentServiceException("Failed to fetch apartments", e);
+        } catch (FirestoreException e) {
+            throw new ApartmentServiceException("Firestore unavailable", e);
         }
     }
 
     public void removeTenantFromApartment(String email) {
+
         try {
             Firestore db = FirestoreClient.getFirestore();
 
@@ -116,21 +147,23 @@ public class ApartmentService {
 
             List<QueryDocumentSnapshot> docs = q.get().getDocuments();
             if (docs.isEmpty()) {
-                throw new RuntimeException("User not found");
+                throw new TenantNotFoundException("User not found with email: " + email);
             }
+
 
             // Step 2 — Get Firestore document ID
             String userId = docs.get(0).getId();
 
             // Step 3 — update fields
-            db.collection("users").document(userId)
-                    .update(
-                            "apartmentId", null,
-                            "houseCode", null
-                    );
+            db.collection("users").document(userId).update("apartmentId", null,"houseCode", null).get();
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to remove tenant: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApartmentServiceException("Removing tenant interrupted", e);
+        } catch (ExecutionException e) {
+            throw new ApartmentServiceException("Failed to remove tenant", e);
+        } catch (FirestoreException e) {
+            throw new ApartmentServiceException("Firestore unavailable", e);
         }
     }
 }
