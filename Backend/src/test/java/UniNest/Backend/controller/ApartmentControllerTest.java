@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import UniNest.Backend.dto.ApartmentRequests;
 import UniNest.Backend.dto.RoomRequests;
+import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.model.Room;
 import UniNest.Backend.model.User;
@@ -96,7 +97,7 @@ class ApartmentControllerTest {
    // get all users by the apartment success
 
     @Test
-    void getUsersByApartment_success() throws Exception {
+    void getUsersByApartment_success() throws Exception, UserServiceException {
         User user = new User();
         user.setEmail("test@uninest.com");
 
@@ -110,7 +111,7 @@ class ApartmentControllerTest {
 
     // get all users by the apartment not found
     @Test
-    void getUsersByApartment_notFound() throws Exception {
+    void getUsersByApartment_notFound() throws Exception, UserServiceException {
         when(userService.getUsersForApartment("A1"))
                 .thenReturn(List.of());
 

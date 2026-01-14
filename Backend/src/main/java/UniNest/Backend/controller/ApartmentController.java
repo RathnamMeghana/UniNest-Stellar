@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import UniNest.Backend.dto.ApartmentRequests;
 import UniNest.Backend.dto.RoomRequests;
+import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.model.Room;
 import UniNest.Backend.model.User;
@@ -66,7 +67,7 @@ public class ApartmentController {
     @GetMapping("/{houseCode}/users")
     public ResponseEntity<List<User>> getUsersByApartment(
             @PathVariable String houseCode
-    ) {
+    ) throws UserServiceException {
         List<User> users = userService.getUsersForApartment(houseCode);
 
         if (users.isEmpty()) {

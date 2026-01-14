@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="UniNest.Backend.BackendApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-12-21T23:37:22" hostname="LAPTOP-J27EJHB6" time="0.006">
+<testsuite name="UniNest.Backend.BackendApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-01-11T02:05:13" hostname="LAPTOP-J27EJHB6" time="2.834">
   <properties/>
-  <testcase name="contextLoads()" classname="UniNest.Backend.BackendApplicationTests" time="0.006"/>
-  <system-out><![CDATA[2025-12-21T23:37:20.711Z  INFO 35172 --- [Backend] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [UniNest.Backend.BackendApplicationTests]: BackendApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2025-12-21T23:37:20.727Z  INFO 35172 --- [Backend] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration UniNest.Backend.BackendApplication for test class UniNest.Backend.BackendApplicationTests
+  <testcase name="contextLoads()" classname="UniNest.Backend.BackendApplicationTests" time="2.834"/>
+  <system-out><![CDATA[Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+02:05:08.615 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [UniNest.Backend.BackendApplicationTests]: BackendApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+02:05:08.823 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration UniNest.Backend.BackendApplication for test class UniNest.Backend.BackendApplicationTests
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -13,10 +14,10 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.7)
 
-2025-12-21T23:37:20.813Z  INFO 35172 --- [Backend] [    Test worker] U.Backend.BackendApplicationTests        : Starting BackendApplicationTests using Java 17.0.9 with PID 35172 (started by aoife in C:\Users\aoife\UniNest-Stellar\Backend)
-2025-12-21T23:37:20.813Z  INFO 35172 --- [Backend] [    Test worker] U.Backend.BackendApplicationTests        : No active profile set, falling back to 1 default profile: "default"
+2026-01-11T02:05:09.767Z  INFO 19424 --- [Backend] [    Test worker] U.Backend.BackendApplicationTests        : Starting BackendApplicationTests using Java 17.0.9 with PID 19424 (started by aoife in C:\Users\aoife\UniNest-Stellar\Backend)
+2026-01-11T02:05:09.773Z  INFO 19424 --- [Backend] [    Test worker] U.Backend.BackendApplicationTests        : No active profile set, falling back to 1 default profile: "default"
  Firebase initialized successfully!
-2025-12-21T23:37:22.199Z  INFO 35172 --- [Backend] [    Test worker] U.Backend.BackendApplicationTests        : Started BackendApplicationTests in 1.455 seconds (process running for 13.828)
+2026-01-11T02:05:13.448Z  INFO 19424 --- [Backend] [    Test worker] U.Backend.BackendApplicationTests        : Started BackendApplicationTests in 4.275 seconds (process running for 7.092)
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

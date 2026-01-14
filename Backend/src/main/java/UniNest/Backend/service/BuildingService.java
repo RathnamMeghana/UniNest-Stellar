@@ -12,41 +12,50 @@ import com.google.firebase.cloud.FirestoreClient;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import org.springframework.stereotype.Service;
+import UniNest.Backend.exception.BuildingServiceException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class BuildingService {
 
     public String createBuilding(BuildingRequest request) {
-try{
-        Firestore db = FirestoreClient.getFirestore();
 
-        Timestamp time = Timestamp.now();
+        if (request == null) {
+            throw new IllegalArgumentException("Request cannot be null");
+        }
 
-        Building building = new Building();
-        building.setName(request.getName());
-        building.setAddressLine1(request.getAddressLine1());
-        building.setCity(request.getCity());
-        building.setPostcode(request.getPostcode());
-        building.setCountry(request.getCountry());
-        building.setLandlordId(request.getLandlordId());
-        building.setCreatedAt(time);
-        building.setUpdatedAt(time);
-        building.setActive(request.getActive());
+        try {
+            Firestore db = FirestoreClient.getFirestore();
 
-        db.collection("buildings").add(building).get();
+            Timestamp time = Timestamp.now();
 
-        return "Building created successfully";
+            Building building = new Building();
+            building.setName(request.getName());
+            building.setAddressLine1(request.getAddressLine1());
+            building.setCity(request.getCity());
+            building.setPostcode(request.getPostcode());
+            building.setCountry(request.getCountry());
+            building.setLandlordId(request.getLandlordId());
+            building.setCreatedAt(time);
+            building.setUpdatedAt(time);
+            building.setActive(request.getActive());
 
-    }
-catch (Exception e) {
-    throw new RuntimeException("Failed to create building: " + e.getMessage());
-}
+            db.collection("buildings").add(building).get();
+
+            return "Building created successfully";
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BuildingServiceException("Building creation interrupted", e);
+        } catch (ExecutionException e) {
+            throw new BuildingServiceException("Failed to create building", e);
+        } catch (com.google.cloud.firestore.FirestoreException e) {
+            throw new BuildingServiceException("Firestore unavailable", e);
+        }
     }
 
     public List<Building> getAllBuildings() {
@@ -66,9 +75,15 @@ catch (Exception e) {
 
             return buildings;
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch buildings: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BuildingServiceException("Fetching buildings interrupted", e);
+        } catch (ExecutionException e) {
+            throw new BuildingServiceException("Failed to fetch buildings by landlord", e);
+        } catch (com.google.cloud.firestore.FirestoreException e) {
+            throw new BuildingServiceException("Firestore unavailable", e);
         }
+
     }
 
     public List<Building> getBuildingsByLandlord(String landlordId) {
@@ -89,27 +104,40 @@ catch (Exception e) {
             }
             return buildings;
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch buildings by landlordId: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BuildingServiceException("Fetching buildings interrupted", e);
+        } catch (ExecutionException e) {
+            throw new BuildingServiceException("Failed to fetch buildings by landlord", e);
+        } catch (com.google.cloud.firestore.FirestoreException e) {
+            throw new BuildingServiceException("Firestore unavailable", e);
         }
     }
 
+
     public Building getBuildingById(String buildingId) {
+        if (buildingId == null || buildingId.isBlank()) {
+            throw new IllegalArgumentException("Building id cannot be null or empty");
+        }
         try {
             Firestore db = FirestoreClient.getFirestore();
 
-            // Fetch specific document by ID
             DocumentSnapshot document = db.collection("buildings").document(buildingId).get().get();
 
             if (document.exists()) {
                 Building building = document.toObject(Building.class);
-                building.setId(document.getId()); // Ensure ID is set
+                building.setId(document.getId());
                 return building;
             } else {
-                return null; // Handle not found in controller
+                return null;
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch building: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BuildingServiceException("Fetching buildings interrupted", e);
+        } catch (ExecutionException e) {
+            throw new BuildingServiceException("Failed to fetch buildings by landlord", e);
+        } catch (com.google.cloud.firestore.FirestoreException e) {
+            throw new BuildingServiceException("Firestore unavailable", e);
         }
     }
 }

@@ -9,6 +9,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+import UniNest.Backend.exception.ApartmentServiceException;
+import UniNest.Backend.exception.BuildingServiceException;
+import UniNest.Backend.exception.RoomServiceException;
+import UniNest.Backend.exception.TicketNotFoundException;
+import UniNest.Backend.exception.TicketServiceException;
+import UniNest.Backend.exception.UserServiceException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -25,4 +32,78 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ApartmentServiceException.class)
+    public ResponseEntity<String> handleApartmentException(ApartmentServiceException ex) {
+        // Logic to differentiate based on message content
+        if (ex.getMessage().contains("does not exist")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        if (ex.getMessage().contains("not authorized")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BuildingServiceException.class)
+    public ResponseEntity<String> handleBuildingException(BuildingServiceException ex) {
+        // Logic to differentiate based on message content
+        if (ex.getMessage().contains("does not exist")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        if (ex.getMessage().contains("not authorized")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RoomServiceException.class)
+    public ResponseEntity<String> handleRoomException(RoomServiceException ex) {
+        // Logic to differentiate based on message content
+        if (ex.getMessage().contains("does not exist")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        if (ex.getMessage().contains("not authorized")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TicketNotFoundException.class)
+    public ResponseEntity<String> handleTicketNotFoundException(TicketNotFoundException ex) {
+        // Logic to differentiate based on message content
+        if (ex.getMessage().contains("does not exist")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        if (ex.getMessage().contains("not authorized")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TicketServiceException.class)
+    public ResponseEntity<String> handleTicketServiceException(TicketServiceException ex) {
+        // Logic to differentiate based on message content
+        if (ex.getMessage().contains("does not exist")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        if (ex.getMessage().contains("not authorized")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserServiceException.class)
+    public ResponseEntity<String> handleUserServiceException(UserServiceException ex) {
+        // Logic to differentiate based on message content
+        if (ex.getMessage().contains("does not exist")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        if (ex.getMessage().contains("not authorized")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+
 }
