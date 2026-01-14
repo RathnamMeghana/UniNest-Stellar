@@ -100,10 +100,13 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
             // Navigate based on the retrieved role string
             if ("2".equals(role)) {
                 // Role 2: Tenent
-                Toast.makeText(this, "Agent Login successful!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Tenants Login successful!", Toast.LENGTH_SHORT).show();
+
                 Intent intent = new Intent(this, ApartmentTenantsActivity.class);
+
                 if (apartmentId != null && !apartmentId.isEmpty()) {
                     intent.putExtra("EXTRA_APARTMENT_ID", apartmentId);
+                    intent.putExtra("EXTRA_HOUSE_CODE", apartmentId);
                     // Optionally pass name details if available on the document
                     // intent.putExtra("EXTRA_BUILDING_NAME", doc.getString("buildingName"));
                     // intent.putExtra("EXTRA_APARTMENT_NAME", doc.getString("apartmentName"));
@@ -119,6 +122,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                 // Role 1: letting agent
                 Toast.makeText(this, "Agent Login successful!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, LettingAgentBuildingsActivity.class);
+                //Intent intent = new Intent(this, LettingAgentTicketsActivity.class);
                 startActivity(intent);
                 finish();
             }
