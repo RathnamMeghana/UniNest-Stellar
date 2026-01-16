@@ -18,6 +18,9 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class CalendarService {
@@ -221,7 +224,19 @@ public class CalendarService {
         CalendarEventDTO.Response dto = new CalendarEventDTO.Response();
         dto.setId(e.getId());
         dto.setHouseCode(e.getHouseCode());
-        dto.setType(CalendarEventDTO.EventType.valueOf(e.getType()));
+
+        // Safe enum mapping
+        if (e.getType() != null) {
+            try {
+                dto.setType(CalendarEventDTO.EventType.valueOf(e.getType()));
+            } catch (IllegalArgumentException ex) {
+                // unknown value in DB → use default
+                dto.setType(CalendarEventDTO.EventType.OTHER);
+            }
+        } else {
+            dto.setType(CalendarEventDTO.EventType.OTHER); // default if null
+        }
+
         dto.setTitle(e.getTitle());
         dto.setDescription(e.getDescription());
         dto.setStartDate(e.getStartDate());
@@ -230,7 +245,8 @@ public class CalendarService {
         dto.setCreatedBy(e.getCreatedBy());
         dto.setAssignedTo(e.getAssignedTo());
         dto.setRelatedChoreId(e.getRelatedChoreId());
-        dto.setRecurrence(null); // map recurrence if needed
+        dto.setRecurrence(null); // optionally map recurrence here
         return dto;
     }
+
 }

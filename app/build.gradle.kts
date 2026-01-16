@@ -9,6 +9,8 @@ plugins {
     id("com.chaquo.python")
 }
 
+
+
 android {
     namespace = "com.example.uninest"
     compileSdk = 34
@@ -102,6 +104,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-tflite-java:16.0.1")
 
 
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
@@ -109,7 +112,9 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation(libs.firebase.database)
 
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
 }

@@ -15,7 +15,7 @@ public class Chore {
     public void setId(String id){ this.id = id; }
 
     public String getTaskName(){ return taskName;}
-    public void getTaskName(String taskName){ this.taskName = taskName; }
+    public void setTaskName(String taskName){ this.taskName = taskName; }
 
     public String getRoom(){return room;}
     public void setRoom(String room){this.room = room;}

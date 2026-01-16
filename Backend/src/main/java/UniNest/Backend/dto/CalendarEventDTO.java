@@ -15,7 +15,7 @@ public class CalendarEventDTO {
         MOVE_IN,
         BILL_DUE,
         MAINTENANCE,
-        CUSTOM
+        OTHER, CUSTOM
     }
 
     // RECURRENCE DTO
