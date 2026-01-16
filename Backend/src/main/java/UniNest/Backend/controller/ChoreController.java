@@ -57,31 +57,23 @@ public class ChoreController {
     }
 
     @PostMapping("/addWithSmartAssign")
-    public ChoreRequests addChore(
+    public ChoreRequests addChoreWithSmartAssign(
             @RequestParam String houseCode,
             @RequestBody ChoreRequests chore
     ) throws UserServiceException {
 
-        // Sanitize inputs
+        // sanitize only request primitives
         houseCode = SanitizationUtil.sanitize(houseCode);
-        chore.setTaskName(SanitizationUtil.sanitize(chore.getTaskName()));
-        chore.setRoom(SanitizationUtil.sanitize(chore.getRoom()));
 
-        // Ensure chore has an ID
-        if (chore.getId() == null || chore.getId().isEmpty()) {
-            chore.setId(UUID.randomUUID().toString());
-        }
-
-        // Set created timestamp
-        chore.setCreatedAt(Timestamp.now());
-
-        // Get roommates
+        // 1️⃣ get roommates
         List<User> roommates = userService.getUsersForApartment(houseCode);
         if (roommates.isEmpty()) {
-            throw new ChoreServiceException("No roommates found for houseCode " + houseCode, null);
+            throw new ChoreServiceException(
+                    "No roommates found for houseCode " + houseCode, null
+            );
         }
 
-        // Prepare AI request
+        // 2️⃣ build AI request
         ChorePredictionRequest predictionRequest = new ChorePredictionRequest();
         predictionRequest.setTaskName(chore.getTaskName());
         predictionRequest.setRoom(chore.getRoom());
@@ -89,31 +81,24 @@ public class ChoreController {
         predictionRequest.setEstDurationMin(chore.getEstDurationMin());
         predictionRequest.setFrequencyPerWeek(chore.getFrequencyPerWeek());
 
-        // AI predicts
-        ChorePredictionResponse assignment = choreSchedulingService.predictAssignee(predictionRequest);
+        //  predict assignment
+        ChorePredictionResponse assignment =
+                choreSchedulingService.predictAssignee(predictionRequest);
+
         int predictedIndex = assignment.getAssignedTo();
         User assignedUser = roommates.get(predictedIndex % roommates.size());
 
-        // Assign to chore
+        //  set assignment ONLY
         chore.setAssignedTo(assignedUser.getId());
 
-        System.out.println("AssignedTo BEFORE Firestore save: " + chore.getAssignedTo());
-
-        // Save chore once to Firestore under the correct nested path
-        try {
-            Firestore db = FirestoreClient.getFirestore();
-            db.collection("apartments")           // use "apartments" instead of chores
-                    .document(houseCode)
-                    .collection("chores")
-                    .document(chore.getId())
-                    .set(chore)
-                    .get(); // ensure write completes
-        } catch (Exception e) {
-            throw new ChoreServiceException("Failed to save chore with assignment", e);
-        }
-
-        return chore;
+        //  delegate EVERYTHING ELSE to service
+        return choreService.addChore(
+                houseCode,
+                chore,
+                assignedUser.getId() // createdBy
+        );
     }
+
 
     @PatchMapping("/updateAssignmentByEmail")
     public ChoreRequests updateAssignmentByEmail(
@@ -131,16 +116,20 @@ public class ChoreController {
     @PostMapping("/addWithAssignment")
     public ChoreRequests addChoreWithAssignment(
             @RequestParam String houseCode,
-            @RequestParam String userEmail,
-            @RequestBody ChoreRequests chore
+            @RequestParam String assignedUserId,
+            @RequestBody ChoreRequests chore,
+            @RequestParam String createdBy
     ) {
-        houseCode = SanitizationUtil.sanitize(houseCode);
-        userEmail = SanitizationUtil.sanitize(userEmail);
-        chore.setTaskName(SanitizationUtil.sanitize(chore.getTaskName()));
-        chore.setRoom(SanitizationUtil.sanitize(chore.getRoom()));
 
-        return choreService.addChoreWithAssignment(houseCode, userEmail, chore);
+        houseCode = SanitizationUtil.sanitize(houseCode);
+        assignedUserId = SanitizationUtil.sanitize(assignedUserId);
+        createdBy = SanitizationUtil.sanitize(createdBy);
+
+        chore.setAssignedTo(assignedUserId);
+
+        return choreService.addChore(houseCode, chore, createdBy);
     }
+
 
 }
 
