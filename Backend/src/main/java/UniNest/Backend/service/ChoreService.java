@@ -48,9 +48,28 @@ public class ChoreService {
                 try {
                     ChoreRequests chore = doc.toObject(ChoreRequests.class);
                     chore.setId(doc.getId());
+
+                    if (chore.getAssignedTo() != null && !chore.getAssignedTo().isEmpty()) {
+                        // We fetch the document from the "users" collection directly by ID
+                        DocumentSnapshot userDoc = db.collection("users")
+                                .document(chore.getAssignedTo())
+                                .get()
+                                .get();
+
+                        if (userDoc.exists()) {
+                            // Set the email in our DTO so Android can see it
+                            chore.setAssignedTo(userDoc.getString("email"));
+                        } else {
+                            chore.setAssignedTo("User not found");
+                        }
+                    } else {
+                        chore.setAssignedTo("Unassigned");
+                    }
+
                     list.add(chore);
-                } catch (Exception ignored) {
-                    // skip corrupted record
+                } catch (Exception e) {
+                    // Log and skip corrupted record
+                    System.err.println("Error parsing chore: " + e.getMessage());
                 }
             }
 
@@ -59,10 +78,8 @@ public class ChoreService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new ChoreServiceException("Chore query interrupted", e);
-        } catch (ExecutionException e) {
-            throw new ChoreServiceException("Failed to fetch Chore", e);
-        } catch (FirestoreException e) {
-            throw new ChoreServiceException("Firestore unavailable", e);
+        } catch (ExecutionException | FirestoreException e) {
+            throw new ChoreServiceException("Failed to fetch Chores", e);
         }
     }
 

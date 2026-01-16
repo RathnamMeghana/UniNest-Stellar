@@ -20,6 +20,7 @@ public class ChoreRequests {
     private int frequencyPerWeek;
     private String assignedTo;
     private Timestamp createdAt;
+    private String assignedUserEmail;
 
 
     public void sanitize() {

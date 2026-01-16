@@ -16,4 +16,5 @@ public class Chore {
     private Timestamp createdAt;
     private String assignedUserEmail;
 
+
 }
