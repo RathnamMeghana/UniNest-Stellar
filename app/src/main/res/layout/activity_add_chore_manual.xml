@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Manual Chore"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"/>
+
+    <EditText
+        android:id="@+id/etTaskName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Task Name (e.g. Vacuum)"/>
+
+    <EditText
+        android:id="@+id/etRoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Room (e.g. Lounge)"/>
+
+    <EditText
+        android:id="@+id/etUserEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Assign to (Email Address)"
+        android:inputType="textEmailAddress"/>
+
+    <EditText
+        android:id="@+id/etDifficulty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Difficulty (1-5)"
+        android:inputType="number"/>
+
+    <EditText
+        android:id="@+id/etDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Duration (minutes)"
+        android:inputType="number"/>
+
+    <EditText
+        android:id="@+id/etFrequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Frequency per week"
+        android:inputType="number"/>
+
+    <Button
+        android:id="@+id/btnSaveChore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save and Assign"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/design_default_color_primary"/>
+</LinearLayout>
