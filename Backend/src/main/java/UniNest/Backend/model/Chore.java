@@ -14,5 +14,6 @@ public class Chore {
     private int frequencyPerWeek;
     private String assignedTo; // roommate ID
     private Timestamp createdAt;
+    private String assignedUserEmail;
 
 }

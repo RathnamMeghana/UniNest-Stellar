@@ -47,8 +47,8 @@ public class ChoreController {
     }
 
 
-    @GetMapping("/getAll")
-    public List<ChoreRequests> getAllChoreByApartment(@RequestParam String houseCode) {
+    @GetMapping("/getAll/{houseCode}")
+    public List<ChoreRequests> getAllChoreByApartment(@PathVariable String houseCode) {
         houseCode = SanitizationUtil.sanitize(houseCode);
 
         return choreService.getAllChoreByApartment(houseCode);

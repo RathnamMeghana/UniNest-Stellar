@@ -21,6 +21,7 @@ public class ChoreRequests {
     private String assignedTo;
     private Timestamp createdAt;
 
+
     public void sanitize() {
         this.id = UniNest.Backend.util.SanitizationUtil.sanitize(this.id);
         this.taskName = UniNest.Backend.util.SanitizationUtil.sanitize(this.taskName);
