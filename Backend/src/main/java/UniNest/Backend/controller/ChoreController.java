@@ -6,6 +6,7 @@ import com.google.firebase.cloud.FirestoreClient;
 
 import UniNest.Backend.dto.ChorePredictionRequest;
 import UniNest.Backend.dto.ChorePredictionResponse;
+import UniNest.Backend.dto.ChoreRequests;
 import UniNest.Backend.exception.ChoreServiceException;
 import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.Chore;
@@ -47,7 +48,7 @@ public class ChoreController {
 
 
     @GetMapping("/getAll")
-    public List<Chore> getAllChoreByApartment(@RequestParam String houseCode) {
+    public List<ChoreRequests> getAllChoreByApartment(@RequestParam String houseCode) {
         houseCode = SanitizationUtil.sanitize(houseCode);
 
         return choreService.getAllChoreByApartment(houseCode);
@@ -56,9 +57,9 @@ public class ChoreController {
     }
 
     @PostMapping("/addWithSmartAssign")
-    public Chore addChore(
+    public ChoreRequests addChore(
             @RequestParam String houseCode,
-            @RequestBody Chore chore
+            @RequestBody ChoreRequests chore
     ) throws UserServiceException {
 
         // Sanitize inputs
@@ -115,7 +116,7 @@ public class ChoreController {
     }
 
     @PatchMapping("/updateAssignmentByEmail")
-    public Chore updateAssignmentByEmail(
+    public ChoreRequests updateAssignmentByEmail(
             @RequestParam String houseCode,
             @RequestParam String taskName,
             @RequestParam String userEmail
@@ -124,18 +125,14 @@ public class ChoreController {
         taskName = SanitizationUtil.sanitize(taskName);
         userEmail = SanitizationUtil.sanitize(userEmail);
 
-        return choreService.updateAssignmentByTaskNameAndUserEmail(
-                houseCode,
-                taskName,
-                userEmail
-        );
+        return choreService.updateAssignmentByTaskNameAndUserEmail(houseCode, taskName, userEmail);
     }
 
     @PostMapping("/addWithAssignment")
-    public Chore addChoreWithAssignment(
+    public ChoreRequests addChoreWithAssignment(
             @RequestParam String houseCode,
             @RequestParam String userEmail,
-            @RequestBody Chore chore
+            @RequestBody ChoreRequests chore
     ) {
         houseCode = SanitizationUtil.sanitize(houseCode);
         userEmail = SanitizationUtil.sanitize(userEmail);
@@ -144,7 +141,6 @@ public class ChoreController {
 
         return choreService.addChoreWithAssignment(houseCode, userEmail, chore);
     }
-
 
 }
 

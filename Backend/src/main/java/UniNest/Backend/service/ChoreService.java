@@ -19,20 +19,23 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import UniNest.Backend.exception.ChoreServiceException;
+import UniNest.Backend.dto.ChoreRequests;
 import UniNest.Backend.model.Chore;
 
 @Service
 public class ChoreService {
 
 
-    public List<Chore> getAllChoreByApartment(String houseCode) {
-        List<Chore> list = new ArrayList<>();
+    public List<ChoreRequests> getAllChoreByApartment(String houseCode) {
+        List<ChoreRequests> list = new ArrayList<>();
 
         if (houseCode == null || houseCode.isBlank()) {
             throw new IllegalArgumentException("houseCode is required");
         }
         try {
             Firestore db = FirestoreClient.getFirestore();
+
+
 
             CollectionReference choresRef = db.collection("chores")
                     .document(houseCode)
@@ -43,7 +46,7 @@ public class ChoreService {
 
             for (DocumentSnapshot doc : docs) {
                 try {
-                    Chore chore = doc.toObject(Chore.class);
+                    ChoreRequests chore = doc.toObject(ChoreRequests.class);
                     chore.setId(doc.getId());
                     list.add(chore);
                 } catch (Exception ignored) {
@@ -63,18 +66,18 @@ public class ChoreService {
         }
     }
 
-    public Chore addChore(String houseCode, Chore chore) {
+    public ChoreRequests addChore(String houseCode, ChoreRequests chore) {
         if (houseCode == null || houseCode.isBlank()) {
             throw new IllegalArgumentException("houseCode is required");
         }
         try {
             chore.setCreatedAt(Timestamp.now());
             Firestore db = FirestoreClient.getFirestore();
+            chore.sanitize();
+
 
             // Save chore first (without assignedTo)
-            CollectionReference choresRef = db.collection("chores")
-                    .document(houseCode)
-                    .collection("chores");
+            CollectionReference choresRef = db.collection("apartments").document(houseCode).collection("chores");
 
             ApiFuture<com.google.cloud.firestore.DocumentReference> future = choresRef.add(chore);
             String choreId = future.get().getId();
@@ -91,11 +94,7 @@ public class ChoreService {
         }
     }
 
-    public Chore updateAssignmentByTaskNameAndUserEmail(
-            String houseCode,
-            String taskName,
-            String userEmail
-    ) {
+    public ChoreRequests updateAssignmentByTaskNameAndUserEmail( String houseCode,String taskName, String userEmail) {
         try {
             Firestore db = FirestoreClient.getFirestore();
 
@@ -107,9 +106,7 @@ public class ChoreService {
             QuerySnapshot userSnapshot = userQuery.get().get();
 
             if (userSnapshot.isEmpty()) {
-                throw new ChoreServiceException(
-                        "No user found with email " + userEmail, null
-                );
+                throw new ChoreServiceException("No user found with email " + userEmail, null);
             }
 
             String userId = userSnapshot.getDocuments().get(0).getId();
@@ -123,9 +120,7 @@ public class ChoreService {
             QuerySnapshot choreSnapshot = choreQuery.get().get();
 
             if (choreSnapshot.isEmpty()) {
-                throw new ChoreServiceException(
-                        "No chore found with task name " + taskName, null
-                );
+                throw new ChoreServiceException("No chore found with task name " + taskName, null);
             }
 
             // 3️ Update assignedTo
@@ -141,13 +136,10 @@ public class ChoreService {
         return null;
     }
 
-    public Chore addChoreWithAssignment(
-            String houseCode,
-            String userEmail,
-            Chore chore
-    ) {
+    public ChoreRequests addChoreWithAssignment(String houseCode, String userEmail, ChoreRequests chore) {
         try {
             Firestore db = FirestoreClient.getFirestore();
+            //chore.sanitize();
 
             // 1️ Find user by email + houseCode
             Query userQuery = db.collection("users")

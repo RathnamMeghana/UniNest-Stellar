@@ -86,8 +86,8 @@ public class ApartmentController {
         try {
             // Sanitize RoomRequest fields
             roomRequest.sanitize();
-            // Convert DTO to Room model if needed
-            Room room = new Room();
+
+            RoomRequests room = new RoomRequests();
             room.setType(roomRequest.getType());
             room.setLabel(roomRequest.getLabel());
 
@@ -101,9 +101,9 @@ public class ApartmentController {
 
 
     @GetMapping("/{houseCode}/rooms")
-    public ResponseEntity<List<Room>> getRooms(@PathVariable String houseCode) {
+    public ResponseEntity<List<RoomRequests>> getRooms(@PathVariable String houseCode) {
         try {
-            List<Room> rooms = roomService.getRooms(houseCode);
+            List<RoomRequests> rooms = roomService.getRooms(houseCode);
             if (rooms.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
