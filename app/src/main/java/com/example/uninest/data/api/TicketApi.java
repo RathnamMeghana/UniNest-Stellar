@@ -13,8 +13,8 @@ import retrofit2.http.Query;
 
 
 public interface TicketApi {
-        @POST("tickets/create")
-        Call<String> createTicket(@Body Ticket ticket);
+    @POST("tickets/create")
+    Call<String> createTicket(@Body Ticket ticket);
 
     @GET("tickets/building")
     Call<List<Ticket>> getTicketsByBuilding(@Query("name") String building);

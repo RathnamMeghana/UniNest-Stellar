@@ -37,7 +37,7 @@ public class ChoreService {
 
 
 
-            CollectionReference choresRef = db.collection("chores")
+            CollectionReference choresRef = db.collection("apartments")
                     .document(houseCode)
                     .collection("chores");
 

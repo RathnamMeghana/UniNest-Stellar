@@ -54,7 +54,7 @@ class ChoreServiceTest {
     void getAllChoreByApartment_Success() throws Exception {
         // Arrange
         String houseCode = "HOUSE123";
-        when(firestore.collection("chores")).thenReturn(collectionReference);
+        when(firestore.collection("apartments")).thenReturn(collectionReference);
         when(collectionReference.document(houseCode)).thenReturn(documentReference);
         when(documentReference.collection("chores")).thenReturn(collectionReference);
         when(collectionReference.get()).thenReturn(querySnapshotFuture);
