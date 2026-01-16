@@ -126,7 +126,7 @@ class ApartmentControllerTest {
         request.setType("Single");
         request.setLabel("Room 1");
 
-        when(roomService.addRoom(eq("A1"), any(Room.class)))
+        when(roomService.addRoom(eq("A1"), any(RoomRequests.class)))
                 .thenReturn("room123");
 
         mockMvc.perform(post("/apartments/A1/addRoom")
@@ -151,7 +151,7 @@ class ApartmentControllerTest {
 
     @Test
     void getRooms_success() throws Exception {
-        Room room = new Room();
+        RoomRequests room = new RoomRequests();
         room.setLabel("Room 1");
 
         when(roomService.getRooms("A1"))

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Smart-Assign Chore"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="smart assign."
+        android:textSize="14sp"
+        android:layout_marginBottom="15dp"
+        android:textColor="#666666"/>
+
+    <EditText
+        android:id="@+id/etTaskNameSmart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Task Name (e.g. Clean Bathroom)"/>
+
+    <EditText
+        android:id="@+id/etRoomSmart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Room (e.g. Upstairs)"/>
+
+    <EditText
+        android:id="@+id/etDifficultySmart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Difficulty (1-5)"
+        android:inputType="number"/>
+    <EditText
+        android:id="@+id/etDurationSmart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Duration (minutes)"
+        android:inputType="number"/>
+
+    <EditText
+        android:id="@+id/etFrequencySmart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Frequency per week"
+        android:inputType="number"/>
+    <Button
+        android:id="@+id/btnSaveChoreSmart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Smart Assign &amp; Save"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#4CAF50"/>
+</LinearLayout>

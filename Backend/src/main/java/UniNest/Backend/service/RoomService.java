@@ -4,7 +4,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
-import UniNest.Backend.model.Room;
+import UniNest.Backend.dto.RoomRequests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class RoomService {
     // -------------------------
     // ADD ROOM TO APARTMENT
     // -------------------------
-    public String addRoom(String houseCode, Room room) {
+    public String addRoom(String houseCode, RoomRequests room) {
 
         if (houseCode == null || houseCode.isBlank())
             throw new IllegalArgumentException("houseCode is required");
@@ -55,8 +55,8 @@ public class RoomService {
     // -------------------------
     // GET ALL ROOMS in an APARTMENT
     // -------------------------
-    public List<Room> getRooms(String houseCode) {
-        List<Room> list = new ArrayList<>();
+    public List<RoomRequests> getRooms(String houseCode) {
+        List<RoomRequests> list = new ArrayList<>();
 
         if (houseCode == null || houseCode.isBlank()) {
             throw new IllegalArgumentException("houseCode is required");
@@ -73,7 +73,7 @@ public class RoomService {
 
             for (DocumentSnapshot doc : docs) {
                 try {
-                    Room room = doc.toObject(Room.class);
+                    RoomRequests room = doc.toObject(RoomRequests.class);
                     room.setId(doc.getId());
                     list.add(room);
                 } catch (Exception ignored) {

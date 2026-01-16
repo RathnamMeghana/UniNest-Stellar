@@ -1,6 +1,7 @@
 package UniNest.Backend.service;
 
 import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -45,6 +46,7 @@ public class UserService {
             List<User> users = new ArrayList<>();
             for (QueryDocumentSnapshot doc : documents) {
                 User user = doc.toObject(User.class);
+                user.setId(doc.getId());
                 users.add(user);
             }
 
@@ -57,4 +59,32 @@ public class UserService {
             throw new UserServiceException("Firestore query failed", e);
         }
     }
+
+    public User getUserByEmailInApartment(String houseCode, String email) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            QuerySnapshot snapshot = db.collection("apartments")
+                    .document(houseCode)
+                    .collection("users")
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .get();
+
+            if (snapshot.isEmpty()) {
+                throw new RuntimeException("User not found with email: " + email);
+            }
+
+            DocumentSnapshot doc = snapshot.getDocuments().get(0);
+            User user = doc.toObject(User.class);
+            user.setId(doc.getId());
+
+            return user;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to find user by email", e);
+        }
+    }
+
 }
