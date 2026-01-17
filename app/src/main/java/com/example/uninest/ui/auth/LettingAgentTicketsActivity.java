@@ -47,12 +47,14 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new TicketCardAdapter(this, new ArrayList<>(), item -> {
-            Toast.makeText(this, "Clicked: " + item.getDescription(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LettingAgentTicketsActivity.this, LettingAgentTicketDetailsActivity.class);
+            intent.putExtra("TICKET_OBJ", item); // Pass the whole object
+            startActivity(intent);
         });
 
         rv.setAdapter(adapter);
 
-        // LOAD DATA CORRECTLY BY LANDLORD ID
+
         loadTicketsByLandlordId();
 
         etSearch.addTextChangedListener(new TextWatcher() {
@@ -70,6 +72,12 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
                 startActivity(new Intent(this, LettingAgentApartmentsActivity.class))
         );
         findViewById(R.id.navProfile).setOnClickListener(v -> {});
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadTicketsByLandlordId();
     }
 
     private void loadTicketsByLandlordId() {
