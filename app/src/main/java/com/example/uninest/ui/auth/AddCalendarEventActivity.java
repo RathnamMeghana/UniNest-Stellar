@@ -23,51 +23,44 @@ public class AddCalendarEventActivity extends AppCompatActivity {
     private EditText etTitle, etDescription, etAssignedTo, etRoom, etDuration, etDifficulty, etFrequency;
     private Spinner typeSpinner;
     private Button btnSave;
-
     private LinearLayout choreFieldsLayout;
 
-    private String houseCode = "APT-E2DE614";       // TODO: pass dynamically
-    private String createdBy = "PSXFJ5KPNyXqrJZFTGAD7OmmwqX2"; // TODO: pass Firebase UID
+    // TODO: Pass these dynamically from SessionManager/Firebase Auth
+    private String houseCode = "APT-E2DE614";
+    private String createdBy = "PSXFJ5KPNyXqrJZFTGAD7OmmwqX2";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_calendar_event);
 
-        // Main fields
+        // Initialize Views
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         etAssignedTo = findViewById(R.id.etAssignedTo);
-
-        // CHORE fields
         choreFieldsLayout = findViewById(R.id.choreFieldsLayout);
         etRoom = findViewById(R.id.etRoom);
         etDuration = findViewById(R.id.etDuration);
         etDifficulty = findViewById(R.id.etDifficulty);
         etFrequency = findViewById(R.id.etFrequency);
-
         typeSpinner = findViewById(R.id.typeSpinner);
         btnSave = findViewById(R.id.btnSaveCalendar);
 
-        // Spinner values
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                new String[]{
-                        "CHORE (Smart Assign)",
-                        "CHORE (Manual Assign)",
-                        "MOVE_OUT",
-                        "MOVE_IN",
-                        "BILL_DUE",
-                        "MAINTENANCE",
-                        "OTHER",
-                        "CUSTOM"
-                }
-        );
+        // Setup Spinner
+        String[] spinnerValues = {
+                "CHORE (Smart Assign)",
+                "CHORE (Manual Assign)",
+                "MOVE_OUT",
+                "MOVE_IN",
+                "BILL_DUE",
+                "MAINTENANCE",
+                "OTHER",
+                "CUSTOM"
+        };
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typeSpinner.setAdapter(adapter);
 
-        // Show/hide CHORE fields dynamically
         typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -81,123 +74,85 @@ public class AddCalendarEventActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        btnSave.setOnClickListener(v -> saveEvent());
+        btnSave.setOnClickListener(v -> {
+            btnSave.setEnabled(false);
+            saveEvent();
+        });
     }
 
     private void saveEvent() {
         String selectedType = typeSpinner.getSelectedItem().toString();
-        boolean isSmartAssign = selectedType.equals("CHORE (Smart Assign)");
-        boolean isManualAssign = selectedType.equals("CHORE (Manual Assign)");
         boolean isChore = selectedType.startsWith("CHORE");
+        boolean isManualAssign = selectedType.equals("CHORE (Manual Assign)");
 
-        // Default start/end times
         Date start = new Date();
-        Date end = new Date(start.getTime() + 60 * 60 * 1000);
+        Date end = new Date(start.getTime() + 60 * 60 * 1000); // Default 1 hour duration
 
         if (isChore) {
-            String roomInput = etRoom.getText().toString().isEmpty() ? "General" : etRoom.getText().toString();
-
-            Chore chore = new Chore();
+            final String roomInput = etRoom.getText().toString().trim().isEmpty() ? "General" : etRoom.getText().toString().trim();
+            final Chore chore = new Chore();
             chore.setHouseCode(houseCode);
-            chore.setTaskName(etTitle.getText().toString());
+            chore.setTaskName(etTitle.getText().toString().trim());
             chore.setRoom(roomInput);
             chore.setEstDurationMin(safeParseInt(etDuration.getText().toString(), 30));
             chore.setDifficultyScore(safeParseInt(etDifficulty.getText().toString(), 1));
             chore.setFrequencyPerWeek(safeParseInt(etFrequency.getText().toString(), 1));
 
-            if (isSmartAssign) {
-                ApiClient.getChoreApi().addWithSmartAssign(houseCode, chore)
-                        .enqueue(new Callback<Chore>() {
-                            @Override
-                            public void onResponse(Call<Chore> call, Response<Chore> response) {
-                                if (response.isSuccessful() && response.body() != null) {
-                                    Chore createdChore = response.body();
-                                    createCalendarEventFromChore(start, end, createdChore, roomInput);
-                                } else {
-                                    Toast.makeText(AddCalendarEventActivity.this, "Failed to create chore", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Chore> call, Throwable t) {
-                                Toast.makeText(AddCalendarEventActivity.this, "Network error while creating chore", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            } else if (isManualAssign) {
+            if (isManualAssign) {
                 String assignedEmail = etAssignedTo.getText().toString().trim();
                 if (assignedEmail.isEmpty()) {
                     Toast.makeText(this, "Please enter assigned email", Toast.LENGTH_SHORT).show();
+                    btnSave.setEnabled(true);
                     return;
                 }
+                // Backend creates both Chore and Calendar event
                 ApiClient.getChoreApi().addWithAssignment(houseCode, assignedEmail, chore)
-                        .enqueue(new Callback<Chore>() {
-                            @Override
-                            public void onResponse(Call<Chore> call, Response<Chore> response) {
-                                if (response.isSuccessful() && response.body() != null) {
-                                    Chore createdChore = response.body();
-                                    createCalendarEventFromChore(start, end, createdChore, roomInput);
-                                } else {
-                                    Toast.makeText(AddCalendarEventActivity.this, "Failed to create chore", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Chore> call, Throwable t) {
-                                Toast.makeText(AddCalendarEventActivity.this, "Network error while creating chore", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        .enqueue(new ChoreCallback());
+            } else {
+                // Smart assign: Backend creates both Chore and Calendar event
+                ApiClient.getChoreApi().addWithSmartAssign(houseCode, chore)
+                        .enqueue(new ChoreCallback());
             }
         } else {
-            // Non-CHORE event
+            // Non-CHORE events: Backend DOES NOT auto-create these, so we call Calendar API directly
             String assignedToEmail = etAssignedTo.getText().toString().trim();
             if (assignedToEmail.isEmpty()) assignedToEmail = createdBy;
             createCalendarEvent(selectedType, start, end, assignedToEmail, null);
         }
     }
 
-    private void createCalendarEventFromChore(Date start, Date end, Chore chore, String room) {
-        CalendarRequest req = new CalendarRequest();
-        req.setHouseCode(chore.getHouseCode());
-        req.setTitle(chore.getTaskName());
-        req.setDescription(etDescription.getText().toString());
-        req.setType("CHORE"); // always CHORE
-        req.setCreatedBy(createdBy);
-        req.setAssignedTo(chore.getAssignedTo());
-        req.setAllDay(false);
-        req.setStartSeconds(DateUtils.toSeconds(start));
-        req.setEndSeconds(DateUtils.toSeconds(end));
-        req.setRelatedChoreId(chore.getId());
+    /**
+     * Specialized Callback for Chore creation.
+     * We do NOT call createCalendarEventFromChore here because the
+     * Backend Service already handles that logic.
+     */
+    private class ChoreCallback implements Callback<Chore> {
+        @Override
+        public void onResponse(Call<Chore> call, Response<Chore> response) {
+            btnSave.setEnabled(true);
+            if (response.isSuccessful()) {
+                Toast.makeText(AddCalendarEventActivity.this, "Chore and Calendar event added!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(AddCalendarEventActivity.this, "Server error: Failed to create chore", Toast.LENGTH_SHORT).show();
+            }
+        }
 
-        // Use room from EditText
-        req.setChoreRoom(room);
-        req.setChoreDuration(chore.getEstDurationMin());
-        req.setChoreDifficulty(chore.getDifficultyScore());
-        req.setChoreFrequency(chore.getFrequencyPerWeek());
-
-        ApiClient.getCalendarApi().createEvent(req, createdBy)
-                .enqueue(new Callback<Calendar>() {
-                    @Override
-                    public void onResponse(Call<Calendar> call, Response<Calendar> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(AddCalendarEventActivity.this, "Calendar event added!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Toast.makeText(AddCalendarEventActivity.this, "Error creating calendar event", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Calendar> call, Throwable t) {
-                        Toast.makeText(AddCalendarEventActivity.this, "Network error while creating calendar event", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        @Override
+        public void onFailure(Call<Chore> call, Throwable t) {
+            btnSave.setEnabled(true);
+            Toast.makeText(AddCalendarEventActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
+    /**
+     * Direct call to Calendar API for non-chore events (Bills, Move-in, etc.)
+     */
     private void createCalendarEvent(String type, Date start, Date end, String assignedTo, String relatedChoreId) {
         CalendarRequest req = new CalendarRequest();
         req.setHouseCode(houseCode);
-        req.setTitle(etTitle.getText().toString());
-        req.setDescription(etDescription.getText().toString());
+        req.setTitle(etTitle.getText().toString().trim());
+        req.setDescription(etDescription.getText().toString().trim());
         req.setType(type);
         req.setCreatedBy(createdBy);
         req.setAssignedTo(assignedTo);
@@ -210,8 +165,9 @@ public class AddCalendarEventActivity extends AppCompatActivity {
                 .enqueue(new Callback<Calendar>() {
                     @Override
                     public void onResponse(Call<Calendar> call, Response<Calendar> response) {
+                        btnSave.setEnabled(true);
                         if (response.isSuccessful()) {
-                            Toast.makeText(AddCalendarEventActivity.this, "Calendar event added!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddCalendarEventActivity.this, "Event added to calendar!", Toast.LENGTH_SHORT).show();
                             finish();
                         } else {
                             Toast.makeText(AddCalendarEventActivity.this, "Error creating calendar event", Toast.LENGTH_SHORT).show();
@@ -220,12 +176,12 @@ public class AddCalendarEventActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<Calendar> call, Throwable t) {
-                        Toast.makeText(AddCalendarEventActivity.this, "Network error while creating calendar event", Toast.LENGTH_SHORT).show();
+                        btnSave.setEnabled(true);
+                        Toast.makeText(AddCalendarEventActivity.this, "Network error", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    // Safe integer parser to avoid crashes
     private int safeParseInt(String str, int defaultValue) {
         if (str == null || str.trim().isEmpty()) return defaultValue;
         try {

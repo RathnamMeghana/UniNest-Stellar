@@ -89,29 +89,32 @@ public class ChoreService {
         try {
             Firestore db = FirestoreClient.getFirestore();
 
-            /* 1️⃣ Sanitize incoming JSON */
+            /* 1 Sanitize incoming JSON */
             chore.sanitize();
 
-            /* 2️⃣ Set required metadata */
+            /* 2️ Set required metadata */
             chore.setHouseCode(houseCode);
             chore.setCreatedBy(userId);
             chore.setCreatedAt(Timestamp.now());
+
 
             if (chore.getScheduledDate() == null || chore.getScheduledDate().isBlank()) {
                 chore.setScheduledDate(Instant.now().toString());
             }
 
-            /* 3️⃣ Persist chore */
+            /* 3️ Persist chore */
             CollectionReference choresRef = db.collection("apartments")
                     .document(houseCode)
                     .collection("chores");
+
+
 
             DocumentReference docRef = choresRef.document();
             chore.setId(docRef.getId());
 
             docRef.set(chore).get();
 
-            /* 4️⃣ Create calendar event */
+            /* 4️ Create calendar event */
             Instant scheduledInstant = Instant.parse(chore.getScheduledDate());
             Timestamp eventTimestamp = Timestamp.ofTimeSecondsAndNanos(
                     scheduledInstant.getEpochSecond(),
@@ -119,6 +122,9 @@ public class ChoreService {
             );
 
             CalendarEventDTO.Create event = new CalendarEventDTO.Create();
+
+
+            event.setType(CalendarEventDTO.EventType.CHORE);
             event.setTitle(chore.getTaskName());
             event.setHouseCode(houseCode);
             event.setAssignedTo(chore.getAssignedTo());
@@ -129,7 +135,7 @@ public class ChoreService {
 
             calendarService.create(event, userId);
 
-            /* 5️⃣ RETURN THE SAVED OBJECT */
+            /* 5️ RETURN THE SAVED OBJECT */
             return chore;
 
         } catch (InterruptedException e) {
