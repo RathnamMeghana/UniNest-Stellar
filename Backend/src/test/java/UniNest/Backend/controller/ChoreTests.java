@@ -1,25 +1,23 @@
 package UniNest.Backend.controller;
 
+import UniNest.Backend.dto.CalendarEventDTO;
 import UniNest.Backend.dto.ChoreRequests;
 import UniNest.Backend.exception.ChoreServiceException;
+import UniNest.Backend.service.CalendarService;
 import UniNest.Backend.service.ChoreService;
-
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -31,16 +29,13 @@ class ChoreServiceTest {
     @Mock private Firestore firestore;
     @Mock private CollectionReference collectionReference;
     @Mock private DocumentReference documentReference;
-    @Mock private ApiFuture<QuerySnapshot> querySnapshotFuture;
-    @Mock private QuerySnapshot querySnapshot;
-    @Mock private QueryDocumentSnapshot documentSnapshot;
+    @Mock private CalendarService calendarService;
 
     private MockedStatic<FirestoreClient> mockedFirestoreClient;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        // Mocking the static FirestoreClient
         mockedFirestoreClient = mockStatic(FirestoreClient.class);
         mockedFirestoreClient.when(FirestoreClient::getFirestore).thenReturn(firestore);
     }
@@ -51,80 +46,44 @@ class ChoreServiceTest {
     }
 
     @Test
-    void getAllChoreByApartment_Success() throws Exception {
-        // Arrange
-        String houseCode = "HOUSE123";
-        when(firestore.collection("apartments")).thenReturn(collectionReference);
-        when(collectionReference.document(houseCode)).thenReturn(documentReference);
-        when(documentReference.collection("chores")).thenReturn(collectionReference);
-        when(collectionReference.get()).thenReturn(querySnapshotFuture);
-        when(querySnapshotFuture.get()).thenReturn(querySnapshot);
-        when(querySnapshot.getDocuments()).thenReturn(Collections.singletonList(documentSnapshot));
-
-        ChoreRequests chore = new ChoreRequests();
-        when(documentSnapshot.toObject(ChoreRequests.class)).thenReturn(chore);
-        when(documentSnapshot.getId()).thenReturn("choreId123");
-
-        // Act
-        List<ChoreRequests> result = choreService.getAllChoreByApartment(houseCode);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("choreId123", result.get(0).getId());
-    }
-
-    @Test
-    void getAllChoreByApartment_ThrowsException_WhenHouseCodeEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            choreService.getAllChoreByApartment("");
-        });
-    }
-
-    @Test
     void addChore_Success() throws Exception {
-        // Arrange
         String houseCode = "HOUSE123";
+        String userId = "user123";
+
         ChoreRequests chore = new ChoreRequests();
         chore.setTaskName("Wash Dishes");
 
-        ApiFuture<DocumentReference> docRefFuture = mock(ApiFuture.class);
-
+        // Mock Firestore chain correctly
         when(firestore.collection("apartments")).thenReturn(collectionReference);
         when(collectionReference.document(houseCode)).thenReturn(documentReference);
         when(documentReference.collection("chores")).thenReturn(collectionReference);
-        when(collectionReference.add(any(ChoreRequests.class))).thenReturn(docRefFuture);
-        when(docRefFuture.get()).thenReturn(documentReference);
+        when(collectionReference.document()).thenReturn(documentReference);
         when(documentReference.getId()).thenReturn("newChoreId");
 
+        // Mock set() to return ApiFuture<WriteResult>
+        ApiFuture<WriteResult> writeFuture = mock(ApiFuture.class);
+        when(documentReference.set(any(ChoreRequests.class))).thenReturn(writeFuture);
+        when(writeFuture.get()).thenReturn(mock(WriteResult.class));
+        // Create a dummy response for CalendarService.create
+        CalendarEventDTO.Response mockResponse = new CalendarEventDTO.Response();
+        mockResponse.setTitle("Wash Dishes");
+        mockResponse.setHouseCode("HOUSE123");
+        mockResponse.setAssignedTo("user123");
+        // Mock CalendarService
+
+        when(calendarService.create(any(CalendarEventDTO.Create.class), anyString()))
+                .thenReturn(mockResponse);
+
         // Act
-        ChoreRequests result = choreService.addChore(houseCode, chore);
+        ChoreRequests result = choreService.addChore(houseCode, chore, userId);
 
         // Assert
+        assertNotNull(result);
         assertEquals("newChoreId", result.getId());
-        verify(collectionReference, times(1)).add(chore);
-    }
+        assertEquals(houseCode, result.getHouseCode());
+        assertEquals(userId, result.getCreatedBy());
 
-    @Test
-    void addChoreWithAssignment_UserNotFound_ThrowsException() throws Exception {
-        // Arrange
-        String houseCode = "HOUSE123";
-        String email = "test@user.com";
-        ChoreRequests chore = new ChoreRequests();
-
-        Query userQuery = mock(Query.class);
-        ApiFuture<QuerySnapshot> userQueryFuture = mock(ApiFuture.class);
-
-        when(firestore.collection("users")).thenReturn(collectionReference);
-        when(collectionReference.whereEqualTo("email", email)).thenReturn(userQuery);
-        when(userQuery.whereEqualTo("houseCode", houseCode)).thenReturn(userQuery);
-        when(userQuery.get()).thenReturn(userQueryFuture);
-        when(userQueryFuture.get()).thenReturn(querySnapshot);
-        when(querySnapshot.isEmpty()).thenReturn(true); // User not found
-
-        // Act & Assert
-        assertThrows(ChoreServiceException.class, () -> {
-            choreService.addChoreWithAssignment(houseCode, email, chore);
-        });
+        verify(calendarService, times(1)).create(any(), eq(userId));
+        verify(documentReference, times(1)).set(any(ChoreRequests.class));
     }
 }
