@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+
+import UniNest.Backend.dto.UpdateTicketAgentDataRequest;
 import UniNest.Backend.model.Ticket;
 import UniNest.Backend.service.TicketService;
 import UniNest.Backend.dto.UpdateTicketPriorityRequest;
@@ -116,6 +118,18 @@ public class TicketController {
                     "Error updating ticket priority: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
+        }
+    }
+
+    @PutMapping("/agent-update")
+    public ResponseEntity<String> updateAgentData(@RequestBody UpdateTicketAgentDataRequest request) {
+        try {
+            return new ResponseEntity<>(
+                    ticketService.updateAgentData(request.getTicketId(), request.getResponse(), request.getArrivalDate()),
+                    HttpStatus.OK
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
