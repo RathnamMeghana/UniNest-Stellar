@@ -3,8 +3,9 @@ package com.example.uninest.model;
 import com.google.firebase.Timestamp;
 
 import java.util.Date;
+import java.io.Serializable;
 
-public class Ticket {
+public class Ticket implements Serializable{
     private String id;
     private String description;
     private String room;
@@ -15,8 +16,11 @@ public class Ticket {
     private String status;
     private String userId;
     private Object createdAt; // set in backend
+    private Object updatedAt;
     private String landlordId;
     private String apartmentName;
+    private String agentResponse;
+    private String arrivalDate;
 
 
     // Getters and Setters
@@ -50,10 +54,20 @@ public class Ticket {
     public Object getCreatedAt() { return createdAt; }
     public void setCreatedAt(Object createdAt) { this.createdAt = createdAt; }
 
+    public Object getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Object updatedAt) { this.updatedAt = updatedAt; }
+
     public String getLandlordId() { return landlordId; }
     public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
 
     public String getApartmentName() { return apartmentName; }
     public void setApartmentName(String apartmentName) { this.apartmentName = apartmentName; }
+
+    public String getAgentResponse() { return agentResponse; }
+    public void setAgentResponse(String agentResponse) { this.agentResponse = agentResponse; }
+
+    public String getArrivalDate() { return arrivalDate; }
+    public void setArrivalDate(String arrivalDate) { this.arrivalDate = arrivalDate; }
+
 
 }
