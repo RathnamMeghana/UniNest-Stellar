@@ -89,13 +89,12 @@ public class TenantLoginActivity extends AppCompatActivity {
                         if ("2".equals(role)) {
                             String houseCode = documentSnapshot.getString("houseCode");
 
-                            // SAVE SESSION: Critical for RaiseTicketActivity
                             sessionManager.saveUserSession(email, role, houseCode);
 
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
 
                             // Navigate to Raise Ticket Screen
-                            Intent intent = new Intent(TenantLoginActivity.this, RaiseTicketActivity.class);
+                            Intent intent = new Intent(TenantLoginActivity.this, TenantTicketsActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Prevent going back to login
                             startActivity(intent);
                             finish();
