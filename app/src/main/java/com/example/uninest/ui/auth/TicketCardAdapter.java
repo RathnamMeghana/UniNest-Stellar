@@ -75,26 +75,38 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
     public void onBindViewHolder(@NonNull VH h, int position) {
         Ticket item = filtered.get(position);
 
-        // 1. Building Name
-        h.tvBuilding.setText(item.getBuilding() != null ? item.getBuilding() : "Unknown Building");
-
-        // 2. Subtitle: "Name - Category"
-        String aptName = (item.getApartmentName() != null) ? item.getApartmentName() : "Unit";
+        // 1. Building & Subtitle
+        h.tvBuilding.setText(item.getBuilding() != null ? item.getBuilding() : "Unknown");
+        String apt = (item.getApartmentName() != null) ? item.getApartmentName() : "Unit";
         String cat = item.getCategory() != null ? item.getCategory() : "General";
-        h.tvSubTitle.setText(aptName + " - " + cat);
+        h.tvSubTitle.setText(apt + " - " + cat);
 
-        // 3. Priority
+        // 2. Priority
         String priority = item.getPriority() != null ? item.getPriority() : "Low";
         h.tvPriorityChip.setText(priority);
 
-        // 4. Status + Date
+        // 3. Status & Date Logic
         String status = item.getStatus() != null ? item.getStatus() : "Open";
+        String finalStatusText;
 
-        String dateStr = parseDate(item.getCreatedAt());
-        h.tvStatusDate.setText(status + " on: " + dateStr);
+        // CASE 1: New Ticket
+        if ("Raised".equalsIgnoreCase(status)) {
+            finalStatusText = "Raised : " + parseDate(item.getCreatedAt());
+        }
+        // CASE 2: Scheduled Date exists
+        else if (item.getArrivalDate() != null && !item.getArrivalDate().isEmpty()) {
+            finalStatusText = status + " • Scheduled: " + item.getArrivalDate();
+        }
+        // CASE 3: Solved/Open/Closed
+        else {
+            // Use UpdatedAt if available, otherwise fall back to CreatedAt
+            Object dateObj = (item.getUpdatedAt() != null) ? item.getUpdatedAt() : item.getCreatedAt();
+            finalStatusText = status + " : " + parseDate(dateObj);
+        }
 
+        h.tvStatusDate.setText(finalStatusText);
 
-        // 5. Apply Colors/Styling
+        // 4. Styling
         applyPriorityChip(h.tvPriorityChip, priority);
         applyCardGlowByPriority(h.cardRoot, priority);
         applyStatusDateColor(h.tvStatusDate, status);
