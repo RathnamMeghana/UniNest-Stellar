@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Common Fields -->
         <EditText
             android:id="@+id/etTitle"
             android:hint="Title"
@@ -27,10 +28,43 @@
 
         <EditText
             android:id="@+id/etAssignedTo"
-            android:hint="Assigned User ID"
+            android:hint="Assigned User ID (optional if CHORE)"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <!-- CHORE-specific Fields -->
+        <EditText
+            android:id="@+id/etRoom"
+            android:hint="Room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/etDuration"
+            android:hint="Estimated Duration (minutes)"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/etDifficulty"
+            android:hint="Difficulty Score"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/etFrequency"
+            android:hint="Frequency per week"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <!-- Save Button -->
         <Button
             android:id="@+id/btnSaveCalendar"
             android:text="Save Event"

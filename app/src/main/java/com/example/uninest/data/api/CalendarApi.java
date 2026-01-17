@@ -21,7 +21,7 @@ public interface CalendarApi {
     @GET("calendar/getForUser/{userId}")
     Call<List<Calendar>> getEventsForUser(@Path("userId") String userId);
 
-    // Create a new calendar event from a chore
+    // Create a new calendar event if a chore a chore will also be created
     @POST("calendar/create")
     Call<Calendar> createEvent(
             @Body CalendarRequest event,

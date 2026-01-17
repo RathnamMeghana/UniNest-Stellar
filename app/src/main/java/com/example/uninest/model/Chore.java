@@ -5,6 +5,7 @@ public class Chore {
     private String id;
     private String taskName;
     private String room;
+    private String houseCode;
     private int difficultyScore;
     private int estDurationMin;
     private int frequencyPerWeek;
@@ -16,6 +17,9 @@ public class Chore {
 
     public String getTaskName(){ return taskName;}
     public void setTaskName(String taskName){ this.taskName = taskName; }
+
+    public String getHouseCode(){ return houseCode;}
+    public void setHouseCode(String houseCode){ this.houseCode = houseCode; }
 
     public String getRoom(){return room;}
     public void setRoom(String room){this.room = room;}
