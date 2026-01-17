@@ -1,6 +1,8 @@
 package com.example.uninest.data.api;
 
 import com.example.uninest.model.Calendar;
+import com.example.uninest.model.CalendarRequest;
+
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -19,14 +21,16 @@ public interface CalendarApi {
     @GET("calendar/getForUser/{userId}")
     Call<List<Calendar>> getEventsForUser(@Path("userId") String userId);
 
-    // Create a new calendar event (e.g., from a chore)
+    // Create a new calendar event from a chore
     @POST("calendar/create")
     Call<Calendar> createEvent(
-            @Body Calendar event,
+            @Body CalendarRequest event,
             @Query("userId") String userId
     );
 
-    // Optional: delete a calendar event by ID
+
+
+
     @POST("calendar/delete")
     Call<Void> deleteEvent(
             @Query("eventId") String eventId

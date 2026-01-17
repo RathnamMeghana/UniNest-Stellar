@@ -10,8 +10,8 @@ public class Calendar {
     @SerializedName("title")
     private String title;
 
-    private FirestoreTimestamp startDate; // changed
-    private FirestoreTimestamp endDate;   // changed
+    private FirestoreTimestamp startDate;
+    private FirestoreTimestamp endDate;
 
     // Getters and setters
     public String getId() { return id; }
