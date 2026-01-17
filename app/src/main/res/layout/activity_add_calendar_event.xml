@@ -71,5 +71,47 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+
+        <!-- CHORE fields container -->
+        <LinearLayout
+            android:id="@+id/choreFieldsLayout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:paddingTop="16dp">
+
+            <EditText
+                android:id="@+id/etRoom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Room (optional)" />
+
+            <EditText
+                android:id="@+id/etDuration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Estimated Duration (min)"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etDifficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Difficulty Score"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etFrequency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Frequency per Week"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+
     </LinearLayout>
+
+
 </ScrollView>
