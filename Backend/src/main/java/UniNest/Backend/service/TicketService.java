@@ -3,6 +3,7 @@ package UniNest.Backend.service;
 import com.google.api.core.ApiFuture;
 import com.google.api.services.storage.model.BucketAccessControl;
 import com.google.cloud.Timestamp;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreException;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -56,6 +57,7 @@ public class TicketService {
             ticket.setStatus(request.getStatus());
             ticket.setUserId(request.getUserId());
             ticket.setCreatedAt(time);
+            ticket.setUpdatedAt(time);
 
             db.collection("tickets").add(ticket).get();
 
@@ -149,7 +151,10 @@ public class TicketService {
 
             }
 
-            documents.get(0).getReference().update("status", status).get();
+            documents.get(0).getReference().update(
+                    "status", status,
+                    "updatedAt", Timestamp.now()
+            ).get();
 
             return "Ticket status updated successfully";
 
@@ -182,7 +187,10 @@ public class TicketService {
         }
 
 
-        docs.get(0).getReference().update("priority", priority);
+            docs.get(0).getReference().update(
+                    "priority", priority,
+                    "updatedAt", Timestamp.now()
+            );
 
         return "Ticket priority updated successfully";
         } catch (InterruptedException e) {
@@ -232,6 +240,30 @@ public class TicketService {
             throw new TicketServiceException("Firestore operation failed", e);
         } catch (FirestoreException e) {
             throw new TicketServiceException("Firestore unavailable", e);
+        }
+    }
+
+    public String updateAgentData(String ticketId, String response, String arrivalDate) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            ApiFuture<QuerySnapshot> future = db.collection("tickets").whereEqualTo("id", ticketId).get();
+            List<QueryDocumentSnapshot> docs = future.get().getDocuments();
+
+            if (docs.isEmpty()) throw new TicketNotFoundException("Ticket not found");
+
+            DocumentReference ref = docs.get(0).getReference();
+
+
+            ref.update(
+                    "agentResponse", response,
+                    "arrivalDate", arrivalDate,
+                    "updatedAt", Timestamp.now()
+            );
+
+
+            return "Agent data updated";
+        } catch (Exception e) {
+            throw new TicketServiceException("Error updating agent data", e);
         }
     }
 
