@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Common Fields -->
         <EditText
             android:id="@+id/etTitle"
             android:hint="Title"
@@ -32,47 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <!-- CHORE-specific Fields -->
-        <EditText
-            android:id="@+id/etRoom"
-            android:hint="Room"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-
-        <EditText
-            android:id="@+id/etDuration"
-            android:hint="Estimated Duration (minutes)"
-            android:inputType="number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-
-        <EditText
-            android:id="@+id/etDifficulty"
-            android:hint="Difficulty Score"
-            android:inputType="number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-
-        <EditText
-            android:id="@+id/etFrequency"
-            android:hint="Frequency per week"
-            android:inputType="number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-
-        <!-- Save Button -->
-        <Button
-            android:id="@+id/btnSaveCalendar"
-            android:text="Save Event"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-
-        <!-- CHORE fields container -->
         <LinearLayout
             android:id="@+id/choreFieldsLayout"
             android:orientation="vertical"
@@ -85,7 +43,7 @@
                 android:id="@+id/etRoom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Room (optional)" />
+                android:hint="Room (e.g. Kitchen, Bathroom)" />
 
             <EditText
                 android:id="@+id/etDuration"
@@ -110,8 +68,12 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnSaveCalendar"
+            android:text="Save Event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
-
-
 </ScrollView>
