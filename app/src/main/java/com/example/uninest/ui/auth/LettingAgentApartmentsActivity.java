@@ -46,6 +46,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
 
         apartmentList = findViewById(R.id.layoutApartmentList);
         Button btnNewApartment = findViewById(R.id.btnNewApartment);
+
         TextView tvBuildingName = findViewById(R.id.tvBuildingName);
 
         apartmentApi = ApiClient.getApartmentApi();
@@ -74,61 +75,95 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+
+
+        Button btnAddMultiple = findViewById(R.id.btnAddMultiple);
+        btnAddMultiple.setOnClickListener(v -> {
+            Intent intent = new Intent(this, BulkApartmentWithRoomsActivity.class);
+            intent.putExtra("EXTRA_BUILDING_ID", buildingId); // pass the building ID
+            startActivity(intent);
+        });
+
+
         // Bottom nav
         findViewById(R.id.navTickets).setOnClickListener(v -> {});
         findViewById(R.id.navApartments).setOnClickListener(v -> apartmentList.scrollTo(0, 0));
         findViewById(R.id.navProfile).setOnClickListener(v -> {});
     }
 
-    // ------------------------
-    // Load & filter apartments
-    // ------------------------
+
     private void loadApartments() {
         apartmentList.removeAllViews();
-        apartmentList.setVisibility(View.VISIBLE);
 
-
-        apartmentApi.getAllApartments().enqueue(new Callback<List<Apartment>>() {
+        // Call the NEW filtered endpoint
+        apartmentApi.getApartmentsByBuilding(buildingId).enqueue(new Callback<List<Apartment>>() {
             @Override
-            public void onResponse(Call<List<Apartment>> call,
-                                   Response<List<Apartment>> response) {
-
-                if (!response.isSuccessful() || response.body() == null) {
-                    Toast.makeText(LettingAgentApartmentsActivity.this,
-                            "Failed to load apartments", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                List<Apartment> allApartments = response.body();
-                List<Apartment> filtered = new ArrayList<>();
-
-                // Filter by buildingId (since backend does not filter)
-                for (Apartment a : allApartments) {
-                    if (a.getBuildingId() != null &&
-                            a.getBuildingId().equals(buildingId)) {
-                        filtered.add(a);
+            public void onResponse(Call<List<Apartment>> call, Response<List<Apartment>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Every apartment returned is now guaranteed to belong to this building
+                    for (Apartment apartment : response.body()) {
+                        addApartmentCard(apartment);
                     }
-                }
-
-                if (filtered.isEmpty()) {
-                    Toast.makeText(LettingAgentApartmentsActivity.this,
-                            "No apartments found for this building",
-                            Toast.LENGTH_SHORT).show();
-                }
-
-                for (Apartment apartment : filtered) {
-                    addApartmentCard(apartment);
+                } else {
+                    Toast.makeText(LettingAgentApartmentsActivity.this, "Failed to load", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Apartment>> call, Throwable t) {
-                Log.e("ApartmentAPI", "Error loading apartments", t);
-                Toast.makeText(LettingAgentApartmentsActivity.this,
-                        "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("ApartmentAPI", "Error: " + t.getMessage());
             }
         });
     }
+    // ------------------------
+    // Load & filter apartments
+    // ------------------------
+//    private void loadApartments() {
+//        apartmentList.removeAllViews();
+//        apartmentList.setVisibility(View.VISIBLE);
+//
+//
+//        apartmentApi.getAllApartments().enqueue(new Callback<List<Apartment>>() {
+//            @Override
+//            public void onResponse(Call<List<Apartment>> call,
+//                                   Response<List<Apartment>> response) {
+//
+//                if (!response.isSuccessful() || response.body() == null) {
+//                    Toast.makeText(LettingAgentApartmentsActivity.this,
+//                            "Failed to load apartments", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//
+//                List<Apartment> allApartments = response.body();
+//                List<Apartment> filtered = new ArrayList<>();
+//
+//                // Filter by buildingId (since backend does not filter)
+//                for (Apartment a : allApartments) {
+//                    if (a.getBuildingId() != null &&
+//                            a.getBuildingId().equalsIgnoreCase(buildingId)) {
+//                        filtered.add(a);
+//                    }
+//                }
+//
+//                if (filtered.isEmpty()) {
+//                    Toast.makeText(LettingAgentApartmentsActivity.this,
+//                            "No apartments found for this building",
+//                            Toast.LENGTH_SHORT).show();
+//                }
+//
+//                for (Apartment apartment : filtered) {
+//                    addApartmentCard(apartment);
+//                }
+//            }
+
+//            @Override
+//            public void onFailure(Call<List<Apartment>> call, Throwable t) {
+//                Log.e("ApartmentAPI", "Error loading apartments", t);
+//                Toast.makeText(LettingAgentApartmentsActivity.this,
+//                        "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
 
 
@@ -137,6 +172,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
     // ------------------------
     private void addApartmentCard(Apartment apartment) {
         ApartmentCardView card = new ApartmentCardView(this);
+        //Log.d("RENDER_DEBUG", "Adding card for: " + apartment.getName() + " Rooms: " + apartment.getTotalRooms());
 
         // Set apartment details
         card.setApartmentName(apartment.getName());

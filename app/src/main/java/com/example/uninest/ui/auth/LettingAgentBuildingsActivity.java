@@ -65,6 +65,8 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
             addBuildingLauncher.launch(intent);
         });
 
+
+
         // Bottom nav clicks
         findViewById(R.id.navTickets).setOnClickListener(v -> {
             Intent intent = new Intent(LettingAgentBuildingsActivity.this, LettingAgentTicketsActivity.class);
@@ -79,6 +81,9 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         findViewById(R.id.navProfile).setOnClickListener(v -> {
             // TODO navigate to ProfileActivity
         });
+
+
+
     }
 
     @Override

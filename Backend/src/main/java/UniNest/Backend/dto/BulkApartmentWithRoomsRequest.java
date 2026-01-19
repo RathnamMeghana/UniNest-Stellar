@@ -1,12 +1,13 @@
 package UniNest.Backend.dto;
 
-import java.util.List;
-import java.util.Map;
-
 import lombok.Data;
+import java.util.Map;
 
 @Data
 public class BulkApartmentWithRoomsRequest {
-    private List<ApartmentRequests> apartments;
+    private String buildingId;
+    private String landlordId;
+    private int apartmentCount;
     private Map<String, Integer> roomTemplate;
 }
+

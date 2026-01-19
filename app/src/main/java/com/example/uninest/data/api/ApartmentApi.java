@@ -4,6 +4,7 @@ package com.example.uninest.data.api;
 
 import com.example.uninest.model.Apartment;
 import com.example.uninest.model.ApartmentRequest;
+import com.example.uninest.model.BulkApartmentRequest;
 import com.example.uninest.model.Room;
 import com.example.uninest.model.User;
 
@@ -46,10 +47,16 @@ public interface ApartmentApi {
             @Path("houseCode") String houseCode
     );
 
+    @POST("/apartments/bulkWithRooms")
+    Call<String> createApartmentsWithRooms(@Body BulkApartmentRequest request);
+
 
 
     @DELETE("apartments/tenants/{email}/remove")
     Call<Void> removeTenant(@Path(value = "email", encoded = true) String email);
 
+
+    @GET("/apartments/getByBuilding")
+    Call<List<Apartment>> getApartmentsByBuilding(@Query("buildingId") String buildingId);
 
 }
