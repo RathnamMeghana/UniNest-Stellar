@@ -86,6 +86,7 @@ public class ApartmentService {
 
             // Set the unique code
             apartment.setCode(uniqueCode);
+
             apartment.setLandlordId(request.getLandlordId());
             apartment.setCreatedAt(time);
             apartment.setBuildingId(request.getBuildingId());
@@ -95,7 +96,9 @@ public class ApartmentService {
 
             apartment.setActive(request.getActive());
 
-            db.collection("apartments").add(apartment).get();
+            //db.collection("apartments").add(apartment).get();
+            db.collection("apartments").document(uniqueCode).set(apartment).get();
+
 
             return "Apartment created successfully with code: " + uniqueCode;
 
@@ -151,10 +154,10 @@ public class ApartmentService {
             }
 
 
-            // Step 2 — Get Firestore document ID
+            //Get Firestore document ID
             String userId = docs.get(0).getId();
 
-            // Step 3 — update fields
+            //  update fields
             db.collection("users").document(userId).update("apartmentId", null,"houseCode", null).get();
 
         } catch (InterruptedException e) {
@@ -185,7 +188,9 @@ public class ApartmentService {
                 apartment.setActive(request.getActive());
                 apartment.setCreatedAt(Timestamp.now());
 
-                db.collection("apartments").add(apartment).get();
+
+                db.collection("apartments").document(uniqueCode).set(apartment).get();
+
             }
 
         } catch (Exception e) {
