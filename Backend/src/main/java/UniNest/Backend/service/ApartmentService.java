@@ -166,6 +166,33 @@ public class ApartmentService {
             throw new ApartmentServiceException("Firestore unavailable", e);
         }
     }
+
+    public void createApartments(List<ApartmentRequests> requests) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            for (ApartmentRequests request : requests) {
+                String uniqueCode = getUniqueCode();
+
+                Apartment apartment = new Apartment();
+                apartment.setName(request.getName());
+                apartment.setTotalRooms(request.getTotalRooms());
+                apartment.setCode(uniqueCode);
+                apartment.setLandlordId(request.getLandlordId());
+                apartment.setBuildingId(request.getBuildingId());
+                apartment.setDescription(request.getDescription());
+                apartment.setRentPrice(request.getRentPrice());
+                apartment.setActive(request.getActive());
+                apartment.setCreatedAt(Timestamp.now());
+
+                db.collection("apartments").add(apartment).get();
+            }
+
+        } catch (Exception e) {
+            throw new ApartmentServiceException("Bulk apartment creation failed", e);
+        }
+    }
+
 }
 
 

@@ -118,4 +118,11 @@ public class ApartmentController {
         apartmentService.removeTenantFromApartment(email);
         return ResponseEntity.ok("Tenant removed from apartment.");
     }
+
+    @PostMapping("/bulkCreate")
+    public ResponseEntity<String> bulkCreate(@RequestBody List<@Valid ApartmentRequests> requests) {
+        apartmentService.createApartments(requests);
+        return ResponseEntity.ok("Apartments created: " + requests.size());
+    }
+
 }
