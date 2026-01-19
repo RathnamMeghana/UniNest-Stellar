@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import UniNest.Backend.dto.ApartmentRequests;
+import UniNest.Backend.dto.BulkApartmentWithRoomsRequest;
 import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.Apartment;
@@ -119,10 +120,18 @@ public class ApartmentController {
         return ResponseEntity.ok("Tenant removed from apartment.");
     }
 
-    @PostMapping("/bulkCreate")
-    public ResponseEntity<String> bulkCreate(@RequestBody List<@Valid ApartmentRequests> requests) {
-        apartmentService.createApartments(requests);
-        return ResponseEntity.ok("Apartments created: " + requests.size());
+
+    @PostMapping("/bulkCreateWithRooms")
+    public ResponseEntity<String> bulkCreateWithRooms(
+            @RequestBody BulkApartmentWithRoomsRequest request) {
+
+        apartmentService.createApartmentsWithRooms(
+                request.getApartments(),
+                request.getRoomTemplate()
+        );
+
+        return ResponseEntity.ok("Apartments and rooms created");
     }
+
 
 }

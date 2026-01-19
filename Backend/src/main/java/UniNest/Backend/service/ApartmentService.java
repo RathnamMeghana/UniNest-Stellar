@@ -2,6 +2,7 @@ package UniNest.Backend.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 import UniNest.Backend.dto.ApartmentRequests;
+import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.exception.TenantNotFoundException;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.exception.ApartmentServiceException;
@@ -170,7 +172,10 @@ public class ApartmentService {
         }
     }
 
-    public void createApartments(List<ApartmentRequests> requests) {
+    public void createApartmentsWithRooms(
+            List<ApartmentRequests> requests,
+            Map<String, Integer> roomTemplate) {
+
         try {
             Firestore db = FirestoreClient.getFirestore();
 
@@ -188,15 +193,34 @@ public class ApartmentService {
                 apartment.setActive(request.getActive());
                 apartment.setCreatedAt(Timestamp.now());
 
-
+                // Save apartment (houseCode = doc ID)
                 db.collection("apartments").document(uniqueCode).set(apartment).get();
 
+                //  Create rooms under this apartment
+                for (Map.Entry<String, Integer> entry : roomTemplate.entrySet()) {
+                    String type = entry.getKey();
+                    int count = entry.getValue();
+
+                    for (int i = 1; i <= count; i++) {
+                        RoomRequests room = new RoomRequests();
+                        room.setType(type);
+                        room.setLabel(type + " " + i);
+                        room.setHouseCode(uniqueCode);
+
+                        db.collection("apartments")
+                                .document(uniqueCode)
+                                .collection("rooms")
+                                .add(room)
+                                .get();
+                    }
+                }
             }
 
         } catch (Exception e) {
-            throw new ApartmentServiceException("Bulk apartment creation failed", e);
+            throw new ApartmentServiceException("Bulk apartment + room creation failed", e);
         }
     }
+
 
 }
 
