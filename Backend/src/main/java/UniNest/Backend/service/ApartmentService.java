@@ -2,6 +2,7 @@ package UniNest.Backend.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 import UniNest.Backend.dto.ApartmentRequests;
+import UniNest.Backend.dto.BulkApartmentWithRoomsRequest;
+import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.exception.TenantNotFoundException;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.exception.ApartmentServiceException;
@@ -86,6 +89,7 @@ public class ApartmentService {
 
             // Set the unique code
             apartment.setCode(uniqueCode);
+
             apartment.setLandlordId(request.getLandlordId());
             apartment.setCreatedAt(time);
             apartment.setBuildingId(request.getBuildingId());
@@ -95,7 +99,9 @@ public class ApartmentService {
 
             apartment.setActive(request.getActive());
 
-            db.collection("apartments").add(apartment).get();
+            //db.collection("apartments").add(apartment).get();
+            db.collection("apartments").document(uniqueCode).set(apartment).get();
+
 
             return "Apartment created successfully with code: " + uniqueCode;
 
@@ -151,10 +157,10 @@ public class ApartmentService {
             }
 
 
-            // Step 2 — Get Firestore document ID
+            //Get Firestore document ID
             String userId = docs.get(0).getId();
 
-            // Step 3 — update fields
+            //  update fields
             db.collection("users").document(userId).update("apartmentId", null,"houseCode", null).get();
 
         } catch (InterruptedException e) {
@@ -166,6 +172,83 @@ public class ApartmentService {
             throw new ApartmentServiceException("Firestore unavailable", e);
         }
     }
+
+    public void createApartmentsWithRooms(BulkApartmentWithRoomsRequest request) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            String buildingId = request.getBuildingId();
+            String landlordId = request.getLandlordId();
+
+            for (int i = 1; i <= request.getApartmentCount(); i++) {
+                String uniqueCode = getUniqueCode();
+
+                Apartment apartment = new Apartment();
+                apartment.setName("Apartment " + i);
+                // sum the rooms from roomTemplate
+                int totalRooms = request.getRoomTemplate().values().stream().mapToInt(Integer::intValue).sum();
+                apartment.setTotalRooms(String.valueOf(totalRooms));
+                apartment.setCode(uniqueCode);
+                apartment.setLandlordId(landlordId);
+                apartment.setBuildingId(buildingId);
+                apartment.setDescription("Auto-generated apartment");
+                apartment.setRentPrice(0.00); // default rent
+                apartment.setActive(true);
+                apartment.setCreatedAt(Timestamp.now());
+
+                // Save apartment
+                db.collection("apartments").document(uniqueCode).set(apartment).get();
+
+                // Create rooms
+                for (Map.Entry<String, Integer> entry : request.getRoomTemplate().entrySet()) {
+                    String type = entry.getKey();
+                    int count = entry.getValue();
+
+                    for (int r = 1; r <= count; r++) {
+                        RoomRequests room = new RoomRequests();
+                        room.setType(type);
+                        room.setLabel(type + " " + r);
+                        room.setHouseCode(uniqueCode);
+
+                        String roomDocId = type.replaceAll("\\s+", "") + r;
+                        db.collection("apartments")
+                                .document(uniqueCode)
+                                .collection("rooms")
+                                .document(roomDocId)
+                                .set(room)
+                                .get();
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApartmentServiceException("Bulk apartment + room creation failed", e);
+        }
+    }
+
+
+    public List<Apartment> getApartmentsByBuilding(String buildingId) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            // Use whereEqualTo to filter directly in the database
+            ApiFuture<QuerySnapshot> future = db.collection("apartments")
+                    .whereEqualTo("buildingId", buildingId)
+                    .get();
+
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            List<Apartment> apartments = new ArrayList<>();
+
+            for (QueryDocumentSnapshot doc : documents) {
+                apartments.add(doc.toObject(Apartment.class));
+            }
+            return apartments;
+        } catch (Exception e) {
+            throw new ApartmentServiceException("Failed to fetch apartments for building", e);
+        }
+    }
+
+
 }
 
 

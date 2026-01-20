@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import UniNest.Backend.dto.ApartmentRequests;
+import UniNest.Backend.dto.BulkApartmentWithRoomsRequest;
 import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.Apartment;
@@ -118,4 +120,24 @@ public class ApartmentController {
         apartmentService.removeTenantFromApartment(email);
         return ResponseEntity.ok("Tenant removed from apartment.");
     }
+
+
+    @PostMapping("/bulkWithRooms")
+    public ResponseEntity<String> bulkWithRooms(@RequestBody BulkApartmentWithRoomsRequest request) {
+        try {
+            apartmentService.createApartmentsWithRooms(request);
+            return ResponseEntity.ok("Apartments and rooms created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body("Bulk apartment + room creation failed: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/getByBuilding")
+    public List<Apartment> getApartmentsByBuilding(@RequestParam String buildingId) {
+        return apartmentService.getApartmentsByBuilding(buildingId);
+    }
+
+
+
 }
