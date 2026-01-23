@@ -26,6 +26,10 @@ public interface BillsApi {
     @PATCH("/bills/{billId}/{userId}/pay")
     Call<Void> markBillPaid(@Path("billId") String billId, @Path("userId") String userId);
 
+    @GET("/bills/totalOwed/{userId}")
+    Call<Double> getTotalOwed(@Path("userId") String userId);
+
+
 
 
 

@@ -24,7 +24,7 @@ public class BillController {
         return billService.createBill(request);
     }
 
-    //  Mark Bill Split as Paid
+    //  Mark Bill  as Paid
     @PatchMapping("/{billId}/{userId}/pay")
     public ResponseEntity<String> markAsPaid(
             @PathVariable String billId,
@@ -59,4 +59,10 @@ public class BillController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/totalOwed/{userId}")
+    public double getTotalOwed(@PathVariable String userId) {
+        return billService.getTotalOwedByUserId(userId);
+    }
+
 }
