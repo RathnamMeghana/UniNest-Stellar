@@ -15,7 +15,7 @@ import retrofit2.http.Path;
 
 public interface BillsApi {
     @POST("/bills/create")
-    Call<BillsRequest> createBill(@Body BillsRequest request);
+    Call<List<BillsRequest>> createBill(@Body BillsRequest request);
 
     @GET("/bills/getBills/{userId}")
     Call<List<BillsRequest>> getBills(@Path("userId") String userId);

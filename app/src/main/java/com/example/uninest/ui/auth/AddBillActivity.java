@@ -220,9 +220,9 @@ public class AddBillActivity extends AppCompatActivity {
             request.setStartDate(new Date());
         }
 
-        billsApi.createBill(request).enqueue(new Callback<BillsRequest>() {
+        billsApi.createBill(request).enqueue(new Callback<List<BillsRequest>>() {
             @Override
-            public void onResponse(Call<BillsRequest> call, Response<BillsRequest> response) {
+            public void onResponse(Call<List<BillsRequest>> call, Response<List<BillsRequest>> response) {
                 isSubmitting = false;
                 btnSave.setEnabled(true);
 
@@ -238,7 +238,7 @@ public class AddBillActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<BillsRequest> call, Throwable t) {
+            public void onFailure(Call<List<BillsRequest>> call, Throwable t) {
                 isSubmitting = false;
                 btnSave.setEnabled(true);
                 Toast.makeText(AddBillActivity.this, "Network Error", Toast.LENGTH_SHORT).show();

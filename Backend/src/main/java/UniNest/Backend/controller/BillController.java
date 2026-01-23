@@ -20,9 +20,10 @@ public class BillController {
 
     //  Create Bill
     @PostMapping("/create")
-    public BillRequest createBill(@RequestBody BillRequest request) {
+    public List<BillRequest> createBill(@RequestBody BillRequest request) {
         return billService.createBill(request);
     }
+
 
     //  Mark Bill  as Paid
     @PatchMapping("/{billId}/{userId}/pay")

@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,31 +12,19 @@ import com.example.uninest.R;
 import com.example.uninest.model.BillsRequest;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class PaidBillAdapter extends RecyclerView.Adapter<PaidBillAdapter.PaidViewHolder> {
 
-    // Each item now keeps both the bill and the split
-    public static class PaidItem {
-        BillsRequest bill;
-        BillsRequest.Split split;
+    private List<BillsRequest.Split> paidList;
 
-        public PaidItem(BillsRequest bill, BillsRequest.Split split) {
-            this.bill = bill;
-            this.split = split;
-        }
+    public PaidBillAdapter(List<BillsRequest.Split> paidList) {
+        this.paidList = paidList;
     }
 
-    private List<PaidItem> paidItems;
-
-    public PaidBillAdapter(List<PaidItem> paidItems) {
-        this.paidItems = paidItems;
-    }
-
-    public void updateData(List<PaidItem> newList) {
-        this.paidItems = newList;
+    public void updateData(List<BillsRequest.Split> newList) {
+        this.paidList = newList;
         notifyDataSetChanged();
     }
 
@@ -51,18 +38,17 @@ public class PaidBillAdapter extends RecyclerView.Adapter<PaidBillAdapter.PaidVi
 
     @Override
     public void onBindViewHolder(@NonNull PaidViewHolder holder, int position) {
-        PaidItem item = paidItems.get(position);
-        BillsRequest bill = item.bill;
-        BillsRequest.Split split = item.split;
+        BillsRequest.Split split = paidList.get(position);
 
-        // Show the bill title
-        holder.tvTitle.setText(bill.getTitle() != null ? bill.getTitle() : "Untitled Bill");
+        // Bill title
+        holder.tvTitle.setText(split.getBillTitle() != null ? split.getBillTitle() : "Untitled Bill");
 
-        // Amount the user paid
+        // Total amount
+        holder.tvTotalAmount.setText(String.format(Locale.getDefault(), "Total: €%.2f", split.getAmountOwed()));
+
+        // Paid info
         holder.tvAmountOwed.setText(String.format(Locale.getDefault(), "You paid: €%.2f", split.getAmountOwed()));
-
-        // Total bill amount
-        holder.tvTotalAmount.setText(String.format(Locale.getDefault(), "Total: €%.2f", bill.getTotalAmount()));
+        holder.tvAmountOwed.setTextColor(holder.tvAmountOwed.getResources().getColor(R.color.black));
 
         // Paid date
         if (split.getPaidAt() != null) {
@@ -72,44 +58,30 @@ public class PaidBillAdapter extends RecyclerView.Adapter<PaidBillAdapter.PaidVi
             holder.tvDate.setText("Paid");
         }
 
-        // Hide the button for paid items
+        // Hide button
         holder.btnMarkPaid.setVisibility(View.GONE);
 
-        // Slightly gray out to indicate it's paid
+        // Gray out visually
         holder.itemView.setAlpha(0.65f);
     }
 
     @Override
     public int getItemCount() {
-        return paidItems == null ? 0 : paidItems.size();
+        return paidList == null ? 0 : paidList.size();
     }
 
     static class PaidViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvAmountOwed, tvTotalAmount, tvDate;
-        Button btnMarkPaid;
+        TextView tvTitle, tvTotalAmount, tvAmountOwed, tvDate;
+        TextView btnMarkPaid; // hidden for paid items
 
         public PaidViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvBillTitle);
-            tvAmountOwed = itemView.findViewById(R.id.tvBillAmountOwed);
             tvTotalAmount = itemView.findViewById(R.id.tvBillTotalAmount);
+            tvAmountOwed = itemView.findViewById(R.id.tvBillAmountOwed);
             tvDate = itemView.findViewById(R.id.tvBillDueDate);
             btnMarkPaid = itemView.findViewById(R.id.btnMarkPaid);
         }
     }
-
-    // Helper to convert BillsRequest list to PaidItem list
-    public static List<PaidItem> buildPaidItems(List<BillsRequest> bills, String currentUserId) {
-        List<PaidItem> result = new ArrayList<>();
-        for (BillsRequest bill : bills) {
-            if (bill.getSplits() != null) {
-                for (BillsRequest.Split split : bill.getSplits()) {
-                    if (split.isPaid() && currentUserId.equals(split.getUserId())) {
-                        result.add(new PaidItem(bill, split));
-                    }
-                }
-            }
-        }
-        return result;
-    }
 }
+

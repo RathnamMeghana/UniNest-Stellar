@@ -15,12 +15,11 @@ public class BillService {
     private static final String BILL_COLLECTION = "bills";
 
     // ------------------- CREATE BILL -------------------
-    public BillRequest createBill(BillRequest request) {
+    // ------------------- CREATE BILL -------------------
+    public List<BillRequest> createBill(BillRequest request) {
         try {
             Firestore db = FirestoreClient.getFirestore();
-            String billId = UUID.randomUUID().toString();
-            request.setId(billId);
-            request.setActive(true);
+            List<BillRequest> savedBills = new ArrayList<>();
 
             // If no splits provided, default to creator
             if (request.getSplits() == null || request.getSplits().isEmpty()) {
@@ -29,8 +28,6 @@ public class BillService {
                 defaultSplit.setAmountOwed(request.getTotalAmount());
                 defaultSplit.setPaid(false);
                 defaultSplit.setPaidAt(null);
-                defaultSplit.setBillId(billId);
-                defaultSplit.setBillTitle(request.getTitle());
 
                 request.setSplits(new ArrayList<>(List.of(defaultSplit)));
 
@@ -40,14 +37,6 @@ public class BillService {
             } else {
                 validateSplits(request);
 
-                // Ensure splits have billId and billTitle
-                for (BillRequest.Split split : request.getSplits()) {
-                    split.setBillId(billId);
-                    split.setBillTitle(request.getTitle());
-                    split.setPaid(false);
-                    split.setPaidAt(null);
-                }
-
                 // Ensure roommateIds contains all split userIds
                 List<String> splitUserIds = request.getSplits().stream()
                         .map(BillRequest.Split::getUserId)
@@ -55,18 +44,75 @@ public class BillService {
                 request.setRoommateIds(splitUserIds);
             }
 
-            // Save bill with embedded splits
-            db.collection(BILL_COLLECTION)
-                    .document(billId)
-                    .set(request)
-                    .get();
+            // Determine number of bills to create (1 for one-time, 6 for recurring)
+            int repeatCount = 1;
+            if (request.getBillType() == BillRequest.BillType.RECURRING) {
+                repeatCount = 6; // 6 months
+            }
 
-            return request;
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(request.getStartDate());
+
+            for (int i = 0; i < repeatCount; i++) {
+                String billId = UUID.randomUUID().toString();
+
+                BillRequest newBill = new BillRequest();
+                newBill.setId(billId);
+                newBill.setTitle(request.getTitle());
+                newBill.setTotalAmount(request.getTotalAmount());
+                newBill.setCreatorId(request.getCreatorId());
+                newBill.setBillType(request.getBillType());
+                newBill.setFrequency(request.getFrequency());
+                newBill.setActive(true);
+                newBill.setRoommateIds(request.getRoommateIds());
+
+                // Set start and due dates
+                newBill.setStartDate(cal.getTime());
+
+                // If dueDate is provided, calculate relative to startDate
+                if (request.getDueDate() != null) {
+                    long diff = request.getDueDate().getTime() - request.getStartDate().getTime();
+                    newBill.setDueDate(new Date(cal.getTimeInMillis() + diff));
+                }
+
+                // Copy splits
+                List<BillRequest.Split> newSplits = new ArrayList<>();
+                for (BillRequest.Split split : request.getSplits()) {
+                    BillRequest.Split newSplit = new BillRequest.Split();
+                    newSplit.setUserId(split.getUserId());
+                    newSplit.setAmountOwed(split.getAmountOwed());
+                    newSplit.setPaid(false);
+                    newSplits.add(newSplit);
+                }
+                newBill.setSplits(newSplits);
+
+                // Save to Firestore
+                db.collection(BILL_COLLECTION)
+                        .document(billId)
+                        .set(newBill)
+                        .get();
+
+                savedBills.add(newBill);
+
+                // Increment start date for next recurring bill
+                if (request.getBillType() == BillRequest.BillType.RECURRING) {
+                    if (request.getFrequency() == BillRequest.BillFrequency.MONTHLY) {
+                        cal.add(Calendar.MONTH, 1);
+                    } else if (request.getFrequency() == BillRequest.BillFrequency.WEEKLY) {
+                        cal.add(Calendar.WEEK_OF_YEAR, 1);
+                    } else if (request.getFrequency() == BillRequest.BillFrequency.BIWEEKLY) {
+                        cal.add(Calendar.WEEK_OF_YEAR, 2);
+                    }
+                }
+            }
+
+            return savedBills;
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create bill", e);
+            throw new RuntimeException("Failed to create bill(s)", e);
         }
     }
+
 
     // ------------------- MARK SPLIT AS PAID -------------------
     public void markAsPaid(String billId, String userId) {

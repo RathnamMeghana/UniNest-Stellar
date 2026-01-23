@@ -29,8 +29,8 @@ public class ViewBillsActivity extends AppCompatActivity {
     private PaidBillAdapter paidAdapter;
     private BillsApi billsApi;
 
-    // Hardcoded User ID for testing
-    private String userId = "BpkiEXWj9kXTjZ04GfFsGtZ2icq1";
+    private String userId = "BpkiEXWj9kXTjZ04GfFsGtZ2icq1"; // Hardcoded for testing
+    private TextView tvTotalOwed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,38 +39,33 @@ public class ViewBillsActivity extends AppCompatActivity {
 
         billsApi = ApiClient.getBillsApi();
 
+        tvTotalOwed = findViewById(R.id.tvTotalOwed);
+
         // Setup Active Bills RecyclerView
         rvActive = findViewById(R.id.rvBills);
         rvActive.setLayoutManager(new LinearLayoutManager(this));
-        activeAdapter = new BillAdapter(new ArrayList<>(), userId, (bill, position) -> {
-            markBillAsPaid(bill);
-        });
-
+        activeAdapter = new BillAdapter(new ArrayList<>(), userId, (bill, position) -> markBillAsPaid(bill));
         rvActive.setAdapter(activeAdapter);
 
-        // Setup Paid Splits RecyclerView
+        // Setup Paid Bills RecyclerView
         rvPaid = findViewById(R.id.rvPaidBills);
         rvPaid.setLayoutManager(new LinearLayoutManager(this));
         paidAdapter = new PaidBillAdapter(new ArrayList<>());
         rvPaid.setAdapter(paidAdapter);
 
-        // Load data from backend
+        // Fetch data
         fetchTotalOwed();
         fetchActiveBills();
         fetchPaidSplits();
     }
 
-    /**
-     * Fetch all bills and populate active bills RecyclerView
-     */
+    // ---------------- ACTIVE BILLS ----------------
     private void fetchActiveBills() {
-        Log.d("ViewBills", "Fetching active bills for: " + userId);
         billsApi.getBills(userId).enqueue(new Callback<List<BillsRequest>>() {
             @Override
             public void onResponse(Call<List<BillsRequest>> call, Response<List<BillsRequest>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<BillsRequest> bills = response.body();
-                    Log.d("ViewBills", "Active bills count: " + bills.size());
                     activeAdapter.updateData(bills);
                 } else {
                     Log.e("ViewBills", "Active Bills Server Error: " + response.code());
@@ -84,9 +79,8 @@ public class ViewBillsActivity extends AppCompatActivity {
         });
     }
 
-
+    // ---------------- PAID BILLS ----------------
     private void fetchPaidSplits() {
-        Log.d("ViewBills", "Fetching paid splits for: " + userId);
         billsApi.getPaidHistory(userId).enqueue(new Callback<List<BillsRequest>>() {
             @Override
             public void onResponse(Call<List<BillsRequest>> call, Response<List<BillsRequest>> response) {
@@ -98,16 +92,16 @@ public class ViewBillsActivity extends AppCompatActivity {
                         if (bill.getSplits() != null) {
                             for (BillsRequest.Split split : bill.getSplits()) {
                                 if (split.isPaid() && userId.equals(split.getUserId())) {
+                                    // Fill bill info for display
+                                    split.setBillTitle(bill.getTitle());
+                                    split.setBillId(bill.getId());
                                     paidSplits.add(split);
                                 }
                             }
                         }
                     }
 
-                    Log.d("ViewBills", "Paid splits count: " + paidSplits.size());
-                    List<PaidBillAdapter.PaidItem> paidItems = PaidBillAdapter.buildPaidItems(bills, userId);
-                    paidAdapter.updateData(paidItems);
-
+                    paidAdapter.updateData(paidSplits);
 
                 } else {
                     Log.e("ViewBills", "Paid Splits Server Error: " + response.code());
@@ -121,10 +115,7 @@ public class ViewBillsActivity extends AppCompatActivity {
         });
     }
 
-
-    /**
-     * Marks a bill as paid for this user and refreshes both RecyclerViews
-     */
+    // ---------------- MARK BILL AS PAID ----------------
     private void markBillAsPaid(BillsRequest bill) {
         if (bill == null) return;
 
@@ -133,9 +124,10 @@ public class ViewBillsActivity extends AppCompatActivity {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(ViewBillsActivity.this, "Bill marked as paid!", Toast.LENGTH_SHORT).show();
-                    // Refresh lists
+                    // Refresh
                     fetchActiveBills();
                     fetchPaidSplits();
+                    fetchTotalOwed();
                 } else {
                     Toast.makeText(ViewBillsActivity.this, "Server error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -148,13 +140,13 @@ public class ViewBillsActivity extends AppCompatActivity {
         });
     }
 
+    // ---------------- TOTAL OWED ----------------
     private void fetchTotalOwed() {
         billsApi.getTotalOwed(userId).enqueue(new Callback<Double>() {
             @Override
             public void onResponse(Call<Double> call, Response<Double> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     double totalOwed = response.body();
-                    TextView tvTotalOwed = findViewById(R.id.tvTotalOwed);
                     tvTotalOwed.setText(String.format(Locale.getDefault(), "Total Owed: €%.2f", totalOwed));
                 } else {
                     Log.e("ViewBills", "Failed to fetch total owed, code: " + response.code());
@@ -167,5 +159,4 @@ public class ViewBillsActivity extends AppCompatActivity {
             }
         });
     }
-
 }
