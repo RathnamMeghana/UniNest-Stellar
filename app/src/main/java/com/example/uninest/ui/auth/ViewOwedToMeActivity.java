@@ -1,5 +1,6 @@
 package com.example.uninest.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -54,6 +55,12 @@ public class ViewOwedToMeActivity extends AppCompatActivity {
         rvOwedToMe.setLayoutManager(new LinearLayoutManager(this));
 
         fetchOwedToMe();
+
+        // ------------------- Navigation Button -------------------
+        findViewById(R.id.btnGoToBills).setOnClickListener(v -> {
+            startActivity(new Intent(ViewOwedToMeActivity.this, ViewBillsActivity.class));
+            finish(); // optional: closes current activity
+        });
     }
 
     private void fetchOwedToMe() {

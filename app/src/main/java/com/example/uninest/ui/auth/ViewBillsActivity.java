@@ -1,5 +1,6 @@
 package com.example.uninest.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -39,7 +40,7 @@ public class ViewBillsActivity extends AppCompatActivity {
 
         billsApi = ApiClient.getBillsApi();
 
-        tvTotalOwed = findViewById(R.id.tvTotalOwed);
+        //tvTotalOwed = findViewById(R.id.tvTotalOwed);
 
         // Setup Active Bills RecyclerView
         rvActive = findViewById(R.id.rvBills);
@@ -54,9 +55,15 @@ public class ViewBillsActivity extends AppCompatActivity {
         rvPaid.setAdapter(paidAdapter);
 
         // Fetch data
-        fetchTotalOwed();
+        //fetchTotalOwed();
         fetchActiveBills();
         fetchPaidSplits();
+
+        // ------------------- Navigation Button -------------------
+        findViewById(R.id.btnGoToOwedToMe).setOnClickListener(v -> {
+            startActivity(new Intent(ViewBillsActivity.this, ViewOwedToMeActivity.class));
+            finish();
+        });
     }
 
     // ---------------- ACTIVE BILLS ----------------
@@ -134,7 +141,7 @@ public class ViewBillsActivity extends AppCompatActivity {
                     // Refresh
                     fetchActiveBills();
                     fetchPaidSplits();
-                    fetchTotalOwed();
+                    //fetchTotalOwed();
                 } else {
                     Toast.makeText(ViewBillsActivity.this, "Server error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

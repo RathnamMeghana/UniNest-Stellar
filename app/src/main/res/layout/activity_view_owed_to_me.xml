@@ -4,9 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/white">
+    >
 
-    <!-- 🔹 Header -->
+    <!--  Header -->
     <TextView
         android:id="@+id/tvOwedHeader"
         android:layout_width="match_parent"
@@ -17,7 +17,16 @@
         android:textColor="@color/black"
         android:paddingBottom="8dp" />
 
-    <!-- 🔹 Total Owed To You -->
+    <Button
+        android:id="@+id/btnGoToBills"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View My Bills"
+        android:layout_margin="16dp"
+        android:layout_gravity="center_horizontal"/>
+
+
+    <!--  Total Owed To You -->
     <TextView
         android:id="@+id/tvTotalOwedToMe"
         android:layout_width="match_parent"
@@ -28,7 +37,7 @@
         android:textColor="@color/black"
         android:paddingBottom="12dp" />
 
-    <!-- 🔹 RecyclerView -->
+    <!--  RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewOwedToMe"
         android:layout_width="match_parent"
