@@ -43,8 +43,11 @@ public class ViewBillsActivity extends AppCompatActivity {
         // Note: Using rvBills from your XML for the main list
         rvActive = findViewById(R.id.rvBills);
         rvActive.setLayoutManager(new LinearLayoutManager(this));
-        activeAdapter = new BillAdapter(new ArrayList<>());
+        activeAdapter = new BillAdapter(new ArrayList<>(), (bill, position) -> {
+            markBillAsPaid(bill); // your existing method
+        });
         rvActive.setAdapter(activeAdapter);
+
 
         // 2. Setup Paid History RecyclerView
         rvPaid = findViewById(R.id.rvPaidBills);
@@ -98,4 +101,28 @@ public class ViewBillsActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void markBillAsPaid(BillsRequest bill) {
+        if (bill == null) return;
+
+        // Assuming the user paying is always `userId`
+        billsApi.markBillPaid(bill.getId(), userId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(ViewBillsActivity.this, "Bill marked as paid!", Toast.LENGTH_SHORT).show();
+                    fetchActiveBills();    // Refresh active bills
+                    fetchPaidHistory();    // Refresh paid history
+                } else {
+                    Toast.makeText(ViewBillsActivity.this, "Server error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ViewBillsActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

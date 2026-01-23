@@ -31,6 +31,7 @@ public class BillRequest {
     private double totalAmount;
 
     private BillType billType;
+    private String billTitle;
     private BillFrequency frequency; // null for ONE_TIME
 
 
@@ -39,6 +40,8 @@ public class BillRequest {
     private Date dueDate;
 
     private boolean active;
+    private String creatorId;
+    private List<String> roommateIds;
 
 
     private List<BillSplitRequest> splits;

@@ -10,8 +10,12 @@ import lombok.Data;
 public class BillSplitRequest {
     private String billId;
     private String userId;
+    private String billTitle;
 
     private double amountOwed;
     private boolean paid;
     private Date paidAt;
+
+
+
 }

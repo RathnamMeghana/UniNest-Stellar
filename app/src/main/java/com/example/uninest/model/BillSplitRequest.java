@@ -5,6 +5,7 @@ import java.util.Date;
 public class BillSplitRequest {
     private String billId;
     private String userId;
+    private String billTitle;
 
     private double amountOwed;
     private boolean paid;
@@ -47,5 +48,10 @@ public class BillSplitRequest {
 
     public void setPaidAt(Date paidAt){
         this.paidAt = paidAt;
+    }
+
+
+    public String getBillTitle() {
+        return billTitle;
     }
 }
