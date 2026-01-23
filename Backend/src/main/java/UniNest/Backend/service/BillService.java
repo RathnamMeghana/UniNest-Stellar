@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import UniNest.Backend.dto.BillRequest;
+import UniNest.Backend.dto.OwedToUserResponse;
 
 @Service
 public class BillService {
@@ -208,4 +209,53 @@ public class BillService {
             throw new RuntimeException("Error calculating total owed for user: " + userId, e);
         }
     }
+
+    // ------------------- GET WHAT IS OWED TO USER -------------------
+    public List<OwedToUserResponse> getWhatIsOwedToUser(String userId) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            List<OwedToUserResponse> results = new ArrayList<>();
+
+            ApiFuture<QuerySnapshot> future = db.collection(BILL_COLLECTION)
+                    .whereEqualTo("creatorId", userId)
+                    .get();
+
+            for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
+                BillRequest bill = doc.toObject(BillRequest.class);
+
+                if (bill != null && bill.getSplits() != null) {
+                    for (BillRequest.Split split : bill.getSplits()) {
+
+                        // Someone else owes AND hasn't paid
+                        if (!split.getUserId().equals(userId) && !split.isPaid()) {
+                            OwedToUserResponse owed = new OwedToUserResponse();
+                            owed.setBillId(bill.getId());
+                            owed.setBillTitle(bill.getTitle());
+                            owed.setDebtorUserId(split.getUserId());
+                            owed.setAmountOwed(split.getAmountOwed());
+                            owed.setDueDate(bill.getDueDate());
+
+                            results.add(owed);
+                        }
+                    }
+                }
+            }
+
+            // Sort by due date (soonest first)
+            results.sort(Comparator.comparing(OwedToUserResponse::getDueDate));
+
+            return results;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching amounts owed to user", e);
+        }
+    }
+
+    public double getTotalOwedToUser(String userId) {
+        return getWhatIsOwedToUser(userId).stream()
+                .mapToDouble(OwedToUserResponse::getAmountOwed)
+                .sum();
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package UniNest.Backend.controller;
 
 import UniNest.Backend.dto.BillRequest;
+import UniNest.Backend.dto.OwedToUserResponse;
 import UniNest.Backend.service.BillService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,16 @@ public class BillController {
     public double getTotalOwed(@PathVariable String userId) {
         return billService.getTotalOwedByUserId(userId);
     }
+
+    @GetMapping("/owedToMe/{userId}")
+    public List<OwedToUserResponse> getOwedToUser(@PathVariable String userId) {
+        return billService.getWhatIsOwedToUser(userId);
+    }
+
+    @GetMapping("/owedToMe/total/{userId}")
+    public double getTotalOwedToUser(@PathVariable String userId) {
+        return billService.getTotalOwedToUser(userId);
+    }
+
 
 }

@@ -2,6 +2,7 @@ package com.example.uninest.data.api;
 
 import com.example.uninest.model.BillSplitRequest;
 import com.example.uninest.model.BillsRequest;
+import com.example.uninest.model.OwedToUser;
 
 import java.util.List;
 
@@ -28,6 +29,16 @@ public interface BillsApi {
 
     @GET("/bills/totalOwed/{userId}")
     Call<Double> getTotalOwed(@Path("userId") String userId);
+
+
+
+    @GET("/bills/owedToMe/total/{userId}")
+    Call<Double> getTotalOwedToMe(@Path("userId") String userId);
+
+    @GET("/bills/owedToMe/{userId}")
+    Call<List<OwedToUser>> getOwedToMe(@Path("userId") String userId);
+
+
 
 
 

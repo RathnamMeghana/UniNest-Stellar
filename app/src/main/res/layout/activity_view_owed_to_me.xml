@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <!-- 🔹 Header -->
+    <TextView
+        android:id="@+id/tvOwedHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Owed to you"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:paddingBottom="8dp" />
+
+    <!-- 🔹 Total Owed To You -->
+    <TextView
+        android:id="@+id/tvTotalOwedToMe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total owed to you: €0.00"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:paddingBottom="12dp" />
+
+    <!-- 🔹 RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewOwedToMe"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp" />
+
+</LinearLayout>
