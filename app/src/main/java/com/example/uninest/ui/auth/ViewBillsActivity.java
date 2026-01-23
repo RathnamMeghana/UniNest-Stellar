@@ -2,6 +2,7 @@ package com.example.uninest.ui.auth;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import com.example.uninest.model.BillsRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,9 +42,10 @@ public class ViewBillsActivity extends AppCompatActivity {
         // Setup Active Bills RecyclerView
         rvActive = findViewById(R.id.rvBills);
         rvActive.setLayoutManager(new LinearLayoutManager(this));
-        activeAdapter = new BillAdapter(new ArrayList<>(), (bill, position) -> {
+        activeAdapter = new BillAdapter(new ArrayList<>(), userId, (bill, position) -> {
             markBillAsPaid(bill);
         });
+
         rvActive.setAdapter(activeAdapter);
 
         // Setup Paid Splits RecyclerView
@@ -52,6 +55,7 @@ public class ViewBillsActivity extends AppCompatActivity {
         rvPaid.setAdapter(paidAdapter);
 
         // Load data from backend
+        fetchTotalOwed();
         fetchActiveBills();
         fetchPaidSplits();
     }
@@ -101,7 +105,9 @@ public class ViewBillsActivity extends AppCompatActivity {
                     }
 
                     Log.d("ViewBills", "Paid splits count: " + paidSplits.size());
-                    paidAdapter.updateData(paidSplits);
+                    List<PaidBillAdapter.PaidItem> paidItems = PaidBillAdapter.buildPaidItems(bills, userId);
+                    paidAdapter.updateData(paidItems);
+
 
                 } else {
                     Log.e("ViewBills", "Paid Splits Server Error: " + response.code());
@@ -141,4 +147,25 @@ public class ViewBillsActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void fetchTotalOwed() {
+        billsApi.getTotalOwed(userId).enqueue(new Callback<Double>() {
+            @Override
+            public void onResponse(Call<Double> call, Response<Double> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    double totalOwed = response.body();
+                    TextView tvTotalOwed = findViewById(R.id.tvTotalOwed);
+                    tvTotalOwed.setText(String.format(Locale.getDefault(), "Total Owed: €%.2f", totalOwed));
+                } else {
+                    Log.e("ViewBills", "Failed to fetch total owed, code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Double> call, Throwable t) {
+                Log.e("ViewBills", "Network error fetching total owed: " + t.getMessage());
+            }
+        });
+    }
+
 }
