@@ -21,8 +21,12 @@ public interface BillsApi {
     Call<List<BillsRequest>> getBills(@Path("userId") String userId);
 
     @GET("/bills/paidHistory/{userId}")
-    Call<List<BillSplitRequest>> getPaidHistory(@Path("userId") String userId);
+    Call<List<BillsRequest>> getPaidHistory(@Path("userId") String userId);
 
     @PATCH("/bills/{billId}/{userId}/pay")
     Call<Void> markBillPaid(@Path("billId") String billId, @Path("userId") String userId);
+
+
+
+
 }

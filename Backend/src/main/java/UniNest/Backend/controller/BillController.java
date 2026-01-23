@@ -1,7 +1,6 @@
 package UniNest.Backend.controller;
 
 import UniNest.Backend.dto.BillRequest;
-import UniNest.Backend.dto.BillSplitRequest;
 import UniNest.Backend.service.BillService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ public class BillController {
 
     // Get paid bills (payment history)
     @GetMapping("/paidHistory/{userId}")
-    public ResponseEntity<List<BillSplitRequest>> getPaidBills(
+    public ResponseEntity<List<BillRequest>> getPaidBills(
             @PathVariable String userId) {
         try {
             return ResponseEntity.ok(billService.getPaidHistory(userId));

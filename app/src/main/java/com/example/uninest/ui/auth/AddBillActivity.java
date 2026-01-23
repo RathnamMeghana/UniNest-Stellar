@@ -26,8 +26,6 @@ import com.example.uninest.model.BillsRequest;
 import com.example.uninest.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 
-import com.example.uninest.model.BillSplitRequest;
-
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -90,7 +88,6 @@ public class AddBillActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         rvRoommates.setLayoutManager(new LinearLayoutManager(this));
         roommateAdapter = new RoommateSplitAdapter(new ArrayList<>(), (userId, isChecked) -> {
-            // Pass real user ID instead of email
             if (isChecked) {
                 if (!selectedRoommateIds.contains(userId)) selectedRoommateIds.add(userId);
             } else {
@@ -169,7 +166,7 @@ public class AddBillActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    roommateAdapter.updateList(response.body()); // Adapter now has emails + IDs
+                    roommateAdapter.updateList(response.body());
                 }
             }
             @Override
@@ -193,22 +190,23 @@ public class AddBillActivity extends AppCompatActivity {
         isSubmitting = true;
         btnSave.setEnabled(false);
 
-        BillsRequest request = new BillsRequest();
-        request.setTitle(title);
-        request.setTotalAmount(Double.parseDouble(amountStr));
-        request.setCreatorId(testUserId);
-        request.setDueDate(selectedDueDate);
-        request.setRoommateIds(selectedRoommateIds); // <-- real IDs now
-        request.setHouseCode(houseCode);
-        request.setActive(true);
-
-        List<BillSplitRequest> splits = new ArrayList<>();
         double total = Double.parseDouble(amountStr);
         double perPerson = total / selectedRoommateIds.size();
 
+        BillsRequest request = new BillsRequest();
+        request.setTitle(title);
+        request.setTotalAmount(total);
+        request.setCreatorId(testUserId);
+        request.setDueDate(selectedDueDate);
+        request.setRoommateIds(selectedRoommateIds);
+        request.setHouseCode(houseCode);
+        request.setActive(true);
+
+        // Create embedded splits
+        List<BillsRequest.Split> splits = new ArrayList<>();
         for (String userId : selectedRoommateIds) {
-            BillSplitRequest split = new BillSplitRequest();
-            split.setUserId(userId); // real user ID
+            BillsRequest.Split split = new BillsRequest.Split();
+            split.setUserId(userId);
             split.setAmountOwed(perPerson);
             split.setPaid(false);
             splits.add(split);
@@ -230,11 +228,9 @@ public class AddBillActivity extends AppCompatActivity {
 
                 if (response.isSuccessful()) {
                     Toast.makeText(AddBillActivity.this, "Bill Created Successfully!", Toast.LENGTH_SHORT).show();
-
                     Intent intent = new Intent(AddBillActivity.this, ViewBillsActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-
                     finish();
                 } else {
                     Toast.makeText(AddBillActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();

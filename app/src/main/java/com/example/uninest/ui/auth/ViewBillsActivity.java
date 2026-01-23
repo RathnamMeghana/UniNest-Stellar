@@ -12,8 +12,6 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.BillsApi;
 import com.example.uninest.model.BillsRequest;
-import com.example.uninest.model.BillSplitRequest; // Ensure this model exists for the split history
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,7 @@ public class ViewBillsActivity extends AppCompatActivity {
 
     private RecyclerView rvActive, rvPaid;
     private BillAdapter activeAdapter;
-    private PaidBillAdapter paidAdapter; // Adapter for BillSplitRequest
+    private PaidBillAdapter paidAdapter;
     private BillsApi billsApi;
 
     // Hardcoded User ID for testing
@@ -39,27 +37,28 @@ public class ViewBillsActivity extends AppCompatActivity {
 
         billsApi = ApiClient.getBillsApi();
 
-        // 1. Setup Active/Pending Bills RecyclerView
-        // Note: Using rvBills from your XML for the main list
+        // Setup Active Bills RecyclerView
         rvActive = findViewById(R.id.rvBills);
         rvActive.setLayoutManager(new LinearLayoutManager(this));
         activeAdapter = new BillAdapter(new ArrayList<>(), (bill, position) -> {
-            markBillAsPaid(bill); // your existing method
+            markBillAsPaid(bill);
         });
         rvActive.setAdapter(activeAdapter);
 
-
-        // 2. Setup Paid History RecyclerView
+        // Setup Paid Splits RecyclerView
         rvPaid = findViewById(R.id.rvPaidBills);
         rvPaid.setLayoutManager(new LinearLayoutManager(this));
         paidAdapter = new PaidBillAdapter(new ArrayList<>());
         rvPaid.setAdapter(paidAdapter);
 
-        // Load data from both endpoints
+        // Load data from backend
         fetchActiveBills();
-        fetchPaidHistory();
+        fetchPaidSplits();
     }
 
+    /**
+     * Fetch all bills and populate active bills RecyclerView
+     */
     private void fetchActiveBills() {
         Log.d("ViewBills", "Fetching active bills for: " + userId);
         billsApi.getBills(userId).enqueue(new Callback<List<BillsRequest>>() {
@@ -81,38 +80,56 @@ public class ViewBillsActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchPaidHistory() {
-        Log.d("ViewBills", "Fetching paid history for: " + userId);
-        billsApi.getPaidHistory(userId).enqueue(new Callback<List<BillSplitRequest>>() {
+
+    private void fetchPaidSplits() {
+        Log.d("ViewBills", "Fetching paid splits for: " + userId);
+        billsApi.getPaidHistory(userId).enqueue(new Callback<List<BillsRequest>>() {
             @Override
-            public void onResponse(Call<List<BillSplitRequest>> call, Response<List<BillSplitRequest>> response) {
+            public void onResponse(Call<List<BillsRequest>> call, Response<List<BillsRequest>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<BillSplitRequest> history = response.body();
-                    Log.d("ViewBills", "Paid history count: " + history.size());
-                    paidAdapter.updateData(history);
+                    List<BillsRequest> bills = response.body();
+                    List<BillsRequest.Split> paidSplits = new ArrayList<>();
+
+                    for (BillsRequest bill : bills) {
+                        if (bill.getSplits() != null) {
+                            for (BillsRequest.Split split : bill.getSplits()) {
+                                if (split.isPaid() && userId.equals(split.getUserId())) {
+                                    paidSplits.add(split);
+                                }
+                            }
+                        }
+                    }
+
+                    Log.d("ViewBills", "Paid splits count: " + paidSplits.size());
+                    paidAdapter.updateData(paidSplits);
+
                 } else {
-                    Log.e("ViewBills", "Paid History Server Error: " + response.code());
+                    Log.e("ViewBills", "Paid Splits Server Error: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<List<BillSplitRequest>> call, Throwable t) {
-                Log.e("ViewBills", "Paid History Network Failure: " + t.getMessage());
+            public void onFailure(Call<List<BillsRequest>> call, Throwable t) {
+                Log.e("ViewBills", "Paid Splits Network Failure: " + t.getMessage());
             }
         });
     }
 
+
+    /**
+     * Marks a bill as paid for this user and refreshes both RecyclerViews
+     */
     private void markBillAsPaid(BillsRequest bill) {
         if (bill == null) return;
 
-        // Assuming the user paying is always `userId`
         billsApi.markBillPaid(bill.getId(), userId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(ViewBillsActivity.this, "Bill marked as paid!", Toast.LENGTH_SHORT).show();
-                    fetchActiveBills();    // Refresh active bills
-                    fetchPaidHistory();    // Refresh paid history
+                    // Refresh lists
+                    fetchActiveBills();
+                    fetchPaidSplits();
                 } else {
                     Toast.makeText(ViewBillsActivity.this, "Server error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -124,5 +141,4 @@ public class ViewBillsActivity extends AppCompatActivity {
             }
         });
     }
-
 }

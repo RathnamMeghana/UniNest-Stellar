@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.uninest.R;
-import com.example.uninest.model.BillSplitRequest;
+import com.example.uninest.model.BillsRequest;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -17,13 +17,13 @@ import java.util.Locale;
 
 public class PaidBillAdapter extends RecyclerView.Adapter<PaidBillAdapter.PaidViewHolder> {
 
-    private List<BillSplitRequest> paidList;
+    private List<BillsRequest.Split> paidList;
 
-    public PaidBillAdapter(List<BillSplitRequest> paidList) {
+    public PaidBillAdapter(List<BillsRequest.Split> paidList) {
         this.paidList = paidList;
     }
 
-    public void updateData(List<BillSplitRequest> newList) {
+    public void updateData(List<BillsRequest.Split> newList) {
         this.paidList = newList;
         notifyDataSetChanged();
     }
@@ -38,15 +38,13 @@ public class PaidBillAdapter extends RecyclerView.Adapter<PaidBillAdapter.PaidVi
 
     @Override
     public void onBindViewHolder(@NonNull PaidViewHolder holder, int position) {
-        BillSplitRequest split = paidList.get(position);
+        BillsRequest.Split split = paidList.get(position);
 
-        // Bill title (denormalized from backend)
-        holder.tvTitle.setText(split.getBillTitle());
+        // Show the bill title instead of userId
+        holder.tvTitle.setText(split.getBillTitle() != null ? split.getBillTitle() : "Untitled Bill");
 
-        // Amount
-        holder.tvAmount.setText(String.format("Paid: €%.2f", split.getAmountOwed()));
+        holder.tvAmount.setText(String.format(Locale.getDefault(), "Paid: €%.2f", split.getAmountOwed()));
 
-        // Paid date
         if (split.getPaidAt() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
             holder.tvDate.setText("Paid on: " + sdf.format(split.getPaidAt()));
@@ -54,8 +52,7 @@ public class PaidBillAdapter extends RecyclerView.Adapter<PaidBillAdapter.PaidVi
             holder.tvDate.setText("Paid");
         }
 
-        // Visual distinction for paid items
-        holder.itemView.setAlpha(0.65f);
+        holder.itemView.setAlpha(0.65f); // Visual distinction for paid items
     }
 
     @Override
