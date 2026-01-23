@@ -59,28 +59,25 @@ public class ViewBillsActivity extends AppCompatActivity {
         fetchPaidSplits();
     }
 
+    // ---------------- ACTIVE BILLS ----------------
     private void fetchActiveBills() {
         billsApi.getBills(userId).enqueue(new Callback<List<BillsRequest>>() {
             @Override
             public void onResponse(Call<List<BillsRequest>> call, Response<List<BillsRequest>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<BillsRequest> bills = response.body();
-
-                    // SORT BY DUE DATE (closest first)
-                    bills.sort((a, b) -> {
-                        if (a.getDueDate() == null || b.getDueDate() == null) return 0;
-                        return a.getDueDate().compareTo(b.getDueDate());
-                    });
-
                     activeAdapter.updateData(bills);
+                } else {
+                    Log.e("ViewBills", "Active Bills Server Error: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<List<BillsRequest>> call, Throwable t) { }
+            public void onFailure(Call<List<BillsRequest>> call, Throwable t) {
+                Log.e("ViewBills", "Active Bills Network Failure: " + t.getMessage());
+            }
         });
     }
-
 
     // ---------------- PAID BILLS ----------------
     private void fetchPaidSplits() {
