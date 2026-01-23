@@ -14,102 +14,62 @@ import UniNest.Backend.dto.BillRequest;
 public class BillService {
     private static final String BILL_COLLECTION = "bills";
 
-    // ------------------- CREATE BILL -------------------
-    // ------------------- CREATE BILL -------------------
     public List<BillRequest> createBill(BillRequest request) {
         try {
             Firestore db = FirestoreClient.getFirestore();
-            List<BillRequest> savedBills = new ArrayList<>();
+            List<BillRequest> createdBills = new ArrayList<>();
+            int months = request.getBillType() == BillRequest.BillType.RECURRING ? 6 : 1;
 
-            // If no splits provided, default to creator
-            if (request.getSplits() == null || request.getSplits().isEmpty()) {
-                BillRequest.Split defaultSplit = new BillRequest.Split();
-                defaultSplit.setUserId(request.getCreatorId());
-                defaultSplit.setAmountOwed(request.getTotalAmount());
-                defaultSplit.setPaid(false);
-                defaultSplit.setPaidAt(null);
-
-                request.setSplits(new ArrayList<>(List.of(defaultSplit)));
-
-                if (request.getRoommateIds() == null || request.getRoommateIds().isEmpty()) {
-                    request.setRoommateIds(new ArrayList<>(List.of(request.getCreatorId())));
-                }
-            } else {
-                validateSplits(request);
-
-                // Ensure roommateIds contains all split userIds
-                List<String> splitUserIds = request.getSplits().stream()
-                        .map(BillRequest.Split::getUserId)
-                        .collect(Collectors.toList());
-                request.setRoommateIds(splitUserIds);
-            }
-
-            // Determine number of bills to create (1 for one-time, 6 for recurring)
-            int repeatCount = 1;
-            if (request.getBillType() == BillRequest.BillType.RECURRING) {
-                repeatCount = 6; // 6 months
-            }
+            Date startDate = request.getStartDate() != null ? request.getStartDate() : request.getDueDate();
+            if (startDate == null) startDate = new Date();
 
             Calendar cal = Calendar.getInstance();
-            cal.setTime(request.getStartDate());
+            cal.setTime(startDate);
 
-            for (int i = 0; i < repeatCount; i++) {
-                String billId = UUID.randomUUID().toString();
-
-                BillRequest newBill = new BillRequest();
-                newBill.setId(billId);
-                newBill.setTitle(request.getTitle());
-                newBill.setTotalAmount(request.getTotalAmount());
-                newBill.setCreatorId(request.getCreatorId());
-                newBill.setBillType(request.getBillType());
-                newBill.setFrequency(request.getFrequency());
-                newBill.setActive(true);
-                newBill.setRoommateIds(request.getRoommateIds());
-
-                // Set start and due dates
-                newBill.setStartDate(cal.getTime());
-
-                // If dueDate is provided, calculate relative to startDate
-                if (request.getDueDate() != null) {
-                    long diff = request.getDueDate().getTime() - request.getStartDate().getTime();
-                    newBill.setDueDate(new Date(cal.getTimeInMillis() + diff));
-                }
+            for (int i = 0; i < months; i++) {
+                BillRequest billCopy = new BillRequest();
+                billCopy.setId(UUID.randomUUID().toString());
+                billCopy.setTitle(request.getTitle());
+                billCopy.setTotalAmount(request.getTotalAmount());
+                billCopy.setCreatorId(request.getCreatorId());
+                billCopy.setBillType(request.getBillType());
+                billCopy.setFrequency(request.getFrequency());
+                billCopy.setActive(true);
+                billCopy.setHouseCode(request.getHouseCode());
 
                 // Copy splits
-                List<BillRequest.Split> newSplits = new ArrayList<>();
-                for (BillRequest.Split split : request.getSplits()) {
-                    BillRequest.Split newSplit = new BillRequest.Split();
-                    newSplit.setUserId(split.getUserId());
-                    newSplit.setAmountOwed(split.getAmountOwed());
-                    newSplit.setPaid(false);
-                    newSplits.add(newSplit);
-                }
-                newBill.setSplits(newSplits);
-
-                // Save to Firestore
-                db.collection(BILL_COLLECTION)
-                        .document(billId)
-                        .set(newBill)
-                        .get();
-
-                savedBills.add(newBill);
-
-                // Increment start date for next recurring bill
-                if (request.getBillType() == BillRequest.BillType.RECURRING) {
-                    if (request.getFrequency() == BillRequest.BillFrequency.MONTHLY) {
-                        cal.add(Calendar.MONTH, 1);
-                    } else if (request.getFrequency() == BillRequest.BillFrequency.WEEKLY) {
-                        cal.add(Calendar.WEEK_OF_YEAR, 1);
-                    } else if (request.getFrequency() == BillRequest.BillFrequency.BIWEEKLY) {
-                        cal.add(Calendar.WEEK_OF_YEAR, 2);
+                List<BillRequest.Split> splitsCopy = new ArrayList<>();
+                if (request.getSplits() != null) {
+                    for (BillRequest.Split s : request.getSplits()) {
+                        BillRequest.Split splitCopy = new BillRequest.Split();
+                        splitCopy.setUserId(s.getUserId());
+                        splitCopy.setAmountOwed(s.getAmountOwed());
+                        splitCopy.setPaid(s.isPaid());
+                        splitsCopy.add(splitCopy);
                     }
                 }
+                billCopy.setSplits(splitsCopy);
+
+                // Roommates
+                billCopy.setRoommateIds(new ArrayList<>(request.getRoommateIds()));
+
+                // Dates
+                billCopy.setStartDate(cal.getTime());
+                billCopy.setDueDate(cal.getTime()); // can adjust if needed
+
+                // Save to Firestore
+                db.collection(BILL_COLLECTION).document(billCopy.getId()).set(billCopy).get();
+
+                createdBills.add(billCopy);
+
+                // Move calendar to next month for recurring bills
+                cal.add(Calendar.MONTH, 1);
             }
 
-            return savedBills;
+            return createdBills;
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create bill(s)", e);
+            throw new RuntimeException("Failed to create bill", e);
         }
     }
 

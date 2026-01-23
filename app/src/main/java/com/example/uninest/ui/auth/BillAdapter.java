@@ -106,5 +106,6 @@ public class BillAdapter extends RecyclerView.Adapter<BillAdapter.BillViewHolder
             btnMarkPaid = itemView.findViewById(R.id.btnMarkPaid);
         }
     }
+
 }
 
