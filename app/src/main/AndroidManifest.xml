@@ -48,7 +48,7 @@
 
 
         <activity
-            android:name=".ui.auth.LettingAgentLoginActivity"
+            android:name=".ui.auth.TenantLoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,13 +61,18 @@
         <activity
             android:name=".ui.auth.SetupApartmentRoomsActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".ui.auth.LettingAgentTicketDetailsActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ui.auth.TenantCardView"
             android:exported="false" />
         <activity
             android:name=".ui.auth.ApartmentTenantsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.AddCalendarEventActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.LettingAgentApartmentsActivity"
@@ -83,16 +88,31 @@
             android:name=".ui.auth.LettingAgentTicketsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.auth.TenantHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.TenantCalendarActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.auth.RaiseTicketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.ChoreDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.ViewAllTasksActivity"
             android:exported="false" />
 <!--        <activity-->
 <!--            android:name=".ui.auth.LettingAgentLoginActivity"-->
 <!--            android:exported="false">-->
 <!--        </activity>-->
 
-<!--        <activity-->
-<!--            android:name=".ui.auth.TenantSignUpActivity"-->
-<!--            android:exported="false" />-->
+        <activity
+            android:name=".ui.auth.TenantTicketsActivity"
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"
