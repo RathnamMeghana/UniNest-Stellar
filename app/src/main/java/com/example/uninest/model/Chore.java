@@ -11,6 +11,20 @@ public class Chore {
     private int frequencyPerWeek;
     private String assignedTo; // roommate ID
     private Object createdAt;
+    private String scheduledDate;
+
+    private String createdBy;
+    private String description;
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+
+    public String getCreatedBy() { return createdBy; }
+    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+
+    public String getScheduledDate() { return scheduledDate; }
+    public void setScheduledDate(String scheduledDate) { this.scheduledDate = scheduledDate; }
 
     public String getId(){return id;}
     public void setId(String id){ this.id = id; }
