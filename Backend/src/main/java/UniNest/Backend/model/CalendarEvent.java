@@ -12,6 +12,7 @@ public class CalendarEvent {
     private String type; // CHORE, MOVE_OUT, etc
     private String title;
     private String description;
+    private String location;
 
     private Timestamp startDate;
     private Timestamp endDate;
@@ -23,4 +24,9 @@ public class CalendarEvent {
 
     private Recurrence recurrence;
     private Timestamp createdAt;
+
+    private Double amount;
+    private String status;
+    private int actualDuration;
+    private int estDuration;
 }

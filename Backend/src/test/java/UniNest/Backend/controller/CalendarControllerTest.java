@@ -9,7 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.google.cloud.Timestamp;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -36,9 +36,9 @@ class CalendarControllerTest {
         request.setAssignedTo("user123");
         request.setAllDay(false);
 
-        Timestamp now = Timestamp.now();
-        request.setStartDate(now);
-        request.setEndDate(now);
+        String nowIso = Instant.now().toString();
+        request.setStartDate(nowIso);
+        request.setEndDate(nowIso);
 
         // Mock service to return a Response object
         CalendarEventDTO.Response mockResponse = new CalendarEventDTO.Response();
@@ -70,9 +70,9 @@ class CalendarControllerTest {
         request.setAssignedTo("user123");
         request.setAllDay(false);
 
-        Timestamp now = Timestamp.now();
-        request.setStartDate(now);
-        request.setEndDate(now);
+        String nowIso = Instant.now().toString();
+        request.setStartDate(nowIso);
+        request.setEndDate(nowIso);
 
         // Mock service to throw
         when(calendarService.create(any(CalendarEventDTO.Create.class), anyString()))
