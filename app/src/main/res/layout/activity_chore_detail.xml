@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".ui.auth.ChoreDetailActivity">
+
+    <!-- Top Purple Banner -->
+    <FrameLayout
+        android:id="@+id/headerBanner"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:background="#B792D9"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Back Button -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="65dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"
+            android:src="@drawable/ic_back_arrow"
+            app:tint="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Chore Details"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="24sp" />
+    </FrameLayout>
+
+    <!-- Chore Title -->
+    <TextView
+        android:id="@+id/tvChoreTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="Clean Kitchen"
+        android:textStyle="bold"
+        android:textSize="28sp"
+        android:textColor="#333333"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintTop_toBottomOf="@id/headerBanner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tvChoreTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="24dp">
+
+            <!-- 1. INFO CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TASK OVERVIEW"
+                        android:textStyle="bold"
+                        android:textColor="#888888"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Description -->
+                    <TextView
+                        android:id="@+id/tvDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Detailed description of the task goes here."
+                        android:textColor="#333"
+                        android:textSize="15sp"
+                        android:lineSpacingExtra="4dp"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Est Time & Room Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:baselineAligned="false"
+                        android:layout_marginBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Est. Time"
+                                android:textSize="12sp"
+                                android:textColor="#888"/>
+                            <TextView
+                                android:id="@+id/tvEstTime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="30 Mins"
+                                android:textColor="#5B2C83"
+                                android:textStyle="bold"
+                                android:textSize="16sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Location"
+                                android:textSize="12sp"
+                                android:textColor="#888"/>
+                            <TextView
+                                android:id="@+id/tvRoomInfo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="Kitchen"
+                                android:textColor="#5B2C83"
+                                android:textStyle="bold"
+                                android:textSize="16sp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F0F0F0"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Assignment Info -->
+                    <TextView
+                        android:id="@+id/tvAssigneeInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Assigned to: John Doe"
+                        android:textColor="#333333"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvCreatedByInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Created by: Me"
+                        android:textColor="#666"
+                        android:textSize="13sp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginTop="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Due on"
+                            android:textSize="12sp"
+                            android:textColor="#888"/>
+                        <TextView
+                            android:id="@+id/tvDueDateInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="Jan 24, 2026"
+                            android:textColor="#5B2C83"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 2. ACTION CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="UPDATE PROGRESS"
+                        android:textStyle="bold"
+                        android:textColor="#888888"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- STATUS -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Current Status"
+                        android:textStyle="bold"
+                        android:textColor="#000"
+                        android:layout_marginBottom="6dp"/>
+                    <Spinner
+                        android:id="@+id/spinnerStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginBottom="16dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="40dp"
+                        android:background="@drawable/bg_spinner_field"
+                        android:spinnerMode="dropdown" />
+
+                    <!-- TIME TAKEN -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Actual Time Taken (Minutes)"
+                        android:textStyle="bold"
+                        android:textColor="#000"
+                        android:layout_marginBottom="6dp"/>
+                    <EditText
+                        android:id="@+id/etActualTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="#F5F5F5"
+                        android:hint="e.g. 45"
+                        android:inputType="number"
+                        android:padding="12dp"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- SWAP USER -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Swap with Roommate"
+                        android:textStyle="bold"
+                        android:textColor="#000"
+                        android:layout_marginBottom="6dp"/>
+                    <Spinner
+                        android:id="@+id/spinnerSwapUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginBottom="24dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="40dp"
+                        android:background="@drawable/bg_spinner_field"
+                        android:spinnerMode="dropdown" />
+
+                    <!-- UPDATE BUTTON -->
+                    <Button
+                        android:id="@+id/btnUpdateChore"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="Save Updates"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#5B2C83"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
