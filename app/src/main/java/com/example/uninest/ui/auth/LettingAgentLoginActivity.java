@@ -92,7 +92,8 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
         String company = doc.getString("company");
         String apartmentId = doc.getString("houseCode");
         SessionManager session = new SessionManager(this);
-        session.saveUserSession(mAuth.getCurrentUser().getEmail(), role);
+        session.saveAgentSession(mAuth.getCurrentUser().getEmail(), role);
+
 
         if (role != null) {
             Log.d("LoginActivity", "User Role Retrieved: " + role);
