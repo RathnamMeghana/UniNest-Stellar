@@ -3,6 +3,7 @@ package com.example.uninest.data.api;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.uninest.data.api.BuildingApi;
+import com.example.uninest.data.api.UserApi;
 import com.example.uninest.model.Calendar;
 
 import okhttp3.OkHttpClient;
@@ -112,6 +113,25 @@ public class ApiClient {
                     .build();
         }
         return retrofit.create(CalendarApi.class);
+    }
+
+    public static UserApi getUserApi() {
+        if (retrofit == null) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(logging)
+                    .build();
+
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .client(client)
+                    .addConverterFactory(retrofit2.converter.scalars.ScalarsConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit.create(UserApi.class);
     }
 
 }
