@@ -116,18 +116,25 @@ public class ChoreController {
     @PostMapping("/addWithAssignment")
     public ChoreRequests addChoreWithAssignment(
             @RequestParam String houseCode,
-            @RequestParam String assignedUserId,
-            @RequestBody ChoreRequests chore,
-            @RequestParam String createdBy
+            @RequestParam String userEmail,
+            @RequestBody ChoreRequests chore
     ) {
-
         houseCode = SanitizationUtil.sanitize(houseCode);
-        assignedUserId = SanitizationUtil.sanitize(assignedUserId);
-        createdBy = SanitizationUtil.sanitize(createdBy);
+        userEmail = SanitizationUtil.sanitize(userEmail);
 
-        chore.setAssignedTo(assignedUserId);
 
-        return choreService.addChore(houseCode, chore, createdBy);
+        return choreService.addChoreWithAssignment(houseCode, userEmail, chore);
+    }
+
+    @PatchMapping("/updateStatus")
+    public ChoreRequests updateChoreStatus(
+            @RequestParam String houseCode,
+            @RequestParam String choreId,
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0") int actualDuration,
+            @RequestParam(required = false) String assignedTo // For swapping
+    ) {
+        return choreService.updateChoreStatus(houseCode, choreId, status, actualDuration, assignedTo);
     }
 
 
