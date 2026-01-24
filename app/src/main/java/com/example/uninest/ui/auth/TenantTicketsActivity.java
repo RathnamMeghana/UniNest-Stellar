@@ -17,6 +17,7 @@ import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.TicketApi;
 import com.example.uninest.model.Ticket;
 import com.example.uninest.ui.auth.RaiseTicketActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,7 +35,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
 
     // UI Containers
     private LinearLayout containerRaised, containerInProgress, containerSolved;
-    private TextView tvNoTickets; // Add a textview in XML if you want to show "No tickets" message
+    private TextView tvNoTickets;
 
     // Data
     private TicketApi ticketApi;
@@ -45,6 +46,25 @@ public class TenantTicketsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tenant_tickets);
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        bottomNav.setSelectedItemId(R.id.nav_tickets); // Highlight Tickets
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
+                startActivity(new Intent(getApplicationContext(), TenantHomeActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
+            } else if (itemId == R.id.nav_calendar) {
+                startActivity(new Intent(getApplicationContext(), TenantCalendarActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
+            } else if (itemId == R.id.nav_tickets) {
+                return true;
+            }
+            return false;
+        });
 
         // 1. Initialize API & Session
         ticketApi = ApiClient.getTicketApi();
@@ -115,7 +135,6 @@ public class TenantTicketsActivity extends AppCompatActivity {
         containerSolved.removeAllViews();
 
         if (tickets.isEmpty()) {
-            // Optional: Show "No tickets found" text
             return;
         }
 
