@@ -1,9 +1,14 @@
 package com.example.uninest.ui.auth;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.uninest.SessionManager;
+import com.example.uninest.model.FirestoreTimestamp;
 
 import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
@@ -11,7 +16,13 @@ import com.example.uninest.model.Calendar;
 import com.example.uninest.model.CalendarRequest;
 import com.example.uninest.model.Chore;
 import com.example.uninest.model.DateUtils;
+import com.example.uninest.data.api.UserApi;
+import com.example.uninest.model.User;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Date;
 
 import retrofit2.Call;
@@ -20,174 +31,308 @@ import retrofit2.Response;
 
 public class AddCalendarEventActivity extends AppCompatActivity {
 
-    private EditText etTitle, etDescription, etAssignedTo, etRoom, etDuration, etDifficulty, etFrequency;
-    private Spinner typeSpinner;
+    // Inputs
+    private Spinner spinnerCategory, spinnerAssignType, spinnerFrequency, spinnerReminderType;
+    private Spinner spinnerAssignedTo;
+    private EditText etTitle, etDescription, etRoom, etDuration, etDifficulty, etAmount;
+    private TextView tvSelectDate, tvSelectTime;
+    private CheckBox cbAllDay;
     private Button btnSave;
-    private LinearLayout choreFieldsLayout;
 
-    // TODO: Pass these dynamically from SessionManager/Firebase Auth
-    private String houseCode = "APT-E2DE614";
-    private String createdBy = "PSXFJ5KPNyXqrJZFTGAD7OmmwqX2";
+    // Containers
+    private LinearLayout containerChore, containerEvent, containerReminder;
+
+    // Data
+    private final java.util.Calendar selectedCal = java.util.Calendar.getInstance();
+    // Dynamic Data
+    private SessionManager sessionManager;
+    private String houseCode;
+    private String currentUserId;
+    private UserApi userApi;
+    private List<User> roommateList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_calendar_event);
 
-        // Initialize Views
+        // Get Session Data
+        sessionManager = new SessionManager(this);
+        houseCode = sessionManager.fetchHouseCode();
+        currentUserId = sessionManager.getUserId();
+
+        if (houseCode == null || currentUserId == null) {
+            Toast.makeText(this, "Session Error. Re-login required.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        userApi = ApiClient.getUserApi();
+
+        initViews();
+        setupSpinners();
+        setupPickers();
+
+        btnSave.setOnClickListener(v -> handleSave());
+
+        loadRoommates();
+    }
+
+    private void initViews() {
+        spinnerCategory = findViewById(R.id.spinnerCategory);
+        spinnerAssignType = findViewById(R.id.spinnerAssignType);
+        spinnerFrequency = findViewById(R.id.spinnerFrequency);
+        spinnerReminderType = findViewById(R.id.spinnerReminderType);
+
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
-        etAssignedTo = findViewById(R.id.etAssignedTo);
-        choreFieldsLayout = findViewById(R.id.choreFieldsLayout);
+        spinnerAssignedTo = findViewById(R.id.spinnerAssignedTo);
         etRoom = findViewById(R.id.etRoom);
         etDuration = findViewById(R.id.etDuration);
         etDifficulty = findViewById(R.id.etDifficulty);
-        etFrequency = findViewById(R.id.etFrequency);
-        typeSpinner = findViewById(R.id.typeSpinner);
+        etAmount = findViewById(R.id.etAmount); // Only for bills
+
+        tvSelectDate = findViewById(R.id.tvSelectDate);
+        tvSelectTime = findViewById(R.id.tvSelectTime);
+        cbAllDay = findViewById(R.id.cbAllDay);
         btnSave = findViewById(R.id.btnSaveCalendar);
 
-        // Setup Spinner
-        String[] spinnerValues = {
-                "CHORE (Smart Assign)",
-                "CHORE (Manual Assign)",
-                "MOVE_OUT",
-                "MOVE_IN",
-                "BILL_DUE",
-                "MAINTENANCE",
-                "OTHER",
-                "CUSTOM"
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerValues);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        typeSpinner.setAdapter(adapter);
+        containerChore = findViewById(R.id.containerChore);
+        containerEvent = findViewById(R.id.containerEvent);
+        containerReminder = findViewById(R.id.containerReminder);
+    }
 
-        typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    private void loadRoommates() {
+        userApi.getRoommates(houseCode).enqueue(new Callback<List<User>>() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selected = typeSpinner.getSelectedItem().toString();
-                boolean isChore = selected.startsWith("CHORE");
-                choreFieldsLayout.setVisibility(isChore ? View.VISIBLE : View.GONE);
-                etAssignedTo.setEnabled(selected.equals("CHORE (Manual Assign)"));
-            }
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    roommateList = response.body();
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        btnSave.setOnClickListener(v -> {
-            btnSave.setEnabled(false);
-            saveEvent();
-        });
-    }
-
-    private void saveEvent() {
-        String selectedType = typeSpinner.getSelectedItem().toString();
-        boolean isChore = selectedType.startsWith("CHORE");
-        boolean isManualAssign = selectedType.equals("CHORE (Manual Assign)");
-
-        Date start = new Date();
-        Date end = new Date(start.getTime() + 60 * 60 * 1000); // Default 1 hour duration
-
-        if (isChore) {
-            final String roomInput = etRoom.getText().toString().trim().isEmpty() ? "General" : etRoom.getText().toString().trim();
-            final Chore chore = new Chore();
-            chore.setHouseCode(houseCode);
-            chore.setTaskName(etTitle.getText().toString().trim());
-            chore.setRoom(roomInput);
-            chore.setEstDurationMin(safeParseInt(etDuration.getText().toString(), 30));
-            chore.setDifficultyScore(safeParseInt(etDifficulty.getText().toString(), 1));
-            chore.setFrequencyPerWeek(safeParseInt(etFrequency.getText().toString(), 1));
-
-            if (isManualAssign) {
-                String assignedEmail = etAssignedTo.getText().toString().trim();
-                if (assignedEmail.isEmpty()) {
-                    Toast.makeText(this, "Please enter assigned email", Toast.LENGTH_SHORT).show();
-                    btnSave.setEnabled(true);
-                    return;
-                }
-                // Backend creates both Chore and Calendar event
-                ApiClient.getChoreApi().addWithAssignment(houseCode, assignedEmail, chore)
-                        .enqueue(new ChoreCallback());
-            } else {
-                // Smart assign: Backend creates both Chore and Calendar event
-                ApiClient.getChoreApi().addWithSmartAssign(houseCode, chore)
-                        .enqueue(new ChoreCallback());
-            }
-        } else {
-            // Non-CHORE events: Backend DOES NOT auto-create these, so we call Calendar API directly
-            String assignedToEmail = etAssignedTo.getText().toString().trim();
-            if (assignedToEmail.isEmpty()) assignedToEmail = createdBy;
-            createCalendarEvent(selectedType, start, end, assignedToEmail, null);
-        }
-    }
-
-    /**
-     * Specialized Callback for Chore creation.
-     * We do NOT call createCalendarEventFromChore here because the
-     * Backend Service already handles that logic.
-     */
-    private class ChoreCallback implements Callback<Chore> {
-        @Override
-        public void onResponse(Call<Chore> call, Response<Chore> response) {
-            btnSave.setEnabled(true);
-            if (response.isSuccessful()) {
-                Toast.makeText(AddCalendarEventActivity.this, "Chore and Calendar event added!", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(AddCalendarEventActivity.this, "Server error: Failed to create chore", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<Chore> call, Throwable t) {
-            btnSave.setEnabled(true);
-            Toast.makeText(AddCalendarEventActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Direct call to Calendar API for non-chore events (Bills, Move-in, etc.)
-     */
-    private void createCalendarEvent(String type, Date start, Date end, String assignedTo, String relatedChoreId) {
-        CalendarRequest req = new CalendarRequest();
-        req.setHouseCode(houseCode);
-        req.setTitle(etTitle.getText().toString().trim());
-        req.setDescription(etDescription.getText().toString().trim());
-        req.setType(type);
-        req.setCreatedBy(createdBy);
-        req.setAssignedTo(assignedTo);
-        req.setAllDay(false);
-        req.setStartSeconds(DateUtils.toSeconds(start));
-        req.setEndSeconds(DateUtils.toSeconds(end));
-        req.setRelatedChoreId(relatedChoreId);
-
-        ApiClient.getCalendarApi().createEvent(req, createdBy)
-                .enqueue(new Callback<Calendar>() {
-                    @Override
-                    public void onResponse(Call<Calendar> call, Response<Calendar> response) {
-                        btnSave.setEnabled(true);
-                        if (response.isSuccessful()) {
-                            Toast.makeText(AddCalendarEventActivity.this, "Event added to calendar!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Toast.makeText(AddCalendarEventActivity.this, "Error creating calendar event", Toast.LENGTH_SHORT).show();
+                    for (User u : roommateList) {
+                        // Check if this user is the logged-in user
+                        if (u.getId() != null && u.getId().equals(currentUserId)) {
+                            u.setFirstName("Me");
+                            u.setLastName("");
                         }
                     }
 
-                    @Override
-                    public void onFailure(Call<Calendar> call, Throwable t) {
-                        btnSave.setEnabled(true);
-                        Toast.makeText(AddCalendarEventActivity.this, "Network error", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    // Create Adapter
+                    ArrayAdapter<User> adapter = new ArrayAdapter<>(
+                            AddCalendarEventActivity.this,
+                            android.R.layout.simple_spinner_item,
+                            roommateList
+                    );
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerAssignedTo.setAdapter(adapter);
+                }
+            }
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+                Toast.makeText(AddCalendarEventActivity.this, "Failed to load roommates", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private int safeParseInt(String str, int defaultValue) {
-        if (str == null || str.trim().isEmpty()) return defaultValue;
-        try {
-            return Integer.parseInt(str.trim());
-        } catch (NumberFormatException e) {
-            return defaultValue;
+    private void setupSpinners() {
+        // 1. Master Category
+        String[] cats = {"Chore", "Event", "Reminder/Bill"};
+        setAdapter(spinnerCategory, cats);
+
+        // 2. Chore Assignment
+        String[] assignTypes = {"Smart Assign (AI)", "Manual Assign"};
+        setAdapter(spinnerAssignType, assignTypes);
+
+        // 3. Frequency
+        String[] freqs = {"One Time", "Weekly", "Monthly"};
+        setAdapter(spinnerFrequency, freqs);
+
+        // 4. Reminder Types
+        String[] reminders = {"Bill Due", "Maintenance", "General Reminder"};
+        setAdapter(spinnerReminderType, reminders);
+
+        // --- LISTENER TO SWITCH LAYOUTS ---
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = cats[position];
+                containerChore.setVisibility(selected.equals("Chore") ? View.VISIBLE : View.GONE);
+                containerEvent.setVisibility(selected.equals("Event") ? View.VISIBLE : View.GONE);
+                containerReminder.setVisibility(selected.equals("Reminder/Bill") ? View.VISIBLE : View.GONE);
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void setupPickers() {
+        updateDateLabel();
+        tvSelectDate.setOnClickListener(v -> {
+            new DatePickerDialog(this, (view, year, month, day) -> {
+                selectedCal.set(java.util.Calendar.YEAR, year);
+                selectedCal.set(java.util.Calendar.MONTH, month);
+                selectedCal.set(java.util.Calendar.DAY_OF_MONTH, day);
+                updateDateLabel();
+            },
+                    selectedCal.get(java.util.Calendar.YEAR),
+                    selectedCal.get(java.util.Calendar.MONTH),
+                    selectedCal.get(java.util.Calendar.DAY_OF_MONTH)).show();
+        });
+
+        tvSelectTime.setOnClickListener(v -> {
+            new TimePickerDialog(this, (view, hour, minute) -> {
+                selectedCal.set(java.util.Calendar.HOUR_OF_DAY, hour);
+                selectedCal.set(java.util.Calendar.MINUTE, minute);
+                tvSelectTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hour, minute));
+            }, 12, 0, true).show();
+        });
+    }
+
+    private void handleSave() {
+        btnSave.setEnabled(false);
+        String cat = spinnerCategory.getSelectedItem().toString();
+
+        if (cat.equals("Chore")) {
+            saveChore();
+        } else if (cat.equals("Event")) {
+            saveEventOrReminder("EVENT");
+        } else {
+            // Check specific reminder type
+            String subType = spinnerReminderType.getSelectedItem().toString();
+            String backendType = "REMINDER";
+            if(subType.contains("Bill")) backendType = "BILL_DUE";
+            if(subType.contains("Maintenance")) backendType = "MAINTENANCE";
+
+            saveEventOrReminder(backendType);
         }
+    }
+
+    // --- LOGIC 1: SAVING CHORES (Green) ---
+    private void saveChore() {
+        Chore chore = new Chore();
+        chore.setHouseCode(houseCode);
+        chore.setCreatedBy(currentUserId);
+        chore.setTaskName(etTitle.getText().toString().trim());
+        chore.setRoom(etRoom.getText().toString().trim());
+        chore.setDescription(etDescription.getText().toString().trim());
+
+        // Safety parsing
+        chore.setEstDurationMin(parseInt(etDuration.getText().toString(), 30));
+        chore.setDifficultyScore(parseInt(etDifficulty.getText().toString(), 1));
+
+        // Frequency Logic
+        String freqStr = spinnerFrequency.getSelectedItem().toString();
+        int freq = 0; // Once
+        if(freqStr.equals("Weekly")) freq = 1;
+        if(freqStr.equals("Monthly")) freq = 4; // Or handle differently in backend
+        chore.setFrequencyPerWeek(freq);
+
+        // Date Logic (ISO String for Backend)
+        SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        chore.setScheduledDate(iso.format(selectedCal.getTime()));
+
+        String assignType = spinnerAssignType.getSelectedItem().toString();
+
+        if (assignType.contains("Manual")) {
+            User selectedUser = (User) spinnerAssignedTo.getSelectedItem();
+            if (selectedUser == null) {
+                Toast.makeText(this, "Please select a roommate", Toast.LENGTH_SHORT).show();
+                btnSave.setEnabled(true);
+                return;
+            }
+            String email = selectedUser.getEmail();
+
+            ApiClient.getChoreApi().addWithAssignment(houseCode, email, chore).enqueue(choreCallback);
+        } else {
+            // Smart assign
+            ApiClient.getChoreApi().addWithSmartAssign(houseCode, chore).enqueue(choreCallback);
+        }
+    }
+
+
+    // --- LOGIC 2: SAVING EVENTS & REMINDERS (Pink/Orange) ---
+    private void saveEventOrReminder(String type) {
+        CalendarRequest req = new CalendarRequest();
+        req.setHouseCode(houseCode);
+        req.setType(type); // "EVENT", "BILL_DUE", "MAINTENANCE"
+        req.setTitle(etTitle.getText().toString().trim());
+        req.setDescription(etDescription.getText().toString().trim());
+        req.setCreatedBy(currentUserId);
+
+        if (type.equals("BILL_DUE")) {
+            try {
+                double amt = Double.parseDouble(etAmount.getText().toString());
+                req.setAmount(amt);
+            } catch (NumberFormatException e) {
+                req.setAmount(0.0);
+            }
+        }
+
+        // Date Logic
+        SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+
+        // Start
+        req.setStartDate(iso.format(selectedCal.getTime()));
+
+        // End (Start + 1 hour)
+        long endMillis = selectedCal.getTimeInMillis() + 3600000;
+        req.setEndDate(iso.format(new Date(endMillis)));
+
+
+        req.setAllDay(cbAllDay.isChecked());
+
+        req.setAssignedTo(currentUserId);
+
+        ApiClient.getCalendarApi().createEvent(req, currentUserId).enqueue(new Callback<Calendar>() {
+            @Override
+            public void onResponse(Call<Calendar> call, Response<Calendar> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(AddCalendarEventActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(AddCalendarEventActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    btnSave.setEnabled(true);
+                }
+            }
+            @Override
+            public void onFailure(Call<Calendar> call, Throwable t) {
+                Toast.makeText(AddCalendarEventActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                btnSave.setEnabled(true);
+            }
+        });
+    }
+
+    // --- HELPERS ---
+    private final Callback<Chore> choreCallback = new Callback<Chore>() {
+        @Override
+        public void onResponse(Call<Chore> call, Response<Chore> response) {
+            if (response.isSuccessful()) {
+                Toast.makeText(AddCalendarEventActivity.this, "Chore Added!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(AddCalendarEventActivity.this, "Chore Failed: " + response.code(), Toast.LENGTH_SHORT).show();
+                btnSave.setEnabled(true);
+            }
+        }
+        @Override
+        public void onFailure(Call<Chore> call, Throwable t) {
+            Toast.makeText(AddCalendarEventActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+            btnSave.setEnabled(true);
+        }
+    };
+
+    private void updateDateLabel() {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault());
+        tvSelectDate.setText(sdf.format(selectedCal.getTime()));
+    }
+
+    private void setAdapter(Spinner s, String[] data) {
+        ArrayAdapter<String> a = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, data);
+        a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        s.setAdapter(a);
+    }
+
+    private int parseInt(String val, int def) {
+        try { return Integer.parseInt(val); } catch (Exception e) { return def; }
     }
 }
