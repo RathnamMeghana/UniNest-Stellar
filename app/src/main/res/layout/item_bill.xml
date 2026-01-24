@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:elevation="2dp">
+
+    <!-- Bill Title -->
+    <TextView
+        android:id="@+id/tvBillTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Electricity Bill"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"/>
+
+    <!-- Horizontal layout for You Owe / Total and Button -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp">
+
+        <!-- Amounts Vertical -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvBillAmountOwed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="You owe: €0.00"
+                android:textColor="@color/design_default_color_primary"
+                android:textStyle="bold"
+                android:layout_marginBottom="2dp"/>
+
+            <TextView
+                android:id="@+id/tvBillTotalAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total: €0.00"/>
+        </LinearLayout>
+
+        <!-- Pill-shaped Button -->
+        <Button
+            android:id="@+id/btnMarkPaid"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Mark as Paid"
+            android:textColor="@android:color/white"
+            android:paddingHorizontal="16dp"
+            android:backgroundTint="@color/design_default_color_primary"
+            android:clipToOutline="true"
+            android:layout_gravity="center_vertical"
+            android:visibility="visible"
+            android:shape="rectangle"
+            android:radius="50dp"/>
+    </LinearLayout>
+
+    <!-- Due Date -->
+    <TextView
+        android:id="@+id/tvBillDueDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Due: Jan 25, 2026"
+        android:layout_marginTop="4dp"/>
+
+</LinearLayout>
