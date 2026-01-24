@@ -3,6 +3,7 @@ package UniNest.Backend.controller;
 import UniNest.Backend.dto.BillRequest;
 import UniNest.Backend.dto.OwedToUserResponse;
 import UniNest.Backend.service.BillService;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,8 @@ public class BillController {
 
     //  Create Bill
     @PostMapping("/create")
-    public List<BillRequest> createBill(@RequestBody BillRequest request) {
+    public List<BillRequest> createBill(@Valid @RequestBody BillRequest request) {
+        request.sanitize();
         return billService.createBill(request);
     }
 
