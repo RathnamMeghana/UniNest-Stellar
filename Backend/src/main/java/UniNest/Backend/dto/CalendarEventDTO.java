@@ -15,7 +15,9 @@ public class CalendarEventDTO {
         MOVE_IN,
         BILL_DUE,
         MAINTENANCE,
-        OTHER, CUSTOM
+        OTHER,
+        CUSTOM,
+        EVENT
     }
 
     // RECURRENCE DTO
@@ -35,13 +37,19 @@ public class CalendarEventDTO {
         private String title;
         private String description;
 
-        private Timestamp startDate;
-        private Timestamp endDate;
+        private String startDate;
+        private String endDate;
 
         private boolean allDay;
 
         private String assignedTo;
         private String relatedChoreId;
+
+        private Double amount;
+
+        private int estDuration;
+
+        private String location;
 
         private Recurrence recurrence;
 
@@ -94,5 +102,11 @@ public class CalendarEventDTO {
         private String relatedChoreId;
 
         private Recurrence recurrence;
+        private Double amount;
+
+        private String status;
+        private int estDuration;
+        private int actualDuration;
+        private String location;
     }
 }
