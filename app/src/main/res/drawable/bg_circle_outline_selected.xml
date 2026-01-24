@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The Glow/Shadow effect -->
+    <item>
+        <shape android:shape="oval">
+            <padding android:bottom="2dp" android:left="2dp" android:right="2dp" android:top="2dp"/>
+            <solid android:color="#332196F3"/> <!-- Light Blue Glow -->
+        </shape>
+    </item>
+    <!-- The Main Border -->
+    <item>
+        <shape android:shape="oval">
+            <stroke
+                android:width="3dp"
+                android:color="#2196F3" /> <!-- Material Blue -->
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</layer-list>
