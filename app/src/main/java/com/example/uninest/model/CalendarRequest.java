@@ -7,8 +7,8 @@ public class CalendarRequest {
     private String title;
     private String description;
 
-    private long startSeconds;      // epoch seconds
-    private long endSeconds;
+    private String startDate;
+    private String endDate;
 
     private boolean allDay;
 
@@ -21,15 +21,22 @@ public class CalendarRequest {
     private String choreRoom;
     private int choreDuration;       // minutes
     private int choreDifficulty;     // 1-5
-    private int choreFrequency;      // per week
+    private int choreFrequency;// per week
+    private Double amount;
+
+    public Double getAmount() { return amount; }
+    public void setAmount(Double amount) { this.amount = amount; }
 
     // -------- getters --------
     public String getHouseCode() { return houseCode; }
     public String getType() { return type; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
-    public long getStartSeconds() { return startSeconds; }
-    public long getEndSeconds() { return endSeconds; }
+    public String getStartDate() { return startDate; }
+    public void setStartDate(String startDate) { this.startDate = startDate; }
+
+    public String getEndDate() { return endDate; }
+    public void setEndDate(String endDate) { this.endDate = endDate; }
     public boolean isAllDay() { return allDay; }
     public String getCreatedBy() { return createdBy; }
     public String getAssignedTo() { return assignedTo; }
@@ -45,8 +52,6 @@ public class CalendarRequest {
     public void setType(String type) { this.type = type; }
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
-    public void setStartSeconds(long startSeconds) { this.startSeconds = startSeconds; }
-    public void setEndSeconds(long endSeconds) { this.endSeconds = endSeconds; }
     public void setAllDay(boolean allDay) { this.allDay = allDay; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
     public void setAssignedTo(String assignedTo) { this.assignedTo = assignedTo; }
