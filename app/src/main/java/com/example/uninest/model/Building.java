@@ -9,7 +9,9 @@ public class Building {
     private String country;
     private String landlordId;
     private Boolean active;
-    
+    private String imageUrl;
+
+
 
 
     // Getters & setters
@@ -36,4 +38,14 @@ public class Building {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 }
