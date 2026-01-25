@@ -15,6 +15,7 @@ public class Chore {
     private String assignedTo; // roommate ID
     private Timestamp createdAt;
     private String assignedUserEmail;
-
-
+    private String scheduledDate;
+    private String status;
+    private int actualDuration;
 }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/bg_card_green"
+    android:layout_marginBottom="12dp"
+    android:elevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Task Title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000"/>
+
+        <!-- STATUS BADGE -->
+        <TextView
+            android:id="@+id/tvStatusBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Started"
+            android:textSize="13sp"
+            android:textColor="#000"
+            android:background="@drawable/bg_status_pending"
+            android:paddingHorizontal="11dp"
+            android:paddingVertical="7dp"
+            android:layout_marginEnd="11dp"
+            android:visibility="gone"/>
+
+        <!-- ARROW ICON -->
+        <ImageView
+            android:id="@+id/btnDetailsArrow"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:scaleType="centerInside"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:src="@drawable/ic_expand" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvExtraInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Assigned info..."
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/tvDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Desc"
+        android:textSize="12sp"
+        android:visibility="gone"/>
+</LinearLayout>

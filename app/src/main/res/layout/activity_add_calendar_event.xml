@@ -1,79 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F8F8F8"
+    android:padding="20dp">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/etTitle"
-            android:hint="Title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <!-- HEADER -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add New Entry"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333"
+            android:layout_marginBottom="20dp"/>
 
-        <EditText
-            android:id="@+id/etDescription"
-            android:hint="Description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <!-- 1. MASTER CATEGORY SELECTION -->
+        <TextView
+            android:text="What type of entry is this?"
+            style="@style/LabelStyle"/>
 
         <Spinner
-            android:id="@+id/typeSpinner"
+            android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="50dp"
+            android:background="@drawable/bg_textfield_tenant"
+            android:layout_marginBottom="16dp"/>
 
+        <!-- 2. COMMON FIELDS -->
+        <TextView android:text="Title" style="@style/LabelStyle"/>
         <EditText
-            android:id="@+id/etAssignedTo"
-            android:hint="Assigned User ID (optional if CHORE)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:id="@+id/etTitle"
+            style="@style/InputStyle"
+            android:hint="e.g. Clean Kitchen, House Party, Rent Due"/>
 
+        <TextView android:text="Description" style="@style/LabelStyle"/>
+        <EditText
+            android:id="@+id/etDescription"
+            style="@style/InputStyle"
+            android:hint="Add details..."
+            android:inputType="textMultiLine"
+            android:minLines="2"/>
+
+        <TextView android:text="Date" style="@style/LabelStyle"/>
+        <TextView
+            android:id="@+id/tvSelectDate"
+            style="@style/InputStyle"
+            android:text="Select Date"
+            android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <!-- ============================================ -->
+        <!-- CONTAINER A: CHORE SPECIFIC FIELDS (Green) -->
+        <!-- ============================================ -->
         <LinearLayout
-            android:id="@+id/choreFieldsLayout"
-            android:orientation="vertical"
+            android:id="@+id/containerChore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:paddingTop="16dp">
+            android:orientation="vertical"
+            android:visibility="gone">
 
-            <EditText
-                android:id="@+id/etRoom"
+            <TextView android:text="Assignment Type" style="@style/LabelStyle" android:textColor="#4CAF50"/>
+            <Spinner
+                android:id="@+id/spinnerAssignType"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_textfield_tenant"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:text="Assign To"
+                style="@style/LabelStyle"/>
+
+
+            <Spinner
+                android:id="@+id/spinnerAssignedTo"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_textfield_tenant"
+                android:layout_marginBottom="12dp"/>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Room (e.g. Kitchen, Bathroom)" />
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/etDuration"
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginEnd="8dp">
+                    <TextView android:text="Room" style="@style/LabelStyle"/>
+                    <EditText android:id="@+id/etRoom" style="@style/InputStyle" android:hint="Kitchen"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:text="Duration (min)" style="@style/LabelStyle"/>
+                    <EditText android:id="@+id/etDuration" style="@style/InputStyle" android:inputType="number" android:hint="30"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Estimated Duration (min)"
-                android:inputType="number" />
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/etDifficulty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Difficulty Score"
-                android:inputType="number" />
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginEnd="8dp">
+                    <TextView android:text="Difficulty (1-5)" style="@style/LabelStyle"/>
+                    <EditText android:id="@+id/etDifficulty" style="@style/InputStyle" android:inputType="number" android:hint="1"/>
+                </LinearLayout>
 
-            <EditText
-                android:id="@+id/etFrequency"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Frequency per Week"
-                android:inputType="number" />
-
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:text="Repetition" style="@style/LabelStyle"/>
+                    <Spinner android:id="@+id/spinnerFrequency" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_textfield_tenant" android:layout_marginBottom="12dp"/>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btnSaveCalendar"
-            android:text="Save Event"
+        <!-- ============================================ -->
+        <!-- CONTAINER B: EVENT SPECIFIC FIELDS (Pink) -->
+        <!-- ============================================ -->
+        <LinearLayout
+            android:id="@+id/containerEvent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"/>
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView android:text="Time" style="@style/LabelStyle" android:textColor="#E91E63"/>
+            <TextView
+                android:id="@+id/tvSelectTime"
+                style="@style/InputStyle"
+                android:text="Select Time (Optional)"
+                android:drawableEnd="@android:drawable/ic_menu_recent_history"/>
+
+            <CheckBox
+                android:id="@+id/cbAllDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All Day Event"
+                android:checked="true"/>
+        </LinearLayout>
+
+        <!-- ============================================ -->
+        <!-- CONTAINER C: REMINDER SPECIFIC FIELDS (Orange) -->
+        <!-- ============================================ -->
+        <LinearLayout
+            android:id="@+id/containerReminder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView android:text="Reminder Type" style="@style/LabelStyle" android:textColor="#FF9800"/>
+            <Spinner
+                android:id="@+id/spinnerReminderType"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_textfield_tenant"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView android:text="Amount (€)" style="@style/LabelStyle"/>
+            <EditText
+                android:id="@+id/etAmount"
+                style="@style/InputStyle"
+                android:inputType="numberDecimal"
+                android:hint="0.00 (Optional)"/>
+        </LinearLayout>
+
+        <!-- SAVE BUTTON -->
+        <Button
+            android:id="@+id/btnSaveCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Save Entry"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:backgroundTint="#B792D9"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="40dp"/>
 
     </LinearLayout>
 </ScrollView>

@@ -120,6 +120,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation(libs.firebase.database)
 
+    implementation ("com.applandeo:material-calendar-view:1.9.2")
+    implementation ("com.google.android.material:material:1.11.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 1. Header Curve -->
+    <View
+        android:id="@+id/headerBg"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/bg_header_orange_circle"
+        android:translationX="-50dp"
+        android:translationY="-50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Calendar"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- View All Tasks Button -->
+    <Button
+        android:id="@+id/btnViewTasks"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="View all tasks"
+        android:backgroundTint="#00BCD4"
+        android:textColor="#FFF"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- 2. Filter Tasks  -->
+    <LinearLayout
+        android:id="@+id/layoutFilters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/btnViewTasks">
+
+        <TextView android:id="@+id/filterAll" android:text="All" android:textColor="#FFF" android:textStyle="bold" android:background="@drawable/bg_pill_purple" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:layout_marginEnd="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/filterChores" android:text="Chores" android:textColor="#000" android:textStyle="bold" android:background="@drawable/bg_pill_unselected" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:layout_marginEnd="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/filterEvents" android:text="Events" android:textColor="#000" android:textStyle="bold" android:background="@drawable/bg_pill_unselected" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:layout_marginEnd="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/filterReminders" android:text="Reminders" android:textColor="#000" android:textStyle="bold" android:background="@drawable/bg_pill_unselected" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <!-- 3. Add Event Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="+ Add Entry"
+        android:textColor="#E91E63"
+        android:backgroundTint="#FFF"
+        app:strokeColor="#E91E63"
+        app:strokeWidth="1dp"
+        app:cornerRadius="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutFilters"/>
+
+    <!-- 4. Calendar Container -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/calendarCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="#F5F5F5"
+        app:layout_constraintTop_toBottomOf="@id/btnAddEvent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Toggle Arrow -->
+            <FrameLayout
+                android:id="@+id/btnToggleCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="#B792D9"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                    android:id="@+id/imgToggleArrow"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="16dp"
+                    android:src="@android:drawable/arrow_down_float"
+                    app:tint="#FFFFFF"/>
+                <TextView
+                    android:id="@+id/tvCurrentDateHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Today"
+                    android:textColor="#FFF"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"/>
+            </FrameLayout>
+
+            <!-- A. FULL MONTH VIEW  -->
+            <com.applandeo.materialcalendarview.CalendarView
+                android:id="@+id/calendarView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:headerColor="#B792D9"
+                app:headerLabelColor="#FFFFFF"
+            app:selectionLabelColor="#B792D9"
+            app:todayLabelColor="#E91E63"
+            app:type="classic"
+            android:visibility="gone"/>
+
+            <!-- B. WEEK VIEW  -->
+            <LinearLayout
+                android:id="@+id/weekViewContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="90dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:baselineAligned="false"
+                android:background="#F5F5F5"
+                android:visibility="visible"
+                android:paddingBottom="8dp">
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- 5. THREE SECTIONS SCROLLVIEW -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/calendarCard"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="20dp">
+
+            <!-- CHORES SECTION -->
+            <TextView
+                android:id="@+id/tvHeaderChores"
+                android:text="Chores"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:id="@+id/containerChores"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- EVENTS SECTION -->
+            <TextView
+                android:id="@+id/tvHeaderEvents"
+                android:text="Events"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:id="@+id/containerEvents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- REMINDERS SECTION -->
+            <TextView
+                android:id="@+id/tvHeaderReminders"
+                android:text="Reminders"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:id="@+id/containerReminders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#FFFFFF"
+        android:elevation="16dp"
+
+        app:menu="@menu/tenant_bottom_nav"
+        app:labelVisibilityMode="labeled"
+        style="@style/Widget.Design.BottomNavigationView"
+        app:itemBackground="@drawable/bg_nav_pill_custom"
+        app:itemIconSize="50dp"
+        app:itemRippleColor="@null"
+        app:itemIconTint="@color/selector_nav_icon"
+        app:itemTextColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

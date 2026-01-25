@@ -1,0 +1,28 @@
+package UniNest.Backend.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+import UniNest.Backend.exception.UserServiceException;
+import UniNest.Backend.model.User;
+import UniNest.Backend.service.UserService;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    // Endpoint to get roommates by House Code
+    @GetMapping("/roommates/{houseCode}")
+    public List<User> getRoommates(@PathVariable String houseCode) {
+        try {
+            // Reusing your existing service method
+            return userService.getUsersForApartment(houseCode);
+        } catch (Exception | UserServiceException e) {
+            throw new RuntimeException("Error fetching roommates", e);
+        }
+    }
+}

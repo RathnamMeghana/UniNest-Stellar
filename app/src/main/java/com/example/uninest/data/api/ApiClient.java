@@ -3,6 +3,7 @@ package com.example.uninest.data.api;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.uninest.data.api.BuildingApi;
+import com.example.uninest.data.api.UserApi;
 import com.example.uninest.model.Calendar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

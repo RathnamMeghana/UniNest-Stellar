@@ -27,7 +27,7 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
 public class TenantSignUpActivity extends AppCompatActivity {
 
-    private EditText etHouseCode, etTenantEmail, etTenantPassword, etTenantConfirmPassword;
+    private EditText etFirstName, etLastName,etHouseCode, etTenantEmail, etTenantPassword, etTenantConfirmPassword;
     private Button btnTenantSignUp;
 
     private FirebaseAuth mAuth;
@@ -39,6 +39,8 @@ public class TenantSignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tenant_sign_up);
 
         // Hook up views
+        etFirstName = findViewById(R.id.etFirstName);
+        etLastName = findViewById(R.id.etLastName);
         etHouseCode = findViewById(R.id.etHouseCode);
         etTenantEmail = findViewById(R.id.etTenantEmail);
         etTenantPassword = findViewById(R.id.etTenantPassword);
@@ -52,6 +54,8 @@ public class TenantSignUpActivity extends AppCompatActivity {
 
         // Button click
         btnTenantSignUp.setOnClickListener(v -> {
+            String firstName = etFirstName.getText().toString().trim();
+            String lastName = etLastName.getText().toString().trim();
             String houseCode = etHouseCode.getText().toString().trim();
             String email = etTenantEmail.getText().toString().trim();
             String password = etTenantPassword.getText().toString();
@@ -59,7 +63,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
             int role = 2;
 
 
-            if (houseCode.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+            if (firstName.isEmpty() || lastName.isEmpty() || houseCode.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
                 Toast.makeText(TenantSignUpActivity.this,
                         "Please fill in all fields",
                         Toast.LENGTH_SHORT).show();
@@ -82,13 +86,13 @@ public class TenantSignUpActivity extends AppCompatActivity {
             btnTenantSignUp.setEnabled(false);
             btnTenantSignUp.setText("Creating Account...");
 
-            validateHouseCode(houseCode, email, password, String.valueOf(role));
+            validateHouseCode(houseCode, email, password, firstName, lastName,String.valueOf(role));
             //signUp(email, password, String.valueOf(role), houseCode);
         });
     }
 
 
-    private void signUp(String email, String password, String role, String houseCode, String apartmentId) {
+    private void signUp(String email, String password, String fName, String lName, String role, String houseCode, String apartmentId) {
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
@@ -98,6 +102,8 @@ public class TenantSignUpActivity extends AppCompatActivity {
                         // Save tenant info in Firestore
                         Map<String, Object> userMap = new HashMap<>();
                         userMap.put("email", email);
+                        userMap.put("firstName", fName);
+                        userMap.put("lastName", lName);
                         userMap.put("role", role);
                         userMap.put("houseCode", houseCode);
                         userMap.put("apartmentId", apartmentId);
@@ -145,7 +151,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
 
 
 
-    private void validateHouseCode(String houseCode, String email, String password, String role) {
+    private void validateHouseCode(String houseCode, String email, String password,String fName, String lName, String role) {
         db.collection("apartments")
                 .whereEqualTo("code", houseCode)
                 .limit(1)
@@ -154,7 +160,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
                         // Apartment exists proceed with signup
                         String apartmentId = task.getResult().getDocuments().get(0).getId();
-                        signUp(email, password, role, houseCode, apartmentId);
+                        signUp(email, password, fName, lName, role, houseCode, apartmentId);
                     }
                     else {
 

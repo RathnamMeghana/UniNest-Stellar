@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Green -->
+    <item android:width="8dp" android:height="8dp" android:gravity="center_vertical|start">
+        <shape android:shape="oval"><solid android:color="#4CAF50"/></shape>
+    </item>
+    <!-- Pink (Middle) -->
+    <item android:width="8dp" android:height="8dp" android:left="12dp" android:gravity="center_vertical|start">
+        <shape android:shape="oval"><solid android:color="#E91E63"/></shape>
+    </item>
+    <!-- Orange (Right) -->
+    <item android:width="8dp" android:height="8dp" android:left="24dp" android:gravity="center_vertical|start">
+        <shape android:shape="oval"><solid android:color="#FF9800"/></shape>
+    </item>
+</layer-list>

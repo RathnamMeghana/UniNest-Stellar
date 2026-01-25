@@ -46,13 +46,20 @@ public class CalendarService {
             event.setType(dto.getType());
             event.setTitle(dto.getTitle());
             event.setDescription(dto.getDescription());
-            event.setStartDate(dto.getStartDate());
-            event.setEndDate(dto.getEndDate());
+            if (dto.getStartDate() != null) {
+                event.setStartDate(Timestamp.parseTimestamp(dto.getStartDate()));
+            }
+            if (dto.getEndDate() != null) {
+                event.setEndDate(Timestamp.parseTimestamp(dto.getEndDate()));
+            }
             event.setAllDay(dto.isAllDay());
             event.setAssignedTo(dto.getAssignedTo());
             event.setRelatedChoreId(dto.getRelatedChoreId());
             event.setCreatedBy(createdBy);
             event.setRecurrence(dto.getRecurrence());
+            event.setAmount(dto.getAmount());
+            event.setEstDuration(dto.getEstDuration());
+            event.setLocation(dto.getLocation());
 
             // Save to Firestore
             docRef.set(event).get();
@@ -245,7 +252,27 @@ public class CalendarService {
         dto.setCreatedBy(e.getCreatedBy());
         dto.setAssignedTo(e.getAssignedTo());
         dto.setRelatedChoreId(e.getRelatedChoreId());
-        dto.setRecurrence(null); // optionally map recurrence here
+        if (e.getRecurrence() != null) {
+            CalendarEventDTO.Recurrence recDto = new CalendarEventDTO.Recurrence();
+
+            // Convert Enum to String
+            if (e.getRecurrence().getFrequency() != null) {
+                recDto.setFrequency(e.getRecurrence().getFrequency().name());
+            }
+
+            recDto.setInterval(e.getRecurrence().getInterval());
+            recDto.setDaysOfWeek(e.getRecurrence().getDaysOfWeek());
+            recDto.setEndDate(e.getRecurrence().getEndDate());
+
+            dto.setRecurrence(recDto);
+
+        }
+        dto.setAmount(e.getAmount());
+        dto.setStatus(e.getStatus());
+        dto.setEstDuration(e.getEstDuration());
+        dto.setActualDuration(e.getActualDuration());
+        dto.setLocation(e.getLocation());
+
         return dto;
     }
 

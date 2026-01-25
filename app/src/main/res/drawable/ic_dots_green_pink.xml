@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Left Dot (Green) -->
+    <item android:width="8dp" android:height="8dp" android:gravity="center_vertical|start">
+        <shape android:shape="oval"><solid android:color="#4CAF50"/></shape>
+    </item>
+    <!-- Right Dot (Pink) - shifted 12dp -->
+    <item android:width="8dp" android:height="8dp" android:left="12dp" android:gravity="center_vertical|start">
+        <shape android:shape="oval"><solid android:color="#E91E63"/></shape>
+    </item>
+</layer-list>

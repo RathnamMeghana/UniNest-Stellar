@@ -27,6 +27,11 @@ public class ChoreRequests {
     private String scheduledDate; // ISO string for JSON
     private String createdBy;     // String for JSON
 
+    private String status; // "NOT_STARTED", "IN_PROGRESS", "COMPLETED"
+    private int actualDuration;
+
+    private String description;
+
     public void sanitize() {
         if (this.taskName != null)
             this.taskName = UniNest.Backend.util.SanitizationUtil.sanitize(this.taskName);

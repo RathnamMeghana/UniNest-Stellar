@@ -89,13 +89,19 @@ public class TenantLoginActivity extends AppCompatActivity {
                         if ("2".equals(role)) {
                             String houseCode = documentSnapshot.getString("houseCode");
 
-                            sessionManager.saveUserSession(email, role, houseCode);
+                            // Retrieve Names
+                            String fName = documentSnapshot.getString("firstName");
+                            String lName = documentSnapshot.getString("lastName");
+                            String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
+
+                            // Save FULL session data
+                            sessionManager.saveTenantSession(uid, email, role, houseCode, fullName.trim());
 
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
 
                             // Navigate to Raise Ticket Screen
-                            Intent intent = new Intent(TenantLoginActivity.this, TenantTicketsActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Prevent going back to login
+                            Intent intent = new Intent(TenantLoginActivity.this, TenantHomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             finish();
                         } else {
