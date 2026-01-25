@@ -1,23 +1,51 @@
 package com.example.uninest.model;
 
+import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-import com.google.firebase.Timestamp;
+public class Apartment implements Serializable {
 
-public class Apartment {
-
+    @SerializedName("buildingId")
     private String buildingId;
+
+    @SerializedName("name")
     private String name;
+
+    // Based on logs: [{"totalRooms":"9", ...}] - this must be a String
+    @SerializedName("totalRooms")
     private String totalRooms;
-    private String code; // set in backend
+
+    @SerializedName("code")
+    private String code;
+
+    @SerializedName("landlordId")
     private String landlordId;
-    private Object createdAt;
+
+    @SerializedName("description")
     private String description;
-    private Double rentPrice;
-    private Boolean active;
 
+    @SerializedName("rentPrice")
+    private double rentPrice;
 
-    // Getters & setters
+    @SerializedName("active")
+    private boolean active;
 
+    // Handles the nested createdAt object from the logs
+    @SerializedName("createdAt")
+    private CreatedAt createdAt;
+
+    // Static inner class to handle the Timestamp structure
+    public static class CreatedAt {
+        private long seconds;
+        private int nanos;
+
+        public long getSeconds() { return seconds; }
+        public void setSeconds(long seconds) { this.seconds = seconds; }
+        public int getNanos() { return nanos; }
+        public void setNanos(int nanos) { this.nanos = nanos; }
+    }
+
+    // Getters and Setters
     public String getBuildingId() { return buildingId; }
     public void setBuildingId(String buildingId) { this.buildingId = buildingId; }
 
@@ -33,15 +61,15 @@ public class Apartment {
     public String getLandlordId() { return landlordId; }
     public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
 
-    public Object getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Object createdAt) { this.createdAt = createdAt; }
-
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public Double getRentPrice() { return rentPrice; }
-    public void setRentPrice(Double rentPrice) { this.rentPrice = rentPrice; }
+    public double getRentPrice() { return rentPrice; }
+    public void setRentPrice(double rentPrice) { this.rentPrice = rentPrice; }
 
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+
+    public CreatedAt getCreatedAt() { return createdAt; }
+    public void setCreatedAt(CreatedAt createdAt) { this.createdAt = createdAt; }
 }

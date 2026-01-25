@@ -30,4 +30,6 @@ public class BuildingRequest {
     @NotNull(message = "Room type is required")
     private Boolean active;
 
+    private String imageUrl;
+
 }

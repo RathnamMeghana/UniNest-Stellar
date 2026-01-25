@@ -15,5 +15,7 @@ public class Building {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Boolean active;
+    private String imageUrl;
+
 
 }

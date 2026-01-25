@@ -1,19 +1,25 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.cardview.widget.CardView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.uninest.R;
 
 /**
  * Reusable card component for a building row.
+ * Now supports Base64 image decoding for Firestore-stored images.
  */
 public class BuildingCardView extends FrameLayout {
 
@@ -42,10 +48,9 @@ public class BuildingCardView extends FrameLayout {
         tvBuildingName = findViewById(R.id.tvBuildingName);
         tvApartmentInfo = findViewById(R.id.tvApartmentInfo);
         imgBuilding = findViewById(R.id.imgBuilding);
-
     }
 
-    // ---- setters from Activities ---- //
+    // ---- Setters from Activities / Adapters ---- //
 
     public void setBuildingName(String name) {
         tvBuildingName.setText(name);
@@ -59,11 +64,48 @@ public class BuildingCardView extends FrameLayout {
         tvApartmentInfo.setText(text);
     }
 
+    /**
+     * Use this for local Android resource icons.
+     */
     public void setBuildingImage(@DrawableRes int resId) {
         imgBuilding.setImageResource(resId);
     }
 
+    /**
+     * Use this to display the image stored as a Base64 string in Firestore.
+     */
+    public void setBuildingImageFromBase64(String base64String) {
+        if (base64String == null || base64String.isEmpty()) {
+            // Use a default image if no data exists
+            imgBuilding.setImageResource(R.drawable.ic_launcher_background);
+            return;
+        }
+
+        try {
+            // Clean the string if it contains headers (like "data:image/jpeg;base64,")
+            if (base64String.contains(",")) {
+                base64String = base64String.split(",")[1];
+            }
+
+            // Convert Base64 string to byte array
+            byte[] imageBytes = Base64.decode(base64String, Base64.DEFAULT);
+
+            // Load into ImageView using Glide
+            Glide.with(getContext())
+                    .asBitmap()
+                    .load(imageBytes)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache for performance
+                    .placeholder(R.drawable.ic_launcher_background) // Show while loading
+                    .error(R.drawable.ic_launcher_background)       // Show if decoding fails
+                    .into(imgBuilding);
+
+        } catch (Exception e) {
+            Log.e("BuildingCardView", "Error decoding Base64 image", e);
+            imgBuilding.setImageResource(R.drawable.ic_launcher_background);
+        }
+    }
+
     public ImageView getImageView() {
-        return imgBuilding; // for Glide/Coil later
+        return imgBuilding;
     }
 }

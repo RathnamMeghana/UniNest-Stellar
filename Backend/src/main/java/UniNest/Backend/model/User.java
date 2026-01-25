@@ -8,6 +8,7 @@ public class User {
     private String houseCode;
     private String role;
     private String id;
-    private String firstName;
-    private String lastName;
+
+
+
 }

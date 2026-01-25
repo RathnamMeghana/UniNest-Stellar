@@ -59,6 +59,8 @@
 
     <!-- Scrollable list of building cards -->
 
+
+
     <Button
         android:id="@+id/btnNewBuilding"
         android:layout_width="wrap_content"

@@ -17,6 +17,16 @@
         tools:targetApi="31">
 
         <activity
+            android:name=".ui.auth.ChoreListActivity"
+            android:exported="false">
+
+        </activity>
+
+
+
+       <activity android:name=".ui.auth.AddChoreSmartActivity" android:exported="false" />
+
+        <activity
             android:name=".ui.auth.WelcomeActivity"
             android:exported="false" />
         <activity
@@ -50,10 +60,17 @@
         <activity
             android:name=".ui.auth.TenantLoginActivity"
             android:exported="true">
-            <intent-filter>
+           <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.auth.AddCalendarEventActivity"
+            android:exported="false" >
+
+
         </activity>
         <activity
             android:name=".ui.auth.RoomTypeDetailActivity"
@@ -64,6 +81,7 @@
         <activity
             android:name=".ui.auth.LettingAgentTicketDetailsActivity"
             android:exported="false" />
+
 
         <activity
             android:name=".ui.auth.TenantCardView"
@@ -99,12 +117,9 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.auth.ChoreDetailActivity"
+            android:name=".ui.auth.BulkApartmentWithRoomsActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".ui.auth.ViewAllTasksActivity"
-            android:exported="false" />
 <!--        <activity-->
 <!--            android:name=".ui.auth.LettingAgentLoginActivity"-->
 <!--            android:exported="false">-->

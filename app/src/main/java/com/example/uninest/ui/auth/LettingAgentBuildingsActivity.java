@@ -65,6 +65,7 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
             addBuildingLauncher.launch(intent);
         });
 
+
         // Bottom nav clicks
         findViewById(R.id.navTickets).setOnClickListener(v -> {
             Intent intent = new Intent(LettingAgentBuildingsActivity.this, LettingAgentTicketsActivity.class);
@@ -79,6 +80,8 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         findViewById(R.id.navProfile).setOnClickListener(v -> {
             // TODO navigate to ProfileActivity
         });
+
+
     }
 
     @Override
@@ -149,19 +152,25 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
     private void addBuildingCard(Building building) {
         BuildingCardView card = new BuildingCardView(this);
         card.setBuildingName(building.getName());
-        card.setApartmentCount(0); // you'll hook real count later
+        card.setApartmentCount(0); // Hook real count later
 
-        // Simple placeholder logic so UI works
-        if (building.getName() != null &&
-                building.getName().toLowerCase().contains("green")) {
-            card.setBuildingImage(R.drawable.green_park_placeholder);
-        } else if (building.getName() != null &&
-                building.getName().toLowerCase().contains("mourne")) {
-            card.setBuildingImage(R.drawable.mourne_view_placeholder);
+        // --- FIX: Loading the real image from the API ---
+        // If the building has an image string, use the Base64 loader.
+        // Otherwise, fall back to the placeholder logic.
+        if (building.getImageUrl() != null && !building.getImageUrl().isEmpty()) {
+            card.setBuildingImageFromBase64(building.getImageUrl());
         } else {
-            card.setBuildingImage(R.drawable.building_placeholder); // if you have one
+            // Fallback placeholders based on name
+            if (building.getName() != null && building.getName().toLowerCase().contains("green")) {
+                card.setBuildingImage(R.drawable.green_park_placeholder);
+            } else if (building.getName() != null && building.getName().toLowerCase().contains("mourne")) {
+                card.setBuildingImage(R.drawable.mourne_view_placeholder);
+            } else {
+                card.setBuildingImage(R.drawable.building_placeholder);
+            }
         }
-        //  Tap building card -> open Apartments screen with that building name
+
+        // Tap building card -> open Apartments screen
         card.setOnClickListener(v -> {
             Intent intent = new Intent(
                     LettingAgentBuildingsActivity.this,
@@ -169,9 +178,9 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
             );
             intent.putExtra("EXTRA_BUILDING_NAME", building.getName());
             intent.putExtra("EXTRA_BUILDING_ID", building.getId());
-
             startActivity(intent);
         });
+
         buildingList.addView(card);
     }
 }

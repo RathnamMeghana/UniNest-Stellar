@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.example.uninest.data.api.BuildingApi;
 import com.example.uninest.data.api.UserApi;
 import com.example.uninest.model.Calendar;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -115,10 +117,14 @@ public class ApiClient {
         return retrofit.create(CalendarApi.class);
     }
 
-    public static UserApi getUserApi() {
+    public static BillsApi getBillsApi(){
         if (retrofit == null) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            Gson gson = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ") // Matches your backend date format
+                    .create();
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
@@ -128,10 +134,10 @@ public class ApiClient {
                     .baseUrl(BASE_URL)
                     .client(client)
                     .addConverterFactory(retrofit2.converter.scalars.ScalarsConverterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
-        return retrofit.create(UserApi.class);
+        return retrofit.create(BillsApi.class);
     }
 
 }
