@@ -9,6 +9,8 @@ public class BuildingRequest {
     private String country;
     private String landlordId;
     private Boolean active;
+    private String imageUrl;
+
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -35,5 +37,13 @@ public class BuildingRequest {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
 }
