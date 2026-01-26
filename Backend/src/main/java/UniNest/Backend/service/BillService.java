@@ -9,11 +9,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import UniNest.Backend.dto.BillRequest;
+import UniNest.Backend.dto.CalendarEventDTO;
 import UniNest.Backend.dto.OwedToUserResponse;
+import UniNest.Backend.model.User;
 
 @Service
 public class BillService {
     private static final String BILL_COLLECTION = "bills";
+
+    // Inject CalendarService to create in-app events
+    private final CalendarService calendarService;
+
+    public BillService(CalendarService calendarService) {
+        this.calendarService = calendarService;
+    }
 
     public List<BillRequest> createBill(BillRequest request) {
         try {
@@ -45,35 +54,54 @@ public class BillService {
                         BillRequest.Split splitCopy = new BillRequest.Split();
                         splitCopy.setUserId(s.getUserId());
                         splitCopy.setAmountOwed(s.getAmountOwed());
-                        splitCopy.setPaid(s.isPaid());
+                        splitCopy.setPaid(false);
                         splitsCopy.add(splitCopy);
                     }
                 }
                 billCopy.setSplits(splitsCopy);
-
-                // Roommates
                 billCopy.setRoommateIds(new ArrayList<>(request.getRoommateIds()));
 
-                // Dates
+                // Set Dates for this specific month
                 billCopy.setStartDate(cal.getTime());
-                billCopy.setDueDate(cal.getTime()); // can adjust if needed
+                billCopy.setDueDate(cal.getTime());
 
-                // Save to Firestore
+                // 1. Save Bill to "bills" collection
                 db.collection(BILL_COLLECTION).document(billCopy.getId()).set(billCopy).get();
-
                 createdBills.add(billCopy);
 
-                // Move calendar to next month for recurring bills
+                // 2. CREATE INTERNAL APP EVENT
+                // This makes the bill appear in your app's calendar list
+                createCalendarEventForBill(billCopy);
+
+                // Move calendar to next month for the next iteration
                 cal.add(Calendar.MONTH, 1);
             }
 
             return createdBills;
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create bill", e);
+            throw new RuntimeException("Failed to create bill and events", e);
         }
     }
 
+    private void createCalendarEventForBill(BillRequest bill) {
+        CalendarEventDTO.Create eventDto = new CalendarEventDTO.Create();
+        eventDto.setHouseCode(bill.getHouseCode());
+        eventDto.setTitle("Bill: " + bill.getTitle());
+        eventDto.setDescription("Total Amount: €" + bill.getTotalAmount() + ". Please check splits for your share.");
+
+        // Convert the Bill Date to ISO string for the CalendarService parser
+        String isoDate = bill.getDueDate().toInstant().toString();
+        eventDto.setStartDate(isoDate);
+        eventDto.setEndDate(isoDate);
+
+        eventDto.setAllDay(true);
+        eventDto.setType(CalendarEventDTO.EventType.BILL_DUE);
+        eventDto.setAmount(bill.getTotalAmount());
+
+        // The service will save this to the "calendar_events" collection
+        calendarService.create(eventDto, bill.getCreatorId());
+    }
 
     // ------------------- MARK SPLIT AS PAID -------------------
     public void markAsPaid(String billId, String userId) {
@@ -96,7 +124,6 @@ public class BillService {
                         }
                     }
                     if (updated) {
-                        // Persist the updated splits to Firestore
                         billRef.update("splits", bill.getSplits()).get();
                     }
                 }
@@ -157,7 +184,6 @@ public class BillService {
                 }
             }
 
-            // Sort by paidAt descending
             results.sort((a, b) -> {
                 Date aDate = a.getSplits().get(0).getPaidAt();
                 Date bDate = b.getSplits().get(0).getPaidAt();
@@ -182,31 +208,17 @@ public class BillService {
         }
     }
 
-    // ------------------- VALIDATE SPLITS -------------------
-    private void validateSplits(BillRequest request) {
-        if (request.getSplits() == null || request.getSplits().isEmpty()) return;
-
-        double total = request.getSplits().stream()
-                .mapToDouble(BillRequest.Split::getAmountOwed)
-                .sum();
-
-        if (Math.abs(total - request.getTotalAmount()) > 0.01) {
-            throw new IllegalArgumentException("Split amounts must equal total bill");
-        }
-    }
-
     // ------------------- TOTAL OWED BY USER -------------------
     public double getTotalOwedByUserId(String userId) {
         try {
             List<BillRequest> bills = getBillsByUserId(userId);
-
             return bills.stream()
                     .flatMap(bill -> bill.getSplits().stream())
                     .filter(split -> !split.isPaid())
                     .mapToDouble(BillRequest.Split::getAmountOwed)
                     .sum();
         } catch (Exception e) {
-            throw new RuntimeException("Error calculating total owed for user: " + userId, e);
+            throw new RuntimeException("Error calculating total owed", e);
         }
     }
 
@@ -222,11 +234,8 @@ public class BillService {
 
             for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
                 BillRequest bill = doc.toObject(BillRequest.class);
-
                 if (bill != null && bill.getSplits() != null) {
                     for (BillRequest.Split split : bill.getSplits()) {
-
-                        // Someone else owes AND hasn't paid
                         if (!split.getUserId().equals(userId) && !split.isPaid()) {
                             OwedToUserResponse owed = new OwedToUserResponse();
                             owed.setBillId(bill.getId());
@@ -234,18 +243,13 @@ public class BillService {
                             owed.setDebtorUserId(split.getUserId());
                             owed.setAmountOwed(split.getAmountOwed());
                             owed.setDueDate(bill.getDueDate());
-
                             results.add(owed);
                         }
                     }
                 }
             }
-
-            // Sort by due date (soonest first)
             results.sort(Comparator.comparing(OwedToUserResponse::getDueDate));
-
             return results;
-
         } catch (Exception e) {
             throw new RuntimeException("Error fetching amounts owed to user", e);
         }
@@ -256,6 +260,4 @@ public class BillService {
                 .mapToDouble(OwedToUserResponse::getAmountOwed)
                 .sum();
     }
-
-
 }

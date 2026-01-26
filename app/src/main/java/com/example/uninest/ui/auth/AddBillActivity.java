@@ -182,6 +182,7 @@ public class AddBillActivity extends AppCompatActivity {
         String title = etBillTitle.getText().toString().trim();
         String amountStr = etAmount.getText().toString().trim();
 
+        // 1. Validation
         if (title.isEmpty() || amountStr.isEmpty() || selectedDueDate == null || selectedRoommateIds.isEmpty()) {
             Toast.makeText(this, "Please fill all fields and select roommates", Toast.LENGTH_SHORT).show();
             return;
@@ -193,16 +194,17 @@ public class AddBillActivity extends AppCompatActivity {
         double total = Double.parseDouble(amountStr);
         double perPerson = total / selectedRoommateIds.size();
 
+        // 2. Build the Request
         BillsRequest request = new BillsRequest();
         request.setTitle(title);
         request.setTotalAmount(total);
         request.setCreatorId(testUserId);
-        request.setDueDate(selectedDueDate);
+        request.setDueDate(selectedDueDate); // The date of the first bill
         request.setRoommateIds(selectedRoommateIds);
         request.setHouseCode(houseCode);
         request.setActive(true);
 
-        // Create embedded splits
+        // 3. Create splits
         List<BillsRequest.Split> splits = new ArrayList<>();
         for (String userId : selectedRoommateIds) {
             BillsRequest.Split split = new BillsRequest.Split();
@@ -213,13 +215,20 @@ public class AddBillActivity extends AppCompatActivity {
         }
         request.setSplits(splits);
 
+        // 4. Handle Recurring Logic
         BillsRequest.BillType type = (BillsRequest.BillType) spinnerBillType.getSelectedItem();
         request.setBillType(type);
+
         if (type == BillsRequest.BillType.RECURRING) {
             request.setFrequency((BillsRequest.BillFrequency) spinnerFrequency.getSelectedItem());
-            request.setStartDate(new Date());
+            // Start the 6-month sequence on the date picked in the calendar
+            request.setStartDate(selectedDueDate);
+        } else {
+            // One-time bills start on the due date
+            request.setStartDate(selectedDueDate);
         }
 
+        // 5. Send to API
         billsApi.createBill(request).enqueue(new Callback<List<BillsRequest>>() {
             @Override
             public void onResponse(Call<List<BillsRequest>> call, Response<List<BillsRequest>> response) {
@@ -227,7 +236,8 @@ public class AddBillActivity extends AppCompatActivity {
                 btnSave.setEnabled(true);
 
                 if (response.isSuccessful()) {
-                    Toast.makeText(AddBillActivity.this, "Bill Created Successfully!", Toast.LENGTH_SHORT).show();
+                    // Since the backend loop now creates multiple bills, this is a success!
+                    Toast.makeText(AddBillActivity.this, "6-Month Bill Sequence Created!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(AddBillActivity.this, ViewBillsActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
@@ -241,7 +251,7 @@ public class AddBillActivity extends AppCompatActivity {
             public void onFailure(Call<List<BillsRequest>> call, Throwable t) {
                 isSubmitting = false;
                 btnSave.setEnabled(true);
-                Toast.makeText(AddBillActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddBillActivity.this, "Network Error: Check Connection", Toast.LENGTH_SHORT).show();
             }
         });
     }
