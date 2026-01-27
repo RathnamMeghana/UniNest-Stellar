@@ -3,7 +3,7 @@ package com.example.uninest.model;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
-    private String id;
+    //private String id;
     private String apartmentId;
     private String email;
     private String houseCode;
@@ -14,8 +14,8 @@ public class User {
     @SerializedName("id")
     private String id;
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    //public String getId() { return id; }
+    //public void setId(String id) { this.id = id; }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }

@@ -79,7 +79,7 @@ public class ChoreController {
         predictionRequest.setRoom(chore.getRoom());
         predictionRequest.setDifficultyScore(chore.getDifficultyScore());
         predictionRequest.setEstDurationMin(chore.getEstDurationMin());
-        predictionRequest.setFrequencyPerWeek(chore.getFrequencyPerWeek());
+        predictionRequest.setFrequencyPerWeek((double) chore.getFrequencyPerWeek());
 
         //  predict assignment
         ChorePredictionResponse assignment =

@@ -49,6 +49,9 @@ assert data["assigned_to_enc"].min() == 0
 assert data["assigned_to_enc"].max() == NUM_ROOMMATES - 1
 
 # ---------------- FEATURES ----------------
+
+from sklearn.preprocessing import StandardScaler
+
 X_numeric = data[
     [
         "difficulty_score",
@@ -58,6 +61,10 @@ X_numeric = data[
         "availability_mins",
     ]
 ].values.astype("float32")
+
+scaler = StandardScaler()
+X_numeric = scaler.fit_transform(X_numeric)
+
 
 X_task = data["task_name_enc"].values.astype("int32")
 X_room = data["room_enc"].values.astype("int32")
@@ -87,13 +94,13 @@ num_input = layers.Input(shape=(X_num_train.shape[1],), name="numeric_input")
 
 task_input = layers.Input(shape=(1,), name="task_input")
 task_emb = layers.Embedding(
-    input_dim=len(task_encoder.classes_), output_dim=8
+    input_dim=len(task_encoder.classes_), output_dim=16
 )(task_input)
 task_emb = layers.Flatten()(task_emb)
 
 room_input = layers.Input(shape=(1,), name="room_input")
 room_emb = layers.Embedding(
-    input_dim=len(room_encoder.classes_), output_dim=4
+    input_dim=len(room_encoder.classes_), output_dim=8
 )(room_input)
 room_emb = layers.Flatten()(room_emb)
 
@@ -148,7 +155,7 @@ loss, acc = model.evaluate(
 print(f"Test Accuracy: {acc:.2f}")
 
 # ---------------- SAVE MODEL ----------------
-model.save("chore_model.keras")
+model.save("chore_model_30_EPOCHS_more_data.keras")
 
 
 encoders = {
