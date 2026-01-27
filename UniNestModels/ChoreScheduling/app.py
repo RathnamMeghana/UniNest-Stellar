@@ -1,4 +1,3 @@
-import tensorflow as tf
 import numpy as np
 import pickle
 from flask import Flask, request, jsonify
@@ -8,40 +7,27 @@ from flask import Flask, request, jsonify
 # --------------------------
 app = Flask(__name__)
 
-MODEL_PATH = "chore_model.keras"
-ENCODER_PATH = "encoders.pkl"
-
-
-# --------------------------
-# LOAD MODEL
-# --------------------------
-model = tf.keras.models.load_model(MODEL_PATH)
+# Note: Using the .pkl file we saved from the Random Forest script
+MODEL_DATA_PATH = "stable_chore_rf_model.pkl"
 
 # --------------------------
-# LOAD ENCODERS
+# LOAD MODEL & ENCODERS
 # --------------------------
-with open(ENCODER_PATH, "rb") as f:
-    encoders = pickle.load(f)
+with open(MODEL_DATA_PATH, "rb") as f:
+    payload = pickle.load(f)
 
+# Extract everything from the saved dictionary
+rf_model = payload["model"]
+encoders = payload["encoders"]
+scaler = encoders["scaler"]
+roommate_encoder = encoders["assigned_to"]
+task_encoder = encoders["task_name"]
+room_encoder = encoders["room"]
 
-
-def get_encoder(possible_keys):
-    for key in possible_keys:
-        if key in encoders:
-            return encoders[key]
-    raise RuntimeError(
-        f"Missing encoder. Expected one of {possible_keys}. "
-        f"Found: {list(encoders.keys())}"
-    )
-
-roommate_encoder = get_encoder(["roommate", "assigned_to"])
-task_encoder = get_encoder(["task", "task_name"])
-room_encoder = get_encoder(["room", "Room"])
-
-print("Encoders loaded:", list(encoders.keys()))
+print("Random Forest Model and Encoders loaded successfully.")
 
 # --------------------------
-# FIELD NORMALIZATION
+# HELPERS
 # --------------------------
 def get_field(data, *names, default=None):
     for name in names:
@@ -49,12 +35,10 @@ def get_field(data, *names, default=None):
             return data[name]
     return default
 
-# --------------------------
-# SAFE ENCODING
-# --------------------------
 def safe_encode(value, encoder):
-    if value is None or value not in encoder.classes_:
-        return int(0)  # fallback class
+    # If it's a new chore name we haven't seen, default to the first class
+    if value not in encoder.classes_:
+        return 0
     return int(encoder.transform([value])[0])
 
 # --------------------------
@@ -67,56 +51,60 @@ def predict():
         return jsonify({"error": "No JSON received"}), 400
 
     try:
-        # ---- Numeric features (defaults included) ----
-        numeric_input = np.array([[
-            float(get_field(data, "difficulty_score", "difficultyScore", default=3)),
-            float(get_field(data, "est_duration_min", "estDurationMin", default=30)),
-            float(get_field(data, "frequency_per_week", "frequencyPerWeek", default=1)),
-            float(get_field(data, "roommate_preference", "roommatePreference", "preferenceScore", default=0.5)),
-            float(get_field(data, "availability_mins", "availabilityMins", default=120)),
-        ]], dtype="float32")
-
-
-
-        # ---- Categorical features ----
+        # 1. Extract raw inputs
+        diff = float(get_field(data, "difficulty_score", "difficultyScore", default=3))
+        dur = float(get_field(data, "est_duration_min", "estDurationMin", default=30))
+        freq = float(get_field(data, "frequency_per_week", "frequencyPerWeek", default=1))
+        pref = float(get_field(data, "roommate_preference", "preferenceScore", default=0.5))
+        avail = float(get_field(data, "availability_mins", "availabilityMins", default=120))
+        
         task_name = get_field(data, "task_name", "taskName")
         room_name = get_field(data, "room")
 
+        # 2. CALCULATE ENGINEERED FEATURES (Must match training exactly)
+        total_effort = dur * freq
+        workload_ratio = total_effort / (avail + 1)
+        difficulty_density = diff / (dur + 1)
+
+        # 3. SCALE NUMERIC INPUTS
+        # Must be in the exact order as training: 
+        # [diff, dur, freq, pref, avail, total_effort, workload_ratio, difficulty_density]
+        numeric_features = np.array([[
+            diff, dur, freq, pref, avail, 
+            total_effort, workload_ratio, difficulty_density
+        ]])
+        numeric_scaled = scaler.transform(numeric_features)
+
+        # 4. ENCODE CATEGORICAL INPUTS
         task_enc = safe_encode(task_name, task_encoder)
         room_enc = safe_encode(room_name, room_encoder)
 
-        # ---- Predict ----
-        preds = model.predict(
-            {
-                "numeric_input": numeric_input,
-                "task_input": np.array([task_enc]),
-                "room_input": np.array([room_enc]),
-            },
-            verbose=0
-        )
+        # 5. COMBINE FOR RANDOM FOREST
+        # X_final = [scaled_numerics..., task_id, room_id]
+        X_final = np.hstack([numeric_scaled, [[task_enc, room_enc]]])
 
-        idx = int(np.argmax(preds))
-        confidence = float(np.max(preds))
+        # 6. PREDICT
+        prediction = rf_model.predict(X_final)
+        probabilities = rf_model.predict_proba(X_final)
+        
+        idx = int(prediction[0])
+        confidence = float(np.max(probabilities))
 
         assigned_to = str(roommate_encoder.inverse_transform([idx])[0])
 
         return jsonify({
             "assigned_to": assigned_to,
-            "confidence": round(confidence, 3)
+            "confidence": round(confidence, 3),
+            "features_used": {
+                "workload_ratio": round(workload_ratio, 4),
+                "total_effort": total_effort
+            }
         })
 
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
-# --------------------------
-# HEALTH CHECK
-# --------------------------
-@app.route("/health", methods=["GET"])
-def health():
-    return jsonify({"status": "ok"})
-
-# --------------------------
-# RUN SERVER
-# --------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5002, debug=True)
