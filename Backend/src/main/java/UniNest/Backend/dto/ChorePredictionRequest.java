@@ -7,9 +7,9 @@ public class ChorePredictionRequest {
 
     private String taskName;
     private String room;
-    private int difficultyScore;
-    private int estDurationMin;
-    private double frequencyPerWeek;
-    private int roommatePreference;
-    private int availabilityMins;
+    private Integer difficultyScore;
+    private Integer estDurationMin;
+    private Double frequencyPerWeek;
+    private Integer roommatePreference;
+    private Integer availabilityMins;
 }

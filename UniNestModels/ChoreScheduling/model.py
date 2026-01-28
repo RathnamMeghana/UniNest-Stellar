@@ -1,35 +1,28 @@
-import tensorflow as tf
-from tensorflow.keras import layers, models
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
 import pickle
-import os
-import shutil
+
 # ---------------- CONFIG ----------------
-EPOCHS = 30
-BATCH_SIZE = 16
-LEARNING_RATE = 0.001
 DATA_PATH = "choreData.csv"
 
-
-
-
-# ---------------- CLEAN OLD FILES ----------------
-if os.path.exists("encoders.pkl"):
-    os.remove("encoders.pkl")
-
-if os.path.exists("chore_model"):
-    shutil.rmtree("chore_model")
-
-# ---------------- LOAD DATA ----------------
+# ---------------- LOAD & SHUFFLE ----------------
 data = pd.read_csv(DATA_PATH)
-
 data.columns = data.columns.str.strip()
-data = data.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
-# ---------------- ENCODE CATEGORICAL DATA ----------------
+# SHUFFLE immediately to ensure a fair split
+data = data.sample(frac=1, random_state=42).reset_index(drop=True)
+
+# ---------------- FEATURE ENGINEERING ----------------
+# Re-applying the logic that helps the model understand the "cost" of a chore
+data['total_effort'] = data['est_duration_min'] * data['frequency_per_week']
+data['workload_ratio'] = data['total_effort'] / (data['availability_mins'] + 1)
+data['difficulty_density'] = data['difficulty_score'] / (data['est_duration_min'] + 1)
+
+# ---------------- ENCODING ----------------
 roommate_encoder = LabelEncoder()
 task_encoder = LabelEncoder()
 room_encoder = LabelEncoder()
@@ -38,128 +31,77 @@ data["assigned_to_enc"] = roommate_encoder.fit_transform(data["assigned_to"])
 data["task_name_enc"] = task_encoder.fit_transform(data["task_name"])
 data["room_enc"] = room_encoder.fit_transform(data["Room"])
 
-# ---------------- SANITY CHECKS ----------------
-print("Unique assigned_to:", sorted(data["assigned_to"].unique()))
-print("Encoded labels:", np.unique(data["assigned_to_enc"]))
-print("Roommate classes:", roommate_encoder.classes_)
+# ---------------- PREPARE FEATURES ----------------
+# Numeric Features
+feature_cols = [
+    "difficulty_score", "est_duration_min", "frequency_per_week", 
+    "roommate_preference", "availability_mins", "total_effort",
+    "workload_ratio", "difficulty_density"
+]
 
-NUM_ROOMMATES = data["assigned_to_enc"].nunique()
+X_numeric = data[feature_cols].values.astype("float32")
 
-assert data["assigned_to_enc"].min() == 0
-assert data["assigned_to_enc"].max() == NUM_ROOMMATES - 1
+# Scale numeric data
+scaler = StandardScaler()
+X_numeric_scaled = scaler.fit_transform(X_numeric)
 
-# ---------------- FEATURES ----------------
-X_numeric = data[
-    [
-        "difficulty_score",
-        "est_duration_min",
-        "frequency_per_week",
-        "roommate_preference",
-        "availability_mins",
-    ]
-].values.astype("float32")
+# Combine Numeric + Categorical for the Random Forest
+# RF doesn't need embeddings, just the encoded integers
+X_categorical = data[["task_name_enc", "room_enc"]].values
+X_final = np.hstack([X_numeric_scaled, X_categorical])
+y = data["assigned_to_enc"].values
 
-X_task = data["task_name_enc"].values.astype("int32")
-X_room = data["room_enc"].values.astype("int32")
-
-# ---------------- TARGET ----------------
-y = data["assigned_to_enc"].values.astype("int32")
-
-# ---------------- TRAIN / TEST SPLIT ----------------
-(
-    X_num_train,
-    X_num_test,
-    X_task_train,
-    X_task_test,
-    X_room_train,
-    X_room_test,
-    y_train,
-    y_test,
-) = train_test_split(
-    X_numeric, X_task, X_room, y,
-    test_size=0.2,
-    random_state=42
+# ---------------- SPLIT ----------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X_final, y, test_size=0.2, random_state=42
 )
 
-
-# ---------------- MODEL ----------------
-num_input = layers.Input(shape=(X_num_train.shape[1],), name="numeric_input")
-
-task_input = layers.Input(shape=(1,), name="task_input")
-task_emb = layers.Embedding(
-    input_dim=len(task_encoder.classes_), output_dim=8
-)(task_input)
-task_emb = layers.Flatten()(task_emb)
-
-room_input = layers.Input(shape=(1,), name="room_input")
-room_emb = layers.Embedding(
-    input_dim=len(room_encoder.classes_), output_dim=4
-)(room_input)
-room_emb = layers.Flatten()(room_emb)
-
-combined = layers.Concatenate()([num_input, task_emb, room_emb])
-
-x = layers.Dense(64, activation="relu")(combined)
-x = layers.Dropout(0.3)(x)
-x = layers.Dense(32, activation="relu")(x)
-
-output = layers.Dense(
-    NUM_ROOMMATES,
-    activation="softmax",
-    name="roommate_output",
-)(x)
-
-model = models.Model(
-    inputs=[num_input, task_input, room_input],
-    outputs=output,
+# ---------------- TRAIN RANDOM FOREST ----------------
+# We use 'balanced' class weights to handle any roommate chore-load gaps
+rf_model = RandomForestClassifier(
+    n_estimators=200, 
+    max_depth=15, 
+    min_samples_split=2,
+    random_state=42,
+    class_weight='balanced'
 )
 
-model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
-    loss="sparse_categorical_crossentropy",
-    metrics=["accuracy"],
-)
-
-model.summary()
-
-# ---------------- TRAIN ----------------
-model.fit(
-    {
-        "numeric_input": X_num_train,
-        "task_input": X_task_train,
-        "room_input": X_room_train,
-    },
-    y_train,
-    epochs=EPOCHS,
-    batch_size=BATCH_SIZE,
-    validation_split=0.1,
-)
+rf_model.fit(X_train, y_train)
 
 # ---------------- EVALUATE ----------------
-loss, acc = model.evaluate(
-    {
-        "numeric_input": X_num_test,
-        "task_input": X_task_test,
-        "room_input": X_room_test,
+y_pred = rf_model.predict(X_test)
+acc = accuracy_score(y_test, y_pred)
+
+print(f" Random Forest Results")
+print(f"Final Test Accuracy: {acc:.2f}")
+
+unique_labels = np.unique(np.concatenate((y_test, y_pred)))
+target_names = roommate_encoder.inverse_transform(unique_labels).astype(str)
+
+print("\nDetailed Performance per Roommate:")
+print(classification_report(y_test, y_pred, labels=unique_labels, target_names=target_names))
+
+# ---------------- FEATURE IMPORTANCE ----------------
+# See what the model actually cares about
+all_col_names = feature_cols + ["task_name", "room"]
+importances = rf_model.feature_importances_
+importance_df = pd.DataFrame({"Feature": all_col_names, "Importance": importances})
+print("\nFeature Importance (What the AI is looking at):")
+print(importance_df.sort_values(by="Importance", ascending=False))
+
+# ---------------- SAVE ----------------
+model_data = {
+    "model": rf_model,
+    "encoders": {
+        "assigned_to": roommate_encoder,
+        "task_name": task_encoder,
+        "room": room_encoder,
+        "scaler": scaler
     },
-    y_test,
-)
-
-print(f"Test Accuracy: {acc:.2f}")
-
-# ---------------- SAVE MODEL ----------------
-model.save("chore_model.keras")
-
-
-encoders = {
-    "assigned_to": roommate_encoder,
-    "task_name": task_encoder,
-    "room": room_encoder
+    "feature_names": feature_cols
 }
 
-with open("encoders.pkl", "wb") as f:
-    pickle.dump(encoders, f)
+with open("stable_chore_rf_model.pkl", "wb") as f:
+    pickle.dump(model_data, f)
 
-
-print("Model saved to 'chore_model'")
-
+print("\nModel and Encoders saved to: stable_chore_rf_model.pkl")
