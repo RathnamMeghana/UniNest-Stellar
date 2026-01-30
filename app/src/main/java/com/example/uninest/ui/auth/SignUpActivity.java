@@ -1,35 +1,40 @@
 package com.example.uninest.ui.auth;
 
-import android.os.Bundle;
 import android.content.Intent;
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
-import android.util.Patterns;
-import android.widget.AutoCompleteTextView;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class SignUpActivity extends AppCompatActivity {
 
-    // private Spinner spinnerCompanyName;
     private AutoCompleteTextView actvCompanyName;
     private EditText etCompanyEmail, etPassword, etConfirmPassword;
     private Button btnSignUp;
+
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
@@ -38,11 +43,9 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        // Initialize Firebase instances
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // connect XML views to Java
         actvCompanyName = findViewById(R.id.actvCompanyName);
         etCompanyEmail = findViewById(R.id.etCompanyEmail);
         etPassword = findViewById(R.id.etPassword);
@@ -68,66 +71,99 @@ public class SignUpActivity extends AppCompatActivity {
             String email = etCompanyEmail.getText().toString().trim();
             String password = etPassword.getText().toString();
             String confirm = etConfirmPassword.getText().toString();
-            //role 1 for letting agent view
             int role = 1;
 
             if (email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
-                Toast.makeText(SignUpActivity.this,
-                        "Please fill in all fields",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(SignUpActivity.this,
-                        "Please enter a valid email address",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!password.equals(confirm)) {
-                Toast.makeText(SignUpActivity.this,
-                        "Passwords do not match",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                 return;
             }
-            signUp(email, password,  company, String.valueOf(role));
 
-            });
-
-        };
+            signUp(email, password, company, String.valueOf(role));
+        });
+    }
 
     private void signUp(String email, String password, String company, String role) {
-
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-
-                        // Save user info in Firestore
-                        Map<String, Object> userMap = new HashMap<>();
-                        userMap.put("company", company);
-                        userMap.put("email", email);
-                        userMap.put("role", role);
-
-                        db.collection("users").document(user.getUid())
-                                .set(userMap)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, "Signup Successful!", Toast.LENGTH_SHORT).show();
-
-                                    // ➜ Go to Login
-                                    Intent intent = new Intent(SignUpActivity.this, LettingAgentLoginActivity.class);
-
-                                    startActivity(intent);
-                                    finish();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(this, "Error saving user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
-                    } else {
+                    if (!task.isSuccessful()) {
                         Toast.makeText(this, "Authentication failed: " +
                                 task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        return;
                     }
+
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    if (user == null) {
+                        Toast.makeText(this, "Signup succeeded but user is null", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Save user info in Firestore
+                    Map<String, Object> userMap = new HashMap<>();
+                    userMap.put("company", company);
+                    userMap.put("email", email);
+                    userMap.put("role", role);
+
+                    db.collection("users").document(user.getUid())
+                            .set(userMap)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(this, "Signup Successful!", Toast.LENGTH_SHORT).show();
+
+                                // Navigate immediately to login screen
+                                Intent intent = new Intent(SignUpActivity.this, LettingAgentLoginActivity.class);
+                                startActivity(intent);
+                                finish();
+
+                                // Optional: send token to backend asynchronously
+                                user.getIdToken(true).addOnCompleteListener(tokenTask -> {
+                                    if (tokenTask.isSuccessful()) {
+                                        String idToken = tokenTask.getResult().getToken();
+                                        sendTokenToBackend(idToken);
+                                    }
+                                });
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Error saving user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                 });
+    }
+
+    // Optional: asynchronous backend call, does not block navigation
+    private void sendTokenToBackend(String idToken) {
+        OkHttpClient client = new OkHttpClient();
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        String jsonBody = "{\"token\":\"" + idToken + "\"}";
+        RequestBody body = RequestBody.create(jsonBody, JSON);
+
+        String backendUrl = "http://10.102.198.130:8080/auth/firebase-login";
+
+        Request request = new Request.Builder()
+                .url(backendUrl)
+                .post(body)
+                .addHeader("Authorization", "Bearer " + idToken)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() ->
+                        Toast.makeText(SignUpActivity.this, "Backend auth failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                response.close(); // no navigation needed here
+            }
+        });
     }
 }

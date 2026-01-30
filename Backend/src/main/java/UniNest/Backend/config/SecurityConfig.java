@@ -12,11 +12,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for API calls
+
+                // Allow public access to all API endpoints used by the Android app
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(
+                                "/auth/**",           // Authentication endpoints
+                                "/apartments/**",     // ApartmentController
+                                "/buildings/**",      // BuildingController
+                                "/tickets/**",        // TicketController
+                                "/chores/**",         // ChoreController
+                                "/calendar/**",       // CalendarController
+                                "/bills/**",          // BillsController
+                                "/users/**"           // UserController
+                        ).permitAll()
+
+                        // Any other request (admin pages, static resources, etc.) require authentication
                         .anyRequest().authenticated()
                 )
+
+                // Keep HTTP basic enabled for protected endpoints
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();

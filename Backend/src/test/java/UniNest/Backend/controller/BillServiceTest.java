@@ -1,21 +1,18 @@
-package UniNest.Backend.service;
+package UniNest.Backend.controller;
 
 import UniNest.Backend.dto.BillRequest;
 import UniNest.Backend.dto.OwedToUserResponse;
+import UniNest.Backend.service.BillService;
 
-import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class BillServiceTest {
 

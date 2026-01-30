@@ -11,9 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import UniNest.Backend.dto.ApartmentRequests;
@@ -28,6 +31,8 @@ import UniNest.Backend.service.UserService;
 
 import static org.mockito.Mockito.when;
 
+
+@AutoConfigureMockMvc
 @WebMvcTest(ApartmentController.class)
 class ApartmentControllerTest {
 
@@ -47,7 +52,7 @@ class ApartmentControllerTest {
     private ObjectMapper objectMapper;
 
    // create apartment success
-
+   @WithMockUser(username = "testuser", roles = {"1"})
     @Test
     void createApartment_success() throws Exception {
         ApartmentRequests request = new ApartmentRequests();
@@ -68,6 +73,7 @@ class ApartmentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Apartment created"));
     }
+    @WithMockUser(username = "testuser", roles = {"1"})
     // create apartment validation Error
     @Test
     void createApartment_validationError() throws Exception {
@@ -80,7 +86,7 @@ class ApartmentControllerTest {
     }
 
     // get all apartments success
-
+    @WithMockUser(username = "testuser", roles = {"2"})
     @Test
     void getAllApartments_success() throws Exception {
         Apartment apartment = new Apartment();
@@ -95,7 +101,7 @@ class ApartmentControllerTest {
     }
 
    // get all users by the apartment success
-
+   @WithMockUser(username = "testuser", roles = {"1"})
     @Test
     void getUsersByApartment_success() throws Exception, UserServiceException {
         User user = new User();
