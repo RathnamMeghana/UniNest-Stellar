@@ -20,11 +20,17 @@ public class MainActivity extends AppCompatActivity {
             Python.start(new AndroidPlatform(this));
         }
 
-        // Initialize Firebase with AppCheck debug provider (safe, no Google Sign-In)
-        FirebaseApp.initializeApp(this);
         FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
         firebaseAppCheck.installAppCheckProviderFactory(
                 DebugAppCheckProviderFactory.getInstance()
         );
     }
 }
+        // Initialize Firebase with AppCheck debug provider (safe, no Google Sign-In)
+       // FirebaseApp.initializeApp(this);
+       // FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+       // firebaseAppCheck.installAppCheckProviderFactory(
+        //        DebugAppCheckProviderFactory.getInstance()
+        //);
+   // }
+//}

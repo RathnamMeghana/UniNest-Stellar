@@ -86,7 +86,7 @@ dependencies {
     implementation(libs.constraintlayout)
    // implementation(libs.play.services.measurement.api)
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
-    //implementation("com.google.firebase:firebase-appcheck")
+    implementation("com.google.firebase:firebase-appcheck")
     //implementation("com.google.firebase:firebase-appcheck-debug")
 
     implementation("com.google.firebase:firebase-auth")

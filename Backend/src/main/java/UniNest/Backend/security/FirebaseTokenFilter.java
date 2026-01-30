@@ -14,22 +14,34 @@ import java.io.IOException;
 public class FirebaseTokenFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain)
             throws ServletException, IOException {
+
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
-            String idToken = header.replace("Bearer ", "");
+            String idToken = header.substring(7);
+
             try {
-                FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
-                // optionally, create Authentication object and set in context
-                SecurityContextHolder.getContext().setAuthentication(
-                        new FirebaseAuthentication(decodedToken)
-                );
+                FirebaseToken decodedToken =
+                        FirebaseAuth.getInstance().verifyIdToken(idToken);
+
+                String role = (String) decodedToken.getClaims().get("role");
+
+                FirebaseAuthentication auth =
+                        new FirebaseAuthentication(decodedToken, role);
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
             } catch (Exception e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Firebase token");
                 return;
             }
+
+
+
         }
 
         chain.doFilter(request, response);

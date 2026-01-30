@@ -144,7 +144,7 @@ public class SignUpActivity extends AppCompatActivity {
         String jsonBody = "{\"token\":\"" + idToken + "\"}";
         RequestBody body = RequestBody.create(jsonBody, JSON);
 
-        String backendUrl = "http://10.102.198.130:8080/auth/firebase-login";
+        String backendUrl = "http://192.168.1.70:8080/auth/firebase-login";
 
         Request request = new Request.Builder()
                 .url(backendUrl)

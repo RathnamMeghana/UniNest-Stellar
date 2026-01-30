@@ -151,7 +151,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
                             .addOnSuccessListener(aVoid -> {
                                 toast("Signup successful!");
 
-                                // ✅ ALWAYS go to Tenant Login
+                                // ALWAYS go to Tenant Login
                                 startActivity(new Intent(this, TenantLoginActivity.class));
                                 finish();
 
@@ -178,7 +178,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
         );
 
         Request request = new Request.Builder()
-                .url("http://10.102.198.130:8080/auth/firebase-login")
+                .url("http://192.168.1.70:8080/auth/firebase-login")
                 .post(body)
                 .addHeader("Authorization", "Bearer " + idToken)
                 .build();

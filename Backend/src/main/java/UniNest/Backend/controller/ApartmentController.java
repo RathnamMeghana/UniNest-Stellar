@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +42,7 @@ public class ApartmentController {
 
     @Autowired
     private RoomService roomService;
-
+    @PreAuthorize("hasRole(LETTINGAGENT')")
     @PostMapping("/create")
     public String createApartment( @Valid @RequestBody ApartmentRequests request) {
         request.setName(SanitizationUtil.sanitize(request.getName()));
@@ -79,7 +80,7 @@ public class ApartmentController {
         return ResponseEntity.ok(users);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_LETTINGAGENT')")
     @PostMapping("/{houseCode}/addRoom")
     public ResponseEntity<String> addRoom(
             @PathVariable String houseCode,
@@ -121,7 +122,7 @@ public class ApartmentController {
         return ResponseEntity.ok("Tenant removed from apartment.");
     }
 
-
+    @PreAuthorize("hasRole('ROLE_LETTINGAGENT')")
     @PostMapping("/bulkWithRooms")
     public ResponseEntity<String> bulkWithRooms(@RequestBody BulkApartmentWithRoomsRequest request) {
         try {
