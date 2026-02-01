@@ -21,6 +21,8 @@ public class Ticket implements Serializable{
     private String apartmentName;
     private String agentResponse;
     private String arrivalDate;
+    private String userName;
+    private String prioritySource;
 
 
     // Getters and Setters
@@ -69,5 +71,9 @@ public class Ticket implements Serializable{
     public String getArrivalDate() { return arrivalDate; }
     public void setArrivalDate(String arrivalDate) { this.arrivalDate = arrivalDate; }
 
+    public String getUserName() { return userName; }
+    public void setUserName(String userName) { this.userName = userName; }
 
+    public String getPrioritySource() { return prioritySource; }
+    public void setPrioritySource(String prioritySource) { this.prioritySource = prioritySource; }
 }
