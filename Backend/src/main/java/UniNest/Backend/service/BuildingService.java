@@ -94,6 +94,13 @@ public class BuildingService {
             for (QueryDocumentSnapshot doc : documents) {
                 Building b = doc.toObject(Building.class);
                 b.setId(doc.getId());
+                ApiFuture<QuerySnapshot> aptQuery = db.collection("apartments")
+                        .whereEqualTo("buildingId", b.getId())
+                        .get();
+
+                int count = aptQuery.get().getDocuments().size();
+                b.setApartmentCount(count);
+
                 buildings.add(b);
             }
             return buildings;
