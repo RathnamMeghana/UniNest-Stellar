@@ -35,36 +35,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Not Started"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:layout_marginTop="6dp"
                 android:paddingHorizontal="12dp"
-                android:paddingVertical="4dp"
-                android:background="@drawable/bg_status_pending" />
+                android:paddingVertical="4dp" />
         </LinearLayout>
 
-        <!-- Enlarged Profile Image -->
         <ImageView
             android:id="@+id/imgAssigneeProfile"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_profile_tenant"
-            android:layout_marginEnd="12dp"/>
-
-
-        <ImageView
-            android:id="@+id/btnDetailsArrow"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:scaleType="centerInside"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:src="@drawable/ic_expand" />
+            android:src="@drawable/ic_profile_tenant" />
     </LinearLayout>
-
-    <!-- Separation line -->
 
     <TextView
         android:id="@+id/tvExtraInfo"
@@ -73,16 +57,8 @@
         android:text="Assigned to: Me"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:textColor="#616161"/>
-
-    <TextView
-        android:id="@+id/tvCreatedBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Created by: Roommate"
-        android:textSize="13sp"
-        android:textColor="#9E9E9E"
-        android:layout_marginTop="2dp"/>
+        android:textColor="#616161"
+        android:layout_marginTop="12dp"/>
 
     <TextView
         android:id="@+id/tvDateInfo"
@@ -92,4 +68,33 @@
         android:textSize="13sp"
         android:textColor="#9E9E9E"
         android:layout_marginTop="2dp"/>
+
+    <TextView
+        android:id="@+id/tvCreatedBy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Created by: Roommate"
+        android:textSize="12sp"
+        android:textColor="#BDBDBD"
+        android:layout_marginTop="2dp"/>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnViewMore"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:text="View Details"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:backgroundTint="#00B53E"
+        app:cornerRadius="18dp"
+        app:elevation="2dp"
+        android:paddingHorizontal="20dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp" />
+
 </LinearLayout>
