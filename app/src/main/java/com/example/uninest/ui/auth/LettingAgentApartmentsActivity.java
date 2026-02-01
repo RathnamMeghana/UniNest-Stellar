@@ -16,6 +16,7 @@ import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.model.Apartment;
 import com.example.uninest.SessionManager;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
     private ApartmentApi apartmentApi;
 
     private String buildingName;
-    private String buildingId; // received from previous activity
+    private String buildingId;
     private String loggedInRole;
 
 
@@ -86,9 +87,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
 
 
         // Bottom nav
-        findViewById(R.id.navTickets).setOnClickListener(v -> {});
-        findViewById(R.id.navApartments).setOnClickListener(v -> apartmentList.scrollTo(0, 0));
-        findViewById(R.id.navProfile).setOnClickListener(v -> {});
+        setupBottomNav(R.id.nav_buildings);
     }
 
 
@@ -176,10 +175,10 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
 
         // Set apartment details
         card.setApartmentName(apartment.getName());
-        card.setTenantInfo(
-                apartment.getTotalRooms(),
-                apartment.getTotalRooms()
-        );
+        String occupied = String.valueOf(apartment.getOccupiedCount());
+        String total = apartment.getTotalRooms();
+
+        card.setTenantInfo(occupied, total);
 
         card.setOnClickListener(v -> openApartmentTenants(apartment));
 
@@ -201,9 +200,38 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         intent.putExtra("EXTRA_APARTMENT_ID", apartment.getCode());
         intent.putExtra("EXTRA_USER_ROLE", loggedInRole);
         intent.putExtra("EXTRA_HOUSE_CODE", apartment.getCode());
-
+        intent.putExtra("EXTRA_TOTAL_ROOMS", apartment.getTotalRooms());
 
 
         startActivity(intent);
+    }
+
+    private void setupBottomNav(int selectedId) {
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        bottomNav.setSelectedItemId(selectedId);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            // Prevent reloading the same activity
+            if (itemId == selectedId) return true;
+
+            if (itemId == R.id.nav_tickets) {
+                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_buildings) {
+                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_profile) {
+                // startActivity(new Intent(this, LettingAgentProfileActivity.class));
+                // overridePendingTransition(0, 0);
+                return true;
+            }
+            return false;
+        });
     }
 }

@@ -24,6 +24,7 @@ import retrofit2.Response;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -67,19 +68,7 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
 
 
         // Bottom nav clicks
-        findViewById(R.id.navTickets).setOnClickListener(v -> {
-            Intent intent = new Intent(LettingAgentBuildingsActivity.this, LettingAgentTicketsActivity.class);
-            startActivity(intent);
-        });
-
-        findViewById(R.id.navApartments).setOnClickListener(v -> {
-            // current screen – maybe scroll to top
-            buildingList.scrollTo(0, 0);
-        });
-
-        findViewById(R.id.navProfile).setOnClickListener(v -> {
-            // TODO navigate to ProfileActivity
-        });
+        setupBottomNav(R.id.nav_buildings);
 
 
     }
@@ -87,11 +76,17 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // This listener handles the initial load when the user logs in or app starts
+
+        // 1. Explicitly check and load if user exists
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            loadBuildingsFromApi();
+        }
+
+        // 2. Keep the listener for state changes (logouts/logins)
         if (authListener == null) {
             authListener = firebaseAuth -> {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
+                if (firebaseAuth.getCurrentUser() != null) {
                     loadBuildingsFromApi();
                 }
             };
@@ -152,9 +147,8 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
     private void addBuildingCard(Building building) {
         BuildingCardView card = new BuildingCardView(this);
         card.setBuildingName(building.getName());
-        card.setApartmentCount(0); // Hook real count later
+        card.setApartmentCount(building.getApartmentCount());
 
-        // --- FIX: Loading the real image from the API ---
         // If the building has an image string, use the Base64 loader.
         // Otherwise, fall back to the placeholder logic.
         if (building.getImageUrl() != null && !building.getImageUrl().isEmpty()) {
@@ -182,5 +176,34 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         });
 
         buildingList.addView(card);
+    }
+
+    private void setupBottomNav(int selectedId) {
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        bottomNav.setSelectedItemId(selectedId);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            // Prevent reloading the same activity
+            if (itemId == selectedId) return true;
+
+            if (itemId == R.id.nav_tickets) {
+                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_buildings) {
+                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_profile) {
+                // startActivity(new Intent(this, LettingAgentProfileActivity.class));
+                // overridePendingTransition(0, 0);
+                return true;
+            }
+            return false;
+        });
     }
 }

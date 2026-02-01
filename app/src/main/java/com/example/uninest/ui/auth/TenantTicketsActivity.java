@@ -1,10 +1,12 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +60,10 @@ public class TenantTicketsActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.nav_calendar) {
                 startActivity(new Intent(getApplicationContext(), TenantCalendarActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
+            } else if (itemId == R.id.nav_bills) { // ADD THIS BLOCK
+                startActivity(new Intent(getApplicationContext(), TenantBillsActivity.class));
                 overridePendingTransition(0, 0);
                 return true;
             } else if (itemId == R.id.nav_tickets) {
@@ -144,12 +150,9 @@ public class TenantTicketsActivity extends AppCompatActivity {
             // LOGIC: Group tickets into 3 categories
             if ("Raised".equalsIgnoreCase(status) || "Open".equalsIgnoreCase(status)) {
                 addTicketView(containerRaised, t, 1); // 1 = Raised (Red)
-            }
-            else if ("In_Process".equalsIgnoreCase(status) || "In Progress".equalsIgnoreCase(status) || "Medium".equalsIgnoreCase(status)) {
-                // Note: Sometimes older data might have "Medium" priority stored as status by mistake, added for safety
+            } else if ("In_Process".equalsIgnoreCase(status) || "In Progress".equalsIgnoreCase(status) || "Medium".equalsIgnoreCase(status)) {
                 addTicketView(containerInProgress, t, 2); // 2 = In Progress (Orange)
-            }
-            else if ("Resolved".equalsIgnoreCase(status) || "Closed".equalsIgnoreCase(status) || "Solved".equalsIgnoreCase(status)) {
+            } else if ("Resolved".equalsIgnoreCase(status) || "Closed".equalsIgnoreCase(status) || "Solved".equalsIgnoreCase(status)) {
                 addTicketView(containerSolved, t, 3); // 3 = Solved (Green)
             }
         }
@@ -163,6 +166,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
 
         View cardContainer = view.findViewById(R.id.cardContainer);
         TextView tvTitle = view.findViewById(R.id.tvTitle);
+        TextView tvRaisedBy = view.findViewById(R.id.tvRaisedBy);
         TextView tvRaised = view.findViewById(R.id.tvRaisedDate);
         TextView tvStatusMsg = view.findViewById(R.id.tvStatusMessage);
         TextView tvSolved = view.findViewById(R.id.tvSolvedDate);
@@ -171,6 +175,16 @@ public class TenantTicketsActivity extends AppCompatActivity {
         String room = t.getRoom() != null ? t.getRoom() : "General";
         String cat = t.getCategory() != null ? t.getCategory() : "Issue";
         tvTitle.setText(room + ": " + cat);
+
+        // 2. LOGIC: Set "Raised by me" or "Raised by [Name]"
+        String currentUserId = sessionManager.getUserId();
+        if (t.getUserId() != null && t.getUserId().equals(currentUserId)) {
+            tvRaisedBy.setText("Raised by: Me");
+            tvRaisedBy.setTypeface(null, android.graphics.Typeface.BOLD); // Optional: make 'me' bold
+        } else {
+            String name = (t.getUserName() != null) ? t.getUserName() : "Roommate";
+            tvRaisedBy.setText("Raised by: " + name);
+        }
 
         // 2. Set Raised Date
         tvRaised.setText("Raised on: " + parseDate(t.getCreatedAt()));
@@ -181,8 +195,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
             cardContainer.setBackgroundResource(R.drawable.bg_card_border_raised);
             tvStatusMsg.setText("Waiting for Letting Agent");
             tvSolved.setVisibility(View.GONE);
-        }
-        else if (type == 2) {
+        } else if (type == 2) {
             // IN PROGRESS
             cardContainer.setBackgroundResource(R.drawable.bg_card_border_progress);
 
@@ -194,8 +207,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
                 tvStatusMsg.setText("Agent is reviewing...");
             }
             tvSolved.setVisibility(View.GONE);
-        }
-        else if (type == 3) {
+        } else if (type == 3) {
             // SOLVED
             cardContainer.setBackgroundResource(R.drawable.bg_card_border_solved);
 
@@ -209,7 +221,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
             Object dateObj = t.getUpdatedAt() != null ? t.getUpdatedAt() : t.getCreatedAt();
             tvSolved.setText("Solved: " + parseDate(dateObj));
         }
-
+        cardContainer.setOnClickListener(v -> showTicketDetailsPopup(t));
         // Add to the specific container
         container.addView(view);
     }
@@ -232,7 +244,74 @@ public class TenantTicketsActivity extends AppCompatActivity {
                 if (s.length() >= 10) return s.substring(0, 10);
                 return s;
             }
-        } catch (Exception e) { return "-"; }
+        } catch (Exception e) {
+            return "-";
+        }
         return "-";
+    }
+
+    private void showTicketDetailsPopup(Ticket t) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_ticket_details, null);
+
+        // References
+        TextView tvTitle = view.findViewById(R.id.popTitle);
+        TextView tvStatus = view.findViewById(R.id.popStatusBadge);
+        TextView tvDesc = view.findViewById(R.id.popDesc);
+        TextView tvLocation = view.findViewById(R.id.popLocation);
+        TextView tvRaisedBy = view.findViewById(R.id.popRaisedBy);
+        TextView tvArrival = view.findViewById(R.id.popArrival);
+        TextView tvAgentMsg = view.findViewById(R.id.popAgentMessage);
+        View layoutAgentResponse = view.findViewById(R.id.layoutAgentResponse);
+        Button btnClose = view.findViewById(R.id.btnPopClose);
+
+        // Data population
+        String room = t.getRoom() != null ? t.getRoom() : "General";
+        String cat = t.getCategory() != null ? t.getCategory() : "Issue";
+        tvTitle.setText(room + ": " + cat);
+
+        tvDesc.setText(t.getDescription());
+        tvLocation.setText(room);
+
+        // Raised By Logic
+        if (t.getUserId() != null && t.getUserId().equals(sessionManager.getUserId())) {
+            tvRaisedBy.setText("Me");
+        } else {
+            tvRaisedBy.setText(t.getUserName() != null ? t.getUserName() : "Roommate");
+        }
+
+        // Status Pill Styling
+        String status = t.getStatus() != null ? t.getStatus() : "Raised";
+        tvStatus.setText(status.toUpperCase().replace("_", " "));
+
+        if (status.equalsIgnoreCase("Raised") || status.equalsIgnoreCase("Open")) {
+            tvStatus.setTextColor(Color.parseColor("#C62828")); // Dark Red
+            tvStatus.setBackgroundResource(R.drawable.bg_status_pending);
+        } else if (status.toLowerCase().contains("process")) {
+            tvStatus.setTextColor(Color.parseColor("#EF6C00")); // Dark Orange
+            tvStatus.setBackgroundResource(R.drawable.bg_status_progress);
+        } else {
+            tvStatus.setTextColor(Color.parseColor("#2E7D32")); // Dark Green
+            tvStatus.setBackgroundResource(R.drawable.bg_status_completed);
+        }
+
+        // Agent Arrival & Message
+        tvArrival.setText(t.getArrivalDate() != null && !t.getArrivalDate().isEmpty() ? t.getArrivalDate() : "Not scheduled");
+
+        if (t.getAgentResponse() != null && !t.getAgentResponse().trim().isEmpty()) {
+            layoutAgentResponse.setVisibility(View.VISIBLE);
+            tvAgentMsg.setText(t.getAgentResponse());
+        } else {
+            layoutAgentResponse.setVisibility(View.GONE);
+        }
+
+        // Show Dialog
+        builder.setView(view);
+        android.app.AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 }

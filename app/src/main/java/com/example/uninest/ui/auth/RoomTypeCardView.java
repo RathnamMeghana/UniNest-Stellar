@@ -12,7 +12,7 @@ import com.example.uninest.R;
 public class RoomTypeCardView extends FrameLayout {
 
     private TextView tvRoomTypeName;
-    private ImageView imgChevron;
+    private TextView tvRoomCount;
 
 
     public RoomTypeCardView(Context context) {
@@ -34,7 +34,12 @@ public class RoomTypeCardView extends FrameLayout {
         LayoutInflater.from(context).inflate(R.layout.view_room_type_card, this, true);
 
         tvRoomTypeName = findViewById(R.id.tvRoomTypeName);
-        imgChevron = findViewById(R.id.imgChevron);
+        tvRoomCount = findViewById(R.id.tvRoomCount);
+    }
+
+    public void setRoomData(String name, int count) {
+        tvRoomTypeName.setText(name);
+        tvRoomCount.setText(String.valueOf(count));
     }
 
     public void setRoomTypeName(String name) {

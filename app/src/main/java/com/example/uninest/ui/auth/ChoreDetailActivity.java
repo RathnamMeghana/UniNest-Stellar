@@ -94,7 +94,7 @@ public class ChoreDetailActivity extends AppCompatActivity {
             tvRoomInfo.setText("General");
         }
 
-        tvAssigneeInfo.setText("Assigned to: " + (currentAssignee != null ? currentAssignee : "Unassigned"));
+        tvAssigneeInfo.setText("" + (currentAssignee != null ? currentAssignee : "Unassigned"));
         tvCreatedByInfo.setText("Created by: " + (createdBy != null ? createdBy : "Unknown"));
 
         if (dueDateStr != null) {
@@ -135,10 +135,9 @@ public class ChoreDetailActivity extends AppCompatActivity {
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if(response.isSuccessful() && response.body() != null) {
 
-                    swapCandidates.clear(); // Clear previous data
+                    swapCandidates.clear();
                     List<String> displayNames = new ArrayList<>();
 
-                    // Always add default option
                     displayNames.add("Keep Current Assignee");
 
                     // Filter: Add ONLY if user ID != currentUserId

@@ -15,6 +15,7 @@ import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.Room;
 import com.example.uninest.model.User;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashSet;
 import java.util.List;
@@ -81,7 +82,7 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
                 fetchRooms(houseCode);
             } else {
                 Log.e("TENANTS_ACTIVITY", "House Code is missing. Rooms will not load.");
-                // Optional: Show a message to the user that room data is unavailable
+
             }
         } else {
             Log.e("TENANTS_ACTIVITY", "Apartment ID is missing.");
@@ -101,13 +102,22 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
                 intent.putExtra("EXTRA_HOUSE_CODE", houseCode);
                 intent.putExtra("EXTRA_USER_ROLE", userRole);
 
-                startActivity(intent);
+                startActivityForResult(intent, 101);
             });
         } else { // tenant
             btnNewRoom.setVisibility(View.GONE);
         }
 
         setupHouseCodeDisplay();
+
+        setupBottomNav(R.id.nav_buildings);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            fetchRooms(houseCode); // This re-fetches and updates the counts dynamically
+        }
     }
 
     private void setupHouseCodeDisplay() {
@@ -165,7 +175,8 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         tenantList.removeAllViews();
 
         int occupied = tenants.size();
-        int capacity = 5; // hard-coded for now
+        String totalRoomsStr = getIntent().getStringExtra("EXTRA_TOTAL_ROOMS");
+        int capacity = (totalRoomsStr != null) ? Integer.parseInt(totalRoomsStr) : 0;
         tvTenantCount.setText(occupied + "/" + capacity + " Tenants");
 
         for (User tenant : tenants) {
@@ -208,22 +219,22 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         roomsList.removeAllViews();
         if (rooms == null || rooms.isEmpty()) return;
 
-        Set<String> addedTypes = new HashSet<>();
-
+        // Group by type and count
+        java.util.Map<String, Integer> roomCounts = new java.util.HashMap<>();
         for (Room room : rooms) {
             String type = room.getType();
-            if (type == null || type.isEmpty()) continue;
-
-            if (!addedTypes.contains(type)) {
-                addedTypes.add(type);
-
-                RoomTypeCardView card = new RoomTypeCardView(this);
-                card.setRoomTypeName(type);
-
-                // Open detail activity on click
-                card.setOnClickListener(v -> openRoomDetail(type));
-                roomsList.addView(card);
+            if (type != null) {
+                String key = type.trim();
+                roomCounts.put(key, roomCounts.getOrDefault(key, 0) + 1);
             }
+        }
+
+        for (java.util.Map.Entry<String, Integer> entry : roomCounts.entrySet()) {
+            RoomTypeCardView card = new RoomTypeCardView(this);
+
+            card.setRoomData(entry.getKey(), entry.getValue());
+
+            roomsList.addView(card);
         }
     }
 
@@ -255,6 +266,35 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
                 Toast.makeText(ApartmentTenantsActivity.this, "Network error", Toast.LENGTH_SHORT).show();
                 Log.e("API_CALL", "Failed to remove tenant", t);
             }
+        });
+    }
+
+    private void setupBottomNav(int selectedId) {
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        bottomNav.setSelectedItemId(selectedId);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            // Prevent reloading the same activity
+            if (itemId == selectedId) return true;
+
+            if (itemId == R.id.nav_tickets) {
+                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_buildings) {
+                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_profile) {
+                // startActivity(new Intent(this, LettingAgentProfileActivity.class));
+                // overridePendingTransition(0, 0);
+                return true;
+            }
+            return false;
         });
     }
 }
