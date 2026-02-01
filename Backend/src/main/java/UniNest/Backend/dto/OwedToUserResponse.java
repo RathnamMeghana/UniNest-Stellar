@@ -10,4 +10,7 @@ public class OwedToUserResponse {
     private String debtorUserId;
     private double amountOwed;
     private Date dueDate;
+
+    private BillRequest.BillType billType;
+    private BillRequest.BillFrequency frequency;
 }
