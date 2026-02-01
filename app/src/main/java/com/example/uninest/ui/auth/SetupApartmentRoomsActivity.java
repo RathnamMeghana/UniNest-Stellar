@@ -137,6 +137,7 @@ public class SetupApartmentRoomsActivity extends AppCompatActivity {
 
                 if (roomsAdded >= totalRooms) {
                     Toast.makeText(SetupApartmentRoomsActivity.this, "Rooms added!", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                     finish();
                 }
             }
@@ -148,7 +149,9 @@ public class SetupApartmentRoomsActivity extends AppCompatActivity {
 
                 if (roomsAdded >= totalRooms) {
                     Toast.makeText(SetupApartmentRoomsActivity.this, "Rooms added!", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                     finish();
+
                 }
             }
 

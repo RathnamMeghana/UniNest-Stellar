@@ -10,7 +10,7 @@ public class Building {
     private String landlordId;
     private Boolean active;
     private String imageUrl;
-
+    private int apartmentCount;
 
 
 
@@ -47,5 +47,8 @@ public class Building {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public int getApartmentCount() { return apartmentCount; }
+    public void setApartmentCount(int apartmentCount) { this.apartmentCount = apartmentCount; }
 
 }

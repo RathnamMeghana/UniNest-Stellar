@@ -23,6 +23,9 @@ public class Ticket {
     private String agentResponse;
     private String arrivalDate;
     private Timestamp updatedAt;
+    private String userName;
+    private String prioritySource;
+
 
     public void sanitize() {
         this.id = SanitizationUtil.sanitize(this.id);
@@ -38,6 +41,8 @@ public class Ticket {
         this.apartmentName = SanitizationUtil.sanitize(this.apartmentName);
         this.agentResponse = SanitizationUtil.sanitize(this.agentResponse);
         this.arrivalDate = SanitizationUtil.sanitize(this.arrivalDate);
+        this.userName = SanitizationUtil.sanitize(this.userName);
+        this.prioritySource = SanitizationUtil.sanitize(this.prioritySource);
     }
 
 }

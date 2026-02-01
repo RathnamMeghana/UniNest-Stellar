@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="12dp"
-    android:background="@drawable/bg_card_green"
     android:layout_marginBottom="12dp"
-    android:elevation="2dp">
+    android:background="@drawable/bg_card_green"
+    android:elevation="2dp"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <!-- Title -->
         <TextView
@@ -22,48 +23,59 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Task Title"
+            android:textColor="#000"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#000"/>
+            android:textStyle="bold" />
 
-        <!-- STATUS BADGE -->
+        <!-- Status Badge -->
         <TextView
-            android:id="@+id/tvStatusBadge"
+            android:id="@+id/popStatusBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Not Started"
-            android:textSize="13sp"
-            android:textColor="#000"
             android:background="@drawable/bg_status_pending"
-            android:paddingHorizontal="11dp"
-            android:paddingVertical="7dp"
-            android:layout_marginEnd="11dp"
-            android:visibility="gone"/>
-
-        <!-- ARROW ICON -->
-        <ImageView
-            android:id="@+id/btnDetailsArrow"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:scaleType="centerInside"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:src="@drawable/ic_expand" />
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="Not Started"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
     </LinearLayout>
 
+    <!-- Info Text -->
     <TextView
         android:id="@+id/tvExtraInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Assigned info..."
-        android:layout_marginTop="4dp"/>
+        android:textColor="#555555"
+        android:textSize="13sp" />
 
+    <!-- Hidden Description -->
     <TextView
         android:id="@+id/tvDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Desc"
         android:textSize="12sp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
+
+    <!-- ACTION BUTTON -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnViewMore"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:text="View Details"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:backgroundTint="#00B53E"
+        app:cornerRadius="18dp"
+        app:elevation="2dp"
+        android:paddingHorizontal="20dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp" />
 </LinearLayout>

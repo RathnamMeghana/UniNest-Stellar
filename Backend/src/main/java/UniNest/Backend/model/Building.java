@@ -16,6 +16,6 @@ public class Building {
     private Timestamp updatedAt;
     private Boolean active;
     private String imageUrl;
-
+    private int apartmentCount;
 
 }

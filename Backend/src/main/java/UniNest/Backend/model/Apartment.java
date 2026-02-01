@@ -18,6 +18,6 @@ public class Apartment {
     private Double rentPrice;
     private Boolean active;
     private List<Room> rooms;
-
+    private int occupiedCount;
 
 }

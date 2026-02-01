@@ -185,7 +185,8 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         TextView extraInfo = view.findViewById(R.id.tvExtraInfo);
         TextView tvCreatedBy = view.findViewById(R.id.tvCreatedBy);
         TextView tvDateInfo = view.findViewById(R.id.tvDateInfo);
-        ImageView arrow = view.findViewById(R.id.btnDetailsArrow);
+        com.google.android.material.button.MaterialButton btnMore = view.findViewById(R.id.btnViewMore);
+
 
         String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
@@ -224,7 +225,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             }
         }
 
-        // 4. Dynamic Coloring (Darker text versions)
+        // 4. Dynamic Coloring
         if (status.equals("COMPLETED")) {
             card.setBackgroundResource(R.drawable.bg_card_green);
             statusBadge.setBackgroundResource(R.drawable.bg_status_completed);
@@ -240,7 +241,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         }
 
         // 5. Click Logic: ONLY ON THE ARROW
-        arrow.setOnClickListener(v -> {
+        btnMore.setOnClickListener(v -> {
             if (status.equalsIgnoreCase("COMPLETED")) {
                 showTaskPopup(c);
             } else if (c.getAssignedTo() != null && c.getAssignedTo().equals(currentUserId)) {

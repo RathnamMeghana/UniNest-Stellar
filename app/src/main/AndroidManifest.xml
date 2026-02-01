@@ -24,7 +24,7 @@
 
 
 
-       <activity android:name=".ui.auth.AddChoreSmartActivity" android:exported="false" />
+        <activity android:name=".ui.auth.AddChoreSmartActivity" android:exported="false" />
 
         <activity
             android:name=".ui.auth.WelcomeActivity"
@@ -41,39 +41,36 @@
         <activity
             android:name=".ui.auth.LettingAgentBuildingsActivity"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".ui.auth.TenantLoginActivity"-->
-<!--            android:exported="false" />-->
+                <activity
+                    android:name=".ui.auth.TenantLoginActivity"
+                    android:exported="false" />
 
-<!--        <activity-->
-<!--            android:name=".ui.auth.TicketPredictionActivity"-->
-<!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".ui.auth.TicketPredictionActivity"-->
+        <!--            android:exported="false" />-->
 
-<!--        <activity-->
-<!--            android:name=".ui.auth.DisplayTicketsbyBuilding"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".ui.auth.LettingAgentTicketsActivity"-->
-<!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".ui.auth.DisplayTicketsbyBuilding"-->
+        <!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".ui.auth.LettingAgentTicketsActivity"-->
+        <!--            android:exported="false" />-->
 
 
         <activity
-            android:name=".ui.auth.TenantLoginActivity"
+            android:name=".ui.auth.TenantSignUpActivity"
             android:exported="true">
-           <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".ui.auth.AddCalendarEventActivity"
-            android:exported="false" >
-
-
-        </activity>
-        <activity
             android:name=".ui.auth.RoomTypeDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ChoreDetailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.SetupApartmentRoomsActivity"
@@ -87,10 +84,19 @@
             android:name=".ui.auth.TenantCardView"
             android:exported="false" />
         <activity
+            android:name=".ui.auth.CreateTenantBillActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ViewAllTasksActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.auth.ApartmentTenantsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.AddCalendarEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.TenantBillsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.LettingAgentApartmentsActivity"
@@ -120,10 +126,10 @@
             android:name=".ui.auth.BulkApartmentWithRoomsActivity"
             android:exported="false" />
 
-<!--        <activity-->
-<!--            android:name=".ui.auth.LettingAgentLoginActivity"-->
-<!--            android:exported="false">-->
-<!--        </activity>-->
+        <!--        <activity-->
+        <!--            android:name=".ui.auth.LettingAgentLoginActivity"-->
+        <!--            android:exported="false">-->
+        <!--        </activity>-->
 
         <activity
             android:name=".ui.auth.TenantTicketsActivity"

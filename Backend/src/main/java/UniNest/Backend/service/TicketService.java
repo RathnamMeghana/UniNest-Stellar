@@ -56,6 +56,8 @@ public class TicketService {
             ticket.setPriority(request.getPriority());
             ticket.setStatus(request.getStatus());
             ticket.setUserId(request.getUserId());
+            ticket.setUserName(request.getUserName());
+            ticket.setPrioritySource(request.getPrioritySource());
             ticket.setCreatedAt(time);
             ticket.setUpdatedAt(time);
 
@@ -189,6 +191,7 @@ public class TicketService {
 
             docs.get(0).getReference().update(
                     "priority", priority,
+                    "prioritySource", "Manual",
                     "updatedAt", Timestamp.now()
             );
 

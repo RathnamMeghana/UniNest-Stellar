@@ -34,6 +34,8 @@ public class Apartment implements Serializable {
     @SerializedName("createdAt")
     private CreatedAt createdAt;
 
+    private int occupiedCount;
+
     // Static inner class to handle the Timestamp structure
     public static class CreatedAt {
         private long seconds;
@@ -72,4 +74,7 @@ public class Apartment implements Serializable {
 
     public CreatedAt getCreatedAt() { return createdAt; }
     public void setCreatedAt(CreatedAt createdAt) { this.createdAt = createdAt; }
+
+    public int getOccupiedCount() { return occupiedCount; }
+    public void setOccupiedCount(int occupiedCount) { this.occupiedCount = occupiedCount; }
 }

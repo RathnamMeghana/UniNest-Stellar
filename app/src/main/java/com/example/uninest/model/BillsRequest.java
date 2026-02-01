@@ -24,8 +24,8 @@ public class BillsRequest {
     private BillType billType;
     private BillFrequency frequency; // null for ONE_TIME
 
-    private Date startDate;
-    private Date dueDate;
+    private String startDate;
+    private String dueDate;
 
     private boolean active;
     private String creatorId;
@@ -53,11 +53,11 @@ public class BillsRequest {
     public BillFrequency getFrequency() { return frequency; }
     public void setFrequency(BillFrequency frequency) { this.frequency = frequency; }
 
-    public Date getStartDate() { return startDate; }
-    public void setStartDate(Date startDate) { this.startDate = startDate; }
+    public String getStartDate() { return startDate; }
+    public void setStartDate(String startDate) { this.startDate = startDate; }
 
-    public Date getDueDate() { return dueDate; }
-    public void setDueDate(Date dueDate) { this.dueDate = dueDate; }
+    public String getDueDate() { return dueDate; }
+    public void setDueDate(String dueDate) { this.dueDate = dueDate; }
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
@@ -79,6 +79,7 @@ public class BillsRequest {
         private String billTitle;
         private String billId;
         private Date paidAt;
+        private String creatorId;
 
         // Getters & Setters
         public String getUserId() { return userId; }
@@ -98,5 +99,8 @@ public class BillsRequest {
 
         public String getBillId() { return billId; }
         public void setBillId(String billId) { this.billId = billId; }
+
+        public String getCreatorId() { return creatorId; }
+        public void setCreatorId(String creatorId) { this.creatorId = creatorId; }
     }
 }

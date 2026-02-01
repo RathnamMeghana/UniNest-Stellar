@@ -275,8 +275,10 @@ public class RaiseTicketActivity extends AppCompatActivity {
         ticket.setRoom(rm);
         ticket.setCategory(cat);
         ticket.setPriority(prio);      // CALCULATED
+        ticket.setPrioritySource("AI");
         ticket.setStatus("Raised");
         ticket.setUserId(currentUserId != null ? currentUserId : "android_user");
+        ticket.setUserName(sessionManager.getUserFullName());
         ticket.setLandlordId(currentLandlordId);
         ticket.setApartmentName(currentApartmentName);
 
