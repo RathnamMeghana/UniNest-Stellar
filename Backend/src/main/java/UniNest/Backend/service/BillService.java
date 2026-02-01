@@ -19,61 +19,77 @@ public class BillService {
         try {
             Firestore db = FirestoreClient.getFirestore();
             List<BillRequest> createdBills = new ArrayList<>();
-            int months = request.getBillType() == BillRequest.BillType.RECURRING ? 6 : 1;
 
-            Date startDate = request.getStartDate() != null ? request.getStartDate() : request.getDueDate();
-            if (startDate == null) startDate = new Date();
+            // 1. Determine how many occurrences to create
+            // RECURRING creates 6 months of data, ONE_TIME creates exactly 1
+            int occurrences = (request.getBillType() == BillRequest.BillType.RECURRING) ? 6 : 1;
 
+            // 2. Set the starting date
+            Date baseDate = request.getDueDate() != null ? request.getDueDate() : new Date();
             Calendar cal = Calendar.getInstance();
-            cal.setTime(startDate);
+            cal.setTime(baseDate);
 
-            for (int i = 0; i < months; i++) {
+            for (int i = 0; i < occurrences; i++) {
+                // Generate a unique ID for this specific occurrence
+                String uniqueBillId = UUID.randomUUID().toString();
+
                 BillRequest billCopy = new BillRequest();
-                billCopy.setId(UUID.randomUUID().toString());
+                billCopy.setId(uniqueBillId);
                 billCopy.setTitle(request.getTitle());
                 billCopy.setTotalAmount(request.getTotalAmount());
                 billCopy.setCreatorId(request.getCreatorId());
                 billCopy.setBillType(request.getBillType());
                 billCopy.setFrequency(request.getFrequency());
-                billCopy.setActive(true);
                 billCopy.setHouseCode(request.getHouseCode());
+                billCopy.setActive(true);
 
-                // Copy splits
+                // Set Roommate IDs (for the 'whereArrayContains' queries)
+                billCopy.setRoommateIds(new ArrayList<>(request.getRoommateIds()));
+
+                // Set specific dates for this instance
+                billCopy.setDueDate(cal.getTime());
+                billCopy.setStartDate(new Date()); // Current timestamp for creation
+
+                // 3. Process Splits
                 List<BillRequest.Split> splitsCopy = new ArrayList<>();
                 if (request.getSplits() != null) {
                     for (BillRequest.Split s : request.getSplits()) {
-                        BillRequest.Split splitCopy = new BillRequest.Split();
-                        splitCopy.setUserId(s.getUserId());
-                        splitCopy.setAmountOwed(s.getAmountOwed());
-                        splitCopy.setPaid(s.isPaid());
-                        splitsCopy.add(splitCopy);
+                        BillRequest.Split splitInstance = new BillRequest.Split();
+                        splitInstance.setUserId(s.getUserId());
+                        splitInstance.setAmountOwed(s.getAmountOwed());
+                        splitInstance.setPaid(false);
+                        splitInstance.setBillId(uniqueBillId);
+                        splitInstance.setBillTitle(request.getTitle());
+                        splitsCopy.add(splitInstance);
                     }
                 }
                 billCopy.setSplits(splitsCopy);
 
-                // Roommates
-                billCopy.setRoommateIds(new ArrayList<>(request.getRoommateIds()));
-
-                // Dates
-                billCopy.setStartDate(cal.getTime());
-                billCopy.setDueDate(cal.getTime()); // can adjust if needed
-
-                // Save to Firestore
-                db.collection(BILL_COLLECTION).document(billCopy.getId()).set(billCopy).get();
-
+                // 4. Save to Firestore
+                db.collection(BILL_COLLECTION).document(uniqueBillId).set(billCopy).get();
                 createdBills.add(billCopy);
 
-                // Move calendar to next month for recurring bills
-                cal.add(Calendar.MONTH, 1);
+                if (occurrences > 1 && request.getFrequency() != null) {
+                    switch (request.getFrequency()) {
+                        case WEEKLY:
+                            cal.add(Calendar.DAY_OF_YEAR, 7);
+                            break;
+                        case BIWEEKLY:
+                            cal.add(Calendar.DAY_OF_YEAR, 14);
+                            break;
+                        case MONTHLY:
+                            cal.add(Calendar.MONTH, 1);
+                            break;
+                    }
+                }
             }
 
             return createdBills;
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create bill", e);
+            throw new RuntimeException("Failed to create bill: " + e.getMessage(), e);
         }
     }
-
 
     // ------------------- MARK SPLIT AS PAID -------------------
     public void markAsPaid(String billId, String userId) {
@@ -214,7 +230,9 @@ public class BillService {
     public List<OwedToUserResponse> getWhatIsOwedToUser(String userId) {
         try {
             Firestore db = FirestoreClient.getFirestore();
-            List<OwedToUserResponse> results = new ArrayList<>();
+
+
+            Map<String, OwedToUserResponse> latestSplits = new HashMap<>();
 
             ApiFuture<QuerySnapshot> future = db.collection(BILL_COLLECTION)
                     .whereEqualTo("creatorId", userId)
@@ -222,27 +240,37 @@ public class BillService {
 
             for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
                 BillRequest bill = doc.toObject(BillRequest.class);
+                if (bill == null || bill.getSplits() == null) continue;
 
-                if (bill != null && bill.getSplits() != null) {
-                    for (BillRequest.Split split : bill.getSplits()) {
+                for (BillRequest.Split split : bill.getSplits()) {
 
-                        // Someone else owes AND hasn't paid
-                        if (!split.getUserId().equals(userId) && !split.isPaid()) {
+                    if (!split.getUserId().equals(userId) && !split.isPaid()) {
+
+                        String groupKey = bill.getTitle() + "_" + split.getUserId();
+                        Date currentDueDate = bill.getDueDate();
+
+
+                        if (!latestSplits.containsKey(groupKey) ||
+                                (currentDueDate != null && currentDueDate.before(latestSplits.get(groupKey).getDueDate()))) {
+
                             OwedToUserResponse owed = new OwedToUserResponse();
                             owed.setBillId(bill.getId());
                             owed.setBillTitle(bill.getTitle());
                             owed.setDebtorUserId(split.getUserId());
                             owed.setAmountOwed(split.getAmountOwed());
-                            owed.setDueDate(bill.getDueDate());
+                            owed.setDueDate(currentDueDate);
+                            owed.setBillType(bill.getBillType());
+                            owed.setFrequency(bill.getFrequency());
 
-                            results.add(owed);
+                            latestSplits.put(groupKey, owed);
                         }
                     }
                 }
             }
 
-            // Sort by due date (soonest first)
-            results.sort(Comparator.comparing(OwedToUserResponse::getDueDate));
+            // Convert map to list and sort by due date (soonest first)
+            List<OwedToUserResponse> results = new ArrayList<>(latestSplits.values());
+            results.sort(Comparator.comparing(OwedToUserResponse::getDueDate, Comparator.nullsLast(Date::compareTo)));
 
             return results;
 
@@ -251,11 +279,104 @@ public class BillService {
         }
     }
 
+
     public double getTotalOwedToUser(String userId) {
         return getWhatIsOwedToUser(userId).stream()
                 .mapToDouble(OwedToUserResponse::getAmountOwed)
                 .sum();
     }
 
+    public List<BillRequest> getBillsCreatedBy(String userId) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            List<BillRequest> results = new ArrayList<>();
+
+            ApiFuture<QuerySnapshot> future = db.collection(BILL_COLLECTION)
+                    .whereEqualTo("creatorId", userId)
+                    .get();
+
+            for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
+                BillRequest bill = doc.toObject(BillRequest.class);
+                if (bill != null) results.add(bill);
+            }
+
+
+            results.sort((a, b) -> {
+                if (a.getDueDate() == null || b.getDueDate() == null) return 0;
+                return b.getDueDate().compareTo(a.getDueDate());
+            });
+
+            return results;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching bills created by user", e);
+        }
+    }
+
+    private boolean shouldShowBillOccurrence(BillRequest bill, Date weekStart, Date weekEnd, Date monthStart, Date monthEnd) {
+
+        if (bill.getBillType() == BillRequest.BillType.ONE_TIME) {
+            return true; // keep your current behavior for one-time
+        }
+
+        Date due = bill.getDueDate();
+        if (due == null) return false;
+
+        BillRequest.BillFrequency freq = bill.getFrequency();
+        if (freq == null) return false;
+
+        switch (freq) {
+            case WEEKLY:
+            case BIWEEKLY:
+                return !due.before(weekStart) && !due.after(weekEnd);
+
+            case MONTHLY:
+                return !due.before(monthStart) && !due.after(monthEnd);
+
+            default:
+                return true;
+        }
+    }
+
+    private Date startOfWeek(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    private Date endOfWeek(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startOfWeek(date));
+        cal.add(Calendar.DAY_OF_WEEK, 6);
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal.getTime();
+    }
+
+    private Date startOfMonth(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    private Date endOfMonth(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startOfMonth(date));
+        cal.add(Calendar.MONTH, 1);
+        cal.add(Calendar.MILLISECOND, -1);
+        return cal.getTime();
+    }
 
 }
