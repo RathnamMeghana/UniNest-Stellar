@@ -41,9 +41,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-inline:5.2.0")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	testImplementation ("org.springframework.security:spring-security-test")
-
-
-
+	implementation ("org.springframework.boot:spring-boot-starter-aop")
 
 
 

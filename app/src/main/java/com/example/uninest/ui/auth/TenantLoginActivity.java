@@ -10,9 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -83,9 +83,10 @@ public class TenantLoginActivity extends AppCompatActivity {
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
+                        // This fetches the role from Firestore (e.g., "1" for Agent, "2" for Tenant)
                         String role = documentSnapshot.getString("role");
 
-                        // Check if user is actually a Tenant (Role "2")
+                        // Check if user is actually a Tenant (Assuming Tenant role is stored as "2" in Firestore)
                         if ("2".equals(role)) {
                             String houseCode = documentSnapshot.getString("houseCode");
 
@@ -94,18 +95,18 @@ public class TenantLoginActivity extends AppCompatActivity {
                             String lName = documentSnapshot.getString("lastName");
                             String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
 
-                            // Save FULL session data
+                            // Save FULL session data for Tenant
                             sessionManager.saveTenantSession(uid, email, role, houseCode, fullName.trim());
 
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
 
-                            // Navigate to Raise Ticket Screen
+                            // Navigate to Tenant Home Screen
                             Intent intent = new Intent(TenantLoginActivity.this, TenantHomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             finish();
                         } else {
-                            // User is an agent trying to login as tenant
+                            // User is an agent (role "1") or has another role trying to login as tenant
                             mAuth.signOut();
                             btnTenantLogin.setEnabled(true);
                             btnTenantLogin.setText("Login");

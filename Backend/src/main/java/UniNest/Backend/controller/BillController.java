@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class BillController {
     private BillService billService;
 
     //  Create Bill
+    @PreAuthorize("hasRole('TENANT')")
     @PostMapping("/create")
     public List<BillRequest> createBill(@Valid @RequestBody BillRequest request) {
         request.sanitize();
@@ -29,6 +31,7 @@ public class BillController {
 
 
     //  Mark Bill  as Paid
+    @PreAuthorize("hasRole('TENANT')")
     @PatchMapping("/{billId}/{userId}/pay")
     public ResponseEntity<String> markAsPaid(
             @PathVariable String billId,
@@ -43,6 +46,7 @@ public class BillController {
     }
 
     //  Get unpaid bills for a user
+    @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/getBills/{userId}")
     public ResponseEntity<List<BillRequest>> getBillsByUserId(
             @PathVariable String userId) {
@@ -54,6 +58,7 @@ public class BillController {
     }
 
     // Get paid bills (payment history)
+    @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/paidHistory/{userId}")
     public ResponseEntity<List<BillRequest>> getPaidBills(
             @PathVariable String userId) {
@@ -63,17 +68,18 @@ public class BillController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+    @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/totalOwed/{userId}")
     public double getTotalOwed(@PathVariable String userId) {
         return billService.getTotalOwedByUserId(userId);
     }
-
+    @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/owedToMe/{userId}")
     public List<OwedToUserResponse> getOwedToUser(@PathVariable String userId) {
         return billService.getWhatIsOwedToUser(userId);
     }
 
+    @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/owedToMe/total/{userId}")
     public double getTotalOwedToUser(@PathVariable String userId) {
         return billService.getTotalOwedToUser(userId);

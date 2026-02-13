@@ -16,6 +16,7 @@ import UniNest.Backend.service.ChoreService;
 import UniNest.Backend.service.UserService;
 import UniNest.Backend.util.SanitizationUtil;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,8 +26,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/chores")
-
-
 
 public class ChoreController {
 
@@ -39,6 +38,7 @@ public class ChoreController {
     @Autowired
     private UserService userService;
 
+    @PreAuthorize("hasRole('TENANT')")
     @PostMapping("/assign")
     public ChorePredictionResponse assignChore(
             @RequestBody ChorePredictionRequest request
@@ -46,51 +46,41 @@ public class ChoreController {
         return choreSchedulingService.predictAssignee(request);
     }
 
-
+    @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/getAll/{houseCode}")
     public List<ChoreRequests> getAllChoreByApartment(@PathVariable String houseCode) {
         houseCode = SanitizationUtil.sanitize(houseCode);
 
         return choreService.getAllChoreByApartment(houseCode);
 
-
     }
 
+    @PreAuthorize("hasRole('TENANT')")
     @PostMapping("/addWithSmartAssign")
     public ChoreRequests addChoreWithSmartAssign(
             @RequestParam String houseCode,
             @RequestBody ChoreRequests chore
     ) throws UserServiceException {
-
-        // sanitize only request primitives
+        // sanitize request
         houseCode = SanitizationUtil.sanitize(houseCode);
-
-        // 1️⃣ get roommates
+        //  get roommates
         List<User> roommates = userService.getUsersForApartment(houseCode);
         if (roommates.isEmpty()) {
-            throw new ChoreServiceException(
-                    "No roommates found for houseCode " + houseCode, null
-            );
+            throw new ChoreServiceException("No roommates found for houseCode " + houseCode, null);
         }
-
-        // 2️⃣ build AI request
+        //  build AI request
         ChorePredictionRequest predictionRequest = new ChorePredictionRequest();
         predictionRequest.setTaskName(chore.getTaskName());
         predictionRequest.setRoom(chore.getRoom());
         predictionRequest.setDifficultyScore(chore.getDifficultyScore());
         predictionRequest.setEstDurationMin(chore.getEstDurationMin());
         predictionRequest.setFrequencyPerWeek((double) chore.getFrequencyPerWeek());
-
         //  predict assignment
-        ChorePredictionResponse assignment =
-                choreSchedulingService.predictAssignee(predictionRequest);
-
+        ChorePredictionResponse assignment = choreSchedulingService.predictAssignee(predictionRequest);
         int predictedIndex = assignment.getAssignedTo();
         User assignedUser = roommates.get(predictedIndex % roommates.size());
-
         //  set assignment ONLY
         chore.setAssignedTo(assignedUser.getId());
-
         //  delegate EVERYTHING ELSE to service
         return choreService.addChore(
                 houseCode,
@@ -99,7 +89,7 @@ public class ChoreController {
         );
     }
 
-
+    @PreAuthorize("hasRole('TENANT')")
     @PatchMapping("/updateAssignmentByEmail")
     public ChoreRequests updateAssignmentByEmail(
             @RequestParam String houseCode,
@@ -113,6 +103,7 @@ public class ChoreController {
         return choreService.updateAssignmentByTaskNameAndUserEmail(houseCode, taskName, userEmail);
     }
 
+    @PreAuthorize("hasRole('TENANT')")
     @PostMapping("/addWithAssignment")
     public ChoreRequests addChoreWithAssignment(
             @RequestParam String houseCode,
@@ -126,6 +117,8 @@ public class ChoreController {
         return choreService.addChoreWithAssignment(houseCode, userEmail, chore);
     }
 
+
+    @PreAuthorize("hasRole('TENANT')")
     @PatchMapping("/updateStatus")
     public ChoreRequests updateChoreStatus(
             @RequestParam String houseCode,

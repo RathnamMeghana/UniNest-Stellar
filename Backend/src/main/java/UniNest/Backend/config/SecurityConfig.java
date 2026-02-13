@@ -17,7 +17,10 @@ import java.util.List;
 @EnableWebSecurity // This is the "on switch" for custom security
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-
+    @Bean
+    public FirebaseTokenFilter firebaseTokenFilter() {
+        return new FirebaseTokenFilter();
+    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -30,9 +33,7 @@ public class SecurityConfig {
                     config.setAllowedHeaders(List.of("*"));
                     return config;
                 }))
-                .sessionManagement(sm ->
-                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // Public login/sync path
                         .anyRequest().authenticated()            // Protect everything else

@@ -28,11 +28,8 @@ import UniNest.Backend.service.BuildingService;
 public class BuildingControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private BuildingService buildingService;
-
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -47,10 +44,8 @@ public class BuildingControllerTest {
         request.setCountry("Ireland");
         request.setLandlordId("landlord123");
         request.setActive(true);
-
         when(buildingService.createBuilding(any()))
                 .thenReturn("Building created");
-
         mockMvc.perform(post("/buildings/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

@@ -50,7 +50,6 @@ class ApartmentControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
    // create apartment success
    @WithMockUser(username = "testuser", roles = {"1"})
     @Test

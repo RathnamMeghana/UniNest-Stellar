@@ -42,7 +42,8 @@ public class ApartmentController {
 
     @Autowired
     private RoomService roomService;
-    @PreAuthorize("hasRole(LETTINGAGENT')")
+
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @PostMapping("/create")
     public String createApartment( @Valid @RequestBody ApartmentRequests request) {
         request.setName(SanitizationUtil.sanitize(request.getName()));
@@ -59,6 +60,7 @@ public class ApartmentController {
         return apartmentService.createApartment(request);
     }
 
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/getAll")
     public List<Apartment> getAllApartments() {
 
@@ -67,6 +69,7 @@ public class ApartmentController {
     }
 
 
+    @PreAuthorize("hasRole(LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/{houseCode}/users")
     public ResponseEntity<List<User>> getUsersByApartment(
             @PathVariable String houseCode
@@ -80,7 +83,7 @@ public class ApartmentController {
         return ResponseEntity.ok(users);
     }
 
-    @PreAuthorize("hasRole('ROLE_LETTINGAGENT')")
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @PostMapping("/{houseCode}/addRoom")
     public ResponseEntity<String> addRoom(
             @PathVariable String houseCode,
@@ -102,7 +105,7 @@ public class ApartmentController {
         }
     }
 
-
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/{houseCode}/rooms")
     public ResponseEntity<List<RoomRequests>> getRooms(@PathVariable String houseCode) {
         try {
@@ -116,13 +119,14 @@ public class ApartmentController {
         }
     }
 
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @DeleteMapping("/tenants/{email}/remove")
     public ResponseEntity<?> removeTenant(@PathVariable String email) {
         apartmentService.removeTenantFromApartment(email);
         return ResponseEntity.ok("Tenant removed from apartment.");
     }
 
-    @PreAuthorize("hasRole('ROLE_LETTINGAGENT')")
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @PostMapping("/bulkWithRooms")
     public ResponseEntity<String> bulkWithRooms(@RequestBody BulkApartmentWithRoomsRequest request) {
         try {
@@ -133,12 +137,11 @@ public class ApartmentController {
                     .body("Bulk apartment + room creation failed: " + e.getMessage());
         }
     }
-
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/getByBuilding")
     public List<Apartment> getApartmentsByBuilding(@RequestParam String buildingId) {
         return apartmentService.getApartmentsByBuilding(buildingId);
     }
-
 
 
 }

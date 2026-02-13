@@ -4,6 +4,7 @@ package UniNest.Backend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,10 +32,12 @@ public class TicketController {
 
     // Use constructor injection for the service
     @Autowired
+
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
     }
 
+    @PreAuthorize("hasRole('TENANT')")
     @PostMapping("/create")
     public ResponseEntity<String> createTicket(@RequestBody Ticket ticket) {
         try {
@@ -48,6 +51,7 @@ public class TicketController {
     }
 
 
+    @PreAuthorize("hasRole(LETTINGAGENT')")
     @GetMapping("/building")
     public ResponseEntity<List<Ticket>> getTicketsByBuilding(@RequestParam String name) {
         try {
@@ -57,7 +61,7 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @PreAuthorize("hasRole(LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/apartment")
     public ResponseEntity<List<Ticket>> getTicketsByApartment(@RequestParam String name) {
         try {
@@ -67,7 +71,7 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @PreAuthorize("hasRole(LETTINGAGENT')")
     @GetMapping("/landlord")
     public ResponseEntity<List<Ticket>> getTicketsByLandlord(@RequestParam String id) {
         try {
@@ -77,7 +81,7 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @PreAuthorize("hasRole(LETTINGAGENT')")
     @PutMapping("/status")
     public ResponseEntity<String> updateTicketStatus(@Valid @RequestBody UpdateTicketStatusRequest request) {
         try {
@@ -97,6 +101,8 @@ public class TicketController {
             );
         }
     }
+
+    @PreAuthorize("hasRole(LETTINGAGENT')")
     @PutMapping("/priority")
     public ResponseEntity<String> updateTicketPriority(
             @Valid @RequestBody UpdateTicketPriorityRequest request) {
@@ -120,7 +126,7 @@ public class TicketController {
             );
         }
     }
-
+    @PreAuthorize("hasRole(LETTINGAGENT')")
     @PutMapping("/agent-update")
     public ResponseEntity<String> updateAgentData(@RequestBody UpdateTicketAgentDataRequest request) {
         try {

@@ -11,18 +11,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth") // This matches your Android URL: /auth/firebase-login
+@RequestMapping("/auth")
 public class AuthController {
 
     @PostMapping("/firebase-login")
     public ResponseEntity<?> syncUserRole(@RequestBody Map<String, String> body) {
         try {
             String idToken = body.get("token");
-            // 1. Verify the token sent from Android
+            // Verify the token sent from Android
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
             String uid = decodedToken.getUid();
 
-            // 2. Get role from Firestore (Server-side)
+            // Get role from Firestore (Server-side)
             DocumentSnapshot userDoc = FirestoreClient.getFirestore()
                     .collection("users").document(uid).get().get();
 
@@ -32,9 +32,16 @@ public class AuthController {
 
             String firestoreRole = userDoc.getString("role");
 
-            // 3. Map role string to Custom Claim
-            // "1" = LETTINGAGENT, "2" = TENANT
-            String claimValue = "1".equals(firestoreRole) ? "LETTINGAGENT" : "TENANT";
+
+            String claimValue;
+            if ("1".equals(firestoreRole)) {
+                claimValue = "LETTINGAGENT";
+            } else if ("2".equals(firestoreRole)) {
+                claimValue = "TENANT";
+            } else {
+                // If unknown, throw error
+                return ResponseEntity.status(400).body("Invalid role configuration for user");
+            }
 
             // 4. SET THE CUSTOM CLAIM
             // This injects the role into the Firebase Authentication system

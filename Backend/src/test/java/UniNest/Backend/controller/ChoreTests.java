@@ -53,7 +53,7 @@ class ChoreServiceTest {
         ChoreRequests chore = new ChoreRequests();
         chore.setTaskName("Wash Dishes");
 
-        // Mock Firestore chain correctly
+        // Mock Firestore chain
         when(firestore.collection("apartments")).thenReturn(collectionReference);
         when(collectionReference.document(houseCode)).thenReturn(documentReference);
         when(documentReference.collection("chores")).thenReturn(collectionReference);
