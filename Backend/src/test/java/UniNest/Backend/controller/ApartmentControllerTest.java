@@ -41,7 +41,7 @@ import UniNest.Backend.service.UserService;
 import UniNest.Backend.security.FirebaseTokenFilter;
 
 @WebMvcTest(ApartmentController.class)
-@Import(SecurityConfig.class) // IMPORTANT: Load your Security Logic
+@Import(SecurityConfig.class) // Load  Security Logic
 class ApartmentControllerTest {
 
     @Autowired
