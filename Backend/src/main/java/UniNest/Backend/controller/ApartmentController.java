@@ -60,7 +60,7 @@ public class ApartmentController {
         return apartmentService.createApartment(request);
     }
 
-    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/getAll")
     public List<Apartment> getAllApartments() {
 
@@ -69,7 +69,7 @@ public class ApartmentController {
     }
 
 
-    @PreAuthorize("hasRole(LETTINGAGENT') or hasRole('TENANT')")
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/{houseCode}/users")
     public ResponseEntity<List<User>> getUsersByApartment(
             @PathVariable String houseCode

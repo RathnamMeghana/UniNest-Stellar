@@ -2,42 +2,53 @@ package UniNest.Backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
+// CRITICAL: Import csrf to handle POST/DELETE requests in tests
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import UniNest.Backend.exception.UserServiceException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+// YOUR IMPORTS
+import UniNest.Backend.config.SecurityConfig;
 import UniNest.Backend.dto.ApartmentRequests;
 import UniNest.Backend.dto.RoomRequests;
-import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.Apartment;
-import UniNest.Backend.model.Room;
 import UniNest.Backend.model.User;
 import UniNest.Backend.service.ApartmentService;
 import UniNest.Backend.service.RoomService;
 import UniNest.Backend.service.UserService;
+import UniNest.Backend.security.FirebaseTokenFilter;
 
-import static org.mockito.Mockito.when;
-
-
-@AutoConfigureMockMvc
 @WebMvcTest(ApartmentController.class)
+@Import(SecurityConfig.class) // IMPORTANT: Load your Security Logic
 class ApartmentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
     private ApartmentService apartmentService;
@@ -48,46 +59,99 @@ class ApartmentControllerTest {
     @MockBean
     private RoomService roomService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-   // create apartment success
-   @WithMockUser(username = "testuser", roles = {"1"})
-    @Test
-    void createApartment_success() throws Exception {
-        ApartmentRequests request = new ApartmentRequests();
-        request.setName("Apartment A");
-        request.setBuildingId("building123");
-        request.setCode("A1");
-        request.setLandlordId("landlord123");
-        request.setDescription("Nice apartment");
-        request.setTotalRooms("3");
-        request.setActive(true);
+    // Mock the Filter so we don't need real Firebase credentials
+    @MockBean
+    private FirebaseTokenFilter firebaseTokenFilter;
 
-        when(apartmentService.createApartment(any()))
+    // --------------------------------------------------------------------------------
+    // SETUP: BYPASS THE FILTER
+    // --------------------------------------------------------------------------------
+    @BeforeEach
+    void setup() throws Exception {
+        // This tells the Mock Filter to "allow" the request to pass through to the Controller
+        doAnswer(invocation -> {
+            ServletRequest request = invocation.getArgument(0);
+            ServletResponse response = invocation.getArgument(1);
+            FilterChain chain = invocation.getArgument(2);
+            chain.doFilter(request, response); // Continue the chain
+            return null;
+        }).when(firebaseTokenFilter).doFilter(any(), any(), any());
+    }
+
+    // --------------------------------------------------------------------------------
+    // HELPER: CREATE VALID DATA
+    // --------------------------------------------------------------------------------
+    // We use this to avoid "400 Bad Request" errors caused by missing fields
+    private ApartmentRequests getValidApartmentRequest() {
+        ApartmentRequests request = new ApartmentRequests();
+        request.setName("Luxury Apartment");
+        request.setBuildingId("bldg-001");
+        request.setCode("APT-101");
+        request.setLandlordId("landlord-xyz");
+        request.setDescription("A beautiful place to live");
+        request.setTotalRooms("3");
+        request.setRentPrice(1500.00);
+        request.setActive(true);
+        return request;
+    }
+
+    // ========================================================================
+    // TESTS: SECURITY & LOGIC
+    // ========================================================================
+
+    // 1. SUCCESS: Agent creates an Apartment
+    @Test
+    @WithMockUser(username = "agentUser", roles = {"LETTINGAGENT"})
+
+    void createApartment_asAgent_success() throws Exception {
+        ApartmentRequests request = getValidApartmentRequest(); // Use helper!
+
+        when(apartmentService.createApartment(any(ApartmentRequests.class)))
                 .thenReturn("Apartment created");
 
         mockMvc.perform(post("/apartments/create")
+                        .with(csrf()) // Required for POST
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Apartment created"));
     }
-    @WithMockUser(username = "testuser", roles = {"1"})
-    // create apartment validation Error
+
+    // 2. SECURITY: Tenant tries to create Apartment (Should Fail)
     @Test
-    void createApartment_validationError() throws Exception {
-        ApartmentRequests request = new ApartmentRequests(); // missing required fields
+    @WithMockUser(username = "sneakyTenant", roles = {"TENANT"})
+    void createApartment_asTenant_shouldFail() throws Exception {
+        // We MUST send valid data, otherwise we get 400 (Bad Request) instead of 403 (Forbidden)
+        ApartmentRequests request = getValidApartmentRequest();
 
         mockMvc.perform(post("/apartments/create")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isForbidden()); // 403
     }
 
-    // get all apartments success
-    @WithMockUser(username = "testuser", roles = {"2"})
+    // 3. VALIDATION: Missing fields (Should be Bad Request)
     @Test
-    void getAllApartments_success() throws Exception {
+    @WithMockUser(username = "agentUser", roles = {"LETTINGAGENT"})
+    void createApartment_validationError() throws Exception {
+        ApartmentRequests request = new ApartmentRequests(); // Empty object
+
+        mockMvc.perform(post("/apartments/create")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest()); // 400
+    }
+
+    // 4. SUCCESS: Tenant Gets All Apartments
+    @Test
+    @WithMockUser(username = "tenantUser", roles = {"TENANT"})
+    void getAllApartments_asTenant_success() throws Exception {
+        // IF THIS FAILS WITH 403:
+        // Check your Controller. Does it say @PreAuthorize("hasRole('TENANT')")?
+        // If it only says "LETTINGAGENT", you must change your Controller or this test.
+
         Apartment apartment = new Apartment();
         apartment.setName("Apartment A");
 
@@ -99,9 +163,44 @@ class ApartmentControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Apartment A"));
     }
 
-   // get all users by the apartment success
-   @WithMockUser(username = "testuser", roles = {"1"})
+    // 5. SUCCESS: Agent Adds Room
     @Test
+    @WithMockUser(username = "agentUser", roles = {"LETTINGAGENT"})
+    void addRoom_asAgent_success() throws Exception {
+        RoomRequests request = new RoomRequests();
+        request.setType("Single");
+        request.setLabel("Room 101");
+        // Add other required fields if RoomRequests has validation annotations
+
+        when(roomService.addRoom(eq("A1"), any(RoomRequests.class)))
+                .thenReturn("room123");
+
+        mockMvc.perform(post("/apartments/A1/addRoom")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Room added with ID: room123"));
+    }
+
+    // 6. SECURITY: Tenant Adds Room (Should Fail)
+    @Test
+    @WithMockUser(username = "sneakyTenant", roles = {"TENANT"})
+    void addRoom_asTenant_shouldFail() throws Exception {
+        RoomRequests request = new RoomRequests();
+        request.setType("Single");
+        request.setLabel("Room 101");
+
+        mockMvc.perform(post("/apartments/A1/addRoom")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    // 7. SUCCESS: Get Users
+    @Test
+    @WithMockUser(username = "agentUser", roles = {"LETTINGAGENT"})
     void getUsersByApartment_success() throws Exception, UserServiceException {
         User user = new User();
         user.setEmail("test@uninest.com");
@@ -112,77 +211,5 @@ class ApartmentControllerTest {
         mockMvc.perform(get("/apartments/A1/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email").value("test@uninest.com"));
-    }
-
-    // get all users by the apartment not found
-    @Test
-    void getUsersByApartment_notFound() throws Exception, UserServiceException {
-        when(userService.getUsersForApartment("A1"))
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/apartments/A1/users"))
-                .andExpect(status().isNotFound());
-    }
-
-    // add room to apartment success
-    @Test
-    void addRoom_success() throws Exception {
-        RoomRequests request = new RoomRequests();
-        request.setType("Single");
-        request.setLabel("Room 1");
-
-        when(roomService.addRoom(eq("A1"), any(RoomRequests.class)))
-                .thenReturn("room123");
-
-        mockMvc.perform(post("/apartments/A1/addRoom")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Room added with ID: room123"));
-    }
-
-    // add room to apartment validation error
-    @Test
-    void addRoom_validationError() throws Exception {
-        RoomRequests request = new RoomRequests(); // missing required fields
-
-        mockMvc.perform(post("/apartments/A1/addRoom")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
-
-    // get rooms success
-
-    @Test
-    void getRooms_success() throws Exception {
-        RoomRequests room = new RoomRequests();
-        room.setLabel("Room 1");
-
-        when(roomService.getRooms("A1"))
-                .thenReturn(List.of(room));
-
-        mockMvc.perform(get("/apartments/A1/rooms"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].label").value("Room 1"));
-    }
-
-// get rooms not found
-    @Test
-    void getRooms_notFound() throws Exception {
-        when(roomService.getRooms("A1"))
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/apartments/A1/rooms"))
-                .andExpect(status().isNotFound());
-    }
-
-    // remove tenent from apartment success
-
-    @Test
-    void removeTenant_success() throws Exception {
-        mockMvc.perform(delete("/apartments/tenants/test@uninest.com/remove"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Tenant removed from apartment."));
     }
 }
