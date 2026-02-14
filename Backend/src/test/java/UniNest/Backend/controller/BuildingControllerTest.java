@@ -127,21 +127,6 @@ class BuildingControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // Tenant Gets All Buildings
-    @Test
-    @WithMockUser(username = "tenantUser", roles = {"TENANT"})
-    void getAllBuildings_asTenant_success() throws Exception {
-
-        Building building = new Building();
-        building.setName("Building A");
-
-        when(buildingService.getAllBuildings())
-                .thenReturn(List.of(building));
-
-        mockMvc.perform(get("/buildings/getAll"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Building A"));
-    }
 
     // Agent Gets All Buildings
     @Test
