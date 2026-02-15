@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,27 +13,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp"
+        android:padding="20dp"
         android:background="#D4BAF1">
 
+        <!-- Room Name (Left side) -->
         <TextView
             android:id="@+id/tvRoomTypeName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text=""
-            tools:text="Bedrooms"
-            android:textSize="16sp"
+            android:text="Bedrooms"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@android:color/black" />
 
-        <ImageView
-            android:id="@+id/imgChevron"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_chevron_right"
-            app:tint="#6C2BA4"
-            tools:ignore="ContentDescription" />
-    </LinearLayout>
+        <!-- BIG Count (Right side corner) -->
+        <TextView
+            android:id="@+id/tvRoomCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="4"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#6C2BA4" />
 
+    </LinearLayout>
 </FrameLayout>

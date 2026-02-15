@@ -39,6 +39,8 @@ public interface BillsApi {
     Call<List<OwedToUser>> getOwedToMe(@Path("userId") String userId);
 
 
+    @GET("/bills/createdBy/{userId}")
+    Call<List<BillsRequest>> getBillsCreatedBy(@Path("userId") String userId);
 
 
 

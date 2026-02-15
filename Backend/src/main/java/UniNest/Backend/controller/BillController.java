@@ -85,5 +85,13 @@ public class BillController {
         return billService.getTotalOwedToUser(userId);
     }
 
+    @GetMapping("/createdBy/{userId}")
+    public ResponseEntity<List<BillRequest>> getBillsCreatedBy(@PathVariable String userId) {
+        try {
+            return ResponseEntity.ok(billService.getBillsCreatedBy(userId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }

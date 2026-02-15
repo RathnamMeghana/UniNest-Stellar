@@ -231,7 +231,7 @@ public class ApartmentService {
     public List<Apartment> getApartmentsByBuilding(String buildingId) {
         try {
             Firestore db = FirestoreClient.getFirestore();
-            // Use whereEqualTo to filter directly in the database
+
             ApiFuture<QuerySnapshot> future = db.collection("apartments")
                     .whereEqualTo("buildingId", buildingId)
                     .get();
@@ -240,7 +240,16 @@ public class ApartmentService {
             List<Apartment> apartments = new ArrayList<>();
 
             for (QueryDocumentSnapshot doc : documents) {
-                apartments.add(doc.toObject(Apartment.class));
+                Apartment apt = doc.toObject(Apartment.class);
+
+                ApiFuture<QuerySnapshot> userQuery = db.collection("users")
+                        .whereEqualTo("houseCode", apt.getCode())
+                        .get();
+
+                int count = userQuery.get().getDocuments().size();
+                apt.setOccupiedCount(count);
+
+                apartments.add(apt);
             }
             return apartments;
         } catch (Exception e) {
