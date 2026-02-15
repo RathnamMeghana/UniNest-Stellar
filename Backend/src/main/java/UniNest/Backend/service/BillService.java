@@ -3,8 +3,11 @@ package UniNest.Backend.service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,6 +16,15 @@ import UniNest.Backend.dto.OwedToUserResponse;
 
 @Service
 public class BillService {
+
+
+
+    private void checkOwnership(String userId) throws AccessDeniedException {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!currentUser.equals(userId)) {
+            throw new AccessDeniedException("Cannot access another user's bills");
+        }
+    }
     private static final String BILL_COLLECTION = "bills";
 
     public List<BillRequest> createBill(BillRequest request) {
@@ -92,7 +104,8 @@ public class BillService {
     }
 
     // ------------------- MARK SPLIT AS PAID -------------------
-    public void markAsPaid(String billId, String userId) {
+    public void markAsPaid(String billId, String userId) throws AccessDeniedException {
+        checkOwnership(userId);
         try {
             Firestore db = FirestoreClient.getFirestore();
             DocumentReference billRef = db.collection(BILL_COLLECTION).document(billId);
@@ -123,7 +136,9 @@ public class BillService {
     }
 
     // ------------------- GET UNPAID BILLS -------------------
-    public List<BillRequest> getBillsByUserId(String userId) {
+
+    public List<BillRequest> getBillsByUserId(String userId) throws AccessDeniedException {
+        checkOwnership(userId);
         try {
             Firestore db = FirestoreClient.getFirestore();
             List<BillRequest> results = new ArrayList<>();
@@ -151,7 +166,8 @@ public class BillService {
     }
 
     // ------------------- GET PAID HISTORY -------------------
-    public List<BillRequest> getPaidHistory(String userId) {
+    public List<BillRequest> getPaidHistory(String userId) throws AccessDeniedException {
+        checkOwnership(userId);
         try {
             Firestore db = FirestoreClient.getFirestore();
             List<BillRequest> results = new ArrayList<>();

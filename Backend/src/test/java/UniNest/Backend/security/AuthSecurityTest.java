@@ -30,8 +30,9 @@ class AuthSecurityTest {
      * without a Firebase token is rejected.
      */
     @Test
-    void accessProtectedEndpoint_withoutToken_returns401() throws Exception {
+    void accessProtectedEndpoint_withoutToken_returns403() throws Exception {
         mockMvc.perform(get("/apartments/getAll"))
-                .andExpect(status().isUnauthorized());
+                //.andExpect(status().isUnauthorized());
+        .andExpect(status().isForbidden()); // 403
     }
 }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +41,7 @@ class BillServiceTest {
     }
 
     @Test
-    void getTotalOwedByUserId_calculatesCorrectTotal() {
+    void getTotalOwedByUserId_calculatesCorrectTotal() throws AccessDeniedException {
         BillRequest.Split split = new BillRequest.Split();
         split.setUserId("user1");
         split.setAmountOwed(50);
