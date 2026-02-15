@@ -23,12 +23,12 @@ public class BuildingService {
 
     /**
      * Creates a building in Firestore.
-     * Note: Admin SDK bypasses security rules.
      */
     public String createBuilding(BuildingRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Request cannot be null");
         }
+        request.sanitize();
 
         try {
             Firestore db = FirestoreClient.getFirestore();
