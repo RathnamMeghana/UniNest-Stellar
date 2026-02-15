@@ -1,5 +1,6 @@
 package UniNest.Backend.dto;
 
+import UniNest.Backend.util.SanitizationUtil;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -27,5 +28,11 @@ public class UpdateTicketStatusRequest {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+
+    public void sanitize() {
+        this.ticketId = SanitizationUtil.sanitize(this.ticketId);
+        this.status = SanitizationUtil.sanitize(this.status);
     }
 }

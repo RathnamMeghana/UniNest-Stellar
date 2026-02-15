@@ -1,5 +1,7 @@
 package UniNest.Backend.dto;
 
+import UniNest.Backend.util.SanitizationUtil;
+
 public class UpdateTicketAgentDataRequest {
     private String ticketId;
     private String response;
@@ -14,4 +16,11 @@ public class UpdateTicketAgentDataRequest {
 
     public String getArrivalDate() { return arrivalDate; }
     public void setArrivalDate(String arrivalDate) { this.arrivalDate = arrivalDate; }
+
+    public void sanitize() {
+        this.ticketId = SanitizationUtil.sanitize(this.ticketId);
+        this.response = SanitizationUtil.sanitize(this.response);
+        this.arrivalDate = SanitizationUtil.sanitize(this.arrivalDate);
+    }
+
 }
