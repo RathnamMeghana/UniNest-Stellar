@@ -38,9 +38,8 @@ class BuildingControllerObjectLevelTest {
     @MockBean
     private FirebaseTokenFilter firebaseTokenFilter;
 
-    // ---------------------------------------------------
+
     // BYPASS FIREBASE FILTER
-    // ---------------------------------------------------
     @BeforeEach
     void setup() throws Exception {
         doAnswer(invocation -> {
@@ -92,7 +91,6 @@ class BuildingControllerObjectLevelTest {
         mockMvc.perform(get("/buildings/getAll"))
                 .andExpect(status().isForbidden());
     }
-
 
     // Unauthenticated access attempt
     @Test
