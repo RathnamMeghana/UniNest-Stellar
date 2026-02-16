@@ -1,6 +1,7 @@
 package UniNest.Backend.config;
 
 import UniNest.Backend.security.FirebaseTokenFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,6 @@ import java.util.List;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    // Inject the filter (In tests, this will be the Mock. In prod, the real one)
     @Autowired
     private FirebaseTokenFilter firebaseTokenFilter;
 
@@ -34,14 +34,20 @@ public class SecurityConfig {
                     config.setAllowedHeaders(List.of("*"));
                     return config;
                 }))
+                // Forces 401 Unauthorized instead of 403 Forbidden for unauthenticated requests
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        })
+                )
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll() // Allows Spring to report the error status correctly
                         .anyRequest().authenticated()
                 )
-                // USE THE INJECTED VARIABLE, NOT "new FirebaseTokenFilter()"
                 .addFilterBefore(firebaseTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
