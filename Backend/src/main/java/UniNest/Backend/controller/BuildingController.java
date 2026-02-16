@@ -54,22 +54,18 @@ public class BuildingController {
         return buildingService.getBuildingsByLandlord(landlordId);
     }
 
+
+
     @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/{id}")
     public ResponseEntity<Building> getBuildingById(@PathVariable String id) {
-        try {
-            // Sanitize input
-            String cleanId = SanitizationUtil.sanitize(id);
+        // 1. Sanitize
+        String cleanId = SanitizationUtil.sanitize(id);
 
-            Building building = buildingService.getBuildingById(cleanId);
+        // 2. Call service (Service already throws BuildingServiceException if not found)
+        Building building = buildingService.getBuildingById(cleanId);
 
-            if (building != null) {
-                return new ResponseEntity<>(building, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        // 3. Return success
+        return new ResponseEntity<>(building, HttpStatus.OK);
     }
 }

@@ -47,15 +47,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BuildingServiceException.class)
     public ResponseEntity<String> handleBuildingException(BuildingServiceException ex) {
-        // Logic to differentiate based on message content
-        if (ex.getMessage().contains("does not exist")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-        if (ex.getMessage().contains("not authorized")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
+
+
 
     @ExceptionHandler(RoomServiceException.class)
     public ResponseEntity<String> handleRoomException(RoomServiceException ex) {
