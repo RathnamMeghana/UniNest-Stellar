@@ -15,6 +15,7 @@ import UniNest.Backend.exception.RoomServiceException;
 import UniNest.Backend.exception.TicketNotFoundException;
 import UniNest.Backend.exception.TicketServiceException;
 import UniNest.Backend.exception.UserServiceException;
+import UniNest.Backend.exception.TenantNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -33,16 +34,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+
     @ExceptionHandler(ApartmentServiceException.class)
     public ResponseEntity<String> handleApartmentException(ApartmentServiceException ex) {
-        // Logic to differentiate based on message content
-        if (ex.getMessage().contains("does not exist")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        // Priority 1: Use the status attached to the exception
+        if (ex.getStatus() != null) {
+            return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
         }
-        if (ex.getMessage().contains("not authorized")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+
+        // Priority 2: Fallback logic if status is somehow still null
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        if (ex.getMessage().contains("does not exist")) status = HttpStatus.NOT_FOUND;
+        if (ex.getMessage().contains("not authorized")) status = HttpStatus.FORBIDDEN;
+
+        return ResponseEntity.status(status).body(ex.getMessage());
     }
 
     @ExceptionHandler(BuildingServiceException.class)
@@ -50,6 +55,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
 
+    @ExceptionHandler(TenantNotFoundException.class)
+    public ResponseEntity<String> handleTenantNotFound(TenantNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 
 
     @ExceptionHandler(RoomServiceException.class)
@@ -99,6 +108,8 @@ public class GlobalExceptionHandler {
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
+
+
 
 
 }

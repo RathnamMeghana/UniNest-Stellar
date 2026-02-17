@@ -5,7 +5,7 @@ import com.google.cloud.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +34,8 @@ import UniNest.Backend.util.SanitizationUtil;
 @RequestMapping("/apartments")
 
 public class ApartmentController {
+
+
     @Autowired
     private ApartmentService apartmentService;
 
@@ -45,19 +47,9 @@ public class ApartmentController {
 
     @PreAuthorize("hasRole('LETTINGAGENT')")
     @PostMapping("/create")
-    public String createApartment( @Valid @RequestBody ApartmentRequests request) {
-        request.setName(SanitizationUtil.sanitize(request.getName()));
-        request.setBuildingId(SanitizationUtil.sanitize(request.getBuildingId()));
-//        request.setCode(SanitizationUtil.sanitize(request.getCode()));
-        request.setLandlordId(SanitizationUtil.sanitize(request.getLandlordId()));
-        request.setDescription(SanitizationUtil.sanitize(request.getDescription()));
-        request.setTotalRooms(SanitizationUtil.sanitize(request.getTotalRooms()));
-
-        if(request.getCreatedAt() == null){
-            request.setCreatedAt(Timestamp.now());
-        }
-
-        return apartmentService.createApartment(request);
+    public String createApartment(@Valid @RequestBody ApartmentRequests request) {
+        request.sanitize(); // This runs the cleaning logic
+        return apartmentService.createApartment(request); // This passes the cleaned object
     }
 
     @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")

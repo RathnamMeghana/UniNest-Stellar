@@ -1,7 +1,6 @@
 package UniNest.Backend.config;
 
 import UniNest.Backend.security.FirebaseTokenFilter;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,20 +33,15 @@ public class SecurityConfig {
                     config.setAllowedHeaders(List.of("*"));
                     return config;
                 }))
-                // Forces 401 Unauthorized instead of 403 Forbidden for unauthenticated requests
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                        })
-                )
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/error").permitAll() // Allows Spring to report the error status correctly
+                        .requestMatchers("/error").permitAll() // Added to prevent 403 on error paths
                         .anyRequest().authenticated()
                 )
+                // When we remove the ExceptionEntryPoint, Spring defaults back to 403 for anonymous users
                 .addFilterBefore(firebaseTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

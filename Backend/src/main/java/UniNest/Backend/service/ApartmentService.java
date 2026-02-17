@@ -22,6 +22,7 @@ import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.exception.TenantNotFoundException;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.exception.ApartmentServiceException;
+import org.springframework.http.HttpStatus;
 
 @Service
 public class ApartmentService {
@@ -57,11 +58,11 @@ public class ApartmentService {
     }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ApartmentServiceException("Apartment code generation interrupted", e);
+            throw new ApartmentServiceException("Apartment code generation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new ApartmentServiceException("Failed to generate unique apartment code", e);
+            throw new ApartmentServiceException("Failed to generate unique apartment code", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new ApartmentServiceException("Firestore unavailable", e);
+            throw new ApartmentServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -71,13 +72,17 @@ public class ApartmentService {
             Firestore db = FirestoreClient.getFirestore();
             var landlordDoc = db.collection("users").document(request.getLandlordId()).get().get();
 
+
             if (!landlordDoc.exists()) {
-                throw new ApartmentServiceException("Landlord with ID " + request.getLandlordId() + " does not exist.", null);
+                // Change null to HttpStatus.NOT_FOUND
+                throw new ApartmentServiceException("Landlord with ID " + request.getLandlordId() + " does not exist.", HttpStatus.NOT_FOUND);
             }
             String role = landlordDoc.getString("role");
             if (!"1".equalsIgnoreCase(role)) {
-                throw new ApartmentServiceException("User exists but is not authorized as a Landlord.", null);
+                // Change null to HttpStatus.FORBIDDEN
+                throw new ApartmentServiceException("User exists but is not authorized as a Landlord.", HttpStatus.FORBIDDEN);
             }
+
             // Assign the guaranteed unique code
             String uniqueCode = getUniqueCode();
 
@@ -105,14 +110,19 @@ public class ApartmentService {
 
             return "Apartment created successfully with code: " + uniqueCode;
 
+
+
+
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ApartmentServiceException("Apartment creation interrupted", e);
+            throw new ApartmentServiceException("Apartment creation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new ApartmentServiceException("Failed to create apartment", e);
+            throw new ApartmentServiceException("Failed to create apartment", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new ApartmentServiceException("Firestore unavailable", e);
+            throw new ApartmentServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
 
     public List<Apartment> getAllApartments() {
@@ -133,11 +143,11 @@ public class ApartmentService {
 
         }  catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ApartmentServiceException("Fetching apartments interrupted", e);
+            throw new ApartmentServiceException("Fetching apartments interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new ApartmentServiceException("Failed to fetch apartments", e);
+            throw new ApartmentServiceException("Failed to fetch apartments", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new ApartmentServiceException("Firestore unavailable", e);
+            throw new ApartmentServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -165,11 +175,11 @@ public class ApartmentService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ApartmentServiceException("Removing tenant interrupted", e);
+            throw new ApartmentServiceException("Removing tenant interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new ApartmentServiceException("Failed to remove tenant", e);
+            throw new ApartmentServiceException("Failed to remove tenant", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new ApartmentServiceException("Firestore unavailable", e);
+            throw new ApartmentServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -223,7 +233,7 @@ public class ApartmentService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ApartmentServiceException("Bulk apartment + room creation failed", e);
+            throw new ApartmentServiceException("Bulk apartment + room creation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -253,7 +263,7 @@ public class ApartmentService {
             }
             return apartments;
         } catch (Exception e) {
-            throw new ApartmentServiceException("Failed to fetch apartments for building", e);
+            throw new ApartmentServiceException("Failed to fetch apartments for building", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
