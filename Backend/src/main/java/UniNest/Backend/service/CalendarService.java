@@ -12,6 +12,7 @@ import com.google.cloud.firestore.*;
 import com.google.cloud.Timestamp;
 import com.google.firebase.cloud.FirestoreClient;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -68,9 +69,9 @@ public class CalendarService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CalendarServiceException("Calendar event creation interrupted", e);
+            throw new CalendarServiceException("Calendar event creation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException | FirestoreException e) {
-            throw new CalendarServiceException("Failed to create calendar event", e);
+            throw new CalendarServiceException("Failed to create calendar event", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -94,11 +95,11 @@ public class CalendarService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CalendarServiceException("Fetch interrupted", e);
+            throw new CalendarServiceException("Fetch interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new CalendarServiceException("Failed to fetch events", e);
+            throw new CalendarServiceException("Failed to fetch events", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new CalendarServiceException("Firestore unavailable", e);
+            throw new CalendarServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -120,11 +121,11 @@ public class CalendarService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CalendarServiceException("Fetch interrupted", e);
+            throw new CalendarServiceException("Fetch interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new CalendarServiceException("Failed to fetch user events", e);
+            throw new CalendarServiceException("Failed to fetch user events", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new CalendarServiceException("Firestore unavailable", e);
+            throw new CalendarServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -154,11 +155,11 @@ public class CalendarService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CalendarServiceException("Update interrupted", e);
+            throw new CalendarServiceException("Update interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new CalendarServiceException("Failed to update event", e);
+            throw new CalendarServiceException("Failed to update event", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new CalendarServiceException("Firestore unavailable", e);
+            throw new CalendarServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -171,11 +172,11 @@ public class CalendarService {
             db.collection(COLLECTION).document(eventId).delete().get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CalendarServiceException("Delete interrupted", e);
+            throw new CalendarServiceException("Delete interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new CalendarServiceException("Failed to delete event", e);
+            throw new CalendarServiceException("Failed to delete event", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new CalendarServiceException("Firestore unavailable", e);
+            throw new CalendarServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -203,11 +204,11 @@ public class CalendarService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CalendarServiceException("Fetch interrupted", e);
+            throw new CalendarServiceException("Fetch interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new CalendarServiceException("Failed to fetch events for range", e);
+            throw new CalendarServiceException("Failed to fetch events for range", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new CalendarServiceException("Firestore unavailable", e);
+            throw new CalendarServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -237,7 +238,7 @@ public class CalendarService {
             try {
                 dto.setType(CalendarEventDTO.EventType.valueOf(e.getType()));
             } catch (IllegalArgumentException ex) {
-                // unknown value in DB → use default
+                // unknown value in DB use default
                 dto.setType(CalendarEventDTO.EventType.OTHER);
             }
         } else {

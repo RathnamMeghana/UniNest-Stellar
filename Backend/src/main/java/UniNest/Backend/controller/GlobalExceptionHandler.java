@@ -12,6 +12,7 @@ import java.util.Map;
 import UniNest.Backend.exception.ApartmentServiceException;
 import UniNest.Backend.exception.BillServiceException;
 import UniNest.Backend.exception.BuildingServiceException;
+import UniNest.Backend.exception.CalendarServiceException;
 import UniNest.Backend.exception.RoomServiceException;
 import UniNest.Backend.exception.TicketNotFoundException;
 import UniNest.Backend.exception.TicketServiceException;
@@ -122,6 +123,12 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CalendarServiceException.class)
+    public ResponseEntity<String> handleCalendarException(CalendarServiceException ex) {
+
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
 
 }
