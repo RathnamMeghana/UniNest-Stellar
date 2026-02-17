@@ -97,7 +97,7 @@ class CalendarControllerErrorHandlingTest {
     @WithMockUser
     @DisplayName("GET /calendar/getByApartment/{house} - Should return 400 for invalid date format")
     public void getEvents_WhenDateFormatInvalid_Returns400() throws Exception {
-        // 1. Tell the mock to throw a 400 error when it gets "invalid-date"
+        // mock to throw a 400 error when it gets "invalid-date"
         // Use ArgumentMatchers (eq and anyString) to match the call
         when(calendarService.getForRange(eq("HOUSE123"), eq("invalid-date"), anyString()))
                 .thenThrow(new CalendarServiceException("Invalid date format provided", HttpStatus.BAD_REQUEST));

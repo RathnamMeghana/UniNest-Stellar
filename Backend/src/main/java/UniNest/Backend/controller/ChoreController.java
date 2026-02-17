@@ -16,6 +16,7 @@ import UniNest.Backend.service.ChoreService;
 import UniNest.Backend.service.UserService;
 import UniNest.Backend.util.SanitizationUtil;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,8 @@ public class ChoreController {
         //  get roommates
         List<User> roommates = userService.getUsersForApartment(houseCode);
         if (roommates.isEmpty()) {
-            throw new ChoreServiceException("No roommates found for houseCode " + houseCode, null);
+
+            throw new ChoreServiceException("No roommates found for houseCode " + houseCode, HttpStatus.NOT_FOUND);
         }
         //  build AI request
         ChorePredictionRequest predictionRequest = new ChorePredictionRequest();

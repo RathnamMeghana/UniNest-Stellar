@@ -13,6 +13,7 @@ import UniNest.Backend.exception.ApartmentServiceException;
 import UniNest.Backend.exception.BillServiceException;
 import UniNest.Backend.exception.BuildingServiceException;
 import UniNest.Backend.exception.CalendarServiceException;
+import UniNest.Backend.exception.ChoreServiceException;
 import UniNest.Backend.exception.RoomServiceException;
 import UniNest.Backend.exception.TicketNotFoundException;
 import UniNest.Backend.exception.TicketServiceException;
@@ -129,6 +130,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleCalendarException(CalendarServiceException ex) {
 
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ChoreServiceException.class)
+    public ResponseEntity<String> handleChoreException(ChoreServiceException ex) {
+        // Null-safe check: default to 500 if status is null
+        HttpStatus status = (ex.getStatus() != null) ? ex.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(status).body(ex.getMessage());
     }
 
 }

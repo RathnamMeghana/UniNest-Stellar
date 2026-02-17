@@ -3,6 +3,8 @@ package UniNest.Backend.service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.*;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -68,9 +70,9 @@ public class ChoreService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ChoreServiceException("Chore query interrupted", e);
+            throw new ChoreServiceException("Chore query interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new ChoreServiceException("Failed to fetch chores", e);
+            throw new ChoreServiceException("Failed to fetch chores", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -109,9 +111,9 @@ public class ChoreService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ChoreServiceException("Chore creation interrupted", e);
+            throw new ChoreServiceException("Chore creation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new ChoreServiceException("Failed to add chore", e);
+            throw new ChoreServiceException("Failed to add chore", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -143,7 +145,7 @@ public class ChoreService {
             return choreDoc.toObject(ChoreRequests.class);
 
         } catch (Exception e) {
-            throw new ChoreServiceException("Failed to update assignment", e);
+            throw new ChoreServiceException("Failed to update assignment", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -184,7 +186,7 @@ public class ChoreService {
             return chore;
 
         } catch (Exception e) {
-            throw new ChoreServiceException("Failed to add chore with assignment: " + e.getMessage(), e);
+            throw new ChoreServiceException("Failed to add chore with assignment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -257,7 +259,7 @@ public class ChoreService {
             return new ChoreRequests();
 
         } catch (Exception e) {
-            throw new ChoreServiceException("Update failed", e);
+            throw new ChoreServiceException("Update failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
