@@ -4,6 +4,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 import UniNest.Backend.dto.BillRequest;
 import UniNest.Backend.dto.OwedToUserResponse;
+import UniNest.Backend.exception.BillServiceException;
 
 @Service
 public class BillService {
@@ -99,7 +101,7 @@ public class BillService {
             return createdBills;
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create bill: " + e.getMessage(), e);
+            throw new BillServiceException("Error fetching unpaid bills: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -131,7 +133,7 @@ public class BillService {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to update payment status: " + e.getMessage(), e);
+            throw new BillServiceException("Error marking as paid: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -161,7 +163,8 @@ public class BillService {
             }
             return results;
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching unpaid bills", e);
+            throw new BillServiceException("Error fetching unpaid bills: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 
@@ -200,7 +203,8 @@ public class BillService {
             return results;
 
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching paid history", e);
+            throw new BillServiceException("Error fetching paid history: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 
@@ -210,7 +214,8 @@ public class BillService {
             Firestore db = FirestoreClient.getFirestore();
             db.collection(BILL_COLLECTION).document(billId).delete().get();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to delete bill: " + e.getMessage(), e);
+            throw new BillServiceException("Failed to delete bill: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 
@@ -223,7 +228,7 @@ public class BillService {
                 .sum();
 
         if (Math.abs(total - request.getTotalAmount()) > 0.01) {
-            throw new IllegalArgumentException("Split amounts must equal total bill");
+            throw new BillServiceException("Split amounts must equal total bill: " , HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -238,7 +243,9 @@ public class BillService {
                     .mapToDouble(BillRequest.Split::getAmountOwed)
                     .sum();
         } catch (Exception e) {
-            throw new RuntimeException("Error calculating total owed for user: " + userId, e);
+            throw new BillServiceException("Error calculating total owed for user: " , HttpStatus.INTERNAL_SERVER_ERROR);
+
+
         }
     }
 
@@ -291,7 +298,8 @@ public class BillService {
             return results;
 
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching amounts owed to user", e);
+            throw new BillServiceException("Error fetching amounts owed to user: " , HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 
@@ -325,7 +333,9 @@ public class BillService {
             return results;
 
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching bills created by user", e);
+
+            throw new BillServiceException("Error fetching bills created by user: " , HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 

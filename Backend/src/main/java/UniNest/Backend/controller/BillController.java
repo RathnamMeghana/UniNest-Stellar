@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -35,38 +36,31 @@ public class BillController {
     @PatchMapping("/{billId}/{userId}/pay")
     public ResponseEntity<String> markAsPaid(
             @PathVariable String billId,
-            @PathVariable String userId) {
-        try {
+            @PathVariable String userId) throws AccessDeniedException {
+
             billService.markAsPaid(billId, userId);
             return ResponseEntity.ok("Split marked as paid successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error updating payment: " + e.getMessage());
-        }
+
     }
 
     //  Get unpaid bills for a user
     @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/getBills/{userId}")
     public ResponseEntity<List<BillRequest>> getBillsByUserId(
-            @PathVariable String userId) {
-        try {
+            @PathVariable String userId) throws AccessDeniedException {
+
             return ResponseEntity.ok(billService.getBillsByUserId(userId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
     }
 
     // Get paid bills (payment history)
     @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/paidHistory/{userId}")
     public ResponseEntity<List<BillRequest>> getPaidBills(
-            @PathVariable String userId) {
-        try {
+            @PathVariable String userId) throws AccessDeniedException {
+
             return ResponseEntity.ok(billService.getPaidHistory(userId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
     }
     @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/totalOwed/{userId}")
@@ -87,11 +81,9 @@ public class BillController {
 
     @GetMapping("/createdBy/{userId}")
     public ResponseEntity<List<BillRequest>> getBillsCreatedBy(@PathVariable String userId) {
-        try {
+
             return ResponseEntity.ok(billService.getBillsCreatedBy(userId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
     }
 
 }
