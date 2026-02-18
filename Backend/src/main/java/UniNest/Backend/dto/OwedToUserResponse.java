@@ -1,5 +1,6 @@
 package UniNest.Backend.dto;
 
+import UniNest.Backend.util.SanitizationUtil;
 import lombok.Data;
 import java.util.Date;
 
@@ -13,4 +14,15 @@ public class OwedToUserResponse {
 
     private BillRequest.BillType billType;
     private BillRequest.BillFrequency frequency;
+
+
+    public void sanitize() {
+        if (this.billId != null)
+            this.billId = SanitizationUtil.sanitize(this.billId);
+        if (this.billTitle != null)
+            this.billTitle = SanitizationUtil.sanitize(this.billTitle);
+        if (this.debtorUserId != null)
+            this.debtorUserId = SanitizationUtil.sanitize(this.debtorUserId);
+
+    }
 }

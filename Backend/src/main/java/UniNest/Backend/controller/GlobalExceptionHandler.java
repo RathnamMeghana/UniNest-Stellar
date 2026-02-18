@@ -76,6 +76,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
 
+    @ExceptionHandler(UserServiceException.class)
+    public ResponseEntity<String> handleUserServiceException(UserServiceException ex) {
+        HttpStatus status = (ex.getStatus() != null) ? ex.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(status).body(ex.getMessage());
+    }
+
 
 
     @ExceptionHandler(RoomServiceException.class)
@@ -114,17 +120,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(UserServiceException.class)
-    public ResponseEntity<String> handleUserServiceException(UserServiceException ex) {
-        // Logic to differentiate based on message content
-        if (ex.getMessage().contains("does not exist")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-        if (ex.getMessage().contains("not authorized")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-    }
 
     @ExceptionHandler(CalendarServiceException.class)
     public ResponseEntity<String> handleCalendarException(CalendarServiceException ex) {
@@ -137,6 +132,12 @@ public class GlobalExceptionHandler {
         // Null-safe check: default to 500 if status is null
         HttpStatus status = (ex.getStatus() != null) ? ex.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
         return ResponseEntity.status(status).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        // This will turn the service's "houseCode cannot be empty" error into a 400
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
 }

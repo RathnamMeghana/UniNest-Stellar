@@ -23,7 +23,7 @@ public class UserController {
         try {
             // Reusing your existing service method
             return userService.getUsersForApartment(houseCode);
-        } catch (Exception | UserServiceException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error fetching roommates", e);
         }
     }
