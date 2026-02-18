@@ -39,7 +39,7 @@ public class TicketController {
 
     @PreAuthorize("hasRole('TENANT')")
     @PostMapping("/create")
-    public ResponseEntity<String> createTicket(@RequestBody Ticket ticket) {
+    public ResponseEntity<String> createTicket(@Valid @RequestBody Ticket ticket) {
         try {
             ticket.sanitize();
             String result = ticketService.createTicket(ticket);
@@ -51,7 +51,7 @@ public class TicketController {
     }
 
 
-    @PreAuthorize("hasRole(LETTINGAGENT')")
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/building")
     public ResponseEntity<List<Ticket>> getTicketsByBuilding(@RequestParam String name) {
         try {
@@ -61,7 +61,7 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PreAuthorize("hasRole(LETTINGAGENT') or hasRole('TENANT')")
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/apartment")
     public ResponseEntity<List<Ticket>> getTicketsByApartment(@RequestParam String name) {
         try {
@@ -71,7 +71,7 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PreAuthorize("hasRole(LETTINGAGENT')")
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/landlord")
     public ResponseEntity<List<Ticket>> getTicketsByLandlord(@RequestParam String id) {
         try {
@@ -81,7 +81,7 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PreAuthorize("hasRole(LETTINGAGENT')")
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @PutMapping("/status")
     public ResponseEntity<String> updateTicketStatus(@Valid @RequestBody UpdateTicketStatusRequest request) {
         try {
@@ -102,7 +102,7 @@ public class TicketController {
         }
     }
 
-    @PreAuthorize("hasRole(LETTINGAGENT')")
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @PutMapping("/priority")
     public ResponseEntity<String> updateTicketPriority(
             @Valid @RequestBody UpdateTicketPriorityRequest request) {
@@ -126,7 +126,7 @@ public class TicketController {
             );
         }
     }
-    @PreAuthorize("hasRole(LETTINGAGENT')")
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @PutMapping("/agent-update")
     public ResponseEntity<String> updateAgentData(@RequestBody UpdateTicketAgentDataRequest request) {
         try {

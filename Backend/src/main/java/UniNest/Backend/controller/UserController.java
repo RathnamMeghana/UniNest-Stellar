@@ -17,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     // Endpoint to get roommates by House Code
-    @PreAuthorize("hasRole(LETTINGAGENT') or hasRole('TENANT')")
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/roommates/{houseCode}")
     public List<User> getRoommates(@PathVariable String houseCode) {
         try {

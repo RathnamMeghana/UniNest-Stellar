@@ -4,10 +4,12 @@ import UniNest.Backend.config.SecurityConfig;
 import UniNest.Backend.controller.BillController;
 import UniNest.Backend.controller.GlobalExceptionHandler;
 import UniNest.Backend.dto.BillRequest;
+import UniNest.Backend.exception.BillServiceException;
 import UniNest.Backend.security.FirebaseTokenFilter;
 import UniNest.Backend.service.BillService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -126,5 +129,24 @@ public class BillSecurityFlowTest {
         verify(billService).createBill(captor.capture());
 
         assertFalse(captor.getValue().getTitle().contains("<script>"), "Title must be sanitized");
+    }
+    @Test
+    @WithMockUser(roles = "TENANT")
+    @DisplayName("Logic Flow: Bill creation fails if splits don't add up to total")
+    public void createBill_InvalidMath_Returns400() throws Exception {
+        BillRequest request = new BillRequest();
+        request.setTotalAmount(100.0); // Total is 100
+
+        BillRequest.Split split = new BillRequest.Split();
+        split.setAmountOwed(40.0); // But splits only add up to 40
+        request.setSplits(Collections.singletonList(split));
+
+        // Assume you add split validation in your service or a custom validator
+        when(billService.createBill(any())).thenThrow(new BillServiceException("Splits must sum to total", HttpStatus.BAD_REQUEST));
+
+        mockMvc.perform(post("/bills/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
     }
 }
