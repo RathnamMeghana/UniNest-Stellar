@@ -38,7 +38,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
     private SessionManager sessionManager;
 
     // Use 10.0.2.2 for Emulator, or your Local IP for physical device
-    private static final String BACKEND_URL = "http://192.168.1.70:8080/auth/firebase-login";
+    private static final String BACKEND_URL = "http://192.168.1.90:8080/auth/firebase-login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

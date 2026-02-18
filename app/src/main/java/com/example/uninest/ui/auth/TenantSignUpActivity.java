@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
+import com.example.uninest.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
@@ -31,21 +32,19 @@ import okhttp3.Response;
 
 public class TenantSignUpActivity extends AppCompatActivity {
 
-    private EditText etFirstName, etLastName, etHouseCode,
-            etTenantEmail, etTenantPassword, etTenantConfirmPassword;
+    private EditText etFirstName, etLastName, etHouseCode, etTenantEmail, etTenantPassword, etTenantConfirmPassword;
     private Button btnTenantSignUp;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tenant_sign_up);
 
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-
+        // Hook up views
         etFirstName = findViewById(R.id.etFirstName);
         etLastName = findViewById(R.id.etLastName);
         etHouseCode = findViewById(R.id.etHouseCode);
@@ -54,164 +53,182 @@ public class TenantSignUpActivity extends AppCompatActivity {
         etTenantConfirmPassword = findViewById(R.id.etTenantConfirmPassword);
         btnTenantSignUp = findViewById(R.id.btnTenantSignUp);
 
-        btnTenantSignUp.setOnClickListener(v -> attemptSignup());
+        // Initialize Firebase instances
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        sessionManager = new SessionManager(this);
+
+        // Button click
+        btnTenantSignUp.setOnClickListener(v -> {
+            String firstName = etFirstName.getText().toString().trim();
+            String lastName = etLastName.getText().toString().trim();
+            String houseCode = etHouseCode.getText().toString().trim();
+            String email = etTenantEmail.getText().toString().trim();
+            String password = etTenantPassword.getText().toString();
+            String confirm = etTenantConfirmPassword.getText().toString();
+            int role = 2;
+
+            if (firstName.isEmpty() || lastName.isEmpty() || houseCode.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+                Toast.makeText(TenantSignUpActivity.this,
+                        "Please fill in all fields",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(TenantSignUpActivity.this,
+                        "Please enter a valid email address",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!password.equals(confirm)) {
+                Toast.makeText(TenantSignUpActivity.this,
+                        "Passwords do not match",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            btnTenantSignUp.setEnabled(false);
+            btnTenantSignUp.setText("Creating Account...");
+
+            validateHouseCode(houseCode, email, password, firstName, lastName, String.valueOf(role));
+        });
     }
 
-    private void attemptSignup() {
-        String firstName = etFirstName.getText().toString().trim();
-        String lastName = etLastName.getText().toString().trim();
-        String houseCode = etHouseCode.getText().toString().trim();
-        String email = etTenantEmail.getText().toString().trim();
-        String password = etTenantPassword.getText().toString();
-        String confirm = etTenantConfirmPassword.getText().toString();
-        String role = "2";
+    private void signUp(String email, String password, String fName, String lName, String role, String houseCode, String apartmentId) {
 
-        if (firstName.isEmpty() || lastName.isEmpty() || houseCode.isEmpty()
-                || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
-            toast("Please fill in all fields");
-            return;
-        }
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            toast("Please enter a valid email address");
-            return;
-        }
+                        // Save tenant info in Firestore
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("email", email);
+                        userMap.put("firstName", fName);
+                        userMap.put("lastName", lName);
+                        userMap.put("role", role);
+                        userMap.put("houseCode", houseCode);
+                        userMap.put("apartmentId", apartmentId);
 
-        if (!password.equals(confirm)) {
-            toast("Passwords do not match");
-            return;
-        }
+                        db.collection("users").document(user.getUid())
+                                .set(userMap)
+                                .addOnSuccessListener(aVoid -> {
 
-        setLoading(true);
-        validateHouseCode(houseCode, email, password, firstName, lastName, role);
+                                    // Save session locally
+                                    sessionManager.saveTenantSession(email, houseCode);
+
+                                    // ===== BACKEND SYNC SECTION =====
+                                    user.getIdToken(true).addOnCompleteListener(tokenTask -> {
+                                        if (!tokenTask.isSuccessful()) {
+                                            Toast.makeText(this, "Failed to get token", Toast.LENGTH_SHORT).show();
+                                            btnTenantSignUp.setEnabled(true);
+                                            btnTenantSignUp.setText("Sign Up");
+                                            return;
+                                        }
+
+                                        String idToken = tokenTask.getResult().getToken();
+
+                                        OkHttpClient client = new OkHttpClient();
+                                        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+                                        String jsonBody = "{\"token\":\"" + idToken + "\", \"houseCode\":\"" + houseCode + "\"}";
+                                        RequestBody body = RequestBody.create(jsonBody, JSON);
+
+                                        Request request = new Request.Builder()
+                                                .url("http://192.168.1.90:8080/auth/firebase-login")
+                                                .post(body)
+                                                .addHeader("Authorization", "Bearer " + idToken)
+                                                .build();
+
+                                        client.newCall(request).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                                runOnUiThread(() -> {
+                                                    Toast.makeText(TenantSignUpActivity.this,
+                                                            "Backend sync failed", Toast.LENGTH_SHORT).show();
+                                                    btnTenantSignUp.setEnabled(true);
+                                                    btnTenantSignUp.setText("Sign Up");
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                                                response.close();
+
+                                                // Force refresh token to include backend claims
+                                                user.getIdToken(true).addOnCompleteListener(refreshTask -> {
+                                                    runOnUiThread(() -> {
+                                                        if (refreshTask.isSuccessful()) {
+                                                            Toast.makeText(TenantSignUpActivity.this,
+                                                                    "Signup successful!", Toast.LENGTH_SHORT).show();
+                                                            startActivity(new Intent(TenantSignUpActivity.this, TenantTicketsActivity.class));
+                                                            finish();
+                                                        } else {
+                                                            Toast.makeText(TenantSignUpActivity.this,
+                                                                    "Failed to refresh token", Toast.LENGTH_SHORT).show();
+                                                            btnTenantSignUp.setEnabled(true);
+                                                            btnTenantSignUp.setText("Sign Up");
+                                                        }
+                                                    });
+                                                });
+                                            }
+                                        });
+                                    });
+                                    // ===== END BACKEND SYNC =====
+
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Signup Failed: Could not save profile information.", Toast.LENGTH_LONG).show();
+                                    btnTenantSignUp.setEnabled(true);
+                                    btnTenantSignUp.setText("Sign Up");
+                                });
+
+                    } else {
+                        btnTenantSignUp.setEnabled(true);
+                        btnTenantSignUp.setText("Sign Up");
+
+                        Exception exception = task.getException();
+                        String errorMessage = "Authentication failed. Please try again.";
+
+                        if (exception instanceof FirebaseAuthUserCollisionException) {
+                            errorMessage = "That email address is already registered.";
+                            etTenantEmail.setError(errorMessage);
+                        } else if (exception instanceof FirebaseAuthWeakPasswordException) {
+                            FirebaseAuthWeakPasswordException weakPasswordException = (FirebaseAuthWeakPasswordException) exception;
+                            errorMessage = "Weak password: " + weakPasswordException.getReason();
+                            etTenantPassword.setError(errorMessage);
+                        } else {
+                            errorMessage = "Signup failed: " + exception.getLocalizedMessage();
+                        }
+
+                        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
-    private void validateHouseCode(
-            String houseCode,
-            String email,
-            String password,
-            String firstName,
-            String lastName,
-            String role
-    ) {
+    private void validateHouseCode(String houseCode, String email, String password, String fName, String lName, String role) {
         db.collection("apartments")
                 .whereEqualTo("code", houseCode)
                 .limit(1)
                 .get()
-                .addOnSuccessListener(snapshot -> {
-                    if (snapshot.isEmpty()) {
-                        setLoading(false);
-                        toast("Invalid apartment code");
-                        return;
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        // Apartment exists, proceed with signup
+                        String apartmentId = task.getResult().getDocuments().get(0).getId();
+                        signUp(email, password, fName, lName, role, houseCode, apartmentId);
+                    } else {
+                        btnTenantSignUp.setEnabled(true);
+                        btnTenantSignUp.setText("Sign Up");
+                        Toast.makeText(TenantSignUpActivity.this,
+                                "Invalid apartment code. Please check and try again.",
+                                Toast.LENGTH_LONG).show();
                     }
-
-                    String apartmentId = snapshot.getDocuments().get(0).getId();
-                    createAccount(email, password, firstName, lastName, role, houseCode, apartmentId);
                 })
                 .addOnFailureListener(e -> {
-                    setLoading(false);
-                    toast("Network error: " + e.getMessage());
+                    btnTenantSignUp.setEnabled(true);
+                    btnTenantSignUp.setText("Sign Up");
+                    Toast.makeText(TenantSignUpActivity.this, "Network Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-    }
-
-    private void createAccount(
-            String email,
-            String password,
-            String firstName,
-            String lastName,
-            String role,
-            String houseCode,
-            String apartmentId
-    ) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        setLoading(false);
-                        handleAuthError(task.getException());
-                        return;
-                    }
-
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    if (user == null) {
-                        setLoading(false);
-                        toast("Signup succeeded but user is null");
-                        return;
-                    }
-
-                    Map<String, Object> userMap = new HashMap<>();
-                    userMap.put("email", email);
-                    userMap.put("firstName", firstName);
-                    userMap.put("lastName", lastName);
-                    userMap.put("role", role);
-                    userMap.put("houseCode", houseCode);
-                    userMap.put("apartmentId", apartmentId);
-
-                    db.collection("users").document(user.getUid())
-                            .set(userMap)
-                            .addOnSuccessListener(aVoid -> {
-                                toast("Signup successful!");
-
-                                // ALWAYS go to Tenant Login
-                                startActivity(new Intent(this, TenantLoginActivity.class));
-                                finish();
-
-                                // Optional JWT (non-blocking)
-                                user.getIdToken(true)
-                                        .addOnSuccessListener(result ->
-                                                sendTokenToBackend(result.getToken())
-                                        );
-                            })
-                            .addOnFailureListener(e -> {
-                                setLoading(false);
-                                toast("Failed to save profile");
-                            });
-                });
-    }
-
-    private void sendTokenToBackend(String idToken) {
-        OkHttpClient client = new OkHttpClient();
-        MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-        RequestBody body = RequestBody.create(
-                "{\"token\":\"" + idToken + "\"}",
-                JSON
-        );
-
-        Request request = new Request.Builder()
-                .url("http://192.168.1.70:8080/auth/firebase-login")
-                .post(body)
-                .addHeader("Authorization", "Bearer " + idToken)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {}
-            @Override public void onResponse(@NonNull Call call, @NonNull Response response) {
-                response.close();
-            }
-        });
-    }
-
-    private void handleAuthError(Exception e) {
-        String message = "Signup failed";
-
-        if (e instanceof FirebaseAuthUserCollisionException) {
-            message = "Email already registered";
-            etTenantEmail.setError(message);
-        } else if (e instanceof FirebaseAuthWeakPasswordException) {
-            message = "Weak password";
-            etTenantPassword.setError(message);
-        }
-
-        toast(message);
-    }
-
-    private void setLoading(boolean loading) {
-        btnTenantSignUp.setEnabled(!loading);
-        btnTenantSignUp.setText(loading ? "Creating Account..." : "Sign Up");
-    }
-
-    private void toast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }
-

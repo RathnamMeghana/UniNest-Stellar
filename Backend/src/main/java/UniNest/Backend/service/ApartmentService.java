@@ -182,13 +182,24 @@ public class ApartmentService {
             throw new ApartmentServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     public void createApartmentsWithRooms(BulkApartmentWithRoomsRequest request) {
         try {
             Firestore db = FirestoreClient.getFirestore();
 
             String buildingId = request.getBuildingId();
             String landlordId = request.getLandlordId();
+
+            // 1. VALIDATION: Verify Landlord exists and is authorized (Role "1")
+            var landlordDoc = db.collection("users").document(landlordId).get().get();
+            if (!landlordDoc.exists()) {
+                throw new ApartmentServiceException("Landlord with ID " + landlordId + " does not exist.", HttpStatus.NOT_FOUND);
+            }
+            String role = landlordDoc.getString("role");
+            if (!"1".equalsIgnoreCase(role)) {
+                throw new ApartmentServiceException("User exists but is not authorized as a Landlord.", HttpStatus.FORBIDDEN);
+            }
+
+            // 2. VALIDATION: Check count
             if (request.getApartmentCount() < 1) {
                 throw new ApartmentServiceException("Apartment count must be at least 1", HttpStatus.BAD_REQUEST);
             }
@@ -198,21 +209,23 @@ public class ApartmentService {
 
                 Apartment apartment = new Apartment();
                 apartment.setName("Apartment " + i);
-                // sum the rooms from roomTemplate
+
+                // Sum the rooms from roomTemplate
                 int totalRooms = request.getRoomTemplate().values().stream().mapToInt(Integer::intValue).sum();
                 apartment.setTotalRooms(String.valueOf(totalRooms));
+
                 apartment.setCode(uniqueCode);
-                apartment.setLandlordId(landlordId);
+                apartment.setLandlordId(landlordId); // Explicitly setting Landlord ID
                 apartment.setBuildingId(buildingId);
                 apartment.setDescription("Auto-generated apartment");
-                apartment.setRentPrice(0.00); // default rent
+                apartment.setRentPrice(0.00);
                 apartment.setActive(true);
                 apartment.setCreatedAt(Timestamp.now());
 
-                // Save apartment
+                // Save apartment document
                 db.collection("apartments").document(uniqueCode).set(apartment).get();
 
-                // Create rooms
+                // 3. Create rooms in sub-collection
                 for (Map.Entry<String, Integer> entry : request.getRoomTemplate().entrySet()) {
                     String type = entry.getKey();
                     int count = entry.getValue();
@@ -222,6 +235,7 @@ public class ApartmentService {
                         room.setType(type);
                         room.setLabel(type + " " + r);
                         room.setHouseCode(uniqueCode);
+
 
                         String roomDocId = type.replaceAll("\\s+", "") + r;
                         db.collection("apartments")
@@ -234,13 +248,14 @@ public class ApartmentService {
                 }
             }
 
+        } catch (ApartmentServiceException e) {
+            // Re-throw our custom exceptions so GlobalExceptionHandler can catch them
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ApartmentServiceException("Bulk apartment + room creation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApartmentServiceException("Bulk apartment + room creation failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
     public List<Apartment> getApartmentsByBuilding(String buildingId) {
         try {
             Firestore db = FirestoreClient.getFirestore();

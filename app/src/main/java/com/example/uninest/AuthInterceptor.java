@@ -1,9 +1,8 @@
 package com.example.uninest;
 
-import android.util.Log; // Add this import
+import android.util.Log;
+
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.appcheck.AppCheckToken; // Add this import
-import com.google.firebase.appcheck.FirebaseAppCheck; // Add this import
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
@@ -16,44 +15,60 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class AuthInterceptor implements Interceptor {
+
+    private static final String TAG = "AuthInterceptor";
+
     @Override
     public Response intercept(Chain chain) throws IOException {
-        // Start with the original request
-        Request.Builder requestBuilder = chain.request().newBuilder();
+        Request request = chain.request();
 
-        // 1. Get the current user
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        // 1️⃣ Get Firebase token (try cached first)
+        String token = getFirebaseToken(false);
+        if (token == null) {
+            // Force refresh if cached token is null
+            token = getFirebaseToken(true);
+        }
 
-        // 2. LOGIC FOR AUTH JWT (Identifying the User)
-        if (user != null) {
-            try {
-                // Synchronously wait for the Auth Token
-                GetTokenResult tokenResult = Tasks.await(user.getIdToken(false));
-                String authToken = tokenResult.getToken();
+        if (token != null) {
+            request = request.newBuilder()
+                    .addHeader("Authorization", "Bearer " + token)
+                    .build();
+            Log.d(TAG, "Firebase Auth token attached: " + token.substring(0, 20) + "...");
+        } else {
+            Log.w(TAG, "No Firebase token available, sending request without auth");
+        }
 
-                // Add the Authorization header to the builder
-                requestBuilder.addHeader("Authorization", "Bearer " + authToken);
-                Log.d("AuthInterceptor", "Auth JWT added to request");
-            } catch (ExecutionException | InterruptedException e) {
-                Log.e("AuthInterceptor", "Error getting Auth JWT", e);
+        Response response = chain.proceed(request);
+
+        // 2️⃣ If 403, try refreshing token once and retry
+        if (response.code() == 403) {
+            Log.w(TAG, "Received 403, refreshing token and retrying...");
+            response.close(); // Close previous response
+
+            String newToken = getFirebaseToken(true); // force refresh
+            if (newToken != null) {
+                Request retryRequest = request.newBuilder()
+                        .removeHeader("Authorization")
+                        .addHeader("Authorization", "Bearer " + newToken)
+                        .build();
+
+                response = chain.proceed(retryRequest);
             }
         }
 
-        // 3. LOGIC FOR APP CHECK (Identifying the App)
+        return response;
+    }
+
+    private String getFirebaseToken(boolean forceRefresh) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return null;
+
         try {
-            // Synchronously wait for the App Check Token
-            AppCheckToken appCheckResult = Tasks.await(FirebaseAppCheck.getInstance().getAppCheckToken(false));
-            String appCheckToken = appCheckResult.getToken();
-
-            // Add the X-Firebase-AppCheck header to the builder
-            requestBuilder.addHeader("X-Firebase-AppCheck", appCheckToken);
-            Log.d("AuthInterceptor", "App Check Token added to request");
-        } catch (Exception e) {
-            // This is where your "App attestation failed" error will be caught
-            Log.e("AuthInterceptor", "Error getting App Check Token: " + e.getMessage());
+            GetTokenResult result = Tasks.await(user.getIdToken(forceRefresh));
+            return result.getToken();
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, "Failed to get Firebase token", e);
+            return null;
         }
-
-        // 4. Build the final request and proceed
-        return chain.proceed(requestBuilder.build());
     }
 }

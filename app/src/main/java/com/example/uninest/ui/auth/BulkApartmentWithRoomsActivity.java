@@ -13,6 +13,8 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.BulkApartmentRequest;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -112,6 +114,14 @@ public class BulkApartmentWithRoomsActivity extends AppCompatActivity {
         request.setBuildingId(buildingId);
         request.setApartmentCount(apartmentCount);
         request.setRoomTemplate(roomTemplate);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            request.setLandlordId(user.getUid());
+        } else {
+            Toast.makeText(this, "Error: User not logged in", Toast.LENGTH_LONG).show();
+            return;
+        }
 
 
         // Disable button while API call

@@ -118,17 +118,14 @@ public class ApartmentController {
         return ResponseEntity.ok("Tenant removed from apartment.");
     }
 
-    @PreAuthorize("hasRole('LETTINGAGENT')")
+
     @PostMapping("/bulkWithRooms")
-    public ResponseEntity<String> bulkWithRooms(@Valid @RequestBody BulkApartmentWithRoomsRequest request) { // <--- ADD @Valid
-        try {
-            apartmentService.createApartmentsWithRooms(request);
-            return ResponseEntity.ok("Apartments and rooms created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body("Bulk apartment + room creation failed: " + e.getMessage());
-        }
+    public ResponseEntity<String> bulkWithRooms(@Valid @RequestBody BulkApartmentWithRoomsRequest request) {
+        apartmentService.createApartmentsWithRooms(request);
+        return ResponseEntity.ok("Apartments and rooms created successfully");
     }
+
+
     @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/getByBuilding")
     public List<Apartment> getApartmentsByBuilding(@RequestParam String buildingId) {

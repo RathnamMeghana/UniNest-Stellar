@@ -1,6 +1,6 @@
 package com.example.uninest.data.api;
 
-import com.example.uninest.AuthInterceptor; // Make sure this path is correct
+import com.example.uninest.AuthInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -12,31 +12,27 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class ApiClient {
 
-    private static final String BASE_URL = "http://192.168.1.70:8080/";
-
+    private static final String BASE_URL = "http://192.168.1.90:8080/";
     private static Retrofit retrofit;
 
     private static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
-            // 1. Setup Logging
+            // Logging interceptor
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            // 2. Setup the AuthInterceptor (The 403 Fixer)
+            // Auth interceptor
             AuthInterceptor authInterceptor = new AuthInterceptor();
 
-            // 3. Configure OkHttpClient with BOTH interceptors
             OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(authInterceptor) // Automatically adds the Firebase Token
-                    .addInterceptor(logging)         // Logs the request/response for debugging
+                    .addInterceptor(authInterceptor)
+                    .addInterceptor(logging)
                     .build();
 
-            // 4. Setup Custom GSON
             Gson gson = new GsonBuilder()
                     .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                     .create();
 
-            // 5. Build Retrofit
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(client)
@@ -47,7 +43,7 @@ public class ApiClient {
         return retrofit;
     }
 
-    // --- API Service Getters remain the same ---
+    // --- API Services ---
     public static BuildingApi getBuildingApi() { return getRetrofitInstance().create(BuildingApi.class); }
     public static ApartmentApi getApartmentApi(){ return getRetrofitInstance().create(ApartmentApi.class); }
     public static TicketApi getTicketApi(){ return getRetrofitInstance().create(TicketApi.class); }

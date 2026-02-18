@@ -3,13 +3,16 @@ package UniNest.Backend.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 // CRITICAL: Import csrf to handle POST/DELETE requests in tests
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import UniNest.Backend.dto.BulkApartmentWithRoomsRequest;
+import UniNest.Backend.exception.ApartmentServiceException;
 import UniNest.Backend.exception.UserServiceException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
@@ -26,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -227,5 +231,34 @@ class ApartmentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+    }
+    @Test
+    @WithMockUser(roles = "LETTINGAGENT")
+    @DisplayName("POST /apartments/bulkWithRooms - Should return 403 when landlord is invalid")
+    public void bulkCreate_WhenLandlordInvalid_Returns403() throws Exception {
+        // 1. Create a request that is VALID at the DTO level
+        // (passes @NotBlank and @NotEmpty)
+        BulkApartmentWithRoomsRequest request = new BulkApartmentWithRoomsRequest();
+        request.setLandlordId("INVALID_LANDLORD_ID");
+        request.setBuildingId("BUILDING_123"); // Required field
+        request.setApartmentCount(5);          // Required field
+
+        // Required field: roomTemplate
+        java.util.Map<String, Integer> template = new java.util.HashMap<>();
+        template.put("Bedroom", 2);
+        request.setRoomTemplate(template);
+
+        // 2. Mock the service to throw the 403 error
+        // This will only be reached if the DTO passes validation
+        doThrow(new ApartmentServiceException("User exists but is not authorized as a Landlord.", HttpStatus.FORBIDDEN))
+                .when(apartmentService).createApartmentsWithRooms(any(BulkApartmentWithRoomsRequest.class));
+
+        // 3. Perform the request
+        mockMvc.perform(post("/apartments/bulkWithRooms")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print()) // Look at this output if it fails again
+                .andExpect(status().isForbidden()); // Now expects 403
     }
 }

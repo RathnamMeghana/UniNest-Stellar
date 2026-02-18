@@ -61,6 +61,7 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/apartment")
     public ResponseEntity<List<Ticket>> getTicketsByApartment(@RequestParam String name) {
