@@ -14,7 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
@@ -22,9 +26,16 @@ import jakarta.servlet.ServletResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.nio.file.AccessDeniedException;
 
 @WebMvcTest(ApartmentController.class)
 @Import({SecurityConfig.class, GlobalExceptionHandler.class})
@@ -90,6 +101,25 @@ public class AuthenticationAccessTest {
                 new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + mappedRole);
 
         org.junit.jupiter.api.Assertions.assertEquals("ROLE_LETTINGAGENT", authority.getAuthority());
+    }
+
+
+    @Test
+    @DisplayName("Filter: Should handle 'bearer' (lowercase) and extra spaces")
+    public void filter_HandlesLowercaseAndSpaces() throws Exception {
+        FirebaseTokenFilter filter = new FirebaseTokenFilter();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+
+        // Test lowercase "bearer" and extra leading space
+        request.addHeader("Authorization", " bearer  valid-token");
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = mock(FilterChain.class);
+
+        filter.doFilter(request, response, chain);
+
+        // Verify it didn't reject the request just because of the lowercase 'b'
+        verify(chain).doFilter(request, response);
     }
 
 

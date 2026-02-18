@@ -120,7 +120,7 @@ public class ApartmentController {
 
     @PreAuthorize("hasRole('LETTINGAGENT')")
     @PostMapping("/bulkWithRooms")
-    public ResponseEntity<String> bulkWithRooms(@RequestBody BulkApartmentWithRoomsRequest request) {
+    public ResponseEntity<String> bulkWithRooms(@Valid @RequestBody BulkApartmentWithRoomsRequest request) { // <--- ADD @Valid
         try {
             apartmentService.createApartmentsWithRooms(request);
             return ResponseEntity.ok("Apartments and rooms created successfully");

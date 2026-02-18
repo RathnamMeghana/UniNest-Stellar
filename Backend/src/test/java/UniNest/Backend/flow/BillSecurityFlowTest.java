@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -149,4 +151,38 @@ public class BillSecurityFlowTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
-}
+
+    @Test
+    @WithMockUser(username = "user_A", roles = "TENANT")
+    @DisplayName("Security Logic: User cannot mark someone else's bill split as paid")
+    public void markAsPaid_OtherUserSplit_Forbidden() throws Exception {
+        // Mock service to throw AccessDenied because logged-in user (user_A)
+        // doesn't match the userId in the path (user_B)
+        doThrow(new AccessDeniedException("You can only pay your own splits"))
+                .when(billService).markAsPaid("bill_123", "user_B");
+
+        mockMvc.perform(patch("/bills/bill_123/user_B/pay")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "TENANT")
+    @DisplayName("Validation: Bill creation fails for non-ISO date format")
+    public void createBill_BadDateFormat_Returns400() throws Exception {
+        String malformedJson = """
+        {
+            "title": "Wifi",
+            "totalAmount": 50.0,
+            "dueDate": "12-31-2024",
+            "billType": "ONE_TIME"
+        }
+    """;
+
+        mockMvc.perform(post("/bills/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(malformedJson))
+                .andExpect(status().isBadRequest());
+
+    }
+    }

@@ -9,6 +9,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import UniNest.Backend.dto.BulkApartmentWithRoomsRequest;
 import UniNest.Backend.exception.UserServiceException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
@@ -19,6 +20,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -211,5 +213,19 @@ class ApartmentControllerTest {
         mockMvc.perform(get("/apartments/A1/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email").value("test@uninest.com"));
+    }
+
+    @Test
+    @WithMockUser(roles = "LETTINGAGENT")
+    @DisplayName("Logic Flow: Bulk apartment creation with zero count returns 400")
+    public void bulkCreate_ZeroCount_Returns400() throws Exception {
+        BulkApartmentWithRoomsRequest request = new BulkApartmentWithRoomsRequest();
+        request.setApartmentCount(0); // Logically invalid
+
+        // Assuming you add @Min(1) to your DTO
+        mockMvc.perform(post("/apartments/bulkWithRooms")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
     }
 }

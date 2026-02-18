@@ -19,16 +19,16 @@ public class FirebaseFilterUnitTest {
     @Test
     @DisplayName("Filter: Missing Header should skip authentication")
     public void filter_WhenHeaderMissing_ContinuesChain() throws Exception {
-        // 1. Setup real filter and mocks
+        // Setup real filter and mocks
         FirebaseTokenFilter filter = new FirebaseTokenFilter();
         HttpServletRequest request = new MockHttpServletRequest();
         HttpServletResponse response = new MockHttpServletResponse();
         FilterChain chain = mock(FilterChain.class);
 
-        // 2. Execute
+        //  Execute
         filter.doFilter(request, response, chain);
 
-        // 3. Verify: The filter should just pass the request to the next filter
+        // Verify: The filter should just pass the request to the next filter
         verify(chain, times(1)).doFilter(request, response);
     }
 
@@ -83,5 +83,6 @@ public class FirebaseFilterUnitTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         verify(chain).doFilter(request, response);
     }
+
 
 }

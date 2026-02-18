@@ -189,6 +189,9 @@ public class ApartmentService {
 
             String buildingId = request.getBuildingId();
             String landlordId = request.getLandlordId();
+            if (request.getApartmentCount() < 1) {
+                throw new ApartmentServiceException("Apartment count must be at least 1", HttpStatus.BAD_REQUEST);
+            }
 
             for (int i = 1; i <= request.getApartmentCount(); i++) {
                 String uniqueCode = getUniqueCode();
