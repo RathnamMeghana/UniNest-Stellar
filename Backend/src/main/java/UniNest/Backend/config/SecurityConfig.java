@@ -16,7 +16,8 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
+//@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
