@@ -31,6 +31,7 @@ public class BillController {
     }
 
 
+
     //  Mark Bill  as Paid
     @PreAuthorize("hasRole('TENANT')")
     @PatchMapping("/{billId}/{userId}/pay")
@@ -79,6 +80,7 @@ public class BillController {
         return billService.getTotalOwedToUser(userId);
     }
 
+    @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/createdBy/{userId}")
     public ResponseEntity<List<BillRequest>> getBillsCreatedBy(@PathVariable String userId) {
 
