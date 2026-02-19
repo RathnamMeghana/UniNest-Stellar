@@ -9,6 +9,12 @@ public class BulkApartmentRequest {
     private Map<String, Integer> roomTemplate; // e.g., Bedroom -> 4, Bathroom -> 2
     private String landlordId;
 
+    private int maxTenants;
+
+    public int getMaxTenants() { return maxTenants; }
+    public void setMaxTenants(int maxTenants) { this.maxTenants = maxTenants; }
+
+
     // Getters & Setters
     public String getBuildingId() { return buildingId; }
     public void setBuildingId(String buildingId) { this.buildingId = buildingId; }
