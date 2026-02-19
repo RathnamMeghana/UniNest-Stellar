@@ -64,7 +64,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         }
 
         // Load apartments
-        loadApartments();
+        //loadApartments();
 
         // New Apartment button → open AddApartmentActivity
         btnNewApartment.setOnClickListener(v -> {
@@ -89,6 +89,12 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         // Bottom nav
         setupBottomNav(R.id.nav_buildings);
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // every time you come back to this screen the list reloads from the database.
+        loadApartments();
+    }
 
 
     private void loadApartments() {
@@ -112,6 +118,8 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
             public void onFailure(Call<List<Apartment>> call, Throwable t) {
                 Log.e("ApartmentAPI", "Error: " + t.getMessage());
             }
+
+
         });
     }
     // ------------------------
