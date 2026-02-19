@@ -20,4 +20,6 @@ public class BulkApartmentWithRoomsRequest {
 
     @NotEmpty(message = "Room template cannot be empty")
     private Map<String, Integer> roomTemplate;
+
+    private  int maxTenants;
 }

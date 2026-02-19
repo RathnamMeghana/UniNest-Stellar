@@ -179,8 +179,11 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         String total = apartment.getTotalRooms();
 
         card.setTenantInfo(occupied, total);
+        String capacity = String.valueOf(apartment.getMaxTenants()); // 3
 
+        card.setTenantInfo(occupied, capacity);
         card.setOnClickListener(v -> openApartmentTenants(apartment));
+
 
         apartmentList.addView(card);
     }
@@ -200,6 +203,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         intent.putExtra("EXTRA_APARTMENT_ID", apartment.getCode());
         intent.putExtra("EXTRA_USER_ROLE", loggedInRole);
         intent.putExtra("EXTRA_HOUSE_CODE", apartment.getCode());
+        intent.putExtra("EXTRA_MAX_TENANTS", apartment.getMaxTenants());
         intent.putExtra("EXTRA_TOTAL_ROOMS", apartment.getTotalRooms());
 
 

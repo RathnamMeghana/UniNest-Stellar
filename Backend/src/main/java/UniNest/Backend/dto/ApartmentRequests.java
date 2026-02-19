@@ -32,6 +32,8 @@ public class ApartmentRequests {
     @NotNull(message = "Room type is required")
     private Boolean active;
 
+    private int maxTenants;
+
 
     public void sanitize() {
         this.name = UniNest.Backend.util.SanitizationUtil.sanitize(this.name);
