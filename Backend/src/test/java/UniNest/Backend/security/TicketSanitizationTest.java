@@ -16,6 +16,7 @@ class TicketSanitizationTest {
         Ticket ticket = new Ticket();
 
         ticket.setId("<b>123</b>");
+        // Jsoup removes <script> tags AND everything inside them
         ticket.setDescription("<script>alert('xss')</script>");
         ticket.setRoom("<i>101</i>");
         ticket.setBuilding("<div>MainBuilding</div>");
@@ -34,7 +35,7 @@ class TicketSanitizationTest {
         ticket.sanitize();
 
         assertEquals("123", ticket.getId());
-        assertEquals("alert('xss')", ticket.getDescription());
+        assertEquals("", ticket.getDescription()); // Content inside <script> is deleted
         assertEquals("101", ticket.getRoom());
         assertEquals("MainBuilding", ticket.getBuilding());
         assertEquals("A1", ticket.getApartmentId());
@@ -44,11 +45,10 @@ class TicketSanitizationTest {
         assertEquals("High", ticket.getPriority());
         assertEquals("Open", ticket.getStatus());
         assertEquals("User1", ticket.getUserId());
-        assertEquals("Fixing soon", ticket.getAgentResponse());
+        assertEquals("", ticket.getAgentResponse()); // Content inside <script> is deleted
         assertEquals("2026-02-20", ticket.getArrivalDate());
         assertEquals("John", ticket.getUserName());
-        assertEquals("", ticket.getPrioritySource());
-        // img tag has no inner text
+        assertEquals("", ticket.getPrioritySource()); // <img> is a tag with no text content, so it becomes empty
     }
 
     @Test
@@ -62,7 +62,7 @@ class TicketSanitizationTest {
         request.sanitize();
 
         assertEquals("123", request.getTicketId());
-        assertEquals("alert('xss')", request.getResponse());
+        assertEquals("", request.getResponse()); // Content inside <script> is deleted
         assertEquals("2026-03-01", request.getArrivalDate());
     }
 

@@ -29,12 +29,7 @@ public class BuildingController {
     @PreAuthorize("hasRole('LETTINGAGENT')")
     @PostMapping("/create")
     public String createBuilding(@Valid @RequestBody BuildingRequest request) {
-        request.setName(SanitizationUtil.sanitize(request.getName()));
-        request.setAddressLine1(SanitizationUtil.sanitize(request.getAddressLine1()));
-        request.setCity(SanitizationUtil.sanitize(request.getCity()));
-        request.setPostcode(SanitizationUtil.sanitize(request.getPostcode()));
-        request.setCountry(SanitizationUtil.sanitize(request.getCountry()));
-        request.setLandlordId(SanitizationUtil.sanitize(request.getLandlordId()));
+        request.sanitize();
         return buildingService.createBuilding(request);
     }
 

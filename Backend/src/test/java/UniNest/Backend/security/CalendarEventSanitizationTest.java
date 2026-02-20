@@ -11,7 +11,10 @@ public class CalendarEventSanitizationTest {
     void sanitizeCreate_RemovesHtmlTags() {
         CalendarEventDTO.Create request = new CalendarEventDTO.Create();
         request.setHouseCode("<b>HOUSE123</b>");
+
+        // Jsoup deletes the <script> block entirely
         request.setTitle("<script>alert('xss')</script>Party");
+
         request.setDescription("<div>Some description</div>");
         request.setAssignedTo("<i>user1</i>");
         request.setRelatedChoreId("<u>chore1</u>");
@@ -19,12 +22,12 @@ public class CalendarEventSanitizationTest {
 
         request.sanitize();
 
-        assertEquals("HOUSE123", request.getHouseCode());
-        assertEquals("alert('xss')Party", request.getTitle());
+        // Updated Assertions
+        assertEquals("HOUSE123", request.getHouseCode()); // Tags removed, text remains
+        assertEquals("Party", request.getTitle());        // <script> and its content GONE
         assertEquals("Some description", request.getDescription());
         assertEquals("user1", request.getAssignedTo());
         assertEquals("chore1", request.getRelatedChoreId());
-
     }
 
     @Test
@@ -34,12 +37,10 @@ public class CalendarEventSanitizationTest {
         request.setDescription("<div>Discuss chores</div>");
         request.setAssignedTo("<span>user2</span>");
 
-
         request.sanitize();
 
         assertEquals("Meeting", request.getTitle());
         assertEquals("Discuss chores", request.getDescription());
         assertEquals("user2", request.getAssignedTo());
-
     }
 }

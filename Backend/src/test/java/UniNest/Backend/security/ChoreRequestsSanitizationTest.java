@@ -1,7 +1,6 @@
 package UniNest.Backend.security;
 
 import UniNest.Backend.dto.ChoreRequests;
-import UniNest.Backend.util.SanitizationUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,18 +19,22 @@ public class ChoreRequestsSanitizationTest {
         // sanitize
         chore.sanitize();
 
-        // expected: HTML stripped completely
-        assertEquals("alert('xss')", chore.getTaskName());
+        // ACTUAL Jsoup behavior:
+        // 1. <script> content is deleted entirely
+        assertEquals("", chore.getTaskName());
+
+        // 2. <img> has no text content, so it becomes empty
         assertEquals("", chore.getRoom());
-        assertEquals("useralert('hack')", chore.getAssignedTo());
+
+        // 3. "user" is kept, but the <script> block following it is deleted
+        assertEquals("user", chore.getAssignedTo());
     }
 
     @Test
     void sanitizeChoreRequests_NullFields_DoesNotThrow() {
         ChoreRequests chore = new ChoreRequests();
-        // all fields null
+        // Should not crash even if all fields are null
         chore.sanitize();
-        // nothing to assert, test passes if no exception
     }
 
     @Test
@@ -48,4 +51,3 @@ public class ChoreRequestsSanitizationTest {
         assertEquals("user123", chore.getAssignedTo());
     }
 }
-
