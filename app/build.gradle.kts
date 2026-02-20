@@ -7,6 +7,7 @@ plugins {
     id("com.google.gms.google-services")
 
     id("com.chaquo.python")
+    id("io.sentry.android.gradle") version "4.3.1"
 }
 
 
@@ -96,6 +97,8 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.datastore:datastore:1.1.1")
     implementation ("com.google.firebase:firebase-storage")
+    implementation ("io.sentry:sentry-android:7.6.0")
+    implementation ("io.sentry:sentry-android-okhttp:7.6.0")
 
     //implementation ("com.google.firebase:firebase-appcheck:18.0.0")
     //implementation ("com.google.firebase:firebase-appcheck-debug:18.0.0")
@@ -131,4 +134,13 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation ("com.google.firebase:firebase-appcheck-debug")
 
+}
+
+sentry {
+    org.set("aoife-murphy")
+    projectName.set("android")
+
+    // this will upload your source code to Sentry to show it as part of the stack traces
+    // disable if you don't want to expose your sources
+    includeSourceContext.set(true)
 }

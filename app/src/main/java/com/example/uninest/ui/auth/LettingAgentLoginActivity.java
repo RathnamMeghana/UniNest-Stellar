@@ -28,6 +28,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import io.sentry.Sentry;
 
 public class LettingAgentLoginActivity extends AppCompatActivity {
 
@@ -38,11 +39,22 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
     private SessionManager sessionManager;
 
     // Use 10.0.2.2 for Emulator, or your Local IP for physical device
-    private static final String BACKEND_URL = "http://192.168.1.90:8080/auth/firebase-login";
+    // Match exactly what worked in your browser!
+    private static final String BACKEND_URL = "http://192.168.1.89:8081/auth/firebase-login";
+    //private static final String BACKEND_URL = "http://192.168.1.90:8080/auth/firebase-login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    // waiting for view to draw to better represent a captured error with a screenshot
+    findViewById(android.R.id.content).getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+     // try {
+   //     throw new Exception("This app uses Sentry! :)");
+     // } catch (Exception e) {
+      //  Sentry.captureException(e);
+     // }
+    });
+
         setContentView(R.layout.activity_letting_agent_login);
 
         etEmail = findViewById(R.id.etEmail);

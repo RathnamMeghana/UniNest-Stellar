@@ -1,5 +1,6 @@
 package com.example.uninest.data.api;
 
+
 import com.example.uninest.AuthInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,10 +10,14 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import io.sentry.android.okhttp.SentryOkHttpInterceptor;
 
 public class ApiClient {
 
-    private static final String BASE_URL = "http://192.168.1.90:8080/";
+    //private static final String BASE_URL = "http://192.168.1.89:8080/";
+
+    // Make sure this is just the IP and Port
+    public static final String BASE_URL = "http://192.168.1.89:8081/";
     private static Retrofit retrofit;
 
     private static Retrofit getRetrofitInstance() {
@@ -26,6 +31,7 @@ public class ApiClient {
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(authInterceptor)
+                   // .addInterceptor(new SentryOkHttpInterceptor())
                     .addInterceptor(logging)
                     .build();
 

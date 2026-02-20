@@ -43,6 +43,10 @@ dependencies {
 	testImplementation ("org.springframework.security:spring-security-test")
 	implementation ("org.springframework.boot:spring-boot-starter-aop")
 	implementation ("org.jsoup:jsoup:1.17.2")
+	implementation ("io.sentry:sentry-spring-boot-starter-jakarta:7.0.0")
+	implementation ("io.sentry:sentry-spring-boot-starter-jakarta:7.6.0")
+	implementation ("org.springframework.boot:spring-boot-starter-aop")
+	implementation ("io.sentry:sentry-logback:7.6.0")
 
 
 
