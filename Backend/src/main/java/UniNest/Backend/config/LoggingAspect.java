@@ -8,12 +8,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 
-//@Aspect
-//@Component
+@Aspect
+@Component
 @Slf4j
 public class LoggingAspect {
 
-    // Target all methods in your controller package
+    // Target all methods in the controller
     @Pointcut("within(UniNest.Backend.controller..*)")
     public void controllerMethods() {}
 
