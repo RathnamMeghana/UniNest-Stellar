@@ -47,6 +47,7 @@ dependencies {
 	implementation ("io.sentry:sentry-spring-boot-starter-jakarta:7.6.0")
 	implementation ("org.springframework.boot:spring-boot-starter-aop")
 	implementation ("io.sentry:sentry-logback:7.6.0")
+	implementation ("com.bucket4j:bucket4j-core:8.10.1")
 
 
 
