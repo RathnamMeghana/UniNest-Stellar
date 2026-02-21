@@ -12,7 +12,7 @@ import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreException;
 import com.google.cloud.firestore.Query;
-
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
@@ -22,46 +22,36 @@ import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.exception.TenantNotFoundException;
 import UniNest.Backend.model.Apartment;
 import UniNest.Backend.exception.ApartmentServiceException;
+import org.springframework.http.HttpStatus;
 
 @Service
 public class ApartmentService {
+
     // Helper method to generate a short alphanumeric code
     private String generateAlphanumericCode() {
         String uuid = UUID.randomUUID().toString().replace("-", "").toUpperCase();
-        // Use a prefix to make it more readable
         return "APT-" + uuid.substring(0, 7);
     }
 
     private String getUniqueCode() throws InterruptedException, ExecutionException {
-        try{
-        Firestore db = FirestoreClient.getFirestore();
-        String uniqueCode;
-        boolean exists;
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            String uniqueCode;
+            boolean exists;
 
-        do {
-            uniqueCode = generateAlphanumericCode();
+            do {
+                uniqueCode = generateAlphanumericCode();
+                Query query = db.collection("apartments")
+                        .whereEqualTo("code", uniqueCode)
+                        .limit(1);
 
-            // check for code is it in the database
-            Query query = db.collection("apartments")
-                    .whereEqualTo("code", uniqueCode)
-                    .limit(1);
+                QuerySnapshot snapshot = query.get().get();
+                exists = !snapshot.isEmpty();
+            } while (exists);
 
-            QuerySnapshot snapshot = query.get().get();
-
-            // 3. Check if any apartment were returned
-            exists = !snapshot.isEmpty();
-
-        } while (exists);
-
-        return uniqueCode;
-    }
-        catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApartmentServiceException("Apartment code generation interrupted", e);
-        } catch (ExecutionException e) {
-            throw new ApartmentServiceException("Failed to generate unique apartment code", e);
-        } catch (FirestoreException e) {
-            throw new ApartmentServiceException("Firestore unavailable", e);
+            return uniqueCode;
+        } catch (Exception e) {
+            throw new ApartmentServiceException("Failed to generate unique code", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -72,104 +62,31 @@ public class ApartmentService {
             var landlordDoc = db.collection("users").document(request.getLandlordId()).get().get();
 
             if (!landlordDoc.exists()) {
-                throw new ApartmentServiceException("Landlord with ID " + request.getLandlordId() + " does not exist.", null);
+                throw new ApartmentServiceException("Landlord with ID " + request.getLandlordId() + " does not exist.", HttpStatus.NOT_FOUND);
             }
             String role = landlordDoc.getString("role");
             if (!"1".equalsIgnoreCase(role)) {
-                throw new ApartmentServiceException("User exists but is not authorized as a Landlord.", null);
+                throw new ApartmentServiceException("User exists but is not authorized as a Landlord.", HttpStatus.FORBIDDEN);
             }
-            // Assign the guaranteed unique code
+
             String uniqueCode = getUniqueCode();
-
-            Timestamp time = Timestamp.now();
-
             Apartment apartment = new Apartment();
             apartment.setName(request.getName());
             apartment.setTotalRooms(request.getTotalRooms());
-
-            // Set the unique code
             apartment.setCode(uniqueCode);
-
             apartment.setLandlordId(request.getLandlordId());
-            apartment.setCreatedAt(time);
+            apartment.setCreatedAt(Timestamp.now());
             apartment.setBuildingId(request.getBuildingId());
             apartment.setDescription(request.getDescription());
             apartment.setRentPrice(request.getRentPrice());
-
-
             apartment.setActive(request.getActive());
+            apartment.setMaxTenants(request.getMaxTenants());
 
-            //db.collection("apartments").add(apartment).get();
             db.collection("apartments").document(uniqueCode).set(apartment).get();
-
-
             return "Apartment created successfully with code: " + uniqueCode;
 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApartmentServiceException("Apartment creation interrupted", e);
-        } catch (ExecutionException e) {
-            throw new ApartmentServiceException("Failed to create apartment", e);
-        } catch (FirestoreException e) {
-            throw new ApartmentServiceException("Firestore unavailable", e);
-        }
-    }
-
-    public List<Apartment> getAllApartments() {
-        try {
-            Firestore db = FirestoreClient.getFirestore();
-
-            ApiFuture<QuerySnapshot> future = db.collection("apartments").get();
-            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-
-            List<Apartment> apartments = new ArrayList<>();
-
-            for (QueryDocumentSnapshot doc : documents) {
-                Apartment apartment = doc.toObject(Apartment.class);
-                apartments.add(apartment);
-            }
-
-            return apartments;
-
-        }  catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApartmentServiceException("Fetching apartments interrupted", e);
-        } catch (ExecutionException e) {
-            throw new ApartmentServiceException("Failed to fetch apartments", e);
-        } catch (FirestoreException e) {
-            throw new ApartmentServiceException("Firestore unavailable", e);
-        }
-    }
-
-    public void removeTenantFromApartment(String email) {
-
-        try {
-            Firestore db = FirestoreClient.getFirestore();
-
-            // Step 1 — find the user doc by email (or houseCode)
-            ApiFuture<QuerySnapshot> q = db.collection("users")
-                    .whereEqualTo("email", email)
-                    .get();
-
-            List<QueryDocumentSnapshot> docs = q.get().getDocuments();
-            if (docs.isEmpty()) {
-                throw new TenantNotFoundException("User not found with email: " + email);
-            }
-
-
-            //Get Firestore document ID
-            String userId = docs.get(0).getId();
-
-            //  update fields
-            db.collection("users").document(userId).update("apartmentId", null,"houseCode", null).get();
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new ApartmentServiceException("Removing tenant interrupted", e);
-        } catch (ExecutionException e) {
-            throw new ApartmentServiceException("Failed to remove tenant", e);
-        } catch (FirestoreException e) {
-            throw new ApartmentServiceException("Firestore unavailable", e);
+        } catch (Exception e) {
+            throw new ApartmentServiceException("Apartment creation failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -177,39 +94,57 @@ public class ApartmentService {
         try {
             Firestore db = FirestoreClient.getFirestore();
 
-            String buildingId = request.getBuildingId();
-            String landlordId = request.getLandlordId();
+            // 1. Extract values once to prevent re-calculation/overlap
+            String bId = request.getBuildingId();
+            String lId = request.getLandlordId();
+            int capacityValue = request.getMaxTenants(); // This is your "2"
 
+            // Calculate room sum once: This is your "5"
+            int roomSumValue = request.getRoomTemplate().values().stream().mapToInt(Integer::intValue).sum();
+            String totalRoomsStr = String.valueOf(roomSumValue);
+
+            // 2. Validate Landlord
+            var landlordDoc = db.collection("users").document(lId).get().get();
+            if (!landlordDoc.exists()) {
+                throw new ApartmentServiceException("Landlord not found", HttpStatus.NOT_FOUND);
+            }
+
+            // 3. Loop and Create
             for (int i = 1; i <= request.getApartmentCount(); i++) {
                 String uniqueCode = getUniqueCode();
-
                 Apartment apartment = new Apartment();
+
                 apartment.setName("Apartment " + i);
-                // sum the rooms from roomTemplate
-                int totalRooms = request.getRoomTemplate().values().stream().mapToInt(Integer::intValue).sum();
-                apartment.setTotalRooms(String.valueOf(totalRooms));
                 apartment.setCode(uniqueCode);
-                apartment.setLandlordId(landlordId);
-                apartment.setBuildingId(buildingId);
-                apartment.setDescription("Auto-generated apartment");
-                apartment.setRentPrice(0.00); // default rent
+                apartment.setBuildingId(bId);
+                apartment.setLandlordId(lId);
+
+                // Set the capacity (e.g., 2)
+                apartment.setMaxTenants(capacityValue);
+
+                // Set the room count (e.g., 5)
+                apartment.setTotalRooms(totalRoomsStr);
+
+                apartment.setRentPrice(0.0);
                 apartment.setActive(true);
                 apartment.setCreatedAt(Timestamp.now());
+                apartment.setDescription("Auto-generated apartment");
+                apartment.setOccupiedCount(0);
 
-                // Save apartment
+                // Save Apartment
                 db.collection("apartments").document(uniqueCode).set(apartment).get();
 
-                // Create rooms
+                // 4. Create Rooms
                 for (Map.Entry<String, Integer> entry : request.getRoomTemplate().entrySet()) {
                     String type = entry.getKey();
                     int count = entry.getValue();
-
                     for (int r = 1; r <= count; r++) {
                         RoomRequests room = new RoomRequests();
                         room.setType(type);
                         room.setLabel(type + " " + r);
                         room.setHouseCode(uniqueCode);
 
+                        // ID for room doc
                         String roomDocId = type.replaceAll("\\s+", "") + r;
                         db.collection("apartments")
                                 .document(uniqueCode)
@@ -220,21 +155,52 @@ public class ApartmentService {
                     }
                 }
             }
-
+        } catch (ApartmentServiceException e) {
+            throw e;
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ApartmentServiceException("Bulk apartment + room creation failed", e);
+            throw new ApartmentServiceException("Bulk creation failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    public List<Apartment> getAllApartments() {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            ApiFuture<QuerySnapshot> future = db.collection("apartments").get();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            List<Apartment> apartments = new ArrayList<>();
+
+            for (QueryDocumentSnapshot doc : documents) {
+                Apartment apartment = doc.toObject(Apartment.class);
+                apartments.add(apartment);
+            }
+            return apartments;
+        } catch (Exception e) {
+            throw new ApartmentServiceException("Fetching apartments failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void removeTenantFromApartment(String email) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            ApiFuture<QuerySnapshot> q = db.collection("users").whereEqualTo("email", email).get();
+            List<QueryDocumentSnapshot> docs = q.get().getDocuments();
+
+            if (docs.isEmpty()) {
+                throw new TenantNotFoundException("User not found with email: " + email);
+            }
+
+            String userId = docs.get(0).getId();
+            db.collection("users").document(userId).update("apartmentId", null, "houseCode", null).get();
+        } catch (Exception e) {
+            throw new ApartmentServiceException("Removing tenant failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public List<Apartment> getApartmentsByBuilding(String buildingId) {
         try {
             Firestore db = FirestoreClient.getFirestore();
-
             ApiFuture<QuerySnapshot> future = db.collection("apartments")
-                    .whereEqualTo("buildingId", buildingId)
-                    .get();
+                    .whereEqualTo("buildingId", buildingId).get();
 
             List<QueryDocumentSnapshot> documents = future.get().getDocuments();
             List<Apartment> apartments = new ArrayList<>();
@@ -242,24 +208,16 @@ public class ApartmentService {
             for (QueryDocumentSnapshot doc : documents) {
                 Apartment apt = doc.toObject(Apartment.class);
 
+                // Count occupied status
                 ApiFuture<QuerySnapshot> userQuery = db.collection("users")
-                        .whereEqualTo("houseCode", apt.getCode())
-                        .get();
-
-                int count = userQuery.get().getDocuments().size();
-                apt.setOccupiedCount(count);
+                        .whereEqualTo("houseCode", apt.getCode()).get();
+                apt.setOccupiedCount(userQuery.get().getDocuments().size());
 
                 apartments.add(apt);
             }
             return apartments;
         } catch (Exception e) {
-            throw new ApartmentServiceException("Failed to fetch apartments for building", e);
+            throw new ApartmentServiceException("Failed to fetch apartments for building", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }
-
-
-
-

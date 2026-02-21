@@ -16,6 +16,7 @@ public class ApartmentRequest implements Serializable {
     private String description;
     private Double rentPrice;
     private Boolean active;
+    private int maxTenants;
 
     public String getBuildingId() { return buildingId; }
     public void setBuildingId(String buildingId) { this.buildingId = buildingId; }
@@ -36,6 +37,13 @@ public class ApartmentRequest implements Serializable {
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
+
+    public int getMaxTenants(){return  maxTenants; }
+
+    public void setMaxTenants(int maxTenants){
+        this.maxTenants = maxTenants;
     }
+
+}
 
 

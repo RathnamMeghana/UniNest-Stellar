@@ -1,7 +1,18 @@
 package UniNest.Backend.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class BuildingServiceException extends RuntimeException {
-    public BuildingServiceException(String message, Throwable cause) {
-        super(message, cause);
+
+    private final HttpStatus status;
+
+    public BuildingServiceException(String message, HttpStatus status) {
+        super(message);
+        this.status = status;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 }
+

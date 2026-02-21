@@ -3,14 +3,12 @@ package UniNest.Backend.service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.*;
-import com.google.firebase.cloud.FirestoreClient;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import UniNest.Backend.dto.CalendarEventDTO;
@@ -21,16 +19,17 @@ import UniNest.Backend.exception.ChoreServiceException;
 public class ChoreService {
 
     private final CalendarService calendarService;
+    private final Firestore firestore;
 
-    public ChoreService(CalendarService calendarService) {
+    public ChoreService(CalendarService calendarService, Firestore firestore) {
         this.calendarService = calendarService;
+        this.firestore = firestore;
     }
 
     /* =========================
        GET ALL CHORES
        ========================= */
     public List<ChoreRequests> getAllChoreByApartment(String houseCode) {
-
         if (houseCode == null || houseCode.isBlank()) {
             throw new IllegalArgumentException("houseCode is required");
         }
@@ -38,9 +37,7 @@ public class ChoreService {
         List<ChoreRequests> list = new ArrayList<>();
 
         try {
-            Firestore db = FirestoreClient.getFirestore();
-
-            CollectionReference choresRef = db.collection("apartments")
+            CollectionReference choresRef = firestore.collection("apartments")
                     .document(houseCode)
                     .collection("chores");
 
@@ -52,7 +49,7 @@ public class ChoreService {
                     chore.setId(doc.getId());
 
                     if (chore.getAssignedTo() != null && !chore.getAssignedTo().isBlank()) {
-                        DocumentSnapshot userDoc = db.collection("users")
+                        DocumentSnapshot userDoc = firestore.collection("users")
                                 .document(chore.getAssignedTo())
                                 .get()
                                 .get();
@@ -73,9 +70,9 @@ public class ChoreService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ChoreServiceException("Chore query interrupted", e);
+            throw new ChoreServiceException("Chore query interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new ChoreServiceException("Failed to fetch chores", e);
+            throw new ChoreServiceException("Failed to fetch chores", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -83,83 +80,40 @@ public class ChoreService {
        ADD CHORE (SMART ASSIGN)
        ========================= */
     public ChoreRequests addChore(String houseCode, ChoreRequests chore, String userId) {
-
         if (houseCode == null || houseCode.isBlank()) {
             throw new IllegalArgumentException("houseCode is required");
         }
 
         try {
-            Firestore db = FirestoreClient.getFirestore();
-
-            /* 1 Sanitize incoming JSON */
             chore.sanitize();
-
-            /* 2️ Set required metadata */
             chore.setHouseCode(houseCode);
             chore.setCreatedBy(userId);
             chore.setCreatedAt(Timestamp.now());
-
 
             if (chore.getScheduledDate() == null || chore.getScheduledDate().isBlank()) {
                 chore.setScheduledDate(Instant.now().toString());
             }
 
-            /* 3️ Persist chore */
-            CollectionReference choresRef = db.collection("apartments")
+            CollectionReference choresRef = firestore.collection("apartments")
                     .document(houseCode)
                     .collection("chores");
-
 
             DocumentReference docRef = choresRef.document();
             chore.setId(docRef.getId());
 
             docRef.set(chore).get();
 
-            /* 4️ Create calendar event */
-            Instant scheduledInstant = Instant.parse(chore.getScheduledDate());
-            Timestamp eventTimestamp = Timestamp.ofTimeSecondsAndNanos(
-                    scheduledInstant.getEpochSecond(),
-                    scheduledInstant.getNano()
-            );
-
-            CalendarEventDTO.Create event = new CalendarEventDTO.Create();
-
-
-            event.setType(CalendarEventDTO.EventType.CHORE);
-            event.setTitle(chore.getTaskName());
-            event.setEstDuration(chore.getEstDurationMin());
-            event.setDescription("Room: " + chore.getRoom());
-            event.setHouseCode(houseCode);
-            event.setAssignedTo(chore.getAssignedTo());
-            event.setRelatedChoreId(chore.getId());
-            event.setStartDate(chore.getScheduledDate());
-            event.setEndDate(chore.getScheduledDate());
-            event.setAllDay(false);
-
-            if (chore.getFrequencyPerWeek() > 0) {
-                CalendarEventDTO.Recurrence rec = new CalendarEventDTO.Recurrence();
-
-                if (chore.getFrequencyPerWeek() == 1) {
-                    rec.setFrequency("WEEKLY");
-                } else {
-                    rec.setFrequency("MONTHLY");
-                }
-
-                rec.setInterval(1);
-
-                event.setRecurrence(rec);
-            }
-
+            // Calendar event
+            CalendarEventDTO.Create event = buildCalendarEvent(chore, houseCode);
             calendarService.create(event, userId);
 
-            /* 5️ RETURN THE SAVED OBJECT */
             return chore;
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ChoreServiceException("Chore creation interrupted", e);
+            throw new ChoreServiceException("Chore creation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new ChoreServiceException("Failed to add chore", e);
+            throw new ChoreServiceException("Failed to add chore", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -167,34 +121,23 @@ public class ChoreService {
        UPDATE ASSIGNMENT
        ========================= */
     public ChoreRequests updateAssignmentByTaskNameAndUserEmail(
-            String houseCode,
-            String taskName,
-            String userEmail
+            String houseCode, String taskName, String userEmail
     ) {
-
         try {
-            Firestore db = FirestoreClient.getFirestore();
-
-            Query userQuery = db.collection("users")
+            Query userQuery = firestore.collection("users")
                     .whereEqualTo("email", userEmail)
                     .whereEqualTo("houseCode", houseCode);
-
             QuerySnapshot userSnapshot = userQuery.get().get();
-            if (userSnapshot.isEmpty()) {
-                throw new ChoreServiceException("User not found", null);
-            }
+            if (userSnapshot.isEmpty()) throw new ChoreServiceException("User not found", null);
 
             String userId = userSnapshot.getDocuments().get(0).getId();
 
-            Query choreQuery = db.collection("apartments")
+            Query choreQuery = firestore.collection("apartments")
                     .document(houseCode)
                     .collection("chores")
                     .whereEqualTo("taskName", taskName);
-
             QuerySnapshot choreSnapshot = choreQuery.get().get();
-            if (choreSnapshot.isEmpty()) {
-                throw new ChoreServiceException("Chore not found", null);
-            }
+            if (choreSnapshot.isEmpty()) throw new ChoreServiceException("Chore not found", null);
 
             DocumentSnapshot choreDoc = choreSnapshot.getDocuments().get(0);
             choreDoc.getReference().update("assignedTo", userId).get();
@@ -202,7 +145,7 @@ public class ChoreService {
             return choreDoc.toObject(ChoreRequests.class);
 
         } catch (Exception e) {
-            throw new ChoreServiceException("Failed to update assignment", e);
+            throw new ChoreServiceException("Failed to update assignment", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -210,28 +153,19 @@ public class ChoreService {
        ADD CHORE WITH ASSIGNMENT
        ========================= */
     public ChoreRequests addChoreWithAssignment(
-            String houseCode,
-            String userEmail,
-            ChoreRequests chore
+            String houseCode, String userEmail, ChoreRequests chore
     ) {
-
         try {
-            Firestore db = FirestoreClient.getFirestore();
-
             chore.sanitize();
 
-            Query userQuery = db.collection("users")
+            Query userQuery = firestore.collection("users")
                     .whereEqualTo("email", userEmail)
                     .whereEqualTo("houseCode", houseCode);
-
             QuerySnapshot userSnapshot = userQuery.get().get();
-            if (userSnapshot.isEmpty()) {
-                throw new ChoreServiceException("User not found", null);
-            }
+            if (userSnapshot.isEmpty()) throw new ChoreServiceException("User not found", null);
 
             String assigneeId = userSnapshot.getDocuments().get(0).getId();
 
-            // 2. Setup Chore Object
             chore.setAssignedTo(assigneeId);
             chore.setHouseCode(houseCode);
             chore.setCreatedAt(Timestamp.now());
@@ -239,69 +173,72 @@ public class ChoreService {
                 chore.setScheduledDate(Instant.now().toString());
             }
 
-// 3. Save Chore to Firestore
-            CollectionReference choresRef = db.collection("apartments")
-                    .document(houseCode).collection("chores");
+            CollectionReference choresRef = firestore.collection("apartments")
+                    .document(houseCode)
+                    .collection("chores");
             DocumentReference docRef = choresRef.document();
             chore.setId(docRef.getId());
             docRef.set(chore).get();
 
-            // 4. Create Calendar Event
-            CalendarEventDTO.Create event = new CalendarEventDTO.Create();
-            event.setType(CalendarEventDTO.EventType.CHORE);
-            event.setTitle(chore.getTaskName());
-            event.setDescription(chore.getDescription());
-            event.setLocation(chore.getRoom());
-            event.setEstDuration(chore.getEstDurationMin());
-            event.setHouseCode(houseCode);
-            event.setAssignedTo(assigneeId);
-            event.setRelatedChoreId(chore.getId());
-            event.setStartDate(chore.getScheduledDate());
-            event.setEndDate(chore.getScheduledDate());
-            event.setAllDay(false);
-
-            // Handle Frequency/Recurrence
-            if (chore.getFrequencyPerWeek() > 0) {
-                CalendarEventDTO.Recurrence rec = new CalendarEventDTO.Recurrence();
-                if (chore.getFrequencyPerWeek() == 1) {
-                    rec.setFrequency("WEEKLY");
-                } else {
-                    rec.setFrequency("MONTHLY");
-                }
-                rec.setInterval(1);
-                event.setRecurrence(rec);
-            }
-
-            String creatorId = (chore.getCreatedBy() != null) ? chore.getCreatedBy() : assigneeId;
-
-            calendarService.create(event, creatorId);
+            CalendarEventDTO.Create event = buildCalendarEvent(chore, houseCode);
+            calendarService.create(event, assigneeId);
 
             return chore;
 
         } catch (Exception e) {
-            throw new ChoreServiceException("Failed to add chore with assignment: " + e.getMessage(), e);
+            throw new ChoreServiceException("Failed to add chore with assignment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ChoreRequests updateChoreStatus(String houseCode, String choreId, String status, int actualDuration, String newAssigneeId) {
-        try {
-            Firestore db = FirestoreClient.getFirestore();
+    /* =========================
+       HELPER: Build Calendar Event
+       ========================= */
+    private CalendarEventDTO.Create buildCalendarEvent(ChoreRequests chore, String houseCode) {
+        CalendarEventDTO.Create event = new CalendarEventDTO.Create();
+        event.setType(CalendarEventDTO.EventType.CHORE);
+        event.setTitle(chore.getTaskName());
+        event.setDescription(chore.getDescription());
+        event.setLocation(chore.getRoom());
+        event.setEstDuration(chore.getEstDurationMin());
+        event.setHouseCode(houseCode);
+        event.setAssignedTo(chore.getAssignedTo());
+        event.setRelatedChoreId(chore.getId());
+        event.setStartDate(chore.getScheduledDate());
+        event.setEndDate(chore.getScheduledDate());
+        event.setAllDay(false);
 
-            // 1. Get current chore data
-            DocumentReference choreRef = db.collection("apartments").document(houseCode).collection("chores").document(choreId);
+        if (chore.getFrequencyPerWeek() > 0) {
+            CalendarEventDTO.Recurrence rec = new CalendarEventDTO.Recurrence();
+            rec.setFrequency(chore.getFrequencyPerWeek() == 1 ? "WEEKLY" : "MONTHLY");
+            rec.setInterval(1);
+            event.setRecurrence(rec);
+        }
+
+        return event;
+    }
+
+    /* =========================
+       UPDATE CHORE STATUS
+       ========================= */
+    public ChoreRequests updateChoreStatus(String houseCode, String choreId, String status,
+                                           int actualDuration, String newAssigneeId) {
+        try {
+            DocumentReference choreRef = firestore.collection("apartments")
+                    .document(houseCode)
+                    .collection("chores")
+                    .document(choreId);
             DocumentSnapshot choreSnap = choreRef.get().get();
             ChoreRequests oldChore = choreSnap.toObject(ChoreRequests.class);
 
-            // 2. Mark CURRENT chore as COMPLETED
             Map<String, Object> updates = new HashMap<>();
             updates.put("status", status);
             updates.put("actualDuration", actualDuration);
             if (newAssigneeId != null) updates.put("assignedTo", newAssigneeId);
             choreRef.update(updates).get();
 
-            // 3. Update the Calendar Event to stop it from repeating
-            List<QueryDocumentSnapshot> events = db.collection("calendar_events")
-                    .whereEqualTo("relatedChoreId", choreId).get().get().getDocuments();
+            List<QueryDocumentSnapshot> events = firestore.collection("calendar_events")
+                    .whereEqualTo("relatedChoreId", choreId)
+                    .get().get().getDocuments();
 
             if (!events.isEmpty()) {
                 String eventId = events.get(0).getId();
@@ -310,33 +247,31 @@ public class ChoreService {
                 calUpdates.put("actualDuration", actualDuration);
 
                 if ("COMPLETED".equals(status)) {
-                    calUpdates.put("endDate", Timestamp.now()); // Set completion date
-
-                    //  Delete the recurrence field from the COMPLETED record.
-                    // This prevents the "Green Completed" card from appearing on future dates.
+                    calUpdates.put("endDate", Timestamp.now());
                     calUpdates.put("recurrence", FieldValue.delete());
-
-                    // 4. Create a FRESH chore record for the NEXT week/month
                     if (oldChore != null && oldChore.getFrequencyPerWeek() > 0) {
                         spawnNextOccurrence(houseCode, oldChore);
                     }
                 }
-                db.collection("calendar_events").document(eventId).update(calUpdates);
+                firestore.collection("calendar_events").document(eventId).update(calUpdates);
             }
+
             return new ChoreRequests();
+
         } catch (Exception e) {
-            throw new ChoreServiceException("Update failed", e);
+            throw new ChoreServiceException("Update failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    /* =========================
+       SPAWN NEXT OCCURRENCE FOR RECURRING CHORES
+       ========================= */
     private void spawnNextOccurrence(String houseCode, ChoreRequests oldChore) {
-        // 1. Calculate the next date
         Instant currentScheduled = Instant.parse(oldChore.getScheduledDate());
-        Instant nextScheduledDate = (oldChore.getFrequencyPerWeek() == 1)
-                ? currentScheduled.plus(java.time.Duration.ofDays(7))  // +7 days
-                : currentScheduled.plus(java.time.Duration.ofDays(30)); // +30 days
+        Instant nextScheduled = oldChore.getFrequencyPerWeek() == 1
+                ? currentScheduled.plusSeconds(7 * 24 * 3600)
+                : currentScheduled.plusSeconds(30 * 24 * 3600);
 
-        // 2. Create a totally new Chore object with a different ID
         ChoreRequests nextChore = new ChoreRequests();
         nextChore.setTaskName(oldChore.getTaskName());
         nextChore.setRoom(oldChore.getRoom());
@@ -345,10 +280,9 @@ public class ChoreService {
         nextChore.setEstDurationMin(oldChore.getEstDurationMin());
         nextChore.setFrequencyPerWeek(oldChore.getFrequencyPerWeek());
         nextChore.setAssignedTo(oldChore.getAssignedTo());
-        nextChore.setScheduledDate(nextScheduledDate.toString()); // Set to future date
-        nextChore.setStatus("NOT_STARTED"); // NEW task starts fresh
+        nextChore.setScheduledDate(nextScheduled.toString());
+        nextChore.setStatus("NOT_STARTED");
 
-        // 3. Save it as a new document (Creates new ID and new Calendar event)
         this.addChore(houseCode, nextChore, oldChore.getCreatedBy());
     }
 }

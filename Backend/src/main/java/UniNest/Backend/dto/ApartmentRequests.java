@@ -32,4 +32,18 @@ public class ApartmentRequests {
     @NotNull(message = "Room type is required")
     private Boolean active;
 
+    private int maxTenants;
+
+
+    public void sanitize() {
+        this.name = UniNest.Backend.util.SanitizationUtil.sanitize(this.name);
+        this.buildingId = UniNest.Backend.util.SanitizationUtil.sanitize(this.buildingId);
+        this.landlordId = UniNest.Backend.util.SanitizationUtil.sanitize(this.landlordId);
+        this.description = UniNest.Backend.util.SanitizationUtil.sanitize(this.description);
+        this.totalRooms = UniNest.Backend.util.SanitizationUtil.sanitize(this.totalRooms);
+        if (this.createdAt == null) {
+            this.createdAt = com.google.cloud.Timestamp.now();
+        }
+    }
+
 }

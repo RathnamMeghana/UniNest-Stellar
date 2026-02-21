@@ -1,7 +1,16 @@
 package UniNest.Backend.exception;
 
+import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
+
+@Getter
 public class CalendarServiceException extends RuntimeException {
-    public CalendarServiceException(String message, Throwable cause) {
-        super(message, cause);
+    private final HttpStatus status;
+
+    public CalendarServiceException(String message, HttpStatus status) {
+
+        super(message);
+        this.status = status;
     }
 }

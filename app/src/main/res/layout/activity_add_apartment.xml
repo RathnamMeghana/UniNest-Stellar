@@ -74,6 +74,28 @@
                 android:padding="12dp"
                 android:textSize="14sp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Max Tenants"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+
+            <EditText
+                android:id="@+id/etMaxTenants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_textfield"
+                android:hint="e.g. 5"
+                android:inputType="number"
+                android:padding="12dp"
+                android:textSize="14sp" />
+
+
             <!-- Total Rooms label -->
             <TextView
                 android:layout_width="wrap_content"
@@ -84,7 +106,7 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- Total Rooms input -->
+            <!-- Total Rooms input
             <EditText
                 android:id="@+id/etTotalRooms"
                 android:layout_width="match_parent"
@@ -94,7 +116,7 @@
                 android:hint="e.g. 5"
                 android:inputType="number"
                 android:padding="12dp"
-                android:textSize="14sp" />
+                android:textSize="14sp" /> -->
 
             <!-- Spacer before buttons -->
             <View
