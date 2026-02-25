@@ -91,8 +91,14 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
         String role = doc.getString("role");
         String company = doc.getString("company");
         String apartmentId = doc.getString("houseCode");
+        
+        String fName = doc.getString("firstName");
+        String lName = doc.getString("lastName");
+        String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
+        String profileImg = doc.getString("profileImageUrl");
+
         SessionManager session = new SessionManager(this);
-        session.saveAgentSession(mAuth.getCurrentUser().getEmail(), role);
+        session.saveAgentSession(mAuth.getCurrentUser().getEmail(), role, company, fullName.trim(), profileImg);
 
 
         if (role != null) {
