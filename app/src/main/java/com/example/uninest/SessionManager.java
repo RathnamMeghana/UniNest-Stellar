@@ -11,6 +11,8 @@ public class SessionManager {
     private static final String KEY_USER_ROLE = "user_role";
     private static final String KEY_HOUSE_CODE = "house_code";
     private static final String KEY_USER_NAME = "user_full_name"; // New: Store "John Doe"
+    private static final String KEY_USER_IMAGE = "user_image_data";
+    private static final String KEY_COMPANY_NAME = "company_name";
 
     SharedPreferences pref;
     SharedPreferences.Editor editor;
@@ -21,20 +23,28 @@ public class SessionManager {
     }
 
     // Save Tenant Session (With Name and House Code)
-    public void saveTenantSession(String userId, String email, String role, String houseCode, String fullName) {
+    public void saveTenantSession(String userId, String email, String role, String houseCode, String fullName, String imageStr) {
         editor.putString(KEY_USER_ID, userId);
         editor.putString(KEY_USER_EMAIL, email);
         editor.putString(KEY_USER_ROLE, role);
         editor.putString(KEY_HOUSE_CODE, houseCode);
         editor.putString(KEY_USER_NAME, fullName);
+        editor.putString(KEY_USER_IMAGE, imageStr);
         editor.apply();
     }
 
-    // Save Agent Session (Might not have house code/name in the same way)
-    public void saveAgentSession(String email, String role) {
+    // Save Agent Session
+    public void saveAgentSession(String email, String role, String company, String fullName, String imageStr) {
         editor.putString(KEY_USER_EMAIL, email);
         editor.putString(KEY_USER_ROLE, role);
+        editor.putString(KEY_COMPANY_NAME, company);
+        editor.putString(KEY_USER_NAME, fullName);
+        editor.putString(KEY_USER_IMAGE, imageStr);
         editor.apply();
+    }
+
+    public String getCompany() {
+        return pref.getString(KEY_COMPANY_NAME, "");
     }
 
     public String getUserId() {
@@ -55,6 +65,9 @@ public class SessionManager {
 
     public String getUserFullName() {
         return pref.getString(KEY_USER_NAME, "Me");
+    }
+    public String getUserImage() {
+        return pref.getString(KEY_USER_IMAGE, null);
     }
 
     public void logout() {
