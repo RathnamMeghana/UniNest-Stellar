@@ -111,13 +111,17 @@ public class TenantSignUpActivity extends AppCompatActivity {
                         userMap.put("role", role);
                         userMap.put("houseCode", houseCode);
                         userMap.put("apartmentId", apartmentId);
+                        String profileImg = null;
+                        String uid = user.getUid();
 
                         db.collection("users").document(user.getUid())
                                 .set(userMap)
                                 .addOnSuccessListener(aVoid -> {
 
                                     // Save session locally
-                                    sessionManager.saveTenantSession(email, houseCode);
+
+                                    sessionManager.saveTenantSession(uid, email, role, houseCode, fName.trim(), profileImg);
+                                    //sessionManager.saveTenantSession(email, houseCode);
 
                                     // ===== BACKEND SYNC SECTION =====
                                     user.getIdToken(true).addOnCompleteListener(tokenTask -> {

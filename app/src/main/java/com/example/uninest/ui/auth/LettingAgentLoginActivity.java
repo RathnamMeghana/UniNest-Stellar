@@ -17,6 +17,7 @@ import com.example.uninest.ui.auth.LettingAgentBuildingsActivity;
 import com.example.uninest.ui.auth.ApartmentTenantsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
@@ -105,7 +106,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
         String role = doc.getString("role");
         String company = doc.getString("company");
         String apartmentId = doc.getString("houseCode");
-        
+
         String fName = doc.getString("firstName");
         String lName = doc.getString("lastName");
         String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
@@ -146,12 +147,15 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                 //Intent intent = new Intent(this, LettingAgentTicketsActivity.class);
                 startActivity(intent);
                 finish();
-            }
-            else {
+            } else {
                 // Role found, but it's an unrecognized value
                 Toast.makeText(this, "Unrecognized user role.", Toast.LENGTH_LONG).show();
                 // Optionally sign the user out if their role is invalid
                 mAuth.signOut();
+
+            }
+        }
+    }
     private void sendTokenToBackendAndSyncRoles(FirebaseUser user) {
         user.getIdToken(false).addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
@@ -212,8 +216,15 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
 
                     String role = doc.getString("role");
                     String houseCode = doc.getString("houseCode");
-                    sessionManager.saveAgentSession(mAuth.getCurrentUser().getEmail(), role);
+                    String company = doc.getString("company");
+                    String firstName = doc.getString("firstName");
+                    String lastName = doc.getString("lastName");
+                    String profileImg = doc.getString("profileImageUrl");
 
+                    String fullName = ((firstName != null ? firstName : "") + " " +
+                            (lastName != null ? lastName : "")).trim();
+
+                    sessionManager.saveAgentSession(mAuth.getCurrentUser().getEmail(), role, company, fullName, profileImg);
                     runOnUiThread(() -> {
                         if ("1".equals(role)) {
                             startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
