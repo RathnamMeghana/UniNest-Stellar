@@ -50,6 +50,18 @@
             android:src="@drawable/ic_profile_tenant" />
     </LinearLayout>
 
+    <!-- Points earned chip (visible only for completed tasks) -->
+    <TextView
+        android:id="@+id/tvPointsEarned"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🏆 +0 pts"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#FF8F00"
+        android:layout_marginTop="6dp"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tvExtraInfo"
         android:layout_width="wrap_content"

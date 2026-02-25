@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
-
     <!-- 1. Background Blobs -->
 
     <!-- 2. Greeting Section -->
@@ -81,6 +80,108 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
             android:paddingBottom="20dp">
+
+            <!-- Leaderboard Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardLeaderboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#B094CA"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="10dp"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="4dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🏆"
+                            android:textSize="24sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Chore Leaderboard"
+                            android:textColor="#1A1A1A"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <!-- Your stats row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_leaderboard_you"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="10dp"
+                        android:paddingHorizontal="4dp">
+
+                        <TextView
+                            android:id="@+id/tvYourRank"
+                            android:layout_width="42dp"
+                            android:layout_height="wrap_content"
+                            android:text="#1"
+                            android:textColor="#555555"
+                            android:textSize="22sp"
+                            android:textStyle="bold"/>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivYourProfile"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:layout_marginStart="4dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_profile_tenant"
+                            app:shapeAppearanceOverlay="@style/CircleImage" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:text="You"
+                            android:textColor="#1A1A1A"
+                            android:textSize="15sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvYourPoints"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 pts"
+                            android:textColor="#1A1A1A"
+                            android:textSize="16sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <!-- Other roommates container -->
+                    <LinearLayout
+                        android:id="@+id/layoutLeaderboardRows"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="vertical"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- Card 1: Trash (Blue) -->
             <androidx.cardview.widget.CardView
@@ -241,6 +342,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/tenant_bottom_nav"
         style="@style/Widget.Design.BottomNavigationView" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

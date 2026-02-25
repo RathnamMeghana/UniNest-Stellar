@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#E9E2EE">
+
+    <!-- Top purple banner -->
+    <FrameLayout
+        android:id="@+id/headerBanner"
+        android:layout_width="0dp"
+        android:layout_height="140dp"
+        android:background="#B792D9"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="16dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_back_arrow"
+            app:tint="#FFFFFF"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Privacy Policy"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="32sp" />
+    </FrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerBanner">
+
+        <TextView
+            android:id="@+id/tvPrivacyContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="6dp"
+            android:textColor="#444"
+            android:textSize="14sp"
+            android:text="Your privacy is important to us. UniNest collects data to provide better services to tenants and agents...\n\n1. Agent Data Usage\nBy using the UniNest Agent portal, your profile actions and building assignments are internally tracked by the system administrator for compliance.\n\n2. Transparency\nYour profile photo and basic contact details are visible to enrolled tenants you handle.\n\n3. External Sharing\nWe do not share your direct contact data to external non-tenants.\n\n4. Data Protection\nWe use Firebase security rules to ensure only authorized users can see your sensitive information." />
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
