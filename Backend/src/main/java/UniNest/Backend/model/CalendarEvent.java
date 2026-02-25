@@ -29,4 +29,5 @@ public class CalendarEvent {
     private String status;
     private int actualDuration;
     private int estDuration;
+    private int difficultyScore;
 }
