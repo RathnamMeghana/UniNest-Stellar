@@ -128,6 +128,7 @@ public class ChoreService {
             event.setType(CalendarEventDTO.EventType.CHORE);
             event.setTitle(chore.getTaskName());
             event.setEstDuration(chore.getEstDurationMin());
+            event.setDifficultyScore(chore.getDifficultyScore());
             event.setDescription("Room: " + chore.getRoom());
             event.setHouseCode(houseCode);
             event.setAssignedTo(chore.getAssignedTo());
@@ -253,6 +254,7 @@ public class ChoreService {
             event.setDescription(chore.getDescription());
             event.setLocation(chore.getRoom());
             event.setEstDuration(chore.getEstDurationMin());
+            event.setDifficultyScore(chore.getDifficultyScore());
             event.setHouseCode(houseCode);
             event.setAssignedTo(assigneeId);
             event.setRelatedChoreId(chore.getId());
