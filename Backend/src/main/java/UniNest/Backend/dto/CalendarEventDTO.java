@@ -48,6 +48,7 @@ public class CalendarEventDTO {
         private Double amount;
 
         private int estDuration;
+        private int difficultyScore;
 
         private String location;
 
@@ -107,6 +108,7 @@ public class CalendarEventDTO {
         private String status;
         private int estDuration;
         private int actualDuration;
+        private int difficultyScore;
         private String location;
     }
 }
