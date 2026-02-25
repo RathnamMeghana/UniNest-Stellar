@@ -13,6 +13,10 @@ public class User {
 
     @SerializedName("id")
     private String id;
+    private String profileImageUrl;
+
+    public String getProfileImageUrl() { return profileImageUrl; }
+    public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
 
     //public String getId() { return id; }
     //public void setId(String id) { this.id = id; }
