@@ -54,22 +54,20 @@ public class TenantTicketsActivity extends AppCompatActivity {
 
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
+            if (itemId == R.id.nav_tickets) return true;
+
             if (itemId == R.id.nav_home) {
-                startActivity(new Intent(getApplicationContext(), TenantHomeActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
+                startActivity(new Intent(this, TenantHomeActivity.class));
             } else if (itemId == R.id.nav_calendar) {
-                startActivity(new Intent(getApplicationContext(), TenantCalendarActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
-            } else if (itemId == R.id.nav_bills) { // ADD THIS BLOCK
-                startActivity(new Intent(getApplicationContext(), TenantBillsActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
-            } else if (itemId == R.id.nav_tickets) {
-                return true;
+                startActivity(new Intent(this, TenantCalendarActivity.class));
+            } else if (itemId == R.id.nav_bills) {
+                startActivity(new Intent(this, TenantBillsActivity.class));
+            } else if (itemId == R.id.nav_profile) {
+                startActivity(new Intent(this, TenantProfileActivity.class));
             }
-            return false;
+            overridePendingTransition(0, 0);
+            finish();
+            return true;
         });
 
         // 1. Initialize API & Session

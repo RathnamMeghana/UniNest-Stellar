@@ -126,7 +126,18 @@ public class TenantLoginActivity extends AppCompatActivity {
                             String fName = documentSnapshot.getString("firstName");
                             String lName = documentSnapshot.getString("lastName");
                             String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
+                            String profileImg = documentSnapshot.getString("profileImageUrl");
 
+                            // Save FULL session data
+                            sessionManager.saveTenantSession(uid, email, role, houseCode, fullName.trim(), profileImg);
+
+                            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+
+                            // Navigate to Raise Ticket Screen
+                            Intent intent = new Intent(TenantLoginActivity.this, TenantHomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
                             // Save tenant session locally
                             sessionManager.saveTenantSession(user.getUid(), user.getEmail(), role, houseCode, fullName.trim());
 

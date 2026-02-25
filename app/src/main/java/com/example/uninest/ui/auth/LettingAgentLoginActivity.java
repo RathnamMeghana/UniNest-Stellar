@@ -95,6 +95,63 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                 });
     }
 
+    private void handleUserDocument(DocumentSnapshot doc) {
+
+        if (!doc.exists()) {
+            Toast.makeText(this, "User profile not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String role = doc.getString("role");
+        String company = doc.getString("company");
+        String apartmentId = doc.getString("houseCode");
+        
+        String fName = doc.getString("firstName");
+        String lName = doc.getString("lastName");
+        String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
+        String profileImg = doc.getString("profileImageUrl");
+
+        SessionManager session = new SessionManager(this);
+        session.saveAgentSession(mAuth.getCurrentUser().getEmail(), role, company, fullName.trim(), profileImg);
+
+
+        if (role != null) {
+            Log.d("LoginActivity", "User Role Retrieved: " + role);
+
+            // Navigate based on the retrieved role string
+            if ("2".equals(role)) {
+                // Role 2: Tenent
+                Toast.makeText(this, "Tenants Login successful!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(this, ApartmentTenantsActivity.class);
+
+                if (apartmentId != null && !apartmentId.isEmpty()) {
+                    intent.putExtra("EXTRA_APARTMENT_ID", apartmentId);
+                    intent.putExtra("EXTRA_HOUSE_CODE", apartmentId);
+                    // Optionally pass name details if available on the document
+                    // intent.putExtra("EXTRA_BUILDING_NAME", doc.getString("buildingName"));
+                    // intent.putExtra("EXTRA_APARTMENT_NAME", doc.getString("apartmentName"));
+                } else {
+                    Toast.makeText(this, "Apartment ID missing in user profile.", Toast.LENGTH_LONG).show();
+                    Log.e("LoginActivity", "User with role 2 is missing apartmentId.");
+                    // You might choose to stop here or send them to an error/setup screen
+                }
+
+                startActivity(intent);
+                finish(); // Close login screen
+            } else if ("1".equals(role)) {
+                // Role 1: letting agent
+                Toast.makeText(this, "Agent Login successful!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, LettingAgentBuildingsActivity.class);
+                //Intent intent = new Intent(this, LettingAgentTicketsActivity.class);
+                startActivity(intent);
+                finish();
+            }
+            else {
+                // Role found, but it's an unrecognized value
+                Toast.makeText(this, "Unrecognized user role.", Toast.LENGTH_LONG).show();
+                // Optionally sign the user out if their role is invalid
+                mAuth.signOut();
     private void sendTokenToBackendAndSyncRoles(FirebaseUser user) {
         user.getIdToken(false).addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {

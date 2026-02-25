@@ -49,6 +49,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
     private String selectedUserId = "ALL"; // Default filter
 
     private Map<String, String> roommateNameMap = new HashMap<>();
+    private Map<String, String> roommateImageMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,15 +90,21 @@ public class ViewAllTasksActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     // Clear and rebuild map
                     roommateNameMap.clear();
+                    roommateImageMap.clear();
                     for (User u : response.body()) {
                         roommateNameMap.put(u.getId(), u.getFullName());
+                        roommateImageMap.put(u.getId(), u.getProfileImageUrl());
                     }
+                    // Also store current user's image from session
+                    roommateImageMap.put(currentUserId, sessionManager.getUserImage());
 
                     // Prepare filter list
                     filterList.clear();
                     User all = new User(); all.setId("ALL"); all.setFirstName("All");
                     filterList.add(all);
+
                     User you = new User(); you.setId(currentUserId); you.setFirstName("You");
+                    you.setProfileImageUrl(sessionManager.getUserImage());
                     filterList.add(you);
                     for (User u : response.body()) {
                         if (!u.getId().equals(currentUserId)) filterList.add(u);
@@ -186,6 +193,8 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         TextView tvCreatedBy = view.findViewById(R.id.tvCreatedBy);
         TextView tvDateInfo = view.findViewById(R.id.tvDateInfo);
         com.google.android.material.button.MaterialButton btnMore = view.findViewById(R.id.btnViewMore);
+        ImageView imgAssignee = view.findViewById(R.id.imgAssigneeProfile);
+        TextView tvPointsEarned = view.findViewById(R.id.tvPointsEarned);
 
 
         String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
@@ -206,6 +215,10 @@ public class ViewAllTasksActivity extends AppCompatActivity {
 
         extraInfo.setText("Assigned to: " + assigneeName);
         tvCreatedBy.setText("Created by: " + creatorName);
+
+        // Load assignee's profile image
+        String assigneeImage = roommateImageMap.get(c.getAssignedTo());
+        com.example.uninest.utils.ImageUtils.loadProfileImage(imgAssignee, assigneeImage);
 
         // 3. LOGIC FOR DATE (DUE ON vs COMPLETED ON)
         if (status.equalsIgnoreCase("COMPLETED")) {
@@ -230,14 +243,21 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             card.setBackgroundResource(R.drawable.bg_card_green);
             statusBadge.setBackgroundResource(R.drawable.bg_status_completed);
             statusBadge.setTextColor(Color.parseColor("#2E7D32"));
+
+            // Show points earned on completed tasks
+            int pts = calculateTaskPoints(c);
+            tvPointsEarned.setText("\uD83C\uDFC6 +" + pts + " pts");
+            tvPointsEarned.setVisibility(View.VISIBLE);
         } else if (status.equals("IN_PROGRESS")) {
             card.setBackgroundResource(R.drawable.bg_card_orange);
             statusBadge.setBackgroundResource(R.drawable.bg_status_progress);
             statusBadge.setTextColor(Color.parseColor("#EF6C00"));
+            tvPointsEarned.setVisibility(View.GONE);
         } else {
             card.setBackgroundResource(R.drawable.bg_card_red);
             statusBadge.setBackgroundResource(R.drawable.bg_status_pending);
             statusBadge.setTextColor(Color.parseColor("#C62828"));
+            tvPointsEarned.setVisibility(View.GONE);
         }
 
         // 5. Click Logic: ONLY ON THE ARROW
@@ -282,15 +302,37 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             h.name.setText(u.getFirstName());
 
             // 1. SET THE IMAGE & ADJUST FITTING
+            int pad = (int) (3 * getResources().getDisplayMetrics().density);
+            h.profile.setPadding(pad, pad, pad, pad);
+            
             if (u.getId().equals("ALL")) {
-                h.profile.setImageResource(R.drawable.ic_all_users);
-                h.profile.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                // Padding prevents the icon from touching the blue border
-                h.profile.setPadding(5, 5, 5, 5);
+                if (!"ALL".equals(h.lastLoadedKey)) {
+                    h.profile.setImageResource(R.drawable.ic_all_users);
+                    h.profile.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    h.lastLoadedKey = "ALL";
+                }
             } else {
-                h.profile.setImageResource(R.drawable.ic_profile_tenant);
-                h.profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                h.profile.setPadding(0, 0, 0, 0);
+                // Build a key to track what's loaded — skip Glide if unchanged (prevents glitch)
+                String imageUrl = u.getProfileImageUrl();
+                String key = imageUrl != null ? imageUrl : "default_" + u.getId();
+                if (!key.equals(h.lastLoadedKey)) {
+                    h.profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    com.example.uninest.utils.ImageUtils.loadProfileImage(h.profile, imageUrl);
+                    h.lastLoadedKey = key;
+                }
+            }
+
+            // 3. SHOW POINTS BADGE
+            if (u.getId().equals("ALL")) {
+                h.points.setVisibility(View.GONE);
+            } else {
+                int pts = calculateUserPoints(u.getId());
+                if (pts > 0) {
+                    h.points.setText(pts + " pts");
+                    h.points.setVisibility(View.VISIBLE);
+                } else {
+                    h.points.setVisibility(View.GONE);
+                }
             }
 
             // 2. HIGHLIGHT SELECTED (BLUE SHADOW)
@@ -314,12 +356,15 @@ public class ViewAllTasksActivity extends AppCompatActivity {
 
         class VH extends RecyclerView.ViewHolder {
             TextView name;
+            TextView points;
             View frame;
             ImageView profile;
+            String lastLoadedKey;
 
             VH(View v) {
                 super(v);
                 name = v.findViewById(R.id.tvRoommateName);
+                points = v.findViewById(R.id.tvPoints);
                 frame = v.findViewById(R.id.frameCircle);
                 profile = v.findViewById(R.id.imgProfile);
             }
@@ -399,4 +444,31 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         if ("COMPLETED".equals(s)) return "Completed";
         return "Pending";
     }
+
+    // ======== POINTS SYSTEM ========
+
+    /**
+     * Calculate points earned for a single completed task.
+     * Base = estDuration (min 10), Speed Bonus +10, On-Time Bonus +15
+     */
+    private int calculateTaskPoints(Calendar c) {
+        int diff = Math.max(c.getDifficultyScore(), 1);
+        int estTime = Math.max(c.getEstDuration(), 10);
+        return diff * estTime;
+    }
+
+    /** Sum points for all completed chores assigned to a specific user. */
+    private int calculateUserPoints(String userId) {
+        int total = 0;
+        for (Calendar c : allTasks) {
+            if ("CHORE".equalsIgnoreCase(c.getType())
+                    && "COMPLETED".equalsIgnoreCase(c.getStatus())
+                    && userId.equals(c.getAssignedTo())) {
+                total += calculateTaskPoints(c);
+            }
+        }
+        return total;
+    }
+
+
 }

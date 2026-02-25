@@ -103,6 +103,42 @@ public class ChoreService {
 
             docRef.set(chore).get();
 
+            /* 4️ Create calendar event */
+            Instant scheduledInstant = Instant.parse(chore.getScheduledDate());
+            Timestamp eventTimestamp = Timestamp.ofTimeSecondsAndNanos(
+                    scheduledInstant.getEpochSecond(),
+                    scheduledInstant.getNano()
+            );
+
+            CalendarEventDTO.Create event = new CalendarEventDTO.Create();
+
+
+            event.setType(CalendarEventDTO.EventType.CHORE);
+            event.setTitle(chore.getTaskName());
+            event.setEstDuration(chore.getEstDurationMin());
+            event.setDifficultyScore(chore.getDifficultyScore());
+            event.setDescription("Room: " + chore.getRoom());
+            event.setHouseCode(houseCode);
+            event.setAssignedTo(chore.getAssignedTo());
+            event.setRelatedChoreId(chore.getId());
+            event.setStartDate(chore.getScheduledDate());
+            event.setEndDate(chore.getScheduledDate());
+            event.setAllDay(false);
+
+            if (chore.getFrequencyPerWeek() > 0) {
+                CalendarEventDTO.Recurrence rec = new CalendarEventDTO.Recurrence();
+
+                if (chore.getFrequencyPerWeek() == 1) {
+                    rec.setFrequency("WEEKLY");
+                } else {
+                    rec.setFrequency("MONTHLY");
+                }
+
+                rec.setInterval(1);
+
+                event.setRecurrence(rec);
+            }
+
             // Calendar event
             CalendarEventDTO.Create event = buildCalendarEvent(chore, houseCode);
             calendarService.create(event, userId);
@@ -180,6 +216,36 @@ public class ChoreService {
             chore.setId(docRef.getId());
             docRef.set(chore).get();
 
+            // 4. Create Calendar Event
+            CalendarEventDTO.Create event = new CalendarEventDTO.Create();
+            event.setType(CalendarEventDTO.EventType.CHORE);
+            event.setTitle(chore.getTaskName());
+            event.setDescription(chore.getDescription());
+            event.setLocation(chore.getRoom());
+            event.setEstDuration(chore.getEstDurationMin());
+            event.setDifficultyScore(chore.getDifficultyScore());
+            event.setHouseCode(houseCode);
+            event.setAssignedTo(assigneeId);
+            event.setRelatedChoreId(chore.getId());
+            event.setStartDate(chore.getScheduledDate());
+            event.setEndDate(chore.getScheduledDate());
+            event.setAllDay(false);
+
+            // Handle Frequency/Recurrence
+            if (chore.getFrequencyPerWeek() > 0) {
+                CalendarEventDTO.Recurrence rec = new CalendarEventDTO.Recurrence();
+                if (chore.getFrequencyPerWeek() == 1) {
+                    rec.setFrequency("WEEKLY");
+                } else {
+                    rec.setFrequency("MONTHLY");
+                }
+                rec.setInterval(1);
+                event.setRecurrence(rec);
+            }
+
+            String creatorId = (chore.getCreatedBy() != null) ? chore.getCreatedBy() : assigneeId;
+
+            calendarService.create(event, creatorId);
             CalendarEventDTO.Create event = buildCalendarEvent(chore, houseCode);
             calendarService.create(event, assigneeId);
 

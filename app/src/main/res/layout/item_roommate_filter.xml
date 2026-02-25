@@ -31,4 +31,14 @@
         android:textSize="14sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/tvPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 pts"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:textColor="#FF8F00"
+        android:visibility="gone"/>
 </LinearLayout>

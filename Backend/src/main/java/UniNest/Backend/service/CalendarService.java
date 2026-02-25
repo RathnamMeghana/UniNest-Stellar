@@ -60,6 +60,7 @@ public class CalendarService {
             event.setRecurrence(dto.getRecurrence());
             event.setAmount(dto.getAmount());
             event.setEstDuration(dto.getEstDuration());
+            event.setDifficultyScore(dto.getDifficultyScore());
             event.setLocation(dto.getLocation());
 
             // Save to Firestore
@@ -272,6 +273,7 @@ public class CalendarService {
         dto.setStatus(e.getStatus());
         dto.setEstDuration(e.getEstDuration());
         dto.setActualDuration(e.getActualDuration());
+        dto.setDifficultyScore(e.getDifficultyScore());
         dto.setLocation(e.getLocation());
 
         return dto;

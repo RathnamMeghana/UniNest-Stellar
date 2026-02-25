@@ -37,6 +37,8 @@ public class CalendarEventDTO {
         private String relatedChoreId;
         private Double amount;
         private int estDuration;
+        private int difficultyScore;
+
         private String location;
         private Recurrence recurrence;
 
@@ -85,6 +87,7 @@ public class CalendarEventDTO {
         private String status;
         private int estDuration;
         private int actualDuration;
+        private int difficultyScore;
         private String location;
     }
 }

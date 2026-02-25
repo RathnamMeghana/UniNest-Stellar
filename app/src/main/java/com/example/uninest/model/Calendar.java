@@ -61,6 +61,11 @@ public class Calendar {
     public int getEstDuration() { return estDuration; }
     public void setEstDuration(int estDuration) { this.estDuration = estDuration; }
 
+    @SerializedName("difficultyScore")
+    private int difficultyScore;
+
+    public int getDifficultyScore() { return difficultyScore; }
+    public void setDifficultyScore(int difficultyScore) { this.difficultyScore = difficultyScore; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
