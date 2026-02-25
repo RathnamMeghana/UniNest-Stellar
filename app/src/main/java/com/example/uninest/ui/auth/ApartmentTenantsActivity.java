@@ -181,8 +181,14 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
 
         for (User tenant : tenants) {
             TenantCardView card = new TenantCardView(this);
-            card.setTenantName(tenant.getEmail());
+            card.setTenantName(tenant.getFullName());
             card.setRoomLabel("Room");
+
+            com.example.uninest.utils.ImageUtils.loadProfileImage(
+                    card.getAvatarImageView(),
+                    tenant.getProfileImageUrl()
+            );
+
 
             boolean canDelete = "1".equals(userRole);
             card.showDeleteButton(canDelete);
