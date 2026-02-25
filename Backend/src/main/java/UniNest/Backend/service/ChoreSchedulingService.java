@@ -10,29 +10,22 @@ import java.util.*;
 
 @Service
 public class ChoreSchedulingService {
-
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String MODEL_URL = "http://127.0.0.1:5002/predict";
-
     public ChorePredictionResponse predictAssignee(ChorePredictionRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         // Build payload exactly as Flask expects
         Map<String, Object> payload = new HashMap<>();
-
         // Optional task_name
         if (request.getTaskName() != null && !request.getTaskName().isEmpty()) {
-            payload.put("task_name", request.getTaskName());
-        }
-
+            payload.put("task_name", request.getTaskName());}
         // Required numeric features with defaults if missing
         payload.put("difficulty_score", request.getDifficultyScore() != null ? request.getDifficultyScore() : 3);
         payload.put("est_duration_min", request.getEstDurationMin() != null ? request.getEstDurationMin() : 30);
         payload.put("frequency_per_week", request.getFrequencyPerWeek() != null ? request.getFrequencyPerWeek() : 1);
         payload.put("roommate_preference", request.getRoommatePreference() != null ? request.getRoommatePreference() : 0.5);
         payload.put("availability_mins", request.getAvailabilityMins() != null ? request.getAvailabilityMins() : 120);
-
         // Always include room
         if (request.getRoom() != null && !request.getRoom().isEmpty()) {
             payload.put("room", request.getRoom());

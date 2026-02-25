@@ -1,31 +1,36 @@
 package com.example.uninest;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.chaquo.python.android.AndroidPlatform;
 import com.chaquo.python.Python;
-import com.google.firebase.analytics.FirebaseAnalytics;
-
+import com.chaquo.python.android.AndroidPlatform;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 
 public class MainActivity extends AppCompatActivity {
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Start Python safely
         if (!Python.isStarted()) {
             Python.start(new AndroidPlatform(this));
         }
+
+        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+        firebaseAppCheck.installAppCheckProviderFactory(
+                DebugAppCheckProviderFactory.getInstance()
+        );
     }
 }
+        // Initialize Firebase with AppCheck debug provider (safe, no Google Sign-In)
+       // FirebaseApp.initializeApp(this);
+       // FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+       // firebaseAppCheck.installAppCheckProviderFactory(
+        //        DebugAppCheckProviderFactory.getInstance()
+        //);
+   // }
+//}

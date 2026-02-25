@@ -64,7 +64,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         }
 
         // Load apartments
-        loadApartments();
+        //loadApartments();
 
         // New Apartment button → open AddApartmentActivity
         btnNewApartment.setOnClickListener(v -> {
@@ -89,6 +89,12 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         // Bottom nav
         setupBottomNav(R.id.nav_buildings);
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // every time you come back to this screen the list reloads from the database.
+        loadApartments();
+    }
 
 
     private void loadApartments() {
@@ -112,6 +118,8 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
             public void onFailure(Call<List<Apartment>> call, Throwable t) {
                 Log.e("ApartmentAPI", "Error: " + t.getMessage());
             }
+
+
         });
     }
     // ------------------------
@@ -179,8 +187,11 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         String total = apartment.getTotalRooms();
 
         card.setTenantInfo(occupied, total);
+        String capacity = String.valueOf(apartment.getMaxTenants()); // 3
 
+        card.setTenantInfo(occupied, capacity);
         card.setOnClickListener(v -> openApartmentTenants(apartment));
+
 
         apartmentList.addView(card);
     }
@@ -200,6 +211,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         intent.putExtra("EXTRA_APARTMENT_ID", apartment.getCode());
         intent.putExtra("EXTRA_USER_ROLE", loggedInRole);
         intent.putExtra("EXTRA_HOUSE_CODE", apartment.getCode());
+        intent.putExtra("EXTRA_MAX_TENANTS", apartment.getMaxTenants());
         intent.putExtra("EXTRA_TOTAL_ROOMS", apartment.getTotalRooms());
 
 

@@ -37,17 +37,12 @@ public class AddBuildingActivity extends AppCompatActivity {
     private EditText etBuildingName;
     private ImageView imgPreview;
     private Button btnSave;
-    private Button btnCancel;
-
+    private Uri selectedImageUri;
     private BuildingApi buildingApi;
     private FirebaseAuth mAuth;
-    private Uri selectedImageUri;
-    private boolean isSubmitting = false;
 
-    // 1. Setup the Image Picker Launcher
     private final ActivityResultLauncher<Intent> pickImageLauncher =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                     result -> {
                         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                             selectedImageUri = result.getData().getData();
@@ -61,102 +56,100 @@ public class AddBuildingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_building);
 
         mAuth = FirebaseAuth.getInstance();
+        buildingApi = ApiClient.getBuildingApi();
         etBuildingName = findViewById(R.id.etBuildingName);
         imgPreview = findViewById(R.id.imgPreview);
-        btnCancel = findViewById(R.id.btnCancel);
         btnSave = findViewById(R.id.btnSaveBuilding);
 
-        buildingApi = ApiClient.getBuildingApi();
+        imgPreview.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            pickImageLauncher.launch(intent);
+        });
 
-        // 2. Click to pick image
-        imgPreview.setOnClickListener(v -> openPhotoPicker());
-
-        btnCancel.setOnClickListener(v -> finish());
+        findViewById(R.id.btnCancel).setOnClickListener(v -> finish());
         btnSave.setOnClickListener(v -> saveBuilding());
     }
 
-    private void openPhotoPicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        pickImageLauncher.launch(intent);
-    }
-
     private void saveBuilding() {
-        if (isSubmitting) return;
-
         String name = etBuildingName.getText().toString().trim();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        // Validations
-        if (name.isEmpty()) {
-            etBuildingName.setError("Please enter a building name");
-            return;
-        }
-        if (user == null) {
-            Toast.makeText(this, "Error: User is not logged in.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (selectedImageUri == null) {
-            Toast.makeText(this, "Please select an image first", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || selectedImageUri == null || user == null) {
+            Toast.makeText(this, "Please fill name and select an image", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        isSubmitting = true;
         btnSave.setEnabled(false);
+        btnSave.setText("Processing...");
 
-        // 3. Convert Image to Base64
-        String base64Image = convertImageToBase64(selectedImageUri);
+        // Convert image to a SMALL Base64 string
+        String smallBase64 = convertImageToResizedBase64(selectedImageUri);
 
-        // 4. Create Request for the API
+        if (smallBase64 == null) {
+            btnSave.setEnabled(true);
+            btnSave.setText("Save Building");
+            return;
+        }
+
         BuildingRequest request = new BuildingRequest();
         request.setName(name);
-        request.setAddressLine1("Dummy address line 1");
-        request.setCity("Dummy city");
-        request.setPostcode("0000");
-        request.setCountry("Ireland");
         request.setLandlordId(user.getUid());
+        request.setImageUrl(smallBase64); // This is now a safe, short string
+        request.setAddressLine1("Street");
+        request.setCity("City");
+        request.setPostcode("Postcode");
+        request.setCountry("Country");
         request.setActive(true);
-        request.setImageUrl(base64Image); // Sending the encoded image string to your API
 
-        // 5. Call your Spring Boot API
         buildingApi.createBuilding(request).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                isSubmitting = false;
-                btnSave.setEnabled(true);
-
                 if (response.isSuccessful()) {
-                    Toast.makeText(AddBuildingActivity.this, "Building created via API!", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
+                    Toast.makeText(AddBuildingActivity.this, "Building Created!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Log.e("API_ERROR", "Code: " + response.code());
-                    Toast.makeText(AddBuildingActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    btnSave.setEnabled(true);
+                    Toast.makeText(AddBuildingActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                isSubmitting = false;
                 btnSave.setEnabled(true);
-                Log.e("AddBuildingActivity", "API Failure", t);
-                Toast.makeText(AddBuildingActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddBuildingActivity.this, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // Helper method to turn URI into Base64 string
-    private String convertImageToBase64(Uri uri) {
+    private String convertImageToResizedBase64(Uri uri) {
         try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            InputStream is = getContentResolver().openInputStream(uri);
+            Bitmap original = BitmapFactory.decodeStream(is);
+
+            // RESIZE: Scale to max 400px width/height
+            // This prevents the ENAMETOOLONG crash and stays under 1MB limit
+            int maxSize = 400;
+            int width = original.getWidth();
+            int height = original.getHeight();
+
+            float bitmapRatio = (float) width / (float) height;
+            if (bitmapRatio > 1) {
+                width = maxSize;
+                height = (int) (width / bitmapRatio);
+            } else {
+                height = maxSize;
+                width = (int) (height * bitmapRatio);
+            }
+
+            Bitmap scaled = Bitmap.createScaledBitmap(original, width, height, true);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            // Use 25% quality to stay under Firestore document limits
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+            scaled.compress(Bitmap.CompressFormat.JPEG, 30, baos); // 30% quality is plenty for a list
             byte[] bytes = baos.toByteArray();
+
             return Base64.encodeToString(bytes, Base64.DEFAULT);
         } catch (Exception e) {
-            Log.e("IMAGE_ERROR", "Failed to encode image", e);
+            Log.e("IMAGE_ERROR", "Resizing failed", e);
             return null;
         }
     }

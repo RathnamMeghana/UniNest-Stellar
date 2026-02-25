@@ -11,7 +11,6 @@ public class Apartment implements Serializable {
     @SerializedName("name")
     private String name;
 
-    // Based on logs: [{"totalRooms":"9", ...}] - this must be a String
     @SerializedName("totalRooms")
     private String totalRooms;
 
@@ -30,51 +29,64 @@ public class Apartment implements Serializable {
     @SerializedName("active")
     private boolean active;
 
-    // Handles the nested createdAt object from the logs
-    @SerializedName("createdAt")
-    private CreatedAt createdAt;
-
+    @SerializedName("occupiedCount")
     private int occupiedCount;
 
-    // Static inner class to handle the Timestamp structure
-    public static class CreatedAt {
-        private long seconds;
-        private int nanos;
+    @SerializedName("maxTenants")
+    private int maxTenants;
 
-        public long getSeconds() { return seconds; }
-        public void setSeconds(long seconds) { this.seconds = seconds; }
-        public int getNanos() { return nanos; }
-        public void setNanos(int nanos) { this.nanos = nanos; }
+    // --- GETTERS (Crucial for fixing your error) ---
+
+    public String getName() {
+        return name;
     }
 
-    // Getters and Setters
-    public String getBuildingId() { return buildingId; }
-    public void setBuildingId(String buildingId) { this.buildingId = buildingId; }
+    public String getCode() {
+        return code;
+    }
 
-    public String getName() { return name; }
+    public String getBuildingId() {
+        return buildingId;
+    }
+
+    public String getTotalRooms() {
+        return totalRooms;
+    }
+
+    public int getMaxTenants() {
+        return maxTenants;
+    }
+
+    public int getOccupiedCount() {
+        return occupiedCount;
+    }
+
+    public String getLandlordId() {
+        return landlordId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public double getRentPrice() {
+        return rentPrice;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    // --- SETTERS ---
+
     public void setName(String name) { this.name = name; }
-
-    public String getTotalRooms() { return totalRooms; }
-    public void setTotalRooms(String totalRooms) { this.totalRooms = totalRooms; }
-
-    public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
-
-    public String getLandlordId() { return landlordId; }
-    public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public double getRentPrice() { return rentPrice; }
-    public void setRentPrice(double rentPrice) { this.rentPrice = rentPrice; }
-
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
-
-    public CreatedAt getCreatedAt() { return createdAt; }
-    public void setCreatedAt(CreatedAt createdAt) { this.createdAt = createdAt; }
-
-    public int getOccupiedCount() { return occupiedCount; }
+    public void setBuildingId(String buildingId) { this.buildingId = buildingId; }
+    public void setTotalRooms(String totalRooms) { this.totalRooms = totalRooms; }
+    public void setMaxTenants(int maxTenants) { this.maxTenants = maxTenants; }
     public void setOccupiedCount(int occupiedCount) { this.occupiedCount = occupiedCount; }
+    public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
+    public void setDescription(String description) { this.description = description; }
+    public void setRentPrice(double rentPrice) { this.rentPrice = rentPrice; }
+    public void setActive(boolean active) { this.active = active; }
 }

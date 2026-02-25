@@ -2,7 +2,10 @@ package UniNest.Backend.controller;
 
 import UniNest.Backend.dto.CalendarEventDTO;
 import UniNest.Backend.service.CalendarService;
+import jakarta.validation.Valid; // Ensure this is imported
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,20 +17,19 @@ public class CalendarController {
 
     private final CalendarService calendarService;
 
-    // ==================================================
-    // CREATE EVENT
-    // ==================================================
+    // 1. Fixed @PreAuthorize typo (added opening quote)
+    // 2. Added @Valid to the @RequestBody parameter
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @PostMapping("/create")
     public CalendarEventDTO.Response createEvent(
-            @RequestBody CalendarEventDTO.Create request,
+            @Valid @RequestBody CalendarEventDTO.Create request,
             @RequestParam String userId
     ) {
+        request.sanitize();
         return calendarService.create(request, userId);
     }
 
-
-    // get events by apartment
-
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/getByApartment/{houseCode}")
     public List<CalendarEventDTO.Response> getEventsForHouse(
             @PathVariable String houseCode,
@@ -41,34 +43,28 @@ public class CalendarController {
         }
     }
 
-
-    // GET EVENTS FOR USER
-
+    @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/getByUser/{userId}")
-    public List<CalendarEventDTO.Response> getEventsForUser(
-            @PathVariable String userId
-    ) {
+    public List<CalendarEventDTO.Response> getEventsForUser(@PathVariable String userId) {
         return calendarService.getForUser(userId);
     }
 
-
-    // update event
-
+    // Fixed @PreAuthorize typo
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @PutMapping("/update/{eventId}")
     public CalendarEventDTO.Response updateEvent(
             @PathVariable String eventId,
-            @RequestBody CalendarEventDTO.Update request
+            @Valid @RequestBody CalendarEventDTO.Update request // Added @Valid here too
     ) {
+        request.sanitize();
         return calendarService.update(eventId, request);
     }
 
-
-    // DELETE EVENT
-
+    // Fixed @PreAuthorize typo
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @DeleteMapping("/delete/{eventId}")
     public String delete(@PathVariable String eventId) {
         calendarService.delete(eventId);
         return "Event deleted";
     }
-
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import org.springframework.security.core.Authentication;
 
 public class TicketControllerTest {
 
@@ -31,9 +33,14 @@ public class TicketControllerTest {
 
     private Ticket testTicket;
 
+    @Mock
+    private Authentication mockAuth;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+
+        Mockito.when(mockAuth.getName()).thenReturn("test-user");
 
         testTicket = new Ticket();
         testTicket.setId("ticket1");
@@ -52,7 +59,14 @@ public class TicketControllerTest {
     public void testCreateTicket_Success()  {
         when(ticketService.createTicket(any(Ticket.class))).thenReturn("Ticket created");
 
-        ResponseEntity<String> response = ticketController.createTicket(testTicket);
+        // Tell the mock what "user ID" to return when the controller asks
+        Mockito.when(mockAuth.getName()).thenReturn("test-user-id");
+        Mockito.when(mockAuth.getPrincipal()).thenReturn("test-user-email@example.com");
+
+        // 3. Update the call to include mockAuth as the second parameter
+        // Change this line:
+        ResponseEntity<String> response = ticketController.createTicket(testTicket, mockAuth);
+       // ResponseEntity<String> response = ticketController.createTicket(testTicket);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("Ticket created", response.getBody());
@@ -64,7 +78,7 @@ public class TicketControllerTest {
     public void testCreateTicket_ServiceThrowsException() {
         when(ticketService.createTicket(any(Ticket.class))).thenThrow(new RuntimeException("DB error"));
 
-        ResponseEntity<String> response = ticketController.createTicket(testTicket);
+        ResponseEntity<String> response = ticketController.createTicket(testTicket, mockAuth);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertTrue(response.getBody().contains("Error creating ticket"));
@@ -173,7 +187,7 @@ public class TicketControllerTest {
     @Test
     public void testSanitizationOnCreate() {
         testTicket.setDescription("<script>alert('XSS');</script>");
-        ticketController.createTicket(testTicket);
+        ticketController.createTicket(testTicket, mockAuth);
 
         // make sure description was sanitized
         assertFalse(testTicket.getDescription().contains("<script>"));

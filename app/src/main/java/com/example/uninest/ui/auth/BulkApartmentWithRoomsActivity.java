@@ -13,6 +13,8 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.BulkApartmentRequest;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import retrofit2.Response;
 public class BulkApartmentWithRoomsActivity extends AppCompatActivity {
 
     private EditText etApartmentCount;
+    private EditText etMaxTenants; // NEW: max tenants per apartment
     private LinearLayout layoutRoomCounters;
     private ApartmentApi api;
     private String buildingId;
@@ -34,7 +37,9 @@ public class BulkApartmentWithRoomsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bulk_apartments_with_rooms);
 
         etApartmentCount = findViewById(R.id.etApartmentCount);
+        etMaxTenants = findViewById(R.id.etMaxTenants);
         layoutRoomCounters = findViewById(R.id.layoutRoomCounters);
+
         api = ApiClient.getApartmentApi();
 
         buildingId = getIntent().getStringExtra("EXTRA_BUILDING_ID");
@@ -50,7 +55,7 @@ public class BulkApartmentWithRoomsActivity extends AppCompatActivity {
     }
 
     /**
-     * Dynamically sets up room counter rows
+     * Sets up the room counter rows dynamically
      */
     private void setupRoomRows() {
         String[] roomTypes = {"Bedroom", "Bathroom", "Kitchen", "Living Room", "Laundry"};
@@ -82,9 +87,10 @@ public class BulkApartmentWithRoomsActivity extends AppCompatActivity {
     }
 
     /**
-     * Collects apartment count and room template, then calls backend
+     * Collects apartment count, room template, and max tenants, then calls backend
      */
     private void submitBulk() {
+        // ----- 1. Validate Apartment Count -----
         String countText = etApartmentCount.getText().toString().trim();
         if (countText.isEmpty()) {
             etApartmentCount.setError("Enter number of apartments");
@@ -100,6 +106,23 @@ public class BulkApartmentWithRoomsActivity extends AppCompatActivity {
             return;
         }
 
+        // ----- 2. Validate Max Tenants -----
+        String maxTenantsText = etMaxTenants.getText().toString().trim();
+        if (maxTenantsText.isEmpty()) {
+            etMaxTenants.setError("Enter maximum tenants per apartment");
+            return;
+        }
+
+        int maxTenants;
+        try {
+            maxTenants = Integer.parseInt(maxTenantsText);
+            if (maxTenants <= 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            etMaxTenants.setError("Enter a valid number > 0");
+            return;
+        }
+
+        // ----- 3. Collect Room Template -----
         Map<String, Integer> roomTemplate = new HashMap<>();
         for (int i = 0; i < layoutRoomCounters.getChildCount(); i++) {
             View row = layoutRoomCounters.getChildAt(i);
@@ -108,22 +131,33 @@ public class BulkApartmentWithRoomsActivity extends AppCompatActivity {
             roomTemplate.put(type, count);
         }
 
+        // ----- 4. Build Request Object -----
         BulkApartmentRequest request = new BulkApartmentRequest();
         request.setBuildingId(buildingId);
-        request.setApartmentCount(apartmentCount);
+        request.setApartmentCount(apartmentCount);   // Total apartments to create
+        request.setMaxTenants(maxTenants);           // Max tenants per apartment
         request.setRoomTemplate(roomTemplate);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            request.setLandlordId(user.getUid());
+        } else {
+            Toast.makeText(this, "Error: User not logged in", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // Disable button while API call
+        // ----- 5. Disable button while API call -----
         findViewById(R.id.btnCreateAll).setEnabled(false);
 
+        // ----- 6. Make Backend Call -----
         api.createApartmentsWithRooms(request).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 findViewById(R.id.btnCreateAll).setEnabled(true);
 
                 if (response.isSuccessful()) {
-                    Toast.makeText(BulkApartmentWithRoomsActivity.this, "Apartments created successfully!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(BulkApartmentWithRoomsActivity.this,
+                            "Apartments created successfully!", Toast.LENGTH_LONG).show();
                     finish();
                 } else {
                     Toast.makeText(BulkApartmentWithRoomsActivity.this,
@@ -134,7 +168,8 @@ public class BulkApartmentWithRoomsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 findViewById(R.id.btnCreateAll).setEnabled(true);
-                Toast.makeText(BulkApartmentWithRoomsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(BulkApartmentWithRoomsActivity.this,
+                        "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

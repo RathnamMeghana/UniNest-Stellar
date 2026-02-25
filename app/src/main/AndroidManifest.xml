@@ -173,6 +173,16 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
+
+
+                <!-- Paste your Android-specific DSN here -->
+                <meta-data android:name="io.sentry.dsn"
+                    android:value="https://bc4297d9270fcaf5da22604cd4d894cb@o4510919425392640.ingest.de.sentry.io/4510919531102288" />
+
+
+
+
     </application>
 
 </manifest>

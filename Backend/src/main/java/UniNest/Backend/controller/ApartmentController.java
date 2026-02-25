@@ -5,8 +5,9 @@ import com.google.cloud.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,8 @@ import UniNest.Backend.util.SanitizationUtil;
 @RequestMapping("/apartments")
 
 public class ApartmentController {
+
+
     @Autowired
     private ApartmentService apartmentService;
 
@@ -42,22 +45,14 @@ public class ApartmentController {
     @Autowired
     private RoomService roomService;
 
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @PostMapping("/create")
-    public String createApartment( @Valid @RequestBody ApartmentRequests request) {
-        request.setName(SanitizationUtil.sanitize(request.getName()));
-        request.setBuildingId(SanitizationUtil.sanitize(request.getBuildingId()));
-//        request.setCode(SanitizationUtil.sanitize(request.getCode()));
-        request.setLandlordId(SanitizationUtil.sanitize(request.getLandlordId()));
-        request.setDescription(SanitizationUtil.sanitize(request.getDescription()));
-        request.setTotalRooms(SanitizationUtil.sanitize(request.getTotalRooms()));
-
-        if(request.getCreatedAt() == null){
-            request.setCreatedAt(Timestamp.now());
-        }
-
-        return apartmentService.createApartment(request);
+    public String createApartment(@Valid @RequestBody ApartmentRequests request) {
+        request.sanitize(); // This runs the cleaning logic
+        return apartmentService.createApartment(request); // This passes the cleaned object
     }
 
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/getAll")
     public List<Apartment> getAllApartments() {
 
@@ -66,6 +61,7 @@ public class ApartmentController {
     }
 
 
+    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/{houseCode}/users")
     public ResponseEntity<List<User>> getUsersByApartment(
             @PathVariable String houseCode
@@ -79,7 +75,7 @@ public class ApartmentController {
         return ResponseEntity.ok(users);
     }
 
-
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @PostMapping("/{houseCode}/addRoom")
     public ResponseEntity<String> addRoom(
             @PathVariable String houseCode,
@@ -101,7 +97,7 @@ public class ApartmentController {
         }
     }
 
-
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/{houseCode}/rooms")
     public ResponseEntity<List<RoomRequests>> getRooms(@PathVariable String houseCode) {
         try {
@@ -115,6 +111,7 @@ public class ApartmentController {
         }
     }
 
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @DeleteMapping("/tenants/{email}/remove")
     public ResponseEntity<?> removeTenant(@PathVariable String email) {
         apartmentService.removeTenantFromApartment(email);
@@ -123,21 +120,17 @@ public class ApartmentController {
 
 
     @PostMapping("/bulkWithRooms")
-    public ResponseEntity<String> bulkWithRooms(@RequestBody BulkApartmentWithRoomsRequest request) {
-        try {
-            apartmentService.createApartmentsWithRooms(request);
-            return ResponseEntity.ok("Apartments and rooms created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body("Bulk apartment + room creation failed: " + e.getMessage());
-        }
+    public ResponseEntity<String> bulkWithRooms(@Valid @RequestBody BulkApartmentWithRoomsRequest request) {
+        apartmentService.createApartmentsWithRooms(request);
+        return ResponseEntity.ok("Apartments and rooms created successfully");
     }
 
+
+    @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/getByBuilding")
     public List<Apartment> getApartmentsByBuilding(@RequestParam String buildingId) {
         return apartmentService.getApartmentsByBuilding(buildingId);
     }
-
 
 
 }

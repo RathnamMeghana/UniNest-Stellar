@@ -80,8 +80,6 @@ public class RoomService {
                     // skip corrupted record
                 }
             }
-
-
             return list;
 
         } catch (InterruptedException e) {

@@ -13,6 +13,7 @@ public class SessionManager {
     private static final String KEY_USER_NAME = "user_full_name"; // New: Store "John Doe"
     private static final String KEY_USER_IMAGE = "user_image_data";
     private static final String KEY_COMPANY_NAME = "company_name";
+    private static final String KEY_ID_TOKEN = "id_token";
 
     SharedPreferences pref;
     SharedPreferences.Editor editor;
@@ -70,8 +71,23 @@ public class SessionManager {
         return pref.getString(KEY_USER_IMAGE, null);
     }
 
+
+    public void saveIdToken(String token) {
+        editor.putString(KEY_ID_TOKEN, token);
+        editor.apply();
+    }
+
+    public String getIdToken() {
+        return pref.getString(KEY_ID_TOKEN, null);
+    }
+
     public void logout() {
         editor.clear();
+        editor.apply();
+    }
+    public void saveTenantSession(String email, String houseCode) {
+        editor.putString(KEY_USER_EMAIL, email);
+        editor.putString(KEY_HOUSE_CODE, houseCode);
         editor.apply();
     }
 }

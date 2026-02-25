@@ -1,5 +1,6 @@
 package UniNest.Backend.dto;
 
+import UniNest.Backend.util.SanitizationUtil;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -28,5 +29,11 @@ public class UpdateTicketPriorityRequest {
     public void setPriority(String priority) {
         this.priority = priority;
     }
+
+    public void sanitize() {
+        this.ticketId = SanitizationUtil.sanitize(this.ticketId);
+        this.priority = SanitizationUtil.sanitize(this.priority);
+    }
+
 }
 

@@ -7,6 +7,7 @@ plugins {
     id("com.google.gms.google-services")
 
     id("com.chaquo.python")
+    id("io.sentry.android.gradle") version "4.3.1"
 }
 
 
@@ -84,8 +85,11 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.play.services.measurement.api)
+   // implementation(libs.play.services.measurement.api)
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation("com.google.firebase:firebase-appcheck")
+    //implementation("com.google.firebase:firebase-appcheck-debug")
+
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-database")
@@ -93,9 +97,11 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.datastore:datastore:1.1.1")
     implementation ("com.google.firebase:firebase-storage")
+    implementation ("io.sentry:sentry-android:7.6.0")
+    implementation ("io.sentry:sentry-android-okhttp:7.6.0")
 
-    implementation ("com.google.firebase:firebase-appcheck:18.0.0")
-    implementation ("com.google.firebase:firebase-appcheck-debug:18.0.0")
+    //implementation ("com.google.firebase:firebase-appcheck:18.0.0")
+    //implementation ("com.google.firebase:firebase-appcheck-debug:18.0.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
@@ -109,7 +115,7 @@ dependencies {
     implementation ("org.tensorflow:tensorflow-lite-select-tf-ops:2.13.0")
     implementation ("org.tensorflow:tensorflow-lite-support:0.4.4")
 
-    implementation("com.google.android.gms:play-services-tflite-java:16.0.1")
+    //implementation("com.google.android.gms:play-services-tflite-java:16.0.1")
 
 
 
@@ -126,5 +132,15 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation ("com.google.firebase:firebase-appcheck-debug")
 
+}
+
+sentry {
+    org.set("aoife-murphy")
+    projectName.set("android")
+
+    // this will upload your source code to Sentry to show it as part of the stack traces
+    // disable if you don't want to expose your sources
+    includeSourceContext.set(true)
 }

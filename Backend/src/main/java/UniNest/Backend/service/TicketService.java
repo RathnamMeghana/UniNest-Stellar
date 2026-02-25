@@ -11,6 +11,7 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,11 +70,11 @@ public class TicketService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new TicketServiceException("Operation interrupted", e);
+            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", e);
+            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", e);
+            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -98,11 +99,11 @@ public class TicketService {
                     .collect(Collectors.toList());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new TicketServiceException("Operation interrupted", e);
+            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", e);
+            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", e);
+            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -125,11 +126,11 @@ public class TicketService {
                     .collect(Collectors.toList());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new TicketServiceException("Operation interrupted", e);
+            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", e);
+            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", e);
+            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -162,11 +163,11 @@ public class TicketService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new TicketServiceException("Update interrupted", e);
+            throw new TicketServiceException("Update interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore update failed", e);
+            throw new TicketServiceException("Firestore update failed", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (com.google.cloud.firestore.FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", e);
+            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -198,11 +199,11 @@ public class TicketService {
         return "Ticket priority updated successfully";
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new TicketServiceException("Operation interrupted", e);
+            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", e);
+            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", e);
+            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -238,11 +239,11 @@ public class TicketService {
                     .collect(Collectors.toList());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new TicketServiceException("Operation interrupted", e);
+            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", e);
+            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", e);
+            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -266,7 +267,7 @@ public class TicketService {
 
             return "Agent data updated";
         } catch (Exception e) {
-            throw new TicketServiceException("Error updating agent data", e);
+            throw new TicketServiceException("Error updating agent data", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

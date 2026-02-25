@@ -6,14 +6,19 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.cloud.FirestoreClient;
 
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.ArrayList;
 import java.util.List;
 
 import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.User;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 
@@ -54,9 +59,9 @@ public class UserService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new UserServiceException("User query interrupted", e);
+            throw new UserServiceException("User query interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new UserServiceException("Firestore query failed", e);
+            throw new UserServiceException("Firestore query failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -85,6 +90,22 @@ public class UserService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to find user by email", e);
         }
+    }
+
+    public void setFirebaseRole(String uid, String firestoreRole) throws FirebaseAuthException {
+        String role;
+        switch (firestoreRole) {
+            case "1":
+                role = "LETTINGAGENT";
+                break;
+            case "2":
+                role = "TENANT";
+                break;
+            default:
+                role = "USER";
+        }
+
+        FirebaseAuth.getInstance().setCustomUserClaims(uid, Map.of("role", role));
     }
 
 }

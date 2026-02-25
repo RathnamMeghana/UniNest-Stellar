@@ -1,7 +1,17 @@
 package UniNest.Backend.exception;
+import org.springframework.http.HttpStatus;
 
 public class ApartmentServiceException extends RuntimeException {
-    public ApartmentServiceException(String message, Throwable cause) {
-        super(message, cause);
+
+    private final HttpStatus status;
+
+    public ApartmentServiceException(String message, HttpStatus status) {
+        super(message);
+        this.status = status;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 }
+

@@ -46,6 +46,33 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp">
 
+            <!-- Max Tenants Per Apartment -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Maximum Tenants (per Apartment)"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <EditText
+                android:id="@+id/etMaxTenants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_textfield"
+                android:hint="e.g. 4"
+                android:inputType="number"
+                android:padding="12dp"
+                android:textSize="14sp" />
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+
             <!-- Number of Apartments -->
             <TextView
                 android:layout_width="wrap_content"

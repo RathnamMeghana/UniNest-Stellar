@@ -1,8 +1,11 @@
 package UniNest.Backend.firebase;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.Firestore; // Added import
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.FirestoreClient; // Added import
+import org.springframework.context.annotation.Bean; // Added import
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
@@ -26,11 +29,18 @@ public class FirebaseConfig {
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                System.out.println(" Firebase initialized successfully!");
+                System.out.println("Firebase initialized successfully!");
             }
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Firebase", e);
         }
+    }
+
+
+    @Bean
+    public Firestore getFirestore() {
+        // This makes Firestore available for @Autowired in your services
+        return FirestoreClient.getFirestore();
     }
 }
