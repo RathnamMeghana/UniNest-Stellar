@@ -85,9 +85,9 @@ public class SessionManager {
         editor.clear();
         editor.apply();
     }
-    public void saveTenantSession(String email, String houseCode) {
-        editor.putString(KEY_USER_EMAIL, email);
-        editor.putString(KEY_HOUSE_CODE, houseCode);
-        editor.apply();
-    }
+    //public void saveTenantSession(String email, String houseCode) {
+    //    editor.putString(KEY_USER_EMAIL, email);
+    //    editor.putString(KEY_HOUSE_CODE, houseCode);
+    //    editor.apply();
+    //}
 }
