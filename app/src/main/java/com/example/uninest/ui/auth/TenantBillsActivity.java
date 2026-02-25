@@ -284,16 +284,19 @@ public class TenantBillsActivity extends AppCompatActivity {
         nav.setSelectedItemId(R.id.nav_bills);
         nav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
+            if (id == R.id.nav_bills) return true;
+
             if (id == R.id.nav_home) {
                 startActivity(new Intent(this, TenantHomeActivity.class));
-                overridePendingTransition(0, 0); return true;
             } else if (id == R.id.nav_calendar) {
                 startActivity(new Intent(this, TenantCalendarActivity.class));
-                overridePendingTransition(0, 0); return true;
             } else if (id == R.id.nav_tickets) {
                 startActivity(new Intent(this, TenantTicketsActivity.class));
-                overridePendingTransition(0, 0); return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, TenantProfileActivity.class));
             }
+            overridePendingTransition(0, 0);
+            finish();
             return true;
         });
     }

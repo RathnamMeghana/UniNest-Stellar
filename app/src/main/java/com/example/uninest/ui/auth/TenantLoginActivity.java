@@ -93,9 +93,10 @@ public class TenantLoginActivity extends AppCompatActivity {
                             String fName = documentSnapshot.getString("firstName");
                             String lName = documentSnapshot.getString("lastName");
                             String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
+                            String profileImg = documentSnapshot.getString("profileImageUrl");
 
                             // Save FULL session data
-                            sessionManager.saveTenantSession(uid, email, role, houseCode, fullName.trim());
+                            sessionManager.saveTenantSession(uid, email, role, houseCode, fullName.trim(), profileImg);
 
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
 

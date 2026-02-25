@@ -155,22 +155,20 @@ public class TenantCalendarActivity extends AppCompatActivity {
         bottomNav.setSelectedItemId(R.id.nav_calendar);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
+            if (itemId == R.id.nav_calendar) return true;
+
             if (itemId == R.id.nav_home) {
-                startActivity(new Intent(getApplicationContext(), TenantHomeActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
+                startActivity(new Intent(this, TenantHomeActivity.class));
             } else if (itemId == R.id.nav_bills) {
-                startActivity(new Intent(getApplicationContext(), TenantBillsActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
-            } else if (itemId == R.id.nav_calendar) {
-                return true;
+                startActivity(new Intent(this, TenantBillsActivity.class));
             } else if (itemId == R.id.nav_tickets) {
-                startActivity(new Intent(getApplicationContext(), TenantTicketsActivity.class));
-                overridePendingTransition(0, 0);
-                return true;
+                startActivity(new Intent(this, TenantTicketsActivity.class));
+            } else if (itemId == R.id.nav_profile) {
+                startActivity(new Intent(this, TenantProfileActivity.class));
             }
-            return false;
+            overridePendingTransition(0, 0);
+            finish();
+            return true;
         });
     }
 

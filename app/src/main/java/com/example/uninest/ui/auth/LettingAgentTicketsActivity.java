@@ -264,8 +264,9 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
                 finish();
                 return true;
             } else if (itemId == R.id.nav_profile) {
-                // startActivity(new Intent(this, LettingAgentProfileActivity.class));
-                // overridePendingTransition(0, 0);
+                startActivity(new Intent(this, LettingAgentProfileActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
                 return true;
             }
             return false;
