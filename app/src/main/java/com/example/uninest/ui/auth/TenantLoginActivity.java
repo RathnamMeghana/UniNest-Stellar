@@ -125,6 +125,8 @@ public class TenantLoginActivity extends AppCompatActivity {
                             String houseCode = documentSnapshot.getString("houseCode");
                             String fName = documentSnapshot.getString("firstName");
                             String lName = documentSnapshot.getString("lastName");
+                            String email = documentSnapshot.getString("email");
+                            String uid = documentSnapshot.getString("userId");
                             String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
                             String profileImg = documentSnapshot.getString("profileImageUrl");
 
@@ -139,7 +141,11 @@ public class TenantLoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                             // Save tenant session locally
-                            sessionManager.saveTenantSession(user.getUid(), user.getEmail(), role, houseCode, fullName.trim());
+
+
+
+                            sessionManager.saveTenantSession(uid, email, role, houseCode, fullName.trim(), profileImg);
+                           // sessionManager.saveTenantSession(user.getUid(), user.getEmail(), role, houseCode, fullName.trim());
 
                             // JSON body for backend
                             String jsonBody = "{\"token\":\"" + idToken + "\", \"houseCode\":\"" + houseCode + "\"}";
