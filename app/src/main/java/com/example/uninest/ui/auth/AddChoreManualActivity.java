@@ -18,13 +18,22 @@ import retrofit2.Response;
 public class AddChoreManualActivity extends AppCompatActivity {
 
     private EditText etTaskName, etRoom, etUserEmail, etDifficulty,etDuration, etFrequency;
-    private String houseCode; // Should  be passed by Intent
+    private String houseCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_chore_manual);
-        houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
+
+        houseCode = getIntent().getStringExtra("HOUSE_CODE");
+
+        // Safety check: if no house code was passed, we can't proceed
+        if (houseCode == null || houseCode.isEmpty()) {
+            Toast.makeText(this, "Error: House Code missing!", Toast.LENGTH_SHORT).show();
+            finish(); // Close activity
+            return;
+        }
+
 
         etTaskName = findViewById(R.id.etTaskName);
         etRoom = findViewById(R.id.etRoom);

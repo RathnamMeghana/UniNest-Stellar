@@ -17,12 +17,22 @@ import retrofit2.Response;
 public class AddChoreSmartActivity extends AppCompatActivity {
 
     private EditText etTaskName, etRoom, etDifficulty, etDurationSmart, etFrequencySmart;
-    private String houseCode = "APT-E2DE614";
+    private String houseCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_chore_smart);
+
+        houseCode = getIntent().getStringExtra("HOUSE_CODE");
+
+        // Safety check: if no house code was passed, we can't proceed
+        if (houseCode == null || houseCode.isEmpty()) {
+            Toast.makeText(this, "Error: House Code missing!", Toast.LENGTH_SHORT).show();
+            finish(); // Close activity
+            return;
+        }
+
 
         etTaskName = findViewById(R.id.etTaskNameSmart);
         etRoom = findViewById(R.id.etRoomSmart);

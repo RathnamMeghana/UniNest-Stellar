@@ -22,7 +22,7 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
 
-        // 1️⃣ Get Firebase token (try cached first)
+        //  Get Firebase token (try cached first)
         String token = getFirebaseToken(false);
         if (token == null) {
             // Force refresh if cached token is null
