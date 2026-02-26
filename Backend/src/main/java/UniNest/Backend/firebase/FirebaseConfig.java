@@ -11,25 +11,30 @@ import org.springframework.core.io.ClassPathResource;
 
 import jakarta.annotation.PostConstruct;
 import java.io.InputStream;
-
 @Configuration
 public class FirebaseConfig {
 
     @PostConstruct
     public void init() {
         try {
-            InputStream serviceAccount = new ClassPathResource("serviceAccountKey.json").getInputStream();
-
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            FirebaseOptions.Builder optionsBuilder = FirebaseOptions.builder()
                     .setProjectId("uninest-c8d4b")
                     .setStorageBucket("uninest-c8d4b.firebasestorage.app")
-                    .setDatabaseUrl("https://uninest-c8d4b.firebaseio.com")
-                    .build();
+                    .setDatabaseUrl("https://uninest-c8d4b.firebaseio.com");
+
+            // Check if we are running locally with the file
+            ClassPathResource res = new ClassPathResource("serviceAccountKey.json");
+            if (res.exists()) {
+                optionsBuilder.setCredentials(GoogleCredentials.fromStream(res.getInputStream()));
+                System.out.println("Firebase initialized using local JSON key.");
+            } else {
+                // This is what Google Cloud Run will use automatically
+                optionsBuilder.setCredentials(GoogleCredentials.getApplicationDefault());
+                System.out.println("Firebase initialized using Application Default Credentials.");
+            }
 
             if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
-                System.out.println("Firebase initialized successfully!");
+                FirebaseApp.initializeApp(optionsBuilder.build());
             }
 
         } catch (Exception e) {
@@ -37,10 +42,8 @@ public class FirebaseConfig {
         }
     }
 
-
     @Bean
     public Firestore getFirestore() {
-        // This makes Firestore available for @Autowired in your services
         return FirestoreClient.getFirestore();
     }
 }
