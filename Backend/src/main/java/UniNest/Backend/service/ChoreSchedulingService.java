@@ -2,6 +2,10 @@ package UniNest.Backend.service;
 
 import UniNest.Backend.dto.ChorePredictionRequest;
 import UniNest.Backend.dto.ChorePredictionResponse;
+import UniNest.Backend.dto.ChoreRequests;
+import UniNest.Backend.model.User;
+import UniNest.Backend.exception.UserServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
@@ -10,65 +14,83 @@ import java.util.*;
 
 @Service
 public class ChoreSchedulingService {
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ChoreService choreService;
+
     private final RestTemplate restTemplate = new RestTemplate();
+
+    // URL for your Flask AI server
     private static final String MODEL_URL = "http://127.0.0.1:5002/predict";
-    public ChorePredictionResponse predictAssignee(ChorePredictionRequest request) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // Build payload exactly as Flask expects
-        Map<String, Object> payload = new HashMap<>();
-        // Optional task_name
-        if (request.getTaskName() != null && !request.getTaskName().isEmpty()) {
-            payload.put("task_name", request.getTaskName());}
-        // Required numeric features with defaults if missing
-        payload.put("difficulty_score", request.getDifficultyScore() != null ? request.getDifficultyScore() : 3);
-        payload.put("est_duration_min", request.getEstDurationMin() != null ? request.getEstDurationMin() : 30);
-        payload.put("frequency_per_week", request.getFrequencyPerWeek() != null ? request.getFrequencyPerWeek() : 1);
-        payload.put("roommate_preference", request.getRoommatePreference() != null ? request.getRoommatePreference() : 0.5);
-        payload.put("availability_mins", request.getAvailabilityMins() != null ? request.getAvailabilityMins() : 120);
-        // Always include room
-        if (request.getRoom() != null && !request.getRoom().isEmpty()) {
-            payload.put("room", request.getRoom());
-        } else {
-            throw new RuntimeException("Room field is required for prediction");
-        }
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+    public ChorePredictionResponse predictAssignee(ChorePredictionRequest request, String houseCode) {
+        try {
+            // 1. Fetch roommates
+            List<User> roommates = userService.getUsersForApartment(houseCode);
 
-        // Make POST request to Flask model
-        ResponseEntity<Map> response = restTemplate.postForEntity(MODEL_URL, entity, Map.class);
+            // 2. Fetch chores to calculate individual workloads
+            List<ChoreRequests> allChores = choreService.getAllChoreByApartment(houseCode);
 
-        Map<String, Object> body = response.getBody();
-        if (body == null || !body.containsKey("assigned_to")) {
-            throw new RuntimeException("Invalid response from ML model: " + body);
-        }
+            // Map: UserID -> Total Minutes Assigned
+            Map<String, Integer> workloadMap = new HashMap<>();
+            for (User u : roommates) workloadMap.put(u.getId(), 0); // Initialize all at 0
 
-        // Safely parse assigned_to (String or Number)
-        Object assignedObj = body.get("assigned_to");
-        int assignedTo;
-        if (assignedObj instanceof Number) {
-            assignedTo = ((Number) assignedObj).intValue();
-        } else if (assignedObj instanceof String) {
-            assignedTo = Integer.parseInt((String) assignedObj);
-        } else {
-            throw new RuntimeException("Unexpected type for assigned_to: " + assignedObj);
-        }
-
-        // Safely parse confidence
-        double confidence = 0.9; // default
-        Object confObj = body.get("confidence");
-        if (confObj != null) {
-            if (confObj instanceof Number) {
-                confidence = ((Number) confObj).doubleValue();
-            } else if (confObj instanceof String) {
-                confidence = Double.parseDouble((String) confObj);
+            if (allChores != null) {
+                for (ChoreRequests c : allChores) {
+                    if (c.getAssignedTo() != null && !"COMPLETED".equals(c.getStatus())) {
+                        workloadMap.put(c.getAssignedTo(),
+                                workloadMap.getOrDefault(c.getAssignedTo(), 0) + c.getEstDurationMin());
+                    }
+                }
             }
-        }
 
-        // Return Spring DTO
-        ChorePredictionResponse predictionResponse = new ChorePredictionResponse();
-        predictionResponse.setAssignedTo(assignedTo);
-        predictionResponse.setConfidence(confidence);
-        return predictionResponse;
+            // --- THE GENIUS HACK: SORT ROOMMATES BY WORKLOAD ---
+            // Roommate with 0 minutes comes first (Index 0)
+            // Roommate with 100 minutes comes last
+            roommates.sort(Comparator.comparingInt(u -> workloadMap.get(u.getId())));
+
+            // 3. Prepare AI Payload (using the freest person's availability)
+            int freestPersonMins = roommates.get(0).getAvailabilityMins() > 0 ?
+                    roommates.get(0).getAvailabilityMins() : 180;
+            int currentLoad = workloadMap.get(roommates.get(0).getId());
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("task_name", request.getTaskName());
+            payload.put("room", request.getRoom());
+            payload.put("difficulty_score", request.getDifficultyScore() != null ? request.getDifficultyScore() : 3);
+            payload.put("est_duration_min", request.getEstDurationMin() != null ? request.getEstDurationMin() : 30);
+            payload.put("frequency_per_week", request.getFrequencyPerWeek() != null ? request.getFrequencyPerWeek() : 1.0);
+
+            // Tell the AI how much time the "Freest" person has left
+            payload.put("availability_mins", (double) Math.max(10, freestPersonMins - currentLoad));
+            payload.put("roommate_preference", 0.5);
+
+            // 4. Call Flask AI
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+
+            ResponseEntity<Map> response = restTemplate.postForEntity(MODEL_URL, entity, Map.class);
+            Map<String, Object> body = response.getBody();
+
+            // 5. Return the index
+            int assignedToIndex = 0;
+            Object assignedObj = body.get("assigned_to");
+            if (assignedObj instanceof Number) {
+                assignedToIndex = ((Number) assignedObj).intValue();
+            }
+
+            ChorePredictionResponse predictionResponse = new ChorePredictionResponse();
+            predictionResponse.setAssignedTo(assignedToIndex);
+            predictionResponse.setConfidence(((Number) body.get("confidence")).doubleValue());
+
+            return predictionResponse;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Scheduling failed: " + e.getMessage());
+        }
     }
 }
