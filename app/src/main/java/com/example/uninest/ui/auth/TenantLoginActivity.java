@@ -152,7 +152,7 @@ public class TenantLoginActivity extends AppCompatActivity {
                             RequestBody body = RequestBody.create(jsonBody, JSON);
 
                             Request request = new Request.Builder()
-                                    .url("http://192.168.1.90:8080/auth/firebase-login") // backend endpoint
+                                    .url("http://192.168.1.89:8081/auth/firebase-login") // backend endpoint
                                     .post(body)
                                     .addHeader("Authorization", "Bearer " + idToken)
                                     .build();

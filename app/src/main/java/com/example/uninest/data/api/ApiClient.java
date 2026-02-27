@@ -18,6 +18,7 @@ public class ApiClient {
 
     // Make sure this is just the IP and Port
     public static final String BASE_URL = "http://192.168.1.89:8081/";
+
     private static Retrofit retrofit;
 
     private static Retrofit getRetrofitInstance() {
