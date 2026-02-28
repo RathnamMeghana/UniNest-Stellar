@@ -18,12 +18,13 @@ import retrofit2.Response;
 public class AddChoreManualActivity extends AppCompatActivity {
 
     private EditText etTaskName, etRoom, etUserEmail, etDifficulty,etDuration, etFrequency;
-    private String houseCode = "APT-E2DE614"; // Should  be passed by Intent
+    private String houseCode; // Should  be passed by Intent
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_chore_manual);
+        houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
 
         etTaskName = findViewById(R.id.etTaskName);
         etRoom = findViewById(R.id.etRoom);

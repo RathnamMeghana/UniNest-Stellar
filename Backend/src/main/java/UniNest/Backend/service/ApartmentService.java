@@ -97,9 +97,9 @@ public class ApartmentService {
             // 1. Extract values once to prevent re-calculation/overlap
             String bId = request.getBuildingId();
             String lId = request.getLandlordId();
-            int capacityValue = request.getMaxTenants(); // This is your "2"
+            int capacityValue = request.getMaxTenants();
 
-            // Calculate room sum once: This is your "5"
+            // Calculate room sum
             int roomSumValue = request.getRoomTemplate().values().stream().mapToInt(Integer::intValue).sum();
             String totalRoomsStr = String.valueOf(roomSumValue);
 

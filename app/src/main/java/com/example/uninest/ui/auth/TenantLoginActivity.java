@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
+import com.example.uninest.data.api.ApiClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -150,9 +151,9 @@ public class TenantLoginActivity extends AppCompatActivity {
                             // JSON body for backend
                             String jsonBody = "{\"token\":\"" + idToken + "\", \"houseCode\":\"" + houseCode + "\"}";
                             RequestBody body = RequestBody.create(jsonBody, JSON);
-
+                            String BACKEND_URL = ApiClient.BASE_URL + "auth/firebase-login";
                             Request request = new Request.Builder()
-                                    .url("http://192.168.1.89:8081/auth/firebase-login") // backend endpoint
+                                    .url(BACKEND_URL) // backend endpoint
                                     .post(body)
                                     .addHeader("Authorization", "Bearer " + idToken)
                                     .build();
