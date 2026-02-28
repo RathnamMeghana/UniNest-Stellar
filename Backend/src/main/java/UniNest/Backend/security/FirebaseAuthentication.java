@@ -20,6 +20,11 @@ public class FirebaseAuthentication extends AbstractAuthenticationToken {
         setAuthenticated(true);
     }
 
+    @Override
+    public String getName() {
+        return firebaseToken.getUid();
+    }
+
     private static Collection<? extends GrantedAuthority> convertRoleToAuthorities(String role) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (role != null && !role.isEmpty()) {
