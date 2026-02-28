@@ -2,6 +2,8 @@ package UniNest.Backend.security;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.cloud.FirestoreClient;
+import com.google.cloud.firestore.DocumentSnapshot;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,79 +14,101 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class FirebaseTokenFilter extends OncePerRequestFilter {
 
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
 
-        if (header != null && header.startsWith("Bearer ")) {
-            String idToken = header.substring(7);
+        // Skip filter if no Bearer token is present
+        if (header == null || !header.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
+        }
 
-            try {
-                FirebaseToken decodedToken =
-                        FirebaseAuth.getInstance().verifyIdToken(idToken);
+        String idToken = header.substring(7);
 
+        try {
+            // 1. Verify the token with Firebase Admin SDK
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+            String uid = decodedToken.getUid();
 
-                Object roleClaim = decodedToken.getClaims().get("role");
-                String role = null;
-                String firebaseRoleValue = null;
+            // 2. Try to extract role from Token Claims (Fastest)
+            Object roleClaim = decodedToken.getClaims().get("role");
+            String firebaseRoleValue = extractRoleFromClaim(roleClaim);
 
-                //  Determine the raw role value from the claim
-                if (roleClaim instanceof String) {
-                    firebaseRoleValue = (String) roleClaim;
-                } else if (roleClaim instanceof List) {
-                    // Handle case where 'role' might be stored as a list/array
-                    List<?> rolesList = (List<?>) roleClaim;
-                    if (!rolesList.isEmpty()) {
-                        firebaseRoleValue = rolesList.get(0).toString(); // Take the first element
+            // 3. Just-in-Time Authorization (Firestore Fallback)
+            // If the token is new and doesn't have the role yet, check the database.
+            if (firebaseRoleValue == null) {
+                try {
+                    DocumentSnapshot userDoc = FirestoreClient.getFirestore()
+                            .collection("users")
+                            .document(uid)
+                            .get()
+                            .get();
+
+                    if (userDoc.exists()) {
+                        firebaseRoleValue = userDoc.getString("role");
                     }
+                } catch (Exception dbEx) {
+                    System.err.println(">>> Filter Warning: Firestore lookup failed: " + dbEx.getMessage());
                 }
-
-                // Map the raw value to the expected application role for Spring Security
-                if (firebaseRoleValue != null) {
-                    // Apply mapping based on your observation that '1' might map to 'LETTINGAGENT'
-                    switch (firebaseRoleValue) {
-                        case "1":
-                            role = "LETTINGAGENT";
-                            break;
-
-                        case "2":
-                            role = "TENANT";
-                            break;
-                        default:
-                            role = firebaseRoleValue; // Use as is if no specific mapping
-                            break;
-                    }
-                }
-
-
-                FirebaseAuthentication auth =
-                        new FirebaseAuthentication(decodedToken, role);
-
-                // Enhanced Logging for Debugging
-                System.out.println(">>> SECURITY FILTER DEBUG <<<");
-                System.out.println("User ID: " + decodedToken.getUid());
-                System.out.println("Firebase Raw Role Value: " + firebaseRoleValue);
-                System.out.println("Application Role Set for Security: " + role);
-                // Log ALL claims to see if 'TENANT' role exists anywhere else
-                System.out.println("ALL CLAIMS: " + decodedToken.getClaims());
-
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-                // --- END OF MODIFICATION/ENHANCEMENT ---
-
-            } catch (Exception e) {
-                e.printStackTrace(); // Print exception for better debugging in case of verification failure
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Firebase token");
-                return;
             }
+
+            // 4. Strict Role Mapping
+            // standardize "1"/"2" or "TENANT"/"LETTINGAGENT" to the exact Spring roles
+            String mappedRole = mapToStandardRole(firebaseRoleValue);
+
+            // 5. Create Authentication object
+            // This will use your FirebaseAuthentication class to add the "ROLE_" prefix
+            FirebaseAuthentication auth = new FirebaseAuthentication(decodedToken, mappedRole);
+
+            // 6. Set Security Context
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            // Debug Logging (Viewable in IntelliJ or Google Cloud Logs)
+            System.out.println(">>> AUTH SUCCESS: User [" + uid + "] assigned role [ROLE_" + mappedRole + "]");
+
+        } catch (Exception e) {
+            // If token is invalid or expired, return a JSON error
+            System.err.println(">>> AUTH ERROR: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + e.getMessage() + "\"}");
+            return;
         }
 
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Maps Firestore numeric roles or raw claim strings to standard Application Roles.
+     */
+    private String mapToStandardRole(String rawValue) {
+        if (rawValue == null) return "USER";
+
+        String cleanValue = rawValue.trim().toUpperCase();
+
+        return switch (cleanValue) {
+            case "1", "LETTINGAGENT" -> "LETTINGAGENT";
+            case "2", "TENANT"       -> "TENANT";
+            default                  -> "USER";
+        };
+    }
+
+    /**
+     * Handles cases where 'role' claim is a String or a List.
+     */
+    private String extractRoleFromClaim(Object roleClaim) {
+        if (roleClaim instanceof String) {
+            return (String) roleClaim;
+        } else if (roleClaim instanceof List && !((List<?>) roleClaim).isEmpty()) {
+            return ((List<?>) roleClaim).get(0).toString();
+        }
+        return null;
     }
 }

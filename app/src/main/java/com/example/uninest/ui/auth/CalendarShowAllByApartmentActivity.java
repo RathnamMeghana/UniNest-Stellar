@@ -23,12 +23,14 @@ public class CalendarShowAllByApartmentActivity extends AppCompatActivity {
 
     private LinearLayout calendarContainer;
     private CalendarApi calendarApi;
-    private String houseCode = "APT-E2DE614"; // Your specific house code
+    private String houseCode; // Your specific house code
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calendar);
+
+        houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
 
         calendarContainer = findViewById(R.id.layoutCalendarList);
         TextView tvTitle = findViewById(R.id.tvCalendarTitle);

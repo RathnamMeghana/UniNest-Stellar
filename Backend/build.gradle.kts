@@ -14,48 +14,49 @@ java {
 	}
 }
 
+// ADD THIS BLOCK - This tells Google Cloud where to download the libraries
+repositories {
+	mavenCentral()
+}
+
 configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
 	}
 }
 
-// Repositories are defined in the root `settings.gradle.kts` via dependencyResolutionManagement
-
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-validation")
+	// Core Spring Boot
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.google.firebase:firebase-admin:9.2.0")
-	implementation ("org.springframework.boot:spring-boot-starter-validation")
-	implementation ("org.apache.commons:commons-text:1.10.0")
-	implementation("com.google.firebase:firebase-admin:9.1.1")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
 
+	// Firebase
+	implementation("com.google.firebase:firebase-admin:9.2.0")
+
+	// Utilities
+	implementation("org.apache.commons:commons-text:1.10.0")
+	implementation("org.jsoup:jsoup:1.17.2")
+	implementation("com.bucket4j:bucket4j-core:8.10.1")
+
+	// Sentry (Monitoring)
+	implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.6.0")
+	implementation("io.sentry:sentry-logback:7.6.0")
+
+	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+
+	// Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-	testImplementation ("org.springframework.boot:spring-boot-starter-test")
-	testImplementation ("org.mockito:mockito-core:5.5.0")
-	testImplementation ("org.mockito:mockito-junit-jupiter:5.5.0")
+	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.mockito:mockito-core:5.5.0")
+	testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
 	testImplementation("org.mockito:mockito-inline:5.2.0")
-	implementation("org.springframework.boot:spring-boot-starter-security")
-	testImplementation ("org.springframework.security:spring-security-test")
-	implementation ("org.springframework.boot:spring-boot-starter-aop")
-	implementation ("org.jsoup:jsoup:1.17.2")
-	implementation ("io.sentry:sentry-spring-boot-starter-jakarta:7.0.0")
-	implementation ("io.sentry:sentry-spring-boot-starter-jakarta:7.6.0")
-	implementation ("org.springframework.boot:spring-boot-starter-aop")
-	implementation ("io.sentry:sentry-logback:7.6.0")
-	implementation ("com.bucket4j:bucket4j-core:8.10.1")
-
-
-
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
-
 
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
-
-

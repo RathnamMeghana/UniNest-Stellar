@@ -19,7 +19,7 @@ public class CalendarController {
 
     // 1. Fixed @PreAuthorize typo (added opening quote)
     // 2. Added @Valid to the @RequestBody parameter
-    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+    //@PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @PostMapping("/create")
     public CalendarEventDTO.Response createEvent(
             @Valid @RequestBody CalendarEventDTO.Create request,
@@ -29,7 +29,8 @@ public class CalendarController {
         return calendarService.create(request, userId);
     }
 
-    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+    //@PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+    @PreAuthorize("hasAnyRole('LETTINGAGENT', 'TENANT')")
     @GetMapping("/getByApartment/{houseCode}")
     public List<CalendarEventDTO.Response> getEventsForHouse(
             @PathVariable String houseCode,
@@ -50,7 +51,8 @@ public class CalendarController {
     }
 
     // Fixed @PreAuthorize typo
-    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+    //@PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+    @PreAuthorize("hasAnyRole('LETTINGAGENT', 'TENANT')")
     @PutMapping("/update/{eventId}")
     public CalendarEventDTO.Response updateEvent(
             @PathVariable String eventId,
@@ -61,7 +63,8 @@ public class CalendarController {
     }
 
     // Fixed @PreAuthorize typo
-    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+   // @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+    @PreAuthorize("hasAnyRole('LETTINGAGENT', 'TENANT')")
     @DeleteMapping("/delete/{eventId}")
     public String delete(@PathVariable String eventId) {
         calendarService.delete(eventId);

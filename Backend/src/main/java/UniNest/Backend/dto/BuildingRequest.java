@@ -9,10 +9,8 @@ import lombok.Data;
 public class BuildingRequest {
     @NotBlank(message = "Name is required")
     private String name;
-
     @NotBlank(message = "Address is required")
     private String addressLine1;
-
     @NotBlank(message = "City is required")
     private String city;
 
@@ -31,7 +29,7 @@ public class BuildingRequest {
     private String imageUrl;
 
     public void sanitize() {
-        // Standard sanitization for text fields
+        // Sanitization for text fields
         this.name = SanitizationUtil.sanitize(this.name);
         this.addressLine1 = SanitizationUtil.sanitize(this.addressLine1);
         this.city = SanitizationUtil.sanitize(this.city);
@@ -39,7 +37,7 @@ public class BuildingRequest {
         this.country = SanitizationUtil.sanitize(this.country);
         this.landlordId = SanitizationUtil.sanitize(this.landlordId);
 
-        // SPECIAL sanitization for the Base64 image field
+        // sanitization for the Base64 image field
         if (this.imageUrl != null) {
             this.imageUrl = SanitizationUtil.sanitizeBase64(this.imageUrl);
         }

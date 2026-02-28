@@ -38,7 +38,6 @@ public class BillRequest {
 
     private boolean active = true;
 
-    @NotBlank(message = "creatorId is required")
     private String creatorId;
 
     @NotEmpty(message = "roommateIds cannot be empty")
