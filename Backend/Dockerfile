@@ -5,7 +5,9 @@ COPY --chown=gradle:gradle . .
 RUN gradle build -x test --no-daemon
 
 # Stage 2: Run the JAR using Java
-FROM openjdk:17-jdk-slim
+#FROM openjdk:17-jdk-slim
+
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
 EXPOSE 8080
