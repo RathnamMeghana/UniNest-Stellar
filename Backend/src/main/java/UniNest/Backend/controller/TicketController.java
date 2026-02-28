@@ -17,7 +17,7 @@ import UniNest.Backend.dto.UpdateTicketStatusRequest;
 import UniNest.Backend.util.SanitizationUtil;
 import jakarta.validation.Valid;
 
-@Slf4j // 2. ADD THIS ANNOTATION
+@Slf4j
 @RestController
 @RequestMapping("/tickets")
 public class TicketController {
@@ -64,8 +64,8 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+    @PreAuthorize("hasAnyRole('LETTINGAGENT', 'TENANT')")
+   // @PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
     @GetMapping("/apartment")
     public ResponseEntity<List<Ticket>> getTicketsByApartment(@RequestParam String name) {
         try {

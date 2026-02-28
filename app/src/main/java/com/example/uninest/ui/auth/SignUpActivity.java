@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
+import com.example.uninest.data.api.ApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -144,8 +145,8 @@ public class SignUpActivity extends AppCompatActivity {
         String jsonBody = "{\"token\":\"" + idToken + "\"}";
         RequestBody body = RequestBody.create(jsonBody, JSON);
 
-        String backendUrl = "http://192.168.1.70:8080/auth/firebase-login";
-
+       //String backendUrl = "http://192.168.1.70:8080/auth/firebase-login";
+        String backendUrl = ApiClient.BASE_URL + "auth/firebase-login";
         Request request = new Request.Builder()
                 .url(backendUrl)
                 .post(body)

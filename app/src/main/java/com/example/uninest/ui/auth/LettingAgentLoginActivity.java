@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
+import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.ui.auth.LettingAgentBuildingsActivity;
 import com.example.uninest.ui.auth.ApartmentTenantsActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +42,8 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
 
     // Use 10.0.2.2 for Emulator, or your Local IP for physical device
     // Match exactly what worked in your browser!
-    private static final String BACKEND_URL = "http://192.168.1.89:8081/auth/firebase-login";
+    String BACKEND_URL = ApiClient.BASE_URL + "auth/firebase-login";
+   // private static final String BACKEND_URL = "http://192.168.1.89:8081/auth/firebase-login";
     //private static final String BACKEND_URL = "http://192.168.1.90:8080/auth/firebase-login";
 
     @Override

@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
+import com.example.uninest.data.api.ApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
@@ -138,9 +139,9 @@ public class TenantSignUpActivity extends AppCompatActivity {
                                         MediaType JSON = MediaType.get("application/json; charset=utf-8");
                                         String jsonBody = "{\"token\":\"" + idToken + "\", \"houseCode\":\"" + houseCode + "\"}";
                                         RequestBody body = RequestBody.create(jsonBody, JSON);
-
+                                        String backendUrl = ApiClient.BASE_URL + "auth/firebase-login";
                                         Request request = new Request.Builder()
-                                                .url("http://192.168.1.90:8080/auth/firebase-login")
+                                                .url(backendUrl)
                                                 .post(body)
                                                 .addHeader("Authorization", "Bearer " + idToken)
                                                 .build();

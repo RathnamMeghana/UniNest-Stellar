@@ -47,7 +47,7 @@ public class UserService {
             ApiFuture<QuerySnapshot> future = query.get();
             List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
-            // 3. Map the documents to User objects
+            //  Map the documents to User objects
             List<User> users = new ArrayList<>();
             for (QueryDocumentSnapshot doc : documents) {
                 User user = doc.toObject(User.class);

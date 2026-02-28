@@ -36,6 +36,7 @@ public class SessionManager {
 
     // Save Agent Session
     public void saveAgentSession(String email, String role, String company, String fullName, String imageStr) {
+
         editor.putString(KEY_USER_EMAIL, email);
         editor.putString(KEY_USER_ROLE, role);
         editor.putString(KEY_COMPANY_NAME, company);

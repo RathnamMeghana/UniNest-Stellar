@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -25,8 +26,17 @@ public class BillController {
     //  Create Bill
     @PreAuthorize("hasRole('TENANT')")
     @PostMapping("/create")
-    public List<BillRequest> createBill(@Valid @RequestBody BillRequest request) {
+    public List<BillRequest> createBill(
+            @Valid @RequestBody BillRequest request,
+            org.springframework.security.core.Authentication auth) { // 1. Inject Authentication
+
         request.sanitize();
+
+        // 2. NON-REPUDIATION: Manually set the creatorId from the secure token
+        if (auth != null) {
+            request.setCreatorId(auth.getName());
+        }
+
         return billService.createBill(request);
     }
 
