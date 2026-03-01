@@ -22,7 +22,9 @@ public class ChoreSchedulingService {
 
     @Autowired
     private ChoreService choreService;
-    private static final String modelUrl = "http://127.0.0.1:5002/predict";
+    //private static final String modelUrl = "http://127.0.0.1:5002/predict";
+
+    private static final String modelUrl = "https://uninest-ai-service-369284273825.europe-west1.run.app/predict";
     private final RestTemplate restTemplate = new RestTemplate();
 
 
