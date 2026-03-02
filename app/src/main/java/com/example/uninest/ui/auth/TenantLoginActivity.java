@@ -94,31 +94,27 @@ public class TenantLoginActivity extends AppCompatActivity {
     }
 
     private void syncTokenWithBackend(FirebaseUser user) {
-        // Force refresh to get latest ID token
+        // 1. Get the UID directly from the FirebaseUser object (Guaranteed not null)
+        final String firebaseUid = user.getUid();
+
         user.getIdToken(true).addOnCompleteListener(tokenTask -> {
             if (!tokenTask.isSuccessful()) {
-                btnTenantLogin.setEnabled(true);
-                btnTenantLogin.setText("Login");
-                Toast.makeText(this, "Failed to get Firebase token", Toast.LENGTH_SHORT).show();
+                resetUI();
+                Toast.makeText(this, "Failed to get auth token", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             String idToken = tokenTask.getResult().getToken();
 
-            // Call backend to register token
-            OkHttpClient client = new OkHttpClient();
-            MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-            // Get houseCode from Firestore to include in backend request
-            db.collection("users").document(user.getUid()).get()
+            // 2. Get user profile from Firestore
+            db.collection("users").document(firebaseUid).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             String role = documentSnapshot.getString("role");
+
                             if (!"2".equals(role)) {
-                                // Not a tenant
                                 mAuth.signOut();
-                                btnTenantLogin.setEnabled(true);
-                                btnTenantLogin.setText("Login");
+                                resetUI();
                                 Toast.makeText(this, "Access Denied: Not a Tenant account", Toast.LENGTH_LONG).show();
                                 return;
                             }
@@ -127,33 +123,21 @@ public class TenantLoginActivity extends AppCompatActivity {
                             String fName = documentSnapshot.getString("firstName");
                             String lName = documentSnapshot.getString("lastName");
                             String email = documentSnapshot.getString("email");
-                            String uid = documentSnapshot.getString("userId");
                             String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
                             String profileImg = documentSnapshot.getString("profileImageUrl");
 
-                            // Save FULL session data
-                            sessionManager.saveTenantSession(uid, email, role, houseCode, fullName.trim(), profileImg);
+                            // 3. Save session using the verified firebaseUid
+                            sessionManager.saveTenantSession(firebaseUid, email, role, houseCode, fullName.trim(), profileImg);
 
-                            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-
-                            // Navigate to Raise Ticket Screen
-                            Intent intent = new Intent(TenantLoginActivity.this, TenantHomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            finish();
-                            // Save tenant session locally
-
-
-
-                            sessionManager.saveTenantSession(uid, email, role, houseCode, fullName.trim(), profileImg);
-                           // sessionManager.saveTenantSession(user.getUid(), user.getEmail(), role, houseCode, fullName.trim());
-
-                            // JSON body for backend
+                            // 4. Sync with Backend
+                            OkHttpClient client = new OkHttpClient();
+                            MediaType JSON = MediaType.get("application/json; charset=utf-8");
                             String jsonBody = "{\"token\":\"" + idToken + "\", \"houseCode\":\"" + houseCode + "\"}";
                             RequestBody body = RequestBody.create(jsonBody, JSON);
+
                             String BACKEND_URL = ApiClient.BASE_URL + "auth/firebase-login";
                             Request request = new Request.Builder()
-                                    .url(BACKEND_URL) // backend endpoint
+                                    .url(BACKEND_URL)
                                     .post(body)
                                     .addHeader("Authorization", "Bearer " + idToken)
                                     .build();
@@ -162,8 +146,7 @@ public class TenantLoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                                     runOnUiThread(() -> {
-                                        btnTenantLogin.setEnabled(true);
-                                        btnTenantLogin.setText("Login");
+                                        resetUI();
                                         Toast.makeText(TenantLoginActivity.this, "Backend sync failed", Toast.LENGTH_SHORT).show();
                                     });
                                 }
@@ -171,27 +154,37 @@ public class TenantLoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                                     response.close();
-                                    runOnUiThread(() -> {
-                                        Toast.makeText(TenantLoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                        // Navigate to Tenant Home
-                                        Intent intent = new Intent(TenantLoginActivity.this, TenantHomeActivity.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intent);
-                                        finish();
-                                    });
+                                    if (response.isSuccessful()) {
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(TenantLoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                            // 5. Navigate ONLY after successful sync
+                                            Intent intent = new Intent(TenantLoginActivity.this, TenantHomeActivity.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intent);
+                                            finish();
+                                        });
+                                    } else {
+                                        runOnUiThread(() -> {
+                                            resetUI();
+                                            Toast.makeText(TenantLoginActivity.this, "Server error during sync", Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
                                 }
                             });
                         } else {
-                            btnTenantLogin.setEnabled(true);
-                            btnTenantLogin.setText("Login");
-                            Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show();
+                            resetUI();
+                            Toast.makeText(this, "User profile not found in database", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(e -> {
-                        btnTenantLogin.setEnabled(true);
-                        btnTenantLogin.setText("Login");
+                        resetUI();
                         Toast.makeText(this, "Error fetching data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         });
+    }
+
+    private void resetUI() {
+        btnTenantLogin.setEnabled(true);
+        btnTenantLogin.setText("Login");
     }
 }
