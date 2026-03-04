@@ -30,6 +30,14 @@ public class BuildingCardView extends FrameLayout {
         tvBuildingName = findViewById(R.id.tvBuildingName);
         tvApartmentInfo = findViewById(R.id.tvApartmentInfo);
         imgBuilding = findViewById(R.id.imgBuilding);
+        findViewById(R.id.btnDeleteBuilding).setOnClickListener(v -> {
+            if (deleteListener != null) deleteListener.onClick(v);
+        });
+    }
+
+    private OnClickListener deleteListener;
+    public void setOnDeleteClickListener(OnClickListener listener) {
+        this.deleteListener = listener;
     }
 
     public void setBuildingName(String name) { tvBuildingName.setText(name); }
