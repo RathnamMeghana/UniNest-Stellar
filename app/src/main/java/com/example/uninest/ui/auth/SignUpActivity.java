@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
+import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,9 +36,11 @@ public class SignUpActivity extends AppCompatActivity {
     private AutoCompleteTextView actvCompanyName;
     private EditText etCompanyEmail, etPassword, etConfirmPassword;
     private Button btnSignUp;
+    private android.widget.TextView tvLoginLink;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +49,20 @@ public class SignUpActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        sessionManager = new SessionManager(this);
+        sessionManager.setFirstTimeSetupCompleted();
 
         actvCompanyName = findViewById(R.id.actvCompanyName);
         etCompanyEmail = findViewById(R.id.etCompanyEmail);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnSignUp = findViewById(R.id.btnSignUp);
+        tvLoginLink = findViewById(R.id.tvLoginLink);
+
+        tvLoginLink.setOnClickListener(v -> {
+            startActivity(new Intent(SignUpActivity.this, LettingAgentLoginActivity.class));
+            finish();
+        });
 
         setupCompanySpinner();
         setupSignUpButton();
