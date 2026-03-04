@@ -12,6 +12,7 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,9 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class BuildingService {
+
+    @Autowired
+    private ApartmentService apartmentService;
 
     /**
      * Creates a building in Firestore.
@@ -147,6 +151,29 @@ public class BuildingService {
             throw new BuildingServiceException("Process was interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
             throw new BuildingServiceException("Error fetching building by ID", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public void deleteBuilding(String buildingId) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            // 1. Fetch and delete all apartments in this building
+            ApiFuture<QuerySnapshot> aptQuery = db.collection("apartments")
+                    .whereEqualTo("buildingId", buildingId).get();
+            List<QueryDocumentSnapshot> apartments = aptQuery.get().getDocuments();
+
+            for (QueryDocumentSnapshot aptDoc : apartments) {
+                String houseCode = aptDoc.getString("code");
+                if (houseCode != null) {
+                    apartmentService.deleteApartment(houseCode);
+                }
+            }
+
+            // 2. Delete the building document itself
+            db.collection("buildings").document(buildingId).delete().get();
+
+        } catch (Exception e) {
+            throw new BuildingServiceException("Failed to delete building", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
