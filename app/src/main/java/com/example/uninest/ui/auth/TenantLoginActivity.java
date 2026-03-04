@@ -31,6 +31,7 @@ public class TenantLoginActivity extends AppCompatActivity {
 
     private EditText etTenantEmail, etTenantPassword;
     private MaterialButton btnTenantLogin;
+    private android.widget.TextView tvForgotPassword, tvSignUpLink;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -46,9 +47,44 @@ public class TenantLoginActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         sessionManager = new SessionManager(this);
 
+
+        sessionManager.setFirstTimeSetupCompleted();
+
         etTenantEmail = findViewById(R.id.etTenantEmail);
         etTenantPassword = findViewById(R.id.etTenantPassword);
         btnTenantLogin = findViewById(R.id.btnTenantLogin);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        tvSignUpLink = findViewById(R.id.tvSignUpLink);
+
+        tvSignUpLink.setOnClickListener(v -> {
+            startActivity(new Intent(TenantLoginActivity.this, TenantSignUpActivity.class));
+            finish();
+        });
+
+        tvForgotPassword.setOnClickListener(v -> {
+            String email = etTenantEmail.getText().toString().trim();
+
+            if (email.isEmpty()) {
+                etTenantEmail.setError("Please enter your email");
+                etTenantEmail.requestFocus();
+                return;
+            }
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                etTenantEmail.setError("Please enter a valid email");
+                etTenantEmail.requestFocus();
+                return;
+            }
+
+            mAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(TenantLoginActivity.this, "Password reset email sent!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(TenantLoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+        });
 
         btnTenantLogin.setOnClickListener(v -> {
             String email = etTenantEmail.getText().toString().trim();

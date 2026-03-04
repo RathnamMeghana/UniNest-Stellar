@@ -41,6 +41,7 @@ public class AddCalendarEventActivity extends AppCompatActivity {
 
     // Containers
     private LinearLayout containerChore, containerEvent, containerReminder;
+    private LinearLayout containerAssignTo, containerAmount;
 
     // Data
     private final java.util.Calendar selectedCal = java.util.Calendar.getInstance();
@@ -101,6 +102,8 @@ public class AddCalendarEventActivity extends AppCompatActivity {
         containerChore = findViewById(R.id.containerChore);
         containerEvent = findViewById(R.id.containerEvent);
         containerReminder = findViewById(R.id.containerReminder);
+        containerAssignTo = findViewById(R.id.containerAssignTo);
+        containerAmount = findViewById(R.id.containerAmount);
     }
 
     private void loadRoommates() {
@@ -160,6 +163,26 @@ public class AddCalendarEventActivity extends AppCompatActivity {
                 containerChore.setVisibility(selected.equals("Chore") ? View.VISIBLE : View.GONE);
                 containerEvent.setVisibility(selected.equals("Event") ? View.VISIBLE : View.GONE);
                 containerReminder.setVisibility(selected.equals("Reminder/Bill") ? View.VISIBLE : View.GONE);
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // Toggle "Assign To" based on Assign Type
+        spinnerAssignType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = assignTypes[position];
+                containerAssignTo.setVisibility(selected.equals("Manual Assign") ? View.VISIBLE : View.GONE);
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // Toggle "Amount" based on Reminder Type
+        spinnerReminderType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = reminders[position];
+                containerAmount.setVisibility(selected.equals("Bill Due") ? View.VISIBLE : View.GONE);
             }
             @Override public void onNothingSelected(AdapterView<?> parent) {}
         });

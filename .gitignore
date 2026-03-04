@@ -27,3 +27,5 @@ local.properties
 # Firebase service account (NEVER commit)
 Backend/src/main/resources/serviceAccountKey.json
 Backend/build/resources/main/serviceAccountKey.json
+
+app/google-services.json

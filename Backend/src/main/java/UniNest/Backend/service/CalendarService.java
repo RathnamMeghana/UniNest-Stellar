@@ -36,23 +36,25 @@ public class CalendarService {
 
         try {
             Firestore db = FirestoreClient.getFirestore();
-
-            // Create the Firestore document
             DocumentReference docRef = db.collection(COLLECTION).document();
 
-            // Ensure createdBy is optional
             CalendarEventDTO.Response event = new CalendarEventDTO.Response();
             event.setId(docRef.getId());
             event.setHouseCode(dto.getHouseCode());
             event.setType(dto.getType());
             event.setTitle(dto.getTitle());
             event.setDescription(dto.getDescription());
+
+            // Initial Status Logic
+            event.setStatus("NOT_STARTED");
+
             if (dto.getStartDate() != null) {
                 event.setStartDate(Timestamp.parseTimestamp(dto.getStartDate()));
             }
             if (dto.getEndDate() != null) {
                 event.setEndDate(Timestamp.parseTimestamp(dto.getEndDate()));
             }
+
             event.setAllDay(dto.isAllDay());
             event.setAssignedTo(dto.getAssignedTo());
             event.setRelatedChoreId(dto.getRelatedChoreId());
@@ -63,15 +65,13 @@ public class CalendarService {
             event.setDifficultyScore(dto.getDifficultyScore());
             event.setLocation(dto.getLocation());
 
-            // Save to Firestore
             docRef.set(event).get();
-
             return event;
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new CalendarServiceException("Calendar event creation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (ExecutionException | FirestoreException e) {
+        } catch (Exception e) {
             throw new CalendarServiceException("Failed to create calendar event", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -150,6 +150,10 @@ public class CalendarService {
             if (dto.getAllDay() != null) event.setAllDay(dto.getAllDay());
             if (dto.getAssignedTo() != null) event.setAssignedTo(dto.getAssignedTo());
             if (dto.getRecurrence() != null) event.setRecurrence(mapRecurrence(dto.getRecurrence()));
+
+            if (dto.getStatus() != null) {
+                event.setStatus(dto.getStatus());
+            }
 
             ref.set(event).get();
             return map(event);
@@ -239,11 +243,10 @@ public class CalendarService {
             try {
                 dto.setType(CalendarEventDTO.EventType.valueOf(e.getType()));
             } catch (IllegalArgumentException ex) {
-                // unknown value in DB use default
                 dto.setType(CalendarEventDTO.EventType.OTHER);
             }
         } else {
-            dto.setType(CalendarEventDTO.EventType.OTHER); // default if null
+            dto.setType(CalendarEventDTO.EventType.OTHER);
         }
 
         dto.setTitle(e.getTitle());
@@ -254,23 +257,22 @@ public class CalendarService {
         dto.setCreatedBy(e.getCreatedBy());
         dto.setAssignedTo(e.getAssignedTo());
         dto.setRelatedChoreId(e.getRelatedChoreId());
+
+        // Recurrence mapping
         if (e.getRecurrence() != null) {
             CalendarEventDTO.Recurrence recDto = new CalendarEventDTO.Recurrence();
-
-            // Convert Enum to String
             if (e.getRecurrence().getFrequency() != null) {
                 recDto.setFrequency(e.getRecurrence().getFrequency().name());
             }
-
             recDto.setInterval(e.getRecurrence().getInterval());
             recDto.setDaysOfWeek(e.getRecurrence().getDaysOfWeek());
             recDto.setEndDate(e.getRecurrence().getEndDate());
-
             dto.setRecurrence(recDto);
-
         }
+
+        // Mapping relevant fields for reminders and chores
         dto.setAmount(e.getAmount());
-        dto.setStatus(e.getStatus());
+        dto.setStatus(e.getStatus() != null ? e.getStatus() : "NOT_STARTED"); // Ensure status is never null
         dto.setEstDuration(e.getEstDuration());
         dto.setActualDuration(e.getActualDuration());
         dto.setDifficultyScore(e.getDifficultyScore());
