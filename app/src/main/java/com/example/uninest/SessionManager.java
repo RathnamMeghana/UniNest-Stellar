@@ -14,6 +14,7 @@ public class SessionManager {
     private static final String KEY_USER_IMAGE = "user_image_data";
     private static final String KEY_COMPANY_NAME = "company_name";
     private static final String KEY_ID_TOKEN = "id_token";
+    private static final String KEY_FIRST_TIME_SETUP = "first_time_setup";
 
     SharedPreferences pref;
     SharedPreferences.Editor editor;
@@ -83,7 +84,24 @@ public class SessionManager {
     }
 
     public void logout() {
-        editor.clear();
+        // Individually clear session keys so we don't wipe out global settings like KEY_FIRST_TIME_SETUP
+        editor.remove(KEY_USER_ID);
+        editor.remove(KEY_USER_EMAIL);
+        editor.remove(KEY_USER_ROLE);
+        editor.remove(KEY_HOUSE_CODE);
+        editor.remove(KEY_USER_NAME);
+        editor.remove(KEY_USER_IMAGE);
+        editor.remove(KEY_COMPANY_NAME);
+        editor.remove(KEY_ID_TOKEN);
+        editor.apply();
+    }
+
+    public boolean isFirstTimeSetup() {
+        return pref.getBoolean(KEY_FIRST_TIME_SETUP, true);
+    }
+
+    public void setFirstTimeSetupCompleted() {
+        editor.putBoolean(KEY_FIRST_TIME_SETUP, false);
         editor.apply();
     }
     //public void saveTenantSession(String email, String houseCode) {
