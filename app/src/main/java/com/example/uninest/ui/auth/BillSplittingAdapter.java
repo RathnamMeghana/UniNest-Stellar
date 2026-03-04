@@ -14,11 +14,17 @@ import java.util.List;
 
 public class BillSplittingAdapter extends RecyclerView.Adapter<BillSplittingAdapter.ViewHolder> {
     private List<User> users;
+    private String currentUserId;
     private List<String> selectedIds = new ArrayList<>();
     private OnCheckListener listener;
     public interface OnCheckListener { void onChecked(String id, boolean check); }
 
-    public BillSplittingAdapter(List<User> users, OnCheckListener listener) { this.users = users; this.listener = listener; }
+    public BillSplittingAdapter(List<User> users, String currentUserId, OnCheckListener listener) {
+        this.users = users;
+        this.currentUserId = currentUserId;
+        this.listener = listener;
+    }
+
     public void updateList(List<User> users) { this.users = users; notifyDataSetChanged(); }
 
     @NonNull @Override public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -29,7 +35,11 @@ public class BillSplittingAdapter extends RecyclerView.Adapter<BillSplittingAdap
         User user = users.get(position);
 
         if (holder.checkBox != null) {
-            holder.checkBox.setText(user.getFullName());
+            String displayName = user.getFullName();
+            if (user.getId() != null && user.getId().equals(currentUserId)) {
+                displayName = "Me";
+            }
+            holder.checkBox.setText(displayName);
 
             // 1. Remove listener before changing state
             holder.checkBox.setOnCheckedChangeListener(null);

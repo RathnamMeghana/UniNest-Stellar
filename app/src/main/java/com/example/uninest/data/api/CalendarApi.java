@@ -2,12 +2,14 @@ package com.example.uninest.data.api;
 
 import com.example.uninest.model.Calendar;
 import com.example.uninest.model.CalendarRequest;
+import com.example.uninest.model.CalendarUpdateRequest;
 
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -29,7 +31,11 @@ public interface CalendarApi {
     );
 
 
+    @PUT("calendar/update/{eventId}") Call<Calendar> updateEvent(@Path("eventId") String id, @Body Calendar body);
 
+    // Lightweight update — sends only the fields the backend Update DTO expects
+    @PUT("calendar/update/{eventId}")
+    Call<Calendar> updateEventStatus(@Path("eventId") String id, @Body CalendarUpdateRequest body);
 
     @POST("calendar/delete")
     Call<Void> deleteEvent(

@@ -1,7 +1,10 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Intent;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,6 +18,7 @@ import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.Room;
 import com.example.uninest.model.User;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashSet;
@@ -194,7 +198,16 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
             card.showDeleteButton(canDelete);
 
             if (canDelete) {
-                card.setOnDeleteClickListener(v -> removeTenant(tenant.getEmail()));
+                card.setOnDeleteClickListener(v -> {
+                    AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                            .setTitle("Remove Tenant?")
+                            .setMessage("Are you sure you want to remove this tenant?")
+                            .setPositiveButton("Remove", (d, which) -> removeTenant(tenant.getEmail()))
+                            .setNegativeButton("Cancel", null)
+                            .show();
+
+                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.RED);
+                });
             }
 
             tenantList.addView(card);
