@@ -69,11 +69,12 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
 
             tvTicketCategory.setText(ticket.getCategory() != null ? ticket.getCategory() : "Maintenance Ticket");
 
+            String building = (ticket.getBuilding() != null && !ticket.getBuilding().isEmpty()) ? ticket.getBuilding() : "Unknown Building";
 
             String apt = ticket.getApartmentName() != null ? ticket.getApartmentName() : "Unit";
             String room = ticket.getRoom() != null ? ticket.getRoom() : "General";
-            tvLocationInfo.setText(apt + " - " + room);
-
+            //tvLocationInfo.setText(apt + " - " + room);
+            tvLocationInfo.setText(building + " | " + apt + " - " + room);
             // Set Description
             tvDescription.setText(ticket.getDescription());
 

@@ -30,26 +30,55 @@ public class TicketService {
     @Autowired
     private UserService userService;
 
-    public String createTicket(Ticket request)  {
+    @Autowired
+    private BuildingService buildingService;
 
+    public String createTicket(Ticket request) {
         if (request == null) {
-            throw new IllegalArgumentException(" Request cannot be null or empty");
+            throw new IllegalArgumentException("Request cannot be null or empty");
         }
 
         try {
             Firestore db = FirestoreClient.getFirestore();
             Timestamp time = Timestamp.now();
 
-            Ticket ticket = new Ticket();
+            String realBuildingName = "Unknown Building";
+            try {
+                //  Get the Apartment document using the apartmentId (houseCode)
+                var aptDoc = db.collection("apartments").document(request.getApartmentId()).get().get();
 
+                if (aptDoc.exists()) {
+                    //  Get the buildingId from the apartment
+                    String bId = aptDoc.getString("buildingId");
+
+                    if (bId != null) {
+                        // Get the Building document to get the human-readable name
+                        var bDoc = db.collection("buildings").document(bId).get().get();
+                        if (bDoc.exists()) {
+                            realBuildingName = bDoc.getString("name");
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to fetch building name: " + e.getMessage());
+                // Fallback to whatever the request sent if lookup fails
+                realBuildingName = request.getBuilding() != null ? request.getBuilding() : "Unknown Building";
+            }
+
+
+            Ticket ticket = new Ticket();
 
             if (request.getId() == null || request.getId().isEmpty()) {
                 request.setId(UUID.randomUUID().toString());
             }
+
             ticket.setId(request.getId());
             ticket.setDescription(request.getDescription());
             ticket.setRoom(request.getRoom());
-            ticket.setBuilding(request.getBuilding());
+
+
+            ticket.setBuilding(realBuildingName);
+
             ticket.setApartmentId(request.getApartmentId());
             ticket.setLandlordId(request.getLandlordId());
             ticket.setApartmentName(request.getApartmentName());
@@ -64,20 +93,15 @@ public class TicketService {
 
             db.collection("tickets").add(ticket).get();
 
-
             return "ticket created successfully with id: " + request.getId();
-
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
             throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     public List<Ticket> getTicketsByBuilding(String building) {
         if (building == null || building.isBlank()) {
