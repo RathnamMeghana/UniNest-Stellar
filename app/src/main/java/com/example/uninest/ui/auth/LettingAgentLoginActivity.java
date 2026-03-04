@@ -31,11 +31,13 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import io.sentry.Sentry;
+import com.google.android.material.button.MaterialButton;
 
 public class LettingAgentLoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
-    private Button btnLogin;
+    private MaterialButton btnLogin;
+    private android.widget.TextView tvSignUpLink, tvForgotPassword;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private SessionManager sessionManager;
@@ -63,12 +65,47 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        tvSignUpLink = findViewById(R.id.tvSignUpLink);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
+
+        tvSignUpLink.setOnClickListener(v -> {
+            startActivity(new Intent(LettingAgentLoginActivity.this, SignUpActivity.class));
+            finish();
+        });
+
+        tvForgotPassword.setOnClickListener(v -> resetPassword());
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         sessionManager = new SessionManager(this);
+        sessionManager.setFirstTimeSetupCompleted();
 
         btnLogin.setOnClickListener(v -> login());
+    }
+
+    private void resetPassword() {
+        String email = etEmail.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            etEmail.setError("Please enter your email");
+            etEmail.requestFocus();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Please enter a valid email");
+            etEmail.requestFocus();
+            return;
+        }
+
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Password reset email sent!", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     private void login() {
