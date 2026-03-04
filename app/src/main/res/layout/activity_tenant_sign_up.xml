@@ -164,6 +164,29 @@
                         android:backgroundTint="#B792D9"
                         app:elevation="4dp" />
 
+                    <!-- Login Link -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginTop="24dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Already have an account? "
+                            android:textColor="#757575"/>
+
+                        <TextView
+                            android:id="@+id/tvLoginLink"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Login"
+                            android:textColor="#B792D9"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>

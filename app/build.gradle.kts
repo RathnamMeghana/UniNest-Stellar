@@ -16,6 +16,10 @@ android {
     namespace = "com.example.uninest"
     compileSdk = 34
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.uninest"
         minSdk = 26
@@ -55,6 +59,21 @@ android {
         pickFirst("lib/x86_64/libtensorflowlite_jni.so")
         pickFirst("lib/armeabi-v7a/libtensorflowlite_jni.so")
         pickFirst("lib/arm64-v8a/libtensorflowlite_jni.so")
+    }
+
+    flavorDimensions += listOf("userType")
+
+    productFlavors {
+        create("tenant") {
+            dimension = "userType"
+            applicationIdSuffix = ".tenant"
+            versionNameSuffix = "-tenant"
+        }
+        create("agent") {
+            dimension = "userType"
+            applicationIdSuffix = ".agent"
+            versionNameSuffix = "-agent"
+        }
     }
 
 

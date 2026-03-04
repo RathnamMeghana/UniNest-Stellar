@@ -35,6 +35,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
 
     private EditText etFirstName, etLastName, etHouseCode, etTenantEmail, etTenantPassword, etTenantConfirmPassword;
     private Button btnTenantSignUp;
+    private android.widget.TextView tvLoginLink;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -58,6 +59,15 @@ public class TenantSignUpActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         sessionManager = new SessionManager(this);
+
+        // Mark first-time setup as done
+        sessionManager.setFirstTimeSetupCompleted();
+
+        tvLoginLink = findViewById(R.id.tvLoginLink);
+        tvLoginLink.setOnClickListener(v -> {
+            startActivity(new Intent(TenantSignUpActivity.this, TenantLoginActivity.class));
+            finish();
+        });
 
         // Button click
         btnTenantSignUp.setOnClickListener(v -> {

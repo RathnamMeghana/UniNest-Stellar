@@ -52,4 +52,17 @@
             android:contentDescription="@string/building_image" />
     </LinearLayout>
 
+    <ImageButton
+        android:id="@+id/btnDeleteBuilding"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:background="@drawable/bg_delete_circle_purple"
+        android:src="@drawable/delete"
+        android:contentDescription="Delete Building"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:tint="@android:color/white" />
+
 </FrameLayout>

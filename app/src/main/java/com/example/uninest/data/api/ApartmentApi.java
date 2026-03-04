@@ -59,4 +59,6 @@ public interface ApartmentApi {
     @GET("/apartments/getByBuilding")
     Call<List<Apartment>> getApartmentsByBuilding(@Query("buildingId") String buildingId);
 
+    @DELETE("apartments/{houseCode}")
+    Call<Void> deleteApartment(@Path("houseCode") String houseCode);
 }

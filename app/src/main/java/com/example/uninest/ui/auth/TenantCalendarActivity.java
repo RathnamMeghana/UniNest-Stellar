@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import com.example.uninest.data.api.UserApi;
 import com.example.uninest.data.api.BillsApi;
 import com.example.uninest.model.BillsRequest;
 import com.example.uninest.model.Calendar;
+import com.example.uninest.model.CalendarUpdateRequest;
 import com.example.uninest.model.Recurrence;
 import com.example.uninest.model.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -269,48 +271,103 @@ public class TenantCalendarActivity extends AppCompatActivity {
         boolean hasEvents = false;
         boolean hasReminders = false;
 
-        for (Calendar c : filteredEvents) {
-            if ("COMPLETED".equalsIgnoreCase(c.getStatus())) continue;
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        // Normalize today to start of day for accurate comparison
+        today.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        today.set(java.util.Calendar.MINUTE, 0);
+        today.set(java.util.Calendar.SECOND, 0);
+        today.set(java.util.Calendar.MILLISECOND, 0);
 
+        long nowMillis = System.currentTimeMillis();
+
+        for (Calendar c : filteredEvents) {
+            // 1. Skip if already completed
+            if ("COMPLETED".equalsIgnoreCase(c.getStatus())) continue;
             if (c.getStartDate() == null) continue;
 
+            String type = c.getType() != null ? c.getType() : "";
             java.util.Calendar eventStart = java.util.Calendar.getInstance();
             eventStart.setTime(c.getStartDate().toDate());
 
-            boolean isMatch = isSameDay(eventStart, selectedDate);
-            Recurrence r = c.getRecurrence();
-            if (r != null && r.getFrequency() != null) {
-                if (!selectedDate.before(eventStart)) {
-                    if ("WEEKLY".equalsIgnoreCase(r.getFrequency())) {
-                        if (eventStart.get(java.util.Calendar.DAY_OF_WEEK) == selectedDate.get(java.util.Calendar.DAY_OF_WEEK))
-                            isMatch = true;
-                    } else if ("MONTHLY".equalsIgnoreCase(r.getFrequency())) {
-                        if (eventStart.get(java.util.Calendar.DAY_OF_MONTH) == selectedDate.get(java.util.Calendar.DAY_OF_MONTH))
-                            isMatch = true;
+            // --- 2. EVENT EXPIRY LOGIC ---
+            // If it's an event and the end time has passed, skip it entirely
+            if (type.equalsIgnoreCase("EVENT")) {
+                if (c.getEndDate() != null) {
+                    if (c.getEndDate().toDate().getTime() < nowMillis) {
+                        continue;
                     }
                 }
             }
 
+            // --- 3. MATCHING LOGIC ---
+            boolean isMatch = false;
+
+            // Check if type is a "Sticky" type
+            boolean isOverdue = false;
+            if (type.contains("REMINDER") || type.contains("BILL") || type.contains("MAINTENANCE")) {
+                boolean isScheduledForSelectedDay = isSameDay(eventStart, selectedDate);
+                isOverdue = eventStart.before(today);
+                boolean isViewingToday = isSameDay(selectedDate, today);
+
+                // Only show on Today if overdue (removed from past dates)
+                if (isOverdue) {
+                    if (isViewingToday) isMatch = true;
+                } else if (isScheduledForSelectedDay) {
+                    isMatch = true;
+                }
+            } else {
+                // Standard Logic for Chores and Events
+                isMatch = isSameDay(eventStart, selectedDate);
+
+                // Handle Recurring Chores
+                Recurrence r = c.getRecurrence();
+                if (r != null && r.getFrequency() != null) {
+                    if (!selectedDate.before(eventStart)) {
+                        if ("WEEKLY".equalsIgnoreCase(r.getFrequency())) {
+                            if (eventStart.get(java.util.Calendar.DAY_OF_WEEK) == selectedDate.get(java.util.Calendar.DAY_OF_WEEK))
+                                isMatch = true;
+                        } else if ("MONTHLY".equalsIgnoreCase(r.getFrequency())) {
+                            if (eventStart.get(java.util.Calendar.DAY_OF_MONTH) == selectedDate.get(java.util.Calendar.DAY_OF_MONTH))
+                                isMatch = true;
+                        }
+                    }
+                }
+            }
+
+            // --- 4. UI POPULATION ---
             if (isMatch && isTypeMatch(c.getType(), activeFilter)) {
                 if (isTypeMatch(c.getType(), "CHORE")) {
-                    addCard(c, containerChores);
+                    addCard(c, containerChores, false);
                     hasChores = true;
                 } else if (isTypeMatch(c.getType(), "EVENT")) {
-                    addCard(c, containerEvents);
+                    addCard(c, containerEvents, false);
                     hasEvents = true;
                 } else {
-                    addCard(c, containerReminders);
+                    addCard(c, containerReminders, isOverdue);
                     hasReminders = true;
                 }
             }
         }
 
+        // Bills logic (overdue bills only show on Today, not past dates)
         if (activeFilter.equals("ALL") || activeFilter.equals("REMINDER")) {
             for (BillsRequest b : allBills) {
                 java.util.Calendar billDue = parseIsoToCalendar(b.getDueDate());
-                if (billDue != null && isSameDay(billDue, selectedDate)) {
-                    addBillCard(b, containerReminders);
-                    hasReminders = true;
+                if (billDue != null) {
+                    boolean isOverdue = billDue.before(today);
+                    boolean isViewingToday = isSameDay(selectedDate, today);
+
+                    if (isOverdue) {
+                        // Overdue bill: only show on today
+                        if (isViewingToday) {
+                            addBillCard(b, containerReminders);
+                            hasReminders = true;
+                        }
+                    } else if (isSameDay(billDue, selectedDate)) {
+                        // Future/today bill: show on its due date
+                        addBillCard(b, containerReminders);
+                        hasReminders = true;
+                    }
                 }
             }
         }
@@ -384,8 +441,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
         parent.addView(view);
     }
 
-    private void addCard(Calendar c, ViewGroup parent) {
-
+    private void addCard(Calendar c, ViewGroup parent, boolean isOverdue) {
         View view = LayoutInflater.from(this).inflate(R.layout.item_calendar_task_card, parent, false);
 
         View container = view.findViewById(R.id.cardContainer);
@@ -395,7 +451,6 @@ public class TenantCalendarActivity extends AppCompatActivity {
         TextView tvStatus = view.findViewById(R.id.popStatusBadge);
         com.google.android.material.button.MaterialButton btnMore = view.findViewById(R.id.btnViewMore);
 
-
         title.setText(c.getTitle());
         String dVal = c.getDescription() != null ? c.getDescription() : "";
         desc.setText(dVal);
@@ -404,6 +459,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
         String type = c.getType() != null ? c.getType() : "";
 
         if (isTypeMatch(type, "CHORE")) {
+            // --- CHORE LOGIC ---
             container.setBackgroundResource(R.drawable.bg_card_green);
 
             String creatorName = roommateNamesMap.get(c.getCreatedBy());
@@ -452,11 +508,11 @@ public class TenantCalendarActivity extends AppCompatActivity {
                     SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
                     intent.putExtra("DUE_DATE", sdf.format(c.getStartDate().toDate()));
                 }
-
                 startActivity(intent);
             });
 
         } else if (isTypeMatch(type, "EVENT")) {
+            // --- EVENT LOGIC ---
             container.setBackgroundResource(R.drawable.bg_card_pink);
             tvStatus.setVisibility(View.GONE);
             btnMore.setVisibility(View.GONE);
@@ -467,10 +523,34 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 extraInfo.setTextColor(Color.parseColor("#C2185B"));
                 extraInfo.setVisibility(View.VISIBLE);
             }
+
+            // Click the card to view details
+            container.setOnClickListener(v -> showEventDetailsMiniModal(c));
         } else {
+            // --- REMINDER / STICKY LOGIC ---
             container.setBackgroundResource(R.drawable.bg_card_orange);
-            tvStatus.setVisibility(View.GONE);
-            btnMore.setVisibility(View.GONE);
+
+            // Show OVERDUE badge if the reminder is from a past date
+            if (isOverdue && c.getStartDate() != null) {
+                tvStatus.setVisibility(View.VISIBLE);
+                SimpleDateFormat overdueFmt = new SimpleDateFormat("MMM d", Locale.US);
+                tvStatus.setText("\u26A0\uFE0F Overdue since " + overdueFmt.format(c.getStartDate().toDate()));
+                tvStatus.setBackgroundResource(R.drawable.bg_status_overdue);
+                tvStatus.setTextColor(Color.parseColor("#D32F2F"));
+                tvStatus.setTypeface(null, Typeface.BOLD);
+                tvStatus.setTextSize(12f);
+                int padH = (int) (10 * getResources().getDisplayMetrics().density);
+                int padV = (int) (4 * getResources().getDisplayMetrics().density);
+                tvStatus.setPadding(padH, padV, padH, padV);
+            } else {
+                tvStatus.setVisibility(View.GONE);
+            }
+
+            // Transform the button into a "Done" action
+            btnMore.setVisibility(View.VISIBLE);
+            btnMore.setText("Done");
+            btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#E65100")));
+            btnMore.setTextColor(Color.WHITE);
 
             if (c.getAmount() != null && c.getAmount() > 0) {
                 extraInfo.setText(String.format(Locale.US, "Amount: €%.2f", c.getAmount()));
@@ -479,10 +559,44 @@ public class TenantCalendarActivity extends AppCompatActivity {
             } else {
                 extraInfo.setVisibility(View.GONE);
             }
+
+            // Click logic to mark the reminder as completed
+            btnMore.setOnClickListener(v -> markReminderAsDone(c));
+
+            // Click the card to view details
+            container.setOnClickListener(v -> showEventDetailsMiniModal(c));
         }
 
-
         parent.addView(view);
+    }
+
+    /**
+     * Method to update the reminder status to COMPLETED on the server.
+     * Uses CalendarUpdateRequest to send only the fields the backend expects,
+     * avoiding FirestoreTimestamp serialization mismatches.
+     */
+    private void markReminderAsDone(Calendar c) {
+        CalendarUpdateRequest updateReq = new CalendarUpdateRequest();
+        updateReq.setTitle(c.getTitle());
+        updateReq.setStatus("COMPLETED");
+
+        calendarApi.updateEventStatus(c.getId(), updateReq).enqueue(new Callback<Calendar>() {
+            @Override
+            public void onResponse(Call<Calendar> call, Response<Calendar> response) {
+                if (response.isSuccessful()) {
+                    c.setStatus("COMPLETED");
+                    Toast.makeText(TenantCalendarActivity.this, "Marked as Done", Toast.LENGTH_SHORT).show();
+                    loadEvents(); // Refresh data to update dots and task lists
+                } else {
+                    Toast.makeText(TenantCalendarActivity.this, "Update Failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Calendar> call, Throwable t) {
+                Toast.makeText(TenantCalendarActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // Helper for status text
@@ -491,6 +605,69 @@ public class TenantCalendarActivity extends AppCompatActivity {
         if (s.equals("IN_PROGRESS")) return "In Progress";
         if (s.equals("COMPLETED")) return "Completed";
         return s;
+    }
+
+    private void showEventDetailsMiniModal(Calendar c) {
+        final android.app.Dialog dialog = new android.app.Dialog(this);
+        dialog.setContentView(R.layout.dialog_event_details_mini);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        TextView tvTitle = dialog.findViewById(R.id.popTitle);
+        TextView tvTypeBadge = dialog.findViewById(R.id.popTypeBadge);
+        TextView tvDate = dialog.findViewById(R.id.popDate);
+        LinearLayout layoutTime = dialog.findViewById(R.id.layoutTime);
+        TextView tvTime = dialog.findViewById(R.id.popTime);
+        TextView tvDesc = dialog.findViewById(R.id.popDesc);
+        LinearLayout layoutAmount = dialog.findViewById(R.id.layoutAmount);
+        TextView tvAmount = dialog.findViewById(R.id.popAmount);
+        Button btnClose = dialog.findViewById(R.id.btnPopClose);
+
+        tvTitle.setText(c.getTitle());
+
+        // Type Badge
+        String type = c.getType() != null ? c.getType() : "EVENT";
+        tvTypeBadge.setText(type.toUpperCase());
+        if (type.contains("REMINDER") || type.contains("BILL") || type.contains("MAINTENANCE")) {
+            tvTypeBadge.setBackgroundResource(R.drawable.bg_status_pending);
+            tvTypeBadge.setTextColor(Color.parseColor("#E65100")); // Orange
+        } else {
+            tvTypeBadge.setBackgroundResource(R.drawable.bg_status_pending);
+            tvTypeBadge.setTextColor(Color.parseColor("#C62828")); // Pink/Red
+        }
+
+        // Description
+        if (c.getDescription() != null && !c.getDescription().isEmpty()) {
+            tvDesc.setText(c.getDescription());
+        } else {
+            tvDesc.setText("No description provided.");
+            tvDesc.setTypeface(null, Typeface.ITALIC);
+        }
+
+        // Date & Time logic
+        if (c.getStartDate() != null) {
+            SimpleDateFormat dateFmt = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+            tvDate.setText(dateFmt.format(c.getStartDate().toDate()));
+
+            // Only show time for Events
+            if (isTypeMatch(type, "EVENT")) {
+                SimpleDateFormat timeFmt = new SimpleDateFormat("h:mm a", Locale.US);
+                tvTime.setText(timeFmt.format(c.getStartDate().toDate()));
+                layoutTime.setVisibility(View.VISIBLE);
+            } else {
+                layoutTime.setVisibility(View.GONE);
+            }
+        }
+
+        // Amount
+        if (c.getAmount() != null && c.getAmount() > 0) {
+            layoutAmount.setVisibility(View.VISIBLE);
+            tvAmount.setText(String.format(Locale.US, "€%.2f", c.getAmount()));
+        } else {
+            layoutAmount.setVisibility(View.GONE);
+        }
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     private void updateDateHeader() {
@@ -506,6 +683,13 @@ public class TenantCalendarActivity extends AppCompatActivity {
         java.util.Calendar limitDate = java.util.Calendar.getInstance();
         limitDate.add(java.util.Calendar.MONTH, 6);
 
+        long nowMillis = System.currentTimeMillis();
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        today.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        today.set(java.util.Calendar.MINUTE, 0);
+        today.set(java.util.Calendar.SECOND, 0);
+        today.set(java.util.Calendar.MILLISECOND, 0);
+
         // Iterate over FILTERED events to show dots only for user's tasks
         for (Calendar c : filteredEvents) {
 
@@ -515,6 +699,14 @@ public class TenantCalendarActivity extends AppCompatActivity {
             if (c.getStartDate() == null) continue;
 
             String rawType = c.getType() != null ? c.getType() : "";
+
+            // EVENT EXPIRY: skip events whose end time has already passed
+            if (isTypeMatch(rawType, "EVENT")) {
+                if (c.getEndDate() != null && c.getEndDate().toDate().getTime() < nowMillis) {
+                    continue;
+                }
+            }
+
             String simplifiedType = "";
             if (isTypeMatch(rawType, "CHORE")) simplifiedType = "CHORE";
             else if (isTypeMatch(rawType, "EVENT")) simplifiedType = "EVENT";
@@ -532,29 +724,71 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 else if ("MONTHLY".equalsIgnoreCase(c.getRecurrence().getFrequency())) isMonthly = true;
             }
 
-            do {
-                String dateKey = sdf.format(eventDate.getTime());
-                if (!dailyEventsMap.containsKey(dateKey)) {
-                    dailyEventsMap.put(dateKey, new java.util.HashSet<>());
-                    dateObjectMap.put(dateKey, (java.util.Calendar) eventDate.clone());
-                }
-                dailyEventsMap.get(dateKey).add(simplifiedType);
+            // For overdue reminders: skip the normal dot placement (will be added on today below)
+            boolean isReminderOverdue = false;
+            if (isTypeMatch(rawType, "REMINDER")) {
+                java.util.Calendar normalizedStart = java.util.Calendar.getInstance();
+                normalizedStart.setTime(c.getStartDate().toDate());
+                normalizedStart.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                normalizedStart.set(java.util.Calendar.MINUTE, 0);
+                normalizedStart.set(java.util.Calendar.SECOND, 0);
+                normalizedStart.set(java.util.Calendar.MILLISECOND, 0);
+                isReminderOverdue = normalizedStart.before(today);
+            }
 
-                if (isWeekly) eventDate.add(java.util.Calendar.DAY_OF_MONTH, 7);
-                else if (isMonthly) eventDate.add(java.util.Calendar.MONTH, 1);
-            } while ((isWeekly || isMonthly) && eventDate.before(limitDate));
+            // Only add dots on original/recurring dates if NOT an overdue reminder
+            if (!isReminderOverdue) {
+                do {
+                    String dateKey = sdf.format(eventDate.getTime());
+                    if (!dailyEventsMap.containsKey(dateKey)) {
+                        dailyEventsMap.put(dateKey, new java.util.HashSet<>());
+                        dateObjectMap.put(dateKey, (java.util.Calendar) eventDate.clone());
+                    }
+                    dailyEventsMap.get(dateKey).add(simplifiedType);
+
+                    if (isWeekly) eventDate.add(java.util.Calendar.DAY_OF_MONTH, 7);
+                    else if (isMonthly) eventDate.add(java.util.Calendar.MONTH, 1);
+                } while ((isWeekly || isMonthly) && eventDate.before(limitDate));
+            }
+
+            // STICKY REMINDERS: show dot ONLY on "Today" if overdue
+            if (isReminderOverdue) {
+                String todayKey = sdf.format(today.getTime());
+                if (!dailyEventsMap.containsKey(todayKey)) {
+                    dailyEventsMap.put(todayKey, new java.util.HashSet<>());
+                    dateObjectMap.put(todayKey, (java.util.Calendar) today.clone());
+                }
+                dailyEventsMap.get(todayKey).add("REMINDER");
+            }
         }
 
-        // --- PROCESS BILLS (As Reminders) ---
+        // --- PROCESS BILLS (As Reminders — overdue bills only show on Today) ---
         if (activeFilter.equals("ALL") || activeFilter.equals("REMINDER")) {
             for (BillsRequest b : allBills) {
                 java.util.Calendar billDate = parseIsoToCalendar(b.getDueDate());
                 if (billDate == null) continue;
 
-                String dateKey = sdf.format(billDate.getTime());
+                java.util.Calendar normalizedBill = (java.util.Calendar) billDate.clone();
+                normalizedBill.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                normalizedBill.set(java.util.Calendar.MINUTE, 0);
+                normalizedBill.set(java.util.Calendar.SECOND, 0);
+                normalizedBill.set(java.util.Calendar.MILLISECOND, 0);
+
+                String dateKey;
+                java.util.Calendar dotDate;
+                if (normalizedBill.before(today)) {
+                    // Overdue bill: show dot only on today
+                    dateKey = sdf.format(today.getTime());
+                    dotDate = (java.util.Calendar) today.clone();
+                } else {
+                    // Future/today bill: show dot on its due date
+                    dateKey = sdf.format(billDate.getTime());
+                    dotDate = (java.util.Calendar) billDate.clone();
+                }
+
                 if (!dailyEventsMap.containsKey(dateKey)) {
                     dailyEventsMap.put(dateKey, new java.util.HashSet<>());
-                    dateObjectMap.put(dateKey, (java.util.Calendar) billDate.clone());
+                    dateObjectMap.put(dateKey, dotDate);
                 }
                 dailyEventsMap.get(dateKey).add("REMINDER");
             }
@@ -676,47 +910,88 @@ public class TenantCalendarActivity extends AppCompatActivity {
     private int getIconForDate(java.util.Calendar targetDate) {
         boolean hasChore = false, hasEvent = false, hasReminder = false;
 
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        // Normalize today to the start of the day for accurate comparisons
+        today.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        today.set(java.util.Calendar.MINUTE, 0);
+        today.set(java.util.Calendar.SECOND, 0);
+        today.set(java.util.Calendar.MILLISECOND, 0);
+
+        long nowMillis = System.currentTimeMillis();
+
         // Iterate filteredEvents so dots match filter
         for (Calendar c : filteredEvents) {
 
             if ("COMPLETED".equalsIgnoreCase(c.getStatus())) continue;
-
             if (!isTypeMatch(c.getType(), activeFilter)) continue;
             if (c.getStartDate() == null) continue;
 
+            String type = c.getType() != null ? c.getType() : "";
             java.util.Calendar eventStart = java.util.Calendar.getInstance();
             eventStart.setTime(c.getStartDate().toDate());
 
-            boolean isMatch = isSameDay(eventStart, targetDate);
-            Recurrence r = c.getRecurrence();
-            if (r != null && r.getFrequency() != null) {
-                if (!targetDate.before(eventStart)) {
-                    if ("WEEKLY".equalsIgnoreCase(r.getFrequency())) {
-                        if (eventStart.get(java.util.Calendar.DAY_OF_WEEK) == targetDate.get(java.util.Calendar.DAY_OF_WEEK)) isMatch = true;
-                    } else if ("MONTHLY".equalsIgnoreCase(r.getFrequency())) {
-                        if (eventStart.get(java.util.Calendar.DAY_OF_MONTH) == targetDate.get(java.util.Calendar.DAY_OF_MONTH)) isMatch = true;
+            // --- 1. EVENT EXPIRY LOGIC ---
+            // If it's an event and it has already ended, don't show the dot at all
+            if (type.equalsIgnoreCase("EVENT")) {
+                if (c.getEndDate() != null && c.getEndDate().toDate().getTime() < nowMillis) {
+                    continue;
+                }
+            }
+
+            // --- 2. MATCHING LOGIC ---
+            boolean isMatch = false;
+
+            if (type.contains("REMINDER") || type.contains("BILL") || type.contains("MAINTENANCE")) {
+                // STICKY DOT LOGIC — overdue reminders only show on Today, not past dates
+                boolean isReminderOverdue = eventStart.before(today);
+                if (isReminderOverdue) {
+                    // Only show dot on Today
+                    if (isSameDay(targetDate, today)) isMatch = true;
+                } else {
+                    // Show on its scheduled day
+                    if (isSameDay(eventStart, targetDate)) isMatch = true;
+                }
+            } else {
+                // CHORE / ACTIVE EVENT LOGIC (Standard + Recurrence)
+                isMatch = isSameDay(eventStart, targetDate);
+
+                Recurrence r = c.getRecurrence();
+                if (r != null && r.getFrequency() != null) {
+                    if (!targetDate.before(eventStart)) {
+                        if ("WEEKLY".equalsIgnoreCase(r.getFrequency())) {
+                            if (eventStart.get(java.util.Calendar.DAY_OF_WEEK) == targetDate.get(java.util.Calendar.DAY_OF_WEEK))
+                                isMatch = true;
+                        } else if ("MONTHLY".equalsIgnoreCase(r.getFrequency())) {
+                            if (eventStart.get(java.util.Calendar.DAY_OF_MONTH) == targetDate.get(java.util.Calendar.DAY_OF_MONTH))
+                                isMatch = true;
+                        }
                     }
                 }
             }
 
             if (isMatch) {
-                String type = c.getType() != null ? c.getType() : "";
                 if (isTypeMatch(type, "CHORE")) hasChore = true;
                 else if (isTypeMatch(type, "EVENT")) hasEvent = true;
                 else if (isTypeMatch(type, "REMINDER")) hasReminder = true;
             }
         }
 
+        // Handle External Bills (overdue bills only show dot on Today)
         if (activeFilter.equals("ALL") || activeFilter.equals("REMINDER")) {
             for (BillsRequest b : allBills) {
                 java.util.Calendar billDue = parseIsoToCalendar(b.getDueDate());
-                if (billDue != null && isSameDay(billDue, targetDate)) {
-                    hasReminder = true;
+                if (billDue != null) {
+                    boolean isBillOverdue = billDue.before(today);
+                    if (isBillOverdue) {
+                        if (isSameDay(targetDate, today)) hasReminder = true;
+                    } else {
+                        if (isSameDay(billDue, targetDate)) hasReminder = true;
+                    }
                 }
             }
         }
 
-
+        // Return the correct icon based on what was found for this specific date
         if (activeFilter.equals("CHORE") && hasChore) return R.drawable.ic_dot_green;
         if (activeFilter.equals("EVENT") && hasEvent) return R.drawable.ic_dot_pink;
         if (activeFilter.equals("REMINDER") && hasReminder) return R.drawable.ic_dot_orange;

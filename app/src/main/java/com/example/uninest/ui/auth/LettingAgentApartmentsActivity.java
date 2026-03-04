@@ -1,7 +1,10 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Intent;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +18,7 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.model.Apartment;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.example.uninest.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -192,8 +196,37 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         card.setTenantInfo(occupied, capacity);
         card.setOnClickListener(v -> openApartmentTenants(apartment));
 
+        card.setOnDeleteClickListener(v -> showApartmentDeleteConfirmation(apartment));
 
         apartmentList.addView(card);
+    }
+
+    private void showApartmentDeleteConfirmation(Apartment apartment) {
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle("Delete Apartment?")
+                .setMessage("This will delete the apartment and unassign any tenants. This action cannot be undone.")
+                .setPositiveButton("Delete", (d, which) -> {
+                    apartmentApi.deleteApartment(apartment.getCode()).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(LettingAgentApartmentsActivity.this, "Apartment deleted", Toast.LENGTH_SHORT).show();
+                                loadApartments();
+                            } else {
+                                Toast.makeText(LettingAgentApartmentsActivity.this, "Failed to delete apartment", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Toast.makeText(LettingAgentApartmentsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.RED);
     }
 
     // ------------------------

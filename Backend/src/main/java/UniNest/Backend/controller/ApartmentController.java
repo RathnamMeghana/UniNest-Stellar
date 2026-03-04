@@ -133,4 +133,10 @@ public class ApartmentController {
     }
 
 
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @DeleteMapping("/{houseCode}")
+    public ResponseEntity<String> deleteApartment(@PathVariable String houseCode) {
+        apartmentService.deleteApartment(SanitizationUtil.sanitize(houseCode));
+        return ResponseEntity.ok("Apartment deleted and tenants unassigned successfully");
+    }
 }

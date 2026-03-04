@@ -83,8 +83,15 @@
                         <TextView android:text="Assignment" style="@style/LabelStyle" android:layout_marginTop="16dp" android:textColor="#4CAF50" android:textSize="11sp" android:textStyle="bold" android:textAllCaps="true"/>
                         <Spinner android:id="@+id/spinnerAssignType" android:layout_width="match_parent" android:layout_height="54dp" android:layout_marginTop="8dp" android:background="@drawable/bg_spinner_field" />
 
-                        <TextView android:text="Assign To" style="@style/LabelStyle" android:layout_marginTop="16dp" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:textAllCaps="true"/>
-                        <Spinner android:id="@+id/spinnerAssignedTo" android:layout_width="match_parent" android:layout_height="54dp" android:layout_marginTop="8dp" android:background="@drawable/bg_spinner_field" />
+                        <LinearLayout
+                            android:id="@+id/containerAssignTo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+                            <TextView android:text="Assign To" style="@style/LabelStyle" android:layout_marginTop="16dp" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:textAllCaps="true"/>
+                            <Spinner android:id="@+id/spinnerAssignedTo" android:layout_width="match_parent" android:layout_height="54dp" android:layout_marginTop="8dp" android:background="@drawable/bg_spinner_field" />
+                        </LinearLayout>
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="horizontal">
                             <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginEnd="8dp">
@@ -131,8 +138,15 @@
                         <TextView android:text="Reminder Type" style="@style/LabelStyle" android:layout_marginTop="16dp" android:textColor="#FF9800" android:textSize="11sp" android:textStyle="bold" android:textAllCaps="true"/>
                         <Spinner android:id="@+id/spinnerReminderType" android:layout_width="match_parent" android:layout_height="54dp" android:layout_marginTop="8dp" android:background="@drawable/bg_spinner_field" />
 
-                        <TextView android:text="Amount (€)" style="@style/LabelStyle" android:layout_marginTop="16dp" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:textAllCaps="true"/>
-                        <EditText android:id="@+id/etAmount" style="@style/InputStyle" android:layout_marginTop="8dp" android:background="@drawable/bg_input_field" android:inputType="numberDecimal" android:hint="0.00" android:padding="12dp"/>
+                        <LinearLayout
+                            android:id="@+id/containerAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+                            <TextView android:text="Amount (€)" style="@style/LabelStyle" android:layout_marginTop="16dp" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:textAllCaps="true"/>
+                            <EditText android:id="@+id/etAmount" style="@style/InputStyle" android:layout_marginTop="8dp" android:background="@drawable/bg_input_field" android:inputType="numberDecimal" android:hint="0.00" android:padding="12dp"/>
+                        </LinearLayout>
                     </LinearLayout>
 
                 </LinearLayout>

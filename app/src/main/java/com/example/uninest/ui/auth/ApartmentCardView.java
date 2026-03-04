@@ -39,6 +39,14 @@ public class ApartmentCardView extends FrameLayout {
 
         tvApartmentName = findViewById(R.id.tvApartmentName);
         tvTenantInfo = findViewById(R.id.tvTenantInfo);
+        findViewById(R.id.btnDeleteApartment).setOnClickListener(v -> {
+            if (deleteListener != null) deleteListener.onClick(v);
+        });
+    }
+
+    private OnClickListener deleteListener;
+    public void setOnDeleteClickListener(OnClickListener listener) {
+        this.deleteListener = listener;
     }
 
     // ---- setters from Activities ---- //

@@ -63,4 +63,10 @@ public class BuildingController {
         // 3. Return success
         return new ResponseEntity<>(building, HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBuilding(@PathVariable String id) {
+        buildingService.deleteBuilding(SanitizationUtil.sanitize(id));
+        return ResponseEntity.ok("Building and its apartments deleted successfully");
+    }
 }

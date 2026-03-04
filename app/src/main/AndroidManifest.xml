@@ -62,12 +62,32 @@
 
 
         <activity
-            android:name=".ui.auth.TenantLoginActivity"
+            android:name=".ui.auth.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.auth.TenantLoginActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.auth.TenantSignUpActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.auth.SignUpActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.auth.LettingAgentLoginActivity"
+            android:exported="false">
         </activity>
 
         <activity
@@ -174,14 +194,9 @@
             android:name=".MainActivity"
             android:exported="false" />
 
-
-
-                <!-- Paste your Android-specific DSN here -->
-                <meta-data android:name="io.sentry.dsn"
-                    android:value="https://bc4297d9270fcaf5da22604cd4d894cb@o4510919425392640.ingest.de.sentry.io/4510919531102288" />
-
-
-
+        <!-- Paste your Android-specific DSN here -->
+        <meta-data android:name="io.sentry.dsn"
+            android:value="https://bc4297d9270fcaf5da22604cd4d894cb@o4510919425392640.ingest.de.sentry.io/4510919531102288" />
 
     </application>
 

@@ -29,4 +29,6 @@ public interface BuildingApi {
     @GET("buildings/{id}")
     Call<Building> getBuilding(@Path("id") String buildingId);
 
+    @retrofit2.http.DELETE("buildings/{id}")
+    Call<Void> deleteBuilding(@Path("id") String buildingId);
 }

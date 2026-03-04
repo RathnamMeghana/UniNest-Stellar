@@ -105,7 +105,7 @@ public class CreateTenantBillActivity extends AppCompatActivity {
 
     private void setupList() {
         rvRoommates.setLayoutManager(new LinearLayoutManager(this));
-        roommateAdapter = new BillSplittingAdapter(new ArrayList<>(), (userId, isChecked) -> {
+        roommateAdapter = new BillSplittingAdapter(new ArrayList<>(), session.getUserId(), (userId, isChecked) -> {
             if (isChecked) {
                 if (!selectedIds.contains(userId)) selectedIds.add(userId);
             } else {

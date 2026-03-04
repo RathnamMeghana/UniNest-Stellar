@@ -220,4 +220,35 @@ public class ApartmentService {
             throw new ApartmentServiceException("Failed to fetch apartments for building", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public void deleteApartment(String houseCode) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            // 1. Unassign all tenants from this apartment
+            ApiFuture<QuerySnapshot> userQuery = db.collection("users")
+                    .whereEqualTo("houseCode", houseCode).get();
+            List<QueryDocumentSnapshot> tenants = userQuery.get().getDocuments();
+
+            for (QueryDocumentSnapshot tenant : tenants) {
+                db.collection("users").document(tenant.getId())
+                        .update("apartmentId", null, "houseCode", null).get();
+            }
+
+            // 2. Delete all rooms associated with the apartment
+            ApiFuture<QuerySnapshot> roomQuery = db.collection("apartments")
+                    .document(houseCode).collection("rooms").get();
+            List<QueryDocumentSnapshot> rooms = roomQuery.get().getDocuments();
+            for (QueryDocumentSnapshot room : rooms) {
+                db.collection("apartments").document(houseCode)
+                        .collection("rooms").document(room.getId()).delete().get();
+            }
+
+            // 3. Delete the apartment document itself
+            db.collection("apartments").document(houseCode).delete().get();
+
+        } catch (Exception e) {
+            throw new ApartmentServiceException("Failed to delete apartment", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -119,14 +119,16 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
         String newPriority = spinnerPriority.getSelectedItem().toString();
         String newStatus = spinnerStatus.getSelectedItem().toString();
 
-        // 1. Update Priority
-        UpdateTicketPriorityRequest pReq = new UpdateTicketPriorityRequest();
-        pReq.setTicketId(ticket.getId());
-        pReq.setPriority(newPriority);
-        ticketApi.updatePriority(pReq).enqueue(new Callback<String>() {
-            @Override public void onResponse(Call<String> c, Response<String> r){}
-            @Override public void onFailure(Call<String> c, Throwable t){}
-        });
+        // 1. Update Priority ONLY if it changed
+        if (!newPriority.equalsIgnoreCase(ticket.getPriority())) {
+            UpdateTicketPriorityRequest pReq = new UpdateTicketPriorityRequest();
+            pReq.setTicketId(ticket.getId());
+            pReq.setPriority(newPriority);
+            ticketApi.updatePriority(pReq).enqueue(new Callback<String>() {
+                @Override public void onResponse(Call<String> c, Response<String> r){}
+                @Override public void onFailure(Call<String> c, Throwable t){}
+            });
+        }
 
         // 2. Update Status
         UpdateTicketStatusRequest sReq = new UpdateTicketStatusRequest();
