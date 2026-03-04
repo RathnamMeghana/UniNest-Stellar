@@ -42,6 +42,7 @@ public class CalendarEventDTO {
         private String location;
         private Recurrence recurrence;
 
+
         public void sanitize() {
             this.houseCode = UniNest.Backend.util.SanitizationUtil.sanitize(this.houseCode);
             this.title = UniNest.Backend.util.SanitizationUtil.sanitize(this.title);
@@ -62,10 +63,13 @@ public class CalendarEventDTO {
         private String assignedTo;
         private Recurrence recurrence;
 
+        private String status;
+
         public void sanitize() {
             if (this.title != null) this.title = UniNest.Backend.util.SanitizationUtil.sanitize(this.title);
             if (this.description != null) this.description = UniNest.Backend.util.SanitizationUtil.sanitize(this.description);
             if (this.assignedTo != null) this.assignedTo = UniNest.Backend.util.SanitizationUtil.sanitize(this.assignedTo);
+            if (this.status != null) this.status = UniNest.Backend.util.SanitizationUtil.sanitize(this.status);
         }
     }
 
