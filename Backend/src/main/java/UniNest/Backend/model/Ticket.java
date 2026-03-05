@@ -25,6 +25,7 @@ public class Ticket {
     private Timestamp updatedAt;
     private String userName;
     private String prioritySource;
+    private String imageUrl;
 
 
     public void sanitize() {
@@ -43,6 +44,9 @@ public class Ticket {
         this.arrivalDate = SanitizationUtil.sanitize(this.arrivalDate);
         this.userName = SanitizationUtil.sanitize(this.userName);
         this.prioritySource = SanitizationUtil.sanitize(this.prioritySource);
+        if (this.imageUrl != null && !this.imageUrl.isEmpty()) {
+            this.imageUrl = SanitizationUtil.sanitizeBase64(this.imageUrl);
+        }
     }
 
 }
