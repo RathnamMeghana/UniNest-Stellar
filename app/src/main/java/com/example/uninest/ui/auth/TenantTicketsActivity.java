@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -261,6 +262,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
         TextView tvArrival = view.findViewById(R.id.popArrival);
         TextView tvAgentMsg = view.findViewById(R.id.popAgentMessage);
         View layoutAgentResponse = view.findViewById(R.id.layoutAgentResponse);
+        ImageView ivPopImage = view.findViewById(R.id.popTicketImage);
         Button btnClose = view.findViewById(R.id.btnPopClose);
 
         // Data population
@@ -301,6 +303,27 @@ public class TenantTicketsActivity extends AppCompatActivity {
             tvAgentMsg.setText(t.getAgentResponse());
         } else {
             layoutAgentResponse.setVisibility(View.GONE);
+        }
+
+        if (t.getImageUrl() != null && !t.getImageUrl().isEmpty()) {
+            ivPopImage.setVisibility(View.VISIBLE);
+            try {
+                // Decode Base64 string to bytes
+                byte[] imageBytes = android.util.Base64.decode(t.getImageUrl(), android.util.Base64.DEFAULT);
+
+                // Load into ImageView using Glide
+                com.bumptech.glide.Glide.with(this)
+                        .asBitmap()
+                        .load(imageBytes)
+                        .placeholder(android.R.drawable.progress_horizontal)
+                        .error(android.R.drawable.ic_menu_report_image)
+                        .into(ivPopImage);
+            } catch (Exception e) {
+                ivPopImage.setVisibility(View.GONE);
+                Log.e(TAG, "Error decoding popup image", e);
+            }
+        } else {
+            ivPopImage.setVisibility(View.GONE);
         }
 
         // Show Dialog
