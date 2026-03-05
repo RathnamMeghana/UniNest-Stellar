@@ -132,8 +132,23 @@
                         android:textColor="#333333"
                         android:lineSpacingExtra="4dp"
                         android:textSize="15sp"/>
+
+                    <ImageView
+                        android:id="@+id/ivTicketImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="300dp"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone"
+                        android:background="#F5F5F5"
+                        tools:visibility="visible"
+                        tools:src="@android:drawable/ic_menu_report_image" />
                 </LinearLayout>
+
             </androidx.cardview.widget.CardView>
+
 
             <!-- 2. AGENT ACTION CARD -->
             <androidx.cardview.widget.CardView

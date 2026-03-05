@@ -1,15 +1,22 @@
 package com.example.uninest.ui.auth;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.chaquo.python.PyObject;
@@ -51,6 +58,9 @@ public class RaiseTicketActivity extends AppCompatActivity {
     private String currentUserId;
     private String currentLandlordId;
     private String currentApartmentName;
+    private ImageView imgPreview;
+    private Uri selectedImageUri;
+    private String base64Image = null; // Default is null (Optional)
 
     // UI Components
     private TextView resultTextView;
@@ -119,6 +129,22 @@ public class RaiseTicketActivity extends AppCompatActivity {
         initTFLite();
     }
 
+    private final ActivityResultLauncher<Intent> pickImageLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                            selectedImageUri = result.getData().getData();
+                            imgPreview.setVisibility(View.VISIBLE);
+                            // Show preview using Glide
+                            com.bumptech.glide.Glide.with(this).load(selectedImageUri).into(imgPreview);
+
+                            // Convert in background thread so the UI doesn't freeze
+                            new Thread(() -> {
+                                base64Image = convertImageToResizedBase64(selectedImageUri);
+                            }).start();
+                        }
+                    });
+
     private void fetchBuildingContext() {
         // Step 1: Find the Apartment by House Code to get the BuildingID
         apartmentApi.getAllApartments().enqueue(new Callback<List<Apartment>>() {
@@ -184,6 +210,14 @@ public class RaiseTicketActivity extends AppCompatActivity {
         roomSpinner = findViewById(R.id.roomSpinner);
         typeSpinner = findViewById(R.id.typeSpinner);
         predictButton = findViewById(R.id.predictButton);
+        imgPreview = findViewById(R.id.imgTicketPreview); // Add to XML
+        Button btnAttach = findViewById(R.id.btnAttachImage); // Add to XML
+
+        btnAttach.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            pickImageLauncher.launch(intent);
+        });
 
         // Close Button
         findViewById(R.id.btnClose).setOnClickListener(v -> finish());
@@ -281,6 +315,7 @@ public class RaiseTicketActivity extends AppCompatActivity {
         ticket.setUserName(sessionManager.getUserFullName());
         ticket.setLandlordId(currentLandlordId);
         ticket.setApartmentName(currentApartmentName);
+        ticket.setImageUrl(base64Image);
 
         ticketApi.createTicket(ticket).enqueue(new Callback<String>() {
             @Override
@@ -341,5 +376,36 @@ public class RaiseTicketActivity extends AppCompatActivity {
         String t = text.toLowerCase();
         for (String k : keys) if (t.contains(k)) c++;
         return c;
+    }
+
+    private String convertImageToResizedBase64(Uri uri) {
+        try {
+            java.io.InputStream is = getContentResolver().openInputStream(uri);
+            android.graphics.Bitmap original = android.graphics.BitmapFactory.decodeStream(is);
+
+            // Resize to max 600px to stay under Firestore document limits
+            int maxSize = 600;
+            int width = original.getWidth();
+            int height = original.getHeight();
+
+            float bitmapRatio = (float) width / (float) height;
+            if (bitmapRatio > 1) {
+                width = maxSize;
+                height = (int) (width / bitmapRatio);
+            } else {
+                height = maxSize;
+                width = (int) (height * bitmapRatio);
+            }
+
+            android.graphics.Bitmap scaled = android.graphics.Bitmap.createScaledBitmap(original, width, height, true);
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            scaled.compress(android.graphics.Bitmap.CompressFormat.JPEG, 50, baos); // 50% quality is good for maintenance photos
+            byte[] bytes = baos.toByteArray();
+
+            return android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "Image conversion failed", e);
+            return null;
+        }
     }
 }
