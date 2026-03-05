@@ -81,6 +81,7 @@ public class TicketService {
             ticket.setUserId(request.getUserId());
             ticket.setUserName(request.getUserName());
             ticket.setPrioritySource(request.getPrioritySource());
+            ticket.setImageUrl(request.getImageUrl());
             ticket.setCreatedAt(time);
             ticket.setUpdatedAt(time);
 
