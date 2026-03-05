@@ -25,6 +25,7 @@ public class Ticket implements Serializable{
     private String arrivalDate;
     private String userName;
     private String prioritySource;
+    private String imageUrl;
 
 
     // Getters and Setters
@@ -78,4 +79,6 @@ public class Ticket implements Serializable{
 
     public String getPrioritySource() { return prioritySource; }
     public void setPrioritySource(String prioritySource) { this.prioritySource = prioritySource; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }
