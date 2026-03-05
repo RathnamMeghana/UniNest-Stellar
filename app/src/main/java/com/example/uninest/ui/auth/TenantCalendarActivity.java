@@ -243,11 +243,18 @@ public class TenantCalendarActivity extends AppCompatActivity {
         for (Calendar c : allEvents) {
             boolean include = false;
             String type = c.getType() != null ? c.getType() : "";
-            if (isTypeMatch(type, "CHORE")) {
+
+            // If it's a Maintenance/Agent visit, show it to everyone in the house
+            if (type.equalsIgnoreCase("MAINTENANCE") || type.equalsIgnoreCase("REMINDER")) {
+                include = true;
+            }
+
+            else if (isTypeMatch(type, "CHORE")) {
                 if (isUserMatch(c.getAssignedTo())) {
                     include = true;
                 }
             }
+
             else {
                 if (isUserMatch(c.getCreatedBy()) || isUserMatch(c.getAssignedTo())) {
                     include = true;

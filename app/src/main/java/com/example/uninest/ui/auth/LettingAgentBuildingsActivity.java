@@ -156,8 +156,8 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
         // If the building has an image string, use the Base64 loader.
         // Otherwise, fall back to the placeholder logic.
         if (building.getImageUrl() != null && !building.getImageUrl().isEmpty()) {
-            card.setBuildingImageFromBase64(building.getImageUrl());
-
+           // card.setBuildingImageFromBase64(building.getImageUrl());
+            card.setBuildingImageFromBase64(building);
         } else {
             // Fallback placeholders based on name
             if (building.getName() != null && building.getName().toLowerCase().contains("green")) {

@@ -23,7 +23,7 @@ public class CalendarShowAllByApartmentActivity extends AppCompatActivity {
 
     private LinearLayout calendarContainer;
     private CalendarApi calendarApi;
-    private String houseCode; // Your specific house code
+    private String houseCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +41,13 @@ public class CalendarShowAllByApartmentActivity extends AppCompatActivity {
         loadCalendarEvents();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadCalendarEvents();
+    }
+
+
     private void loadCalendarEvents() {
         calendarContainer.removeAllViews();
 
@@ -50,23 +57,22 @@ public class CalendarShowAllByApartmentActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Calendar> events = response.body();
 
-                    if (events.isEmpty()) {
-                        Toast.makeText(CalendarShowAllByApartmentActivity.this, "No events found", Toast.LENGTH_SHORT).show();
-                    }
+                    // DEBUG LOG: See if the list contains the maintenance items
+                    Log.d("CalendarCheck", "Items received: " + events.size());
 
                     for (Calendar event : events) {
-                        displayEventCard(event);
+                        if (event != null) {
+                            displayEventCard(event);
+                        }
                     }
                 } else {
-                    Toast.makeText(CalendarShowAllByApartmentActivity.this, "Failed to load events", Toast.LENGTH_SHORT).show();
-                    Log.e("CalendarAPI", "Response code: " + response.code());
+                    Toast.makeText(CalendarShowAllByApartmentActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Calendar>> call, Throwable t) {
-                Log.e("CalendarAPI", "Error: " + t.getMessage());
-                Toast.makeText(CalendarShowAllByApartmentActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                Log.e("CalendarCheck", "Network Error", t);
             }
         });
     }

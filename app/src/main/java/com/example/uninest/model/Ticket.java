@@ -1,6 +1,7 @@
 package com.example.uninest.model;
 
 import com.google.firebase.Timestamp;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 import java.io.Serializable;
@@ -9,6 +10,7 @@ public class Ticket implements Serializable{
     private String id;
     private String description;
     private String room;
+    @SerializedName(value = "building", alternate = {"buildingName", "name"})
     private String building;
     private String apartmentId;
     private String category;
