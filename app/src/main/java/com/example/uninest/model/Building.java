@@ -11,6 +11,7 @@ public class Building {
     private Boolean active;
     private String imageUrl;
     private int apartmentCount;
+    private byte[] cachedImageBytes;
 
 
 
@@ -40,6 +41,8 @@ public class Building {
     public void setId(String id) { this.id = id; }
 
 
+
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -50,5 +53,17 @@ public class Building {
 
     public int getApartmentCount() { return apartmentCount; }
     public void setApartmentCount(int apartmentCount) { this.apartmentCount = apartmentCount; }
+
+    public byte[] getCachedImageBytes() {
+        if (cachedImageBytes == null && imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                // Decode once and save it
+                cachedImageBytes = android.util.Base64.decode(imageUrl, android.util.Base64.DEFAULT);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return cachedImageBytes;
+    }
 
 }
