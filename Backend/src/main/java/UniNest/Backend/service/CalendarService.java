@@ -39,6 +39,7 @@ public class CalendarService {
             DocumentReference docRef = db.collection(COLLECTION).document();
 
             CalendarEventDTO.Response event = new CalendarEventDTO.Response();
+
             event.setId(docRef.getId());
             event.setHouseCode(dto.getHouseCode());
             event.setType(dto.getType());
@@ -89,7 +90,15 @@ public class CalendarService {
             List<QueryDocumentSnapshot> docs = future.get().getDocuments();
 
             return docs.stream()
-                    .map(d -> d.toObject(CalendarEvent.class))
+                    .map(d -> {
+                        CalendarEvent e = d.toObject(CalendarEvent.class);
+                        // FIX: If the 'id' field is missing in the document data,
+                        // take it from the actual Document Name (ID).
+                        if (e != null && (e.getId() == null || e.getId().isEmpty())) {
+                            e.setId(d.getId());
+                        }
+                        return e;
+                    })
                     .filter(Objects::nonNull)
                     .map(this::map)
                     .collect(Collectors.toList());
@@ -115,7 +124,13 @@ public class CalendarService {
             List<QueryDocumentSnapshot> docs = future.get().getDocuments();
 
             return docs.stream()
-                    .map(d -> d.toObject(CalendarEvent.class))
+                    .map(d -> {
+                        CalendarEvent e = d.toObject(CalendarEvent.class);
+                        if (e != null && (e.getId() == null || e.getId().isEmpty())) {
+                            e.setId(d.getId());
+                        }
+                        return e;
+                    })
                     .filter(Objects::nonNull)
                     .map(this::map)
                     .collect(Collectors.toList());
@@ -241,7 +256,9 @@ public class CalendarService {
         // Safe enum mapping
         if (e.getType() != null) {
             try {
-                dto.setType(CalendarEventDTO.EventType.valueOf(e.getType()));
+
+                //dto.setType(CalendarEventDTO.EventType.valueOf(e.getType()));
+                dto.setType(CalendarEventDTO.EventType.valueOf(e.getType().toUpperCase()));
             } catch (IllegalArgumentException ex) {
                 dto.setType(CalendarEventDTO.EventType.OTHER);
             }
