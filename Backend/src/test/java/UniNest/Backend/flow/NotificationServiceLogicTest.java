@@ -3,12 +3,17 @@ package UniNest.Backend.flow;
 import UniNest.Backend.service.NotificationService;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
+import com.google.firebase.messaging.BatchResponse;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.MulticastMessage;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -223,6 +228,88 @@ class NotificationServiceLogicTest {
         }), eq(SetOptions.merge()));
     }
 
+    // Persistence Tests
+    @Test
+    @DisplayName("saveNotifications should create a separate document for every user in the list")
+    void saveNotifications_shouldCreateDocForEachUser() throws Exception {
+        setupDedupeMocks();
+        List<String> userIds = List.of("userA", "userB", "userC");
 
+        // Mock that no duplicates exist for any user
+        when(querySnapshotFuture.get()).thenReturn(querySnapshot);
+        when(querySnapshot.getDocuments()).thenReturn(List.of());
 
+        // Mock new document creation
+        when(notificationsCollection.document()).thenReturn(newNotificationDocRef);
+        when(newNotificationDocRef.set(anyMap())).thenReturn(writeResultFuture);
+
+        notificationService.saveNotificationsForUsers("Title", "Body", "TYPE", "SCREEN", "ID", 0L, userIds);
+
+        // Verify that a document was created and saved  once per user
+        verify(notificationsCollection, times(3)).document();
+        verify(newNotificationDocRef, times(3)).set(anyMap());
+    }
+
+    @Test
+    @DisplayName("sendToUsers should return 0 when userIds list is null or empty")
+    void sendToUsers_noUsers_returnsZero() throws Exception {
+        int resultNull = notificationService.sendToUsers("Title", "Body", null, "SCREEN", "ID");
+        int resultEmpty = notificationService.sendToUsers("Title", "Body", List.of(), "SCREEN", "ID");
+
+        assertEquals(0, resultNull);
+        assertEquals(0, resultEmpty);
+        // Verify no Firestore calls were even attempted
+        verifyNoInteractions(usersCollection);
+    }
+
+    @Test
+    @DisplayName("sendToUsers should return 0 if requested users have no registered tokens")
+    void sendToUsers_noTokens_returnsZero() throws Exception {
+        String uid = "userNoToken";
+        DocumentReference dr = mock(DocumentReference.class);
+        ApiFuture<DocumentSnapshot> af = mock(ApiFuture.class);
+        DocumentSnapshot ds = mock(DocumentSnapshot.class);
+
+        when(usersCollection.document(uid)).thenReturn(dr);
+        when(dr.get()).thenReturn(af);
+        when(af.get()).thenReturn(ds);
+        when(ds.exists()).thenReturn(true);
+        when(ds.get("tokens")).thenReturn(List.of()); // Returns empty list of tokens
+
+        int result = notificationService.sendToUsers("Title", "Body", List.of(uid), "SCREEN", "ID");
+
+        assertEquals(0, result);
+    }
+
+    @Test
+    @DisplayName("sendToUsers should return success count from BatchResponse")
+    void sendToUsers_success_returnsCount() throws Exception {
+        String uid = "userWithToken";
+        String token = "token123";
+
+        // Mock Firestore to return a valid token
+        DocumentReference dr = mock(DocumentReference.class);
+        ApiFuture<DocumentSnapshot> af = mock(ApiFuture.class);
+        DocumentSnapshot ds = mock(DocumentSnapshot.class);
+        when(usersCollection.document(uid)).thenReturn(dr);
+        when(dr.get()).thenReturn(af);
+        when(af.get()).thenReturn(ds);
+        when(ds.exists()).thenReturn(true);
+        when(ds.get("tokens")).thenReturn(List.of(token));
+
+        // Mock Static FirebaseMessaging
+        try (MockedStatic<FirebaseMessaging> mockedFirebase = mockStatic(FirebaseMessaging.class)) {
+            FirebaseMessaging mockInstance = mock(FirebaseMessaging.class);
+            BatchResponse mockResponse = mock(BatchResponse.class);
+
+            mockedFirebase.when(FirebaseMessaging::getInstance).thenReturn(mockInstance);
+            when(mockInstance.sendEachForMulticast(any(MulticastMessage.class))).thenReturn(mockResponse);
+            when(mockResponse.getSuccessCount()).thenReturn(5);
+
+            int result = notificationService.sendToUsers("Title", "Body", List.of(uid), "SCREEN", "ID");
+
+            assertEquals(5, result);
+            verify(mockInstance).sendEachForMulticast(any(MulticastMessage.class));
+        }
+    }
 }
