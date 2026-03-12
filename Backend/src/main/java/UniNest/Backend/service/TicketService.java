@@ -194,11 +194,11 @@ public class TicketService {
 
             ApiFuture<QuerySnapshot> future = db.collection("tickets")
                     .whereEqualTo("apartmentId", houseCode)
-                    .whereEqualTo("deletedByTenant", false)
                     .get();
 
             return future.get().getDocuments().stream()
                     .map(doc -> doc.toObject(Ticket.class))
+                    .filter(ticket -> !ticket.isDeletedByTenant())
                     .collect(Collectors.toList());
 
         } catch (InterruptedException e) {
@@ -218,43 +218,33 @@ public class TicketService {
 
         try {
             Firestore db = FirestoreClient.getFirestore();
+
+            // Landlord authorization check (Keep this as is)
             DocumentSnapshot landlordDoc = db.collection("users").document(landlordId).get().get();
-
-            if (!landlordDoc.exists()) {
-                throw new TicketServiceException(
-                        "Landlord with ID " + landlordId + " does not exist.",
-                        HttpStatus.NOT_FOUND
-                );
+            if (!landlordDoc.exists() || !"1".equalsIgnoreCase(landlordDoc.getString("role"))) {
+                throw new TicketServiceException("Unauthorized as Landlord", HttpStatus.FORBIDDEN);
             }
 
-            String role = landlordDoc.getString("role");
-            if (!"1".equalsIgnoreCase(role)) {
-                throw new TicketServiceException(
-                        "User exists but is not authorized as a Landlord.",
-                        HttpStatus.FORBIDDEN
-                );
-            }
-            com.google.cloud.firestore.Query query = db.collection("tickets")
-                    .whereEqualTo("landlordId", landlordId);
-            if (!includeDeleted) {
-                query = query.whereEqualTo("deletedByTenant", false);
-            }
-
+            // 1. Fetch all tickets for this landlord (Simple query)
             ApiFuture<QuerySnapshot> future = db.collection("tickets")
                     .whereEqualTo("landlordId", landlordId)
                     .get();
 
-            return future.get().getDocuments().stream()
+            List<Ticket> allTickets = future.get().getDocuments().stream()
                     .map(doc -> doc.toObject(Ticket.class))
                     .collect(Collectors.toList());
 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
+            // 2. Logic: If agent wants to see deleted, return all. Otherwise, filter them.
+            if (includeDeleted) {
+                return allTickets;
+            } else {
+                return allTickets.stream()
+                        .filter(t -> !t.isDeletedByTenant())
+                        .collect(Collectors.toList());
+            }
+
+        } catch (Exception e) {
+            throw new TicketServiceException("Error fetching tickets", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -501,14 +491,14 @@ public class TicketService {
         }
     }
 
-    public String softDeleteTicket(String ticketId) {
+    public String softDeleteTicket(String ticketId, String currentUserId) {
         if (ticketId == null || ticketId.isBlank()) {
             throw new IllegalArgumentException("ticketId required");
         }
         try {
             Firestore db = FirestoreClient.getFirestore();
 
-            // Find the document where the 'id' field matches ticketId
+            // 1. Find the document where the 'id' field matches ticketId
             ApiFuture<QuerySnapshot> future = db.collection("tickets")
                     .whereEqualTo("id", ticketId)
                     .get();
@@ -519,8 +509,16 @@ public class TicketService {
                 throw new TicketNotFoundException("Ticket not found: " + ticketId);
             }
 
-            // Update the deletedByTenant flag
-            documents.get(0).getReference().update(
+            DocumentSnapshot doc = documents.get(0);
+            String ticketOwnerId = doc.getString("userId");
+
+            if (ticketOwnerId == null || !ticketOwnerId.equals(currentUserId)) {
+                // Throwing a custom exception or a standard Security exception
+                throw new TicketServiceException("You are not authorized to delete this ticket", HttpStatus.FORBIDDEN);
+            }
+
+            // 3. Update the deletedByTenant flag
+            doc.getReference().update(
                     "deletedByTenant", true,
                     "updatedAt", Timestamp.now()
             ).get();

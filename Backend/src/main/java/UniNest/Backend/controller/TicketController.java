@@ -75,6 +75,9 @@ public class TicketController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+
     @PreAuthorize("hasRole('LETTINGAGENT')")
     @GetMapping("/landlord")
     public ResponseEntity<List<Ticket>> getTicketsByLandlord(
@@ -148,9 +151,9 @@ public class TicketController {
 
     @PreAuthorize("hasRole('TENANT')")
     @DeleteMapping("/{ticketId}")
-    public ResponseEntity<String> softDeleteTicket(@PathVariable String ticketId) {
+    public ResponseEntity<String> softDeleteTicket(@PathVariable String ticketId,  Authentication auth) {
         try {
-            String result = ticketService.softDeleteTicket(ticketId);
+            String result = ticketService.softDeleteTicket(ticketId, auth.getName());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error soft deleting ticket: {}", e.getMessage());
