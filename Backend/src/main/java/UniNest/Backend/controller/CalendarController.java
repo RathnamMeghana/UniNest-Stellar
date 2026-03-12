@@ -19,9 +19,8 @@ public class CalendarController {
     @Autowired
     private  CalendarService calendarService;
 
-    // 1. Fixed @PreAuthorize typo (added opening quote)
-    // 2. Added @Valid to the @RequestBody parameter
-    //@PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+
+    @PreAuthorize("hasAnyRole('LETTINGAGENT', 'TENANT')")
     @PostMapping("/create")
     public CalendarEventDTO.Response createEvent(
             @Valid @RequestBody CalendarEventDTO.Create request,

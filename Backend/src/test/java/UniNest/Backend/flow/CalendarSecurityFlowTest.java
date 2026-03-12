@@ -64,7 +64,7 @@ public class CalendarSecurityFlowTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        // Fix: Assign to class-level field so it's not null in the test
+        // Assign to class-level field so it's not null in the test
         validRequest = new CalendarEventDTO.Create();
         validRequest.setTitle("Test Event");
         validRequest.setHouseCode("HOUSE123");
