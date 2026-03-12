@@ -10,17 +10,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings; // Add this
-import org.mockito.quality.Strictness; // Add this
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT) // This fixes the UnnecessaryStubbingException
+@MockitoSettings(strictness = Strictness.LENIENT)
 class NotificationServiceLogicTest {
 
     @Mock private Firestore firestore;
@@ -36,6 +38,7 @@ class NotificationServiceLogicTest {
 
     @InjectMocks
     private NotificationService notificationService;
+
 
     @BeforeEach
     void setUp() {
@@ -158,5 +161,47 @@ class NotificationServiceLogicTest {
         );
 
         verify(notificationsCollection, never()).document();
+    }
+    // --- Token Management Tests ---
+
+    @Test
+    @DisplayName("getTokensForUsers should return unique non-empty tokens from all users")
+    void getTokensForUsers_Logic() throws Exception {
+        String uid1 = "user1";
+        String uid2 = "user2";
+        List<String> tokens1 = List.of("tokenA", "tokenB");
+        List<String> tokens2 = List.of("tokenB", "tokenC", "  ", ""); // tokenB is duplicate, others empty
+
+        // Create Mocks for Users
+        DocumentReference userRef1 = mock(DocumentReference.class);
+        ApiFuture<DocumentSnapshot> future1 = mock(ApiFuture.class);
+        DocumentSnapshot snap1 = mock(DocumentSnapshot.class);
+
+        when(usersCollection.document(uid1)).thenReturn(userRef1);
+        when(userRef1.get()).thenReturn(future1);
+        when(future1.get()).thenReturn(snap1);
+        when(snap1.exists()).thenReturn(true);
+        when(snap1.get("tokens")).thenReturn(tokens1);
+
+        DocumentReference userRef2 = mock(DocumentReference.class);
+        ApiFuture<DocumentSnapshot> future2 = mock(ApiFuture.class);
+        DocumentSnapshot snap2 = mock(DocumentSnapshot.class);
+
+        when(usersCollection.document(uid2)).thenReturn(userRef2);
+        when(userRef2.get()).thenReturn(future2);
+        when(future2.get()).thenReturn(snap2);
+        when(snap2.exists()).thenReturn(true);
+        when(snap2.get("tokens")).thenReturn(tokens2);
+
+        // Reflection to call the private method part of org.springframework.test.util
+        List<String> result = (List<String>) org.springframework.test.util.ReflectionTestUtils.invokeMethod(notificationService, "getTokensForUsers", List.of(uid1, uid2));
+
+        assertNotNull(result);
+        assertEquals(3, result.size(), "Should have tokenA, tokenB, and tokenC");
+        assertTrue(result.contains("tokenA"));
+        assertTrue(result.contains("tokenB"));
+        assertTrue(result.contains("tokenC"));
+        assertFalse(result.contains(""), "Should have filtered out empty strings");
+        assertFalse(result.contains("  "), "Should have filtered out whitespace strings");
     }
 }
