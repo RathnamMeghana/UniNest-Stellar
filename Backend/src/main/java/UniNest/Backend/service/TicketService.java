@@ -14,7 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -40,6 +44,16 @@ public class TicketService {
         }
     }
 
+    private Timestamp parseDateToTimestamp(String dateStr) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy");
+            Date date = sdf.parse(dateStr);
+            return Timestamp.of(date);
+        } catch (Exception e) {
+            return Timestamp.now();
+        }
+    }
+
     public String createTicket(Ticket request) {
         if (request == null) {
             throw new IllegalArgumentException("Request cannot be null or empty");
@@ -49,16 +63,43 @@ public class TicketService {
             Firestore db = FirestoreClient.getFirestore();
             Timestamp time = Timestamp.now();
 
-            Ticket ticket = new Ticket();
+            String realBuildingName = "Unknown Building";
+            try {
+                if (request.getApartmentId() != null && !request.getApartmentId().isBlank()) {
+                    DocumentSnapshot aptDoc = db.collection("apartments")
+                            .document(request.getApartmentId())
+                            .get()
+                            .get();
+
+                    if (aptDoc.exists()) {
+                        String buildingId = aptDoc.getString("buildingId");
+                        if (buildingId != null && !buildingId.isBlank()) {
+                            DocumentSnapshot buildingDoc = db.collection("buildings")
+                                    .document(buildingId)
+                                    .get()
+                                    .get();
+
+                            if (buildingDoc.exists() && buildingDoc.getString("name") != null) {
+                                realBuildingName = buildingDoc.getString("name");
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                realBuildingName = request.getBuilding() != null && !request.getBuilding().isBlank()
+                        ? request.getBuilding()
+                        : "Unknown Building";
+            }
 
             if (request.getId() == null || request.getId().isEmpty()) {
                 request.setId(UUID.randomUUID().toString());
             }
 
+            Ticket ticket = new Ticket();
             ticket.setId(request.getId());
             ticket.setDescription(request.getDescription());
             ticket.setRoom(request.getRoom());
-            ticket.setBuilding(request.getBuilding());
+            ticket.setBuilding(realBuildingName);
             ticket.setApartmentId(request.getApartmentId());
             ticket.setLandlordId(request.getLandlordId());
             ticket.setApartmentName(request.getApartmentName());
@@ -68,6 +109,7 @@ public class TicketService {
             ticket.setUserId(request.getUserId());
             ticket.setUserName(request.getUserName());
             ticket.setPrioritySource(request.getPrioritySource());
+            ticket.setImageUrl(request.getImageUrl());
             ticket.setCreatedAt(time);
             ticket.setUpdatedAt(time);
 
@@ -103,7 +145,7 @@ public class TicketService {
                 }
             }
 
-            return "ticket created successfully with id: " + request.getId();
+            return "Ticket created successfully with id: " + request.getId();
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -117,7 +159,7 @@ public class TicketService {
 
     public List<Ticket> getTicketsByBuilding(String building) {
         if (building == null || building.isBlank()) {
-            throw new IllegalArgumentException("building cannot be null or empty");
+            throw new IllegalArgumentException("Building name cannot be null or empty");
         }
 
         try {
@@ -127,9 +169,7 @@ public class TicketService {
                     .whereEqualTo("building", building)
                     .get();
 
-            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-
-            return documents.stream()
+            return future.get().getDocuments().stream()
                     .map(doc -> doc.toObject(Ticket.class))
                     .collect(Collectors.toList());
 
@@ -137,7 +177,7 @@ public class TicketService {
             Thread.currentThread().interrupt();
             throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new TicketServiceException("Failed to fetch tickets by building", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
             throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -155,9 +195,49 @@ public class TicketService {
                     .whereEqualTo("apartmentId", houseCode)
                     .get();
 
-            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            return future.get().getDocuments().stream()
+                    .map(doc -> doc.toObject(Ticket.class))
+                    .collect(Collectors.toList());
 
-            return documents.stream()
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (ExecutionException e) {
+            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (FirestoreException e) {
+            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public List<Ticket> getTicketsByLandlord(String landlordId) {
+        if (landlordId == null || landlordId.isBlank()) {
+            throw new IllegalArgumentException("LandlordId cannot be null or empty");
+        }
+
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            DocumentSnapshot landlordDoc = db.collection("users").document(landlordId).get().get();
+
+            if (!landlordDoc.exists()) {
+                throw new TicketServiceException(
+                        "Landlord with ID " + landlordId + " does not exist.",
+                        HttpStatus.NOT_FOUND
+                );
+            }
+
+            String role = landlordDoc.getString("role");
+            if (!"1".equalsIgnoreCase(role)) {
+                throw new TicketServiceException(
+                        "User exists but is not authorized as a Landlord.",
+                        HttpStatus.FORBIDDEN
+                );
+            }
+
+            ApiFuture<QuerySnapshot> future = db.collection("tickets")
+                    .whereEqualTo("landlordId", landlordId)
+                    .get();
+
+            return future.get().getDocuments().stream()
                     .map(doc -> doc.toObject(Ticket.class))
                     .collect(Collectors.toList());
 
@@ -263,6 +343,13 @@ public class TicketService {
     }
 
     public String updateTicketPriority(String ticketId, String priority) {
+        if (ticketId == null || ticketId.isBlank()) {
+            throw new IllegalArgumentException("ticketId required");
+        }
+        if (priority == null || priority.isBlank()) {
+            throw new IllegalArgumentException("priority required");
+        }
+
         try {
             Firestore db = FirestoreClient.getFirestore();
 
@@ -294,45 +381,11 @@ public class TicketService {
         }
     }
 
-    public List<Ticket> getTicketsByLandlord(String landlordId) throws ExecutionException, InterruptedException {
-        if (landlordId == null || landlordId.isBlank()) {
-            throw new IllegalArgumentException("LandlordId cannot be null or empty");
-        }
-
-        Firestore db = FirestoreClient.getFirestore();
-        DocumentSnapshot landlordDoc = db.collection("users").document(landlordId).get().get();
-
-        if (!landlordDoc.exists()) {
-            throw new TicketServiceException("Landlord with ID " + landlordId + " does not exist.", HttpStatus.NOT_FOUND);
-        }
-
-        String role = landlordDoc.getString("role");
-        if (!"1".equalsIgnoreCase(role)) {
-            throw new TicketServiceException("User exists but is not authorized as a Landlord.", HttpStatus.FORBIDDEN);
-        }
-
-        try {
-            ApiFuture<QuerySnapshot> future = db.collection("tickets")
-                    .whereEqualTo("landlordId", landlordId)
-                    .get();
-
-            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-
-            return documents.stream()
-                    .map(doc -> doc.toObject(Ticket.class))
-                    .collect(Collectors.toList());
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public String updateAgentData(String ticketId, String response, String arrivalDate) {
+        if (ticketId == null || ticketId.isBlank()) {
+            throw new IllegalArgumentException("ticketId required");
+        }
+
         try {
             Firestore db = FirestoreClient.getFirestore();
 
@@ -343,7 +396,7 @@ public class TicketService {
             List<QueryDocumentSnapshot> docs = future.get().getDocuments();
 
             if (docs.isEmpty()) {
-                throw new TicketNotFoundException("Ticket not found");
+                throw new TicketNotFoundException("Ticket not found: " + ticketId);
             }
 
             QueryDocumentSnapshot ticketDoc = docs.get(0);
@@ -355,6 +408,33 @@ public class TicketService {
                     "arrivalDate", arrivalDate,
                     "updatedAt", Timestamp.now()
             ).get();
+
+            if (ticket != null && arrivalDate != null && !arrivalDate.isBlank()) {
+                String houseCode = ticket.getApartmentId() != null ? ticket.getApartmentId().trim() : null;
+                Timestamp visitTime = parseDateToTimestamp(arrivalDate);
+
+                DocumentReference calendarRef = db.collection("calendar_events").document();
+                String generatedId = calendarRef.getId();
+
+                Map<String, Object> calendarEntry = new HashMap<>();
+                calendarEntry.put("id", generatedId);
+                calendarEntry.put("houseCode", houseCode);
+                calendarEntry.put("type", "MAINTENANCE");
+                calendarEntry.put("title", "Reminder: Maintenance Visit");
+                calendarEntry.put(
+                        "description",
+                        "Agent message: " + (response != null ? response : "") +
+                                " (Issue: " + (ticket.getCategory() != null ? ticket.getCategory() : "General") + ")"
+                );
+                calendarEntry.put("startDate", visitTime);
+                calendarEntry.put("endDate", visitTime);
+                calendarEntry.put("status", "NOT_STARTED");
+                calendarEntry.put("allDay", false);
+                calendarEntry.put("createdAt", Timestamp.now());
+                calendarEntry.put("createdBy", ticket.getLandlordId());
+
+                calendarRef.set(calendarEntry).get();
+            }
 
             if (ticket != null && ticket.getApartmentId() != null && !ticket.getApartmentId().isBlank()) {
                 List<String> tenantIds = notificationService.getTenantUserIdsByHouseCode(ticket.getApartmentId());
@@ -400,7 +480,9 @@ public class TicketService {
                 }
             }
 
-            return "Agent data updated";
+            return arrivalDate != null && !arrivalDate.isBlank()
+                    ? "Agent data updated and reminder added to calendar"
+                    : "Agent data updated";
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
