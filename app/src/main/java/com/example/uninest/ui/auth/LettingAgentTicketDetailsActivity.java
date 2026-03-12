@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
     private TextView tvTicketCategory, tvLocationInfo, tvDescription, tvDateSelector;
     private Spinner spinnerPriority, spinnerStatus;
     private EditText etAgentResponse;
+    private ImageView ivTicketImage;
 
     // Variables
     private String selectedDate = "";
@@ -60,6 +62,7 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
 
         tvDateSelector = findViewById(R.id.tvDateSelector);
         etAgentResponse = findViewById(R.id.etAgentResponse);
+        ivTicketImage = findViewById(R.id.ivTicketImage);
 
         Button btnSave = findViewById(R.id.btnSaveChanges);
         View btnBack = findViewById(R.id.btnBack);
@@ -67,13 +70,36 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
         // 3. Populate Data
         if(ticket != null) {
 
+            if (ticket.getImageUrl() != null && !ticket.getImageUrl().isEmpty()) {
+                ivTicketImage.setVisibility(View.VISIBLE);
+
+                try {
+                    // Convert Base64 String to byte array
+                    byte[] imageBytes = android.util.Base64.decode(ticket.getImageUrl(), android.util.Base64.DEFAULT);
+
+                    // Load using Glide
+                    com.bumptech.glide.Glide.with(this)
+                            .asBitmap()
+                            .load(imageBytes)
+                            .placeholder(android.R.drawable.progress_horizontal)
+                            .error(android.R.drawable.ic_menu_report_image)
+                            .into(ivTicketImage);
+                } catch (Exception e) {
+                    ivTicketImage.setVisibility(View.GONE);
+                    android.util.Log.e("IMAGE_ERROR", "Failed to decode image", e);
+                }
+            } else {
+                ivTicketImage.setVisibility(View.GONE); // Ensure it's hidden if no image
+            }
+
             tvTicketCategory.setText(ticket.getCategory() != null ? ticket.getCategory() : "Maintenance Ticket");
 
+            String building = (ticket.getBuilding() != null && !ticket.getBuilding().isEmpty()) ? ticket.getBuilding() : "Unknown Building";
 
             String apt = ticket.getApartmentName() != null ? ticket.getApartmentName() : "Unit";
             String room = ticket.getRoom() != null ? ticket.getRoom() : "General";
-            tvLocationInfo.setText(apt + " - " + room);
-
+            //tvLocationInfo.setText(apt + " - " + room);
+            tvLocationInfo.setText(building + " | " + apt + " - " + room);
             // Set Description
             tvDescription.setText(ticket.getDescription());
 

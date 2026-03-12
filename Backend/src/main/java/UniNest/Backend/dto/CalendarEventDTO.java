@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CalendarEventDTO {
 
-    public enum EventType { CHORE, MOVE_OUT, MOVE_IN, BILL_DUE, MAINTENANCE, OTHER, CUSTOM, EVENT }
+    public enum EventType { CHORE, MOVE_OUT, MOVE_IN, BILL_DUE, MAINTENANCE, OTHER, CUSTOM, EVENT,  REMINDER }
 
     @Data
     public static class Recurrence {

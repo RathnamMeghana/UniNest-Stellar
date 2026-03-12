@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.uninest.R;
+import com.example.uninest.model.Building;
 
 public class BuildingCardView extends FrameLayout {
 
@@ -49,22 +50,56 @@ public class BuildingCardView extends FrameLayout {
         imgBuilding.setImageResource(resId);
     }
 
-    public void setBuildingImageFromBase64(String base64String) {
-        // Clear state to fix the "Wrong Image" recycling bug
-        Glide.with(getContext()).clear(imgBuilding);
-        imgBuilding.setImageResource(R.drawable.ic_launcher_background);
+//    public void setBuildingImageFromBase64(String base64String) {
+//        // Clear state to fix the "Wrong Image" recycling bug
+//        Glide.with(getContext()).clear(imgBuilding);
+//        imgBuilding.setImageResource(R.drawable.ic_launcher_background);
+//
+//        if (base64String == null || base64String.isEmpty()) return;
+//
+//        try {
+//            byte[] imageBytes = Base64.decode(base64String, Base64.DEFAULT);
+//            Glide.with(getContext())
+//                    .asBitmap()
+//                    .load(imageBytes)
+//                    .centerCrop()
+//                    .into(imgBuilding);
+//        } catch (Exception e) {
+//            imgBuilding.setImageResource(R.drawable.ic_launcher_background);
+//        }
+//    }
 
-        if (base64String == null || base64String.isEmpty()) return;
+    public void setBuildingImageFromBase64(Building building) {
+        if (building == null) return;
 
-        try {
-            byte[] imageBytes = Base64.decode(base64String, Base64.DEFAULT);
-            Glide.with(getContext())
-                    .asBitmap()
-                    .load(imageBytes)
-                    .centerCrop()
-                    .into(imgBuilding);
-        } catch (Exception e) {
-            imgBuilding.setImageResource(R.drawable.ic_launcher_background);
+
+        byte[] imageBytes = building.getCachedImageBytes();
+
+        if (imageBytes == null) {
+
+            Glide.with(getContext()).clear(imgBuilding);
+            imgBuilding.setImageResource(android.R.color.darker_gray);
+
+            return;
         }
+        Glide.with(getContext())
+                .asBitmap()
+                .load(imageBytes)
+                // Change the placeholder to transparent or a neutral color
+                .placeholder(android.R.color.transparent)
+                // Disable animations to prevent the flash
+                .dontAnimate()
+
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                .centerCrop()
+                .into(imgBuilding);
+//        Glide.with(getContext())
+//                .asBitmap()
+//                .load(imageBytes)
+//                .placeholder(R.drawable.ic_launcher_background) // Show this while loading
+//                .error(R.drawable.ic_launcher_background)       // Show this if it fails
+//                .centerCrop()
+//                .thumbnail(0.1f) // Load a very blurry version first to stop "popping"
+//                .into(imgBuilding);
     }
 }
