@@ -26,6 +26,7 @@ public class Ticket {
     private String userName;
     private String prioritySource;
     private String imageUrl;
+    private boolean deletedByTenant = false;
 
 
     public void sanitize() {
