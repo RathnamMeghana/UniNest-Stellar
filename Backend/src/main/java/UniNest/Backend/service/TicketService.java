@@ -210,7 +210,7 @@ public class TicketService {
         }
     }
 
-    public List<Ticket> getTicketsByLandlord(String landlordId) {
+    public List<Ticket> getTicketsByLandlord(String landlordId, boolean includeDeleted) {
         if (landlordId == null || landlordId.isBlank()) {
             throw new IllegalArgumentException("LandlordId cannot be null or empty");
         }
@@ -232,6 +232,11 @@ public class TicketService {
                         "User exists but is not authorized as a Landlord.",
                         HttpStatus.FORBIDDEN
                 );
+            }
+            com.google.cloud.firestore.Query query = db.collection("tickets")
+                    .whereEqualTo("landlordId", landlordId);
+            if (!includeDeleted) {
+                query = query.whereEqualTo("deletedByTenant", false);
             }
 
             ApiFuture<QuerySnapshot> future = db.collection("tickets")
