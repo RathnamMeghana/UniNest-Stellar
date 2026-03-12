@@ -68,6 +68,10 @@ public class ChoreController {
         //  Get Roommates
         List<User> roommates = userService.getUsersForApartment(houseCode);
 
+        if (roommates == null || roommates.isEmpty()) {
+            throw new UserServiceException("No roommates found", HttpStatus.NOT_FOUND);
+        }
+
         //  Apply the same Workload Sort as the Service
         List<ChoreRequests> allChores = choreService.getAllChoreByApartment(houseCode);
         Map<String, Integer> workloadMap = new HashMap<>();
