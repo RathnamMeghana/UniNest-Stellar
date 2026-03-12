@@ -204,7 +204,12 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
                 overridePendingTransition(0, 0);
                 finish();
-                return true;
+                return true;}
+                else if (itemId == R.id.nav_notifications) {
+                    startActivity(new Intent(this, LettingAgentNotificationsActivity.class));
+                    overridePendingTransition(0, 0);
+                    finish();
+                    return true;
             } else if (itemId == R.id.nav_profile) {
                 return true;
             }

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <queries>
@@ -18,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.UniNest"
         android:usesCleartextTraffic="true"
+        android:name=".UniNestApplication"
         tools:targetApi="31">
 
         <activity
@@ -44,6 +46,9 @@
             android:exported="false" />
         <activity
             android:name=".ui.auth.LettingAgentBuildingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LettingAgentNotificationsActivity"
             android:exported="false" />
 <!--                <activity-->
 <!--                    android:name=".ui.auth.TenantLoginActivity"-->
@@ -197,6 +202,15 @@
         <!-- Paste your Android-specific DSN here -->
         <meta-data android:name="io.sentry.dsn"
             android:value="https://bc4297d9270fcaf5da22604cd4d894cb@o4510919425392640.ingest.de.sentry.io/4510919531102288" />
+
+
+        <service
+            android:name=".notifications.UniNestMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
     </application>
 

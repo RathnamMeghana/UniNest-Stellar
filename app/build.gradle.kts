@@ -104,7 +104,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-   // implementation(libs.play.services.measurement.api)
+    // implementation(libs.play.services.measurement.api)
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation("com.google.firebase:firebase-appcheck")
     //implementation("com.google.firebase:firebase-appcheck-debug")
@@ -125,7 +125,7 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
 
-
+    implementation("com.google.firebase:firebase-messaging")
 
 
 

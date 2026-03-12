@@ -2,6 +2,7 @@ package com.example.uninest.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,20 +13,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
+import com.example.uninest.model.RegisterTokenRequest;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class TenantLoginActivity extends AppCompatActivity {
 
@@ -46,7 +49,6 @@ public class TenantLoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         sessionManager = new SessionManager(this);
-
 
         sessionManager.setFirstTimeSetupCompleted();
 
@@ -130,7 +132,6 @@ public class TenantLoginActivity extends AppCompatActivity {
     }
 
     private void syncTokenWithBackend(FirebaseUser user) {
-        // 1. Get the UID directly from the FirebaseUser object (Guaranteed not null)
         final String firebaseUid = user.getUid();
 
         user.getIdToken(true).addOnCompleteListener(tokenTask -> {
@@ -142,7 +143,6 @@ public class TenantLoginActivity extends AppCompatActivity {
 
             String idToken = tokenTask.getResult().getToken();
 
-            // 2. Get user profile from Firestore
             db.collection("users").document(firebaseUid).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
@@ -162,10 +162,8 @@ public class TenantLoginActivity extends AppCompatActivity {
                             String fullName = (fName != null ? fName : "") + " " + (lName != null ? lName : "");
                             String profileImg = documentSnapshot.getString("profileImageUrl");
 
-                            // 3. Save session using the verified firebaseUid
                             sessionManager.saveTenantSession(firebaseUid, email, role, houseCode, fullName.trim(), profileImg);
 
-                            // 4. Sync with Backend
                             OkHttpClient client = new OkHttpClient();
                             MediaType JSON = MediaType.get("application/json; charset=utf-8");
                             String jsonBody = "{\"token\":\"" + idToken + "\", \"houseCode\":\"" + houseCode + "\"}";
@@ -178,9 +176,9 @@ public class TenantLoginActivity extends AppCompatActivity {
                                     .addHeader("Authorization", "Bearer " + idToken)
                                     .build();
 
-                            client.newCall(request).enqueue(new Callback() {
+                            client.newCall(request).enqueue(new okhttp3.Callback() {
                                 @Override
-                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
                                     runOnUiThread(() -> {
                                         resetUI();
                                         Toast.makeText(TenantLoginActivity.this, "Backend sync failed", Toast.LENGTH_SHORT).show();
@@ -188,12 +186,32 @@ public class TenantLoginActivity extends AppCompatActivity {
                                 }
 
                                 @Override
-                                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                                public void onResponse(@NonNull okhttp3.Call call, @NonNull Response response) throws IOException {
                                     response.close();
                                     if (response.isSuccessful()) {
                                         runOnUiThread(() -> {
                                             Toast.makeText(TenantLoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                            // 5. Navigate ONLY after successful sync
+
+                                            // Register FCM token after login succeeds
+                                            FirebaseMessaging.getInstance().getToken()
+                                                    .addOnSuccessListener(token -> {
+                                                        Log.d("FCM", "Login token: " + token);
+
+                                                        ApiClient.getNotificationApi()
+                                                                .registerToken(new RegisterTokenRequest(token))
+                                                                .enqueue(new Callback<Void>() {
+                                                                    @Override
+                                                                    public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
+                                                                        Log.d("FCM", "Token registered on login: " + response.code());
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onFailure(Call<Void> call, Throwable t) {
+                                                                        Log.e("FCM", "Token register failed on login", t);
+                                                                    }
+                                                                });
+                                                    });
+
                                             Intent intent = new Intent(TenantLoginActivity.this, TenantHomeActivity.class);
                                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                             startActivity(intent);

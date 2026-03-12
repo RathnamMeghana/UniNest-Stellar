@@ -214,32 +214,39 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
     }
 
     private void setupBottomNav(int selectedId) {
+
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
         bottomNav.setSelectedItemId(selectedId);
 
         bottomNav.setOnItemSelectedListener(item -> {
+
             int itemId = item.getItemId();
 
-            // Prevent reloading the same activity
-            if (itemId == selectedId) return true;
-
-            if (itemId == R.id.nav_tickets) {
-                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_buildings) {
-                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_profile) {
-                startActivity(new Intent(this, LettingAgentProfileActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
+            if (itemId == selectedId) {
                 return true;
             }
-            return false;
+
+            Intent intent = null;
+
+            if (itemId == R.id.nav_buildings) {
+                intent = new Intent(this, LettingAgentBuildingsActivity.class);
+            }
+            else if (itemId == R.id.nav_tickets) {
+                intent = new Intent(this, LettingAgentTicketsActivity.class);
+            }
+            else if (itemId == R.id.nav_notifications) {
+                intent = new Intent(this, LettingAgentNotificationsActivity.class);
+            }
+            else if (itemId == R.id.nav_profile) {
+                intent = new Intent(this, LettingAgentProfileActivity.class);
+            }
+
+            if (intent != null) {
+                startActivity(intent);
+                overridePendingTransition(0,0);
+            }
+
+            return true;
         });
     }
 }

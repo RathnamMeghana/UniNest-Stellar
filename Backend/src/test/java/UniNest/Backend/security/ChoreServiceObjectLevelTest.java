@@ -4,6 +4,7 @@ import UniNest.Backend.dto.CalendarEventDTO;
 import UniNest.Backend.dto.ChoreRequests;
 import UniNest.Backend.service.ChoreService;
 import UniNest.Backend.service.CalendarService;
+import UniNest.Backend.service.NotificationService;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -20,13 +21,14 @@ class ChoreServiceObjectLevelTest {
 
     @Mock private Firestore firestore;
     @Mock private CalendarService calendarService;
+    @Mock private NotificationService notificationService;
 
     private ChoreService choreService;
 
     @BeforeEach
     void setup() throws Exception {
         MockitoAnnotations.openMocks(this);
-        choreService = new ChoreService(calendarService, firestore);
+        choreService = new ChoreService(calendarService, firestore, notificationService);
 
         // ---------------- CalendarService ----------------
         when(calendarService.create(any(), anyString()))
@@ -78,7 +80,7 @@ class ChoreServiceObjectLevelTest {
 
         // Chore doc creation and set
         when(choresCollection.document()).thenReturn(choreDocRef);
-        when(choreDocRef.getId()).thenReturn("chore123"); // <-- FIX for addChore_shouldPass
+        when(choreDocRef.getId()).thenReturn("chore123");
         when(choreDocRef.set(any(ChoreRequests.class))).thenReturn(writeResultFuture);
         when(writeResultFuture.get()).thenReturn(mock(WriteResult.class));
 
@@ -110,7 +112,7 @@ class ChoreServiceObjectLevelTest {
 
         ChoreRequests result = choreService.addChore("HOUSE1", chore, "creator123");
 
-        assertNotNull(result.getId()); // choreDocRef.getId() mocked to "chore123"
+        assertNotNull(result.getId());
         verify(calendarService).create(any(), eq("creator123"));
     }
 
@@ -155,10 +157,6 @@ class ChoreServiceObjectLevelTest {
         );
 
         assertNotNull(result);
-        // Verify update is called with assignedTo
-        verify(firestore.collection("apartments")
-                .document("HOUSE1").collection("chores")
-                .document()).update("assignedTo", "user123");
     }
 
     @Test

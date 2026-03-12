@@ -99,9 +99,10 @@
         android:paddingHorizontal="24dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:background="#E9E2EE" />
-</ScrollView>
+        android:background="#E9E2EE" >
 
+    </LinearLayout>
+</ScrollView>
 
     <!-- Bottom navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -121,4 +122,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

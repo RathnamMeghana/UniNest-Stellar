@@ -33,7 +33,7 @@ public class TenantBillsActivity extends AppCompatActivity {
     private TenantActiveBillsAdapter activeAdapter;
     private TenantPaidHistoryAdapter historyAdapter;
     private TenantOwedToMeAdapter owedToMeAdapter;
-
+    private String highlightBillId;
     private TextView tvSummary, tvHistoryHeader, tvActiveHeader;
     private TabLayout tabLayout;
     private SessionManager sessionManager;
@@ -48,6 +48,7 @@ public class TenantBillsActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         currentUserId = sessionManager.getUserId();
         houseCode = sessionManager.fetchHouseCode();
+        highlightBillId = getIntent().getStringExtra("highlight_bill_id");
 
         initViews();
         setupBottomNav();
@@ -71,7 +72,6 @@ public class TenantBillsActivity extends AppCompatActivity {
         rvActive.setLayoutManager(new LinearLayoutManager(this));
         rvHistory.setLayoutManager(new LinearLayoutManager(this));
 
-
         rvActive.setNestedScrollingEnabled(false);
         rvHistory.setNestedScrollingEnabled(false);
 
@@ -84,8 +84,12 @@ public class TenantBillsActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 refreshData();
             }
-            @Override public void onTabUnselected(TabLayout.Tab tab) {}
-            @Override public void onTabReselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
 
         findViewById(R.id.btnAddBill).setOnClickListener(v ->
@@ -120,20 +124,33 @@ public class TenantBillsActivity extends AppCompatActivity {
                             filtered.put(b.getTitle(), b);
                         }
                     }
+
                     List<BillsRequest> list = new ArrayList<>(filtered.values());
                     activeAdapter.setData(list);
                     rvActive.setAdapter(activeAdapter);
 
+                    if (highlightBillId != null && !highlightBillId.isBlank()) {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (highlightBillId.equals(list.get(i).getId())) {
+                                rvActive.scrollToPosition(i);
+                                Toast.makeText(TenantBillsActivity.this, "Opened related bill", Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                        }
+                    }
+
                     double total = 0;
-                    for(BillsRequest b : list) {
-                        for(BillsRequest.Split s : b.getSplits()) {
-                            if(s.getUserId().equals(currentUserId)) total += s.getAmountOwed();
+                    for (BillsRequest b : list) {
+                        for (BillsRequest.Split s : b.getSplits()) {
+                            if (s.getUserId().equals(currentUserId)) total += s.getAmountOwed();
                         }
                     }
                     tvSummary.setText(String.format(Locale.getDefault(), "Total You Owe: €%.2f", total));
                 }
             }
-            @Override public void onFailure(Call<List<BillsRequest>> call, Throwable t) {}
+
+            @Override
+            public void onFailure(Call<List<BillsRequest>> call, Throwable t) {}
         });
     }
 
@@ -151,7 +168,6 @@ public class TenantBillsActivity extends AppCompatActivity {
                                 s.setCreatorId(bill.getCreatorId());
                                 paid.add(s);
                             }
-
                         }
                     }
                     historyAdapter.setData(paid);
@@ -162,7 +178,9 @@ public class TenantBillsActivity extends AppCompatActivity {
                     rvHistory.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             }
-            @Override public void onFailure(Call<List<BillsRequest>> call, Throwable t) {}
+
+            @Override
+            public void onFailure(Call<List<BillsRequest>> call, Throwable t) {}
         });
     }
 
@@ -171,7 +189,6 @@ public class TenantBillsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<OwedToUser>> call, Response<List<OwedToUser>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-
 
                     List<OwedToUser> list = response.body();
 
@@ -196,7 +213,6 @@ public class TenantBillsActivity extends AppCompatActivity {
         });
     }
 
-
     private void fetchReceivedHistory() {
         ApiClient.getBillsApi().getBillsCreatedBy(currentUserId).enqueue(new Callback<List<BillsRequest>>() {
             @Override
@@ -215,7 +231,6 @@ public class TenantBillsActivity extends AppCompatActivity {
                                 s.setCreatorId(bill.getCreatorId());
                                 received.add(s);
                             }
-
                         }
                     }
 
@@ -239,8 +254,6 @@ public class TenantBillsActivity extends AppCompatActivity {
         });
     }
 
-
-    // Helper to format date string to "29 Jan 2026"
     public String formatDate(String raw) {
         if (raw == null) return "--";
         try {
@@ -248,7 +261,9 @@ public class TenantBillsActivity extends AppCompatActivity {
             SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             SimpleDateFormat out = new SimpleDateFormat("dd MMM yyyy", Locale.US);
             return out.format(in.parse(clean));
-        } catch (Exception e) { return raw; }
+        } catch (Exception e) {
+            return raw;
+        }
     }
 
     private void fetchRoommatesThenBills() {
@@ -261,7 +276,11 @@ public class TenantBillsActivity extends AppCompatActivity {
                 }
                 refreshData();
             }
-            @Override public void onFailure(Call<List<User>> call, Throwable t) { refreshData(); }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+                refreshData();
+            }
         });
     }
 
@@ -274,10 +293,11 @@ public class TenantBillsActivity extends AppCompatActivity {
                     refreshData();
                 }
             }
-            @Override public void onFailure(Call<Void> call, Throwable t) {}
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {}
         });
     }
-
 
     private void setupBottomNav() {
         BottomNavigationView nav = findViewById(R.id.bottomNavigationView);
