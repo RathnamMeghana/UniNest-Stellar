@@ -5,6 +5,7 @@ import UniNest.Backend.service.CalendarService;
 import jakarta.validation.Valid; // Ensure this is imported
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CalendarController {
 
-    private final CalendarService calendarService;
+    @Autowired
+    private  CalendarService calendarService;
 
-    // 1. Fixed @PreAuthorize typo (added opening quote)
-    // 2. Added @Valid to the @RequestBody parameter
-    //@PreAuthorize("hasRole('LETTINGAGENT') or hasRole('TENANT')")
+
+    @PreAuthorize("hasAnyRole('LETTINGAGENT', 'TENANT')")
     @PostMapping("/create")
     public CalendarEventDTO.Response createEvent(
             @Valid @RequestBody CalendarEventDTO.Create request,
