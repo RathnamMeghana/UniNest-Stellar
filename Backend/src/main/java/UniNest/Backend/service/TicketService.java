@@ -494,4 +494,35 @@ public class TicketService {
             throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public String softDeleteTicket(String ticketId) {
+        if (ticketId == null || ticketId.isBlank()) {
+            throw new IllegalArgumentException("ticketId required");
+        }
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            // Find the document where the 'id' field matches ticketId
+            ApiFuture<QuerySnapshot> future = db.collection("tickets")
+                    .whereEqualTo("id", ticketId)
+                    .get();
+
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+            if (documents.isEmpty()) {
+                throw new TicketNotFoundException("Ticket not found: " + ticketId);
+            }
+
+            // Update the deletedByTenant flag
+            documents.get(0).getReference().update(
+                    "deletedByTenant", true,
+                    "updatedAt", Timestamp.now()
+            ).get();
+
+            return "Ticket removed successfully";
+
+        } catch (InterruptedException | ExecutionException e) {
+            throw new TicketServiceException("Failed to delete ticket", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
