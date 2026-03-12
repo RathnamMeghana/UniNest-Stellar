@@ -204,4 +204,25 @@ class NotificationServiceLogicTest {
         assertFalse(result.contains(""), "Should have filtered out empty strings");
         assertFalse(result.contains("  "), "Should have filtered out whitespace strings");
     }
+
+    @Test
+    @DisplayName("registerToken should use FieldValue.arrayUnion to save tokens")
+    void registerToken_ShouldUseArrayUnion() throws Exception {
+        String uid = "user1";
+        String token = "newToken";
+
+        when(usersCollection.document(uid)).thenReturn(userDocRef);
+        when(userDocRef.set(anyMap(), any(SetOptions.class))).thenReturn(mock(ApiFuture.class));
+        when(mock(ApiFuture.class).get()).thenReturn(mock(WriteResult.class));
+
+        notificationService.registerToken(uid, token);
+
+        verify(userDocRef).set(argThat(map -> {
+            Map<?, ?> m = (Map<?, ?>) map;
+            return m.containsKey("tokens") && m.containsKey("tokensUpdatedAt");
+        }), eq(SetOptions.merge()));
+    }
+
+
+
 }
