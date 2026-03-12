@@ -105,6 +105,7 @@ public class TicketService {
             ticket.setApartmentName(request.getApartmentName());
             ticket.setCategory(request.getCategory());
             ticket.setPriority(request.getPriority());
+            ticket.setDeletedByTenant(false);
             ticket.setStatus(request.getStatus());
             ticket.setUserId(request.getUserId());
             ticket.setUserName(request.getUserName());
