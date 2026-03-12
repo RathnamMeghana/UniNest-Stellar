@@ -3,7 +3,7 @@ package UniNest.Backend.service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,9 @@ import UniNest.Backend.exception.BillServiceException;
 
 @Service
 public class BillService {
+
+    @Autowired
+    private NotificationService notificationService;
 
     private void checkOwnership(String userId) throws AccessDeniedException {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -38,6 +41,13 @@ public class BillService {
             Date baseDate = request.getDueDate() != null ? request.getDueDate() : new Date();
             Calendar cal = Calendar.getInstance();
             cal.setTime(baseDate);
+
+            List<String> tenantIds = new ArrayList<>();
+            if (request.getRoommateIds() != null) {
+                tenantIds.addAll(request.getRoommateIds());
+            }
+
+            Long firstEventTime = null;
 
             for (int i = 0; i < occurrences; i++) {
                 String uniqueBillId = UUID.randomUUID().toString();
@@ -72,14 +82,50 @@ public class BillService {
                 db.collection(BILL_COLLECTION).document(uniqueBillId).set(billCopy).get();
                 createdBills.add(billCopy);
 
+                if (firstEventTime == null && billCopy.getDueDate() != null) {
+                    firstEventTime = billCopy.getDueDate().getTime();
+                }
+
                 if (occurrences > 1 && request.getFrequency() != null) {
                     switch (request.getFrequency()) {
-                        case WEEKLY: cal.add(Calendar.DAY_OF_YEAR, 7); break;
-                        case BIWEEKLY: cal.add(Calendar.DAY_OF_YEAR, 14); break;
-                        case MONTHLY: cal.add(Calendar.MONTH, 1); break;
+                        case WEEKLY:
+                            cal.add(Calendar.DAY_OF_YEAR, 7);
+                            break;
+                        case BIWEEKLY:
+                            cal.add(Calendar.DAY_OF_YEAR, 14);
+                            break;
+                        case MONTHLY:
+                            cal.add(Calendar.MONTH, 1);
+                            break;
                     }
                 }
             }
+
+            if (!tenantIds.isEmpty()) {
+                String pushTitle;
+                String pushBody;
+
+                if (occurrences > 1) {
+                    pushTitle = "Recurring bill created";
+                    pushBody = request.getTitle() + " has been scheduled";
+                } else {
+                    pushTitle = "Rent Due!";
+                    pushBody = request.getTitle() + " is due soon";
+                }
+
+                String firstBillId = createdBills.isEmpty() ? null : createdBills.get(0).getId();
+
+                notificationService.createRentNotification(
+                        tenantIds,
+                        pushTitle,
+                        pushBody,
+                        firstBillId,
+                        firstEventTime
+                );
+
+                notificationService.sendToUsers(pushTitle, pushBody, tenantIds, "BILLS", firstBillId);
+            }
+
             return createdBills;
         } catch (Exception e) {
             throw new BillServiceException("Failed to create bill: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -106,6 +152,39 @@ public class BillService {
                     }
                     if (updated) {
                         billRef.update("splits", bill.getSplits()).get();
+
+                        String title = "Bill paid";
+                        String body = bill.getTitle() + " was marked paid";
+
+                        List<String> creatorIds = new ArrayList<>();
+                        if (bill.getCreatorId() != null && !bill.getCreatorId().isBlank() && !bill.getCreatorId().equals(userId)) {
+                            creatorIds.add(bill.getCreatorId());
+                        }
+
+                        if (!creatorIds.isEmpty()) {
+                            notificationService.createRentNotification(
+                                    creatorIds,
+                                    title,
+                                    body,
+                                    bill.getId(),
+                                    System.currentTimeMillis()
+                            );
+                            notificationService.sendToUsers(title, body, creatorIds, "BILLS", bill.getId());
+                        }
+
+                        if (bill.getHouseCode() != null && !bill.getHouseCode().isBlank()) {
+                            List<String> agentIds = notificationService.getAgentUserIdsByHouseCode(bill.getHouseCode());
+                            if (!agentIds.isEmpty()) {
+                                notificationService.createRentNotification(
+                                        agentIds,
+                                        title,
+                                        body,
+                                        bill.getId(),
+                                        System.currentTimeMillis()
+                                );
+                                notificationService.sendToUsers(title, body, agentIds, "AGENT_BILLS", bill.getId());
+                            }
+                        }
                     }
                 }
             }
@@ -127,7 +206,6 @@ public class BillService {
             for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
                 BillRequest bill = doc.toObject(BillRequest.class);
                 if (bill != null) {
-                    // FIX: Manually set the ID from Firestore document name
                     bill.setId(doc.getId());
 
                     if (bill.getSplits() != null) {
@@ -160,7 +238,6 @@ public class BillService {
             for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
                 BillRequest bill = doc.toObject(BillRequest.class);
                 if (bill != null) {
-                    // FIX: Manually set the ID
                     bill.setId(doc.getId());
 
                     if (bill.getSplits() != null) {
@@ -233,7 +310,7 @@ public class BillService {
                                 (currentDueDate != null && currentDueDate.before(latestSplits.get(groupKey).getDueDate()))) {
 
                             OwedToUserResponse owed = new OwedToUserResponse();
-                            owed.setBillId(doc.getId()); // FIX: Use doc ID
+                            owed.setBillId(doc.getId());
                             owed.setBillTitle(bill.getTitle());
                             owed.setDebtorUserId(split.getUserId());
                             owed.setAmountOwed(split.getAmountOwed());
@@ -272,7 +349,7 @@ public class BillService {
             for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
                 BillRequest bill = doc.toObject(BillRequest.class);
                 if (bill != null) {
-                    bill.setId(doc.getId()); // FIX: Manually set ID
+                    bill.setId(doc.getId());
                     results.add(bill);
                 }
             }

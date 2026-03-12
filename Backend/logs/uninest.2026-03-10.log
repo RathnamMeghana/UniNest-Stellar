@@ -1,0 +1,527 @@
+2026-03-10 13:22:51 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2026-03-10 13:22:51 [main] INFO  UniNest.Backend.BackendApplication - Starting BackendApplication using Java 17.0.4.1 with PID 15508 (C:\Users\richy\Downloads\UNINESTACTUAL\Backend\build\classes\java\main started by richy in C:\Users\richy\Downloads\UNINESTACTUAL\Backend)
+2026-03-10 13:22:51 [main] DEBUG UniNest.Backend.BackendApplication - Running with Spring Boot v3.2.7, Spring v6.1.10
+2026-03-10 13:22:51 [main] INFO  UniNest.Backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
+2026-03-10 13:22:54 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-03-10 13:22:54 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-0.0.0.0-8080"]
+2026-03-10 13:22:54 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-03-10 13:22:54 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.25]
+2026-03-10 13:22:54 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-03-10 13:22:54 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2861 ms
+2026-03-10 13:22:54 [main] DEBUG U.B.security.FirebaseTokenFilter - Filter 'firebaseTokenFilter' configured for use
+2026-03-10 13:22:56 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 571ec78d-ea46-4a0a-b3ef-7926d09398db
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-03-10 13:22:56 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@71668a67, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3ff26c9, org.springframework.security.web.context.SecurityContextHolderFilter@18463720, org.springframework.security.web.header.HeaderWriterFilter@73ddb7ef, org.springframework.web.filter.CorsFilter@2ecdcfe3, org.springframework.security.web.authentication.logout.LogoutFilter@1eb9d69a, UniNest.Backend.security.FirebaseTokenFilter@47829d6d, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@10f8e2d2, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@e8c84eb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@65b73689, org.springframework.security.web.session.SessionManagementFilter@e7e455d, org.springframework.security.web.access.ExceptionTranslationFilter@5e95b0ab, org.springframework.security.web.access.intercept.AuthorizationFilter@5ee581db]
+2026-03-10 13:22:57 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-0.0.0.0-8080"]
+2026-03-10 13:22:57 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-03-10 13:22:57 [main] INFO  UniNest.Backend.BackendApplication - Started BackendApplication in 6.702 seconds (process running for 7.424)
+2026-03-10 13:23:27 [http-nio-0.0.0.0-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-10 13:23:27 [http-nio-0.0.0.0-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-03-10 13:23:27 [http-nio-0.0.0.0-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2026-03-10 13:23:30 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:23:36 [http-nio-0.0.0.0-8080-exec-1] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:23:36 [http-nio-0.0.0.0-8080-exec-1] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:23:36 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:23:36 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:23:36 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:26:11 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:11 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:16 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:16 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:16 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:17 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:17 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:17 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:25 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:25 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:25 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:25 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:35 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:35 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:36 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:36 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:37 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:26:37 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:26:38 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:26:39 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:26:39 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-DA6D148 | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:26:39 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:26:40 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:26:41 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:26:42 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:42 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:43 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:26:44 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:44 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:26:44 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:45 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:26:46 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:26:46 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:26:46 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:26:46 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:26:46 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:26:55 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:55 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:55 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:55 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:56 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:56 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:56 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:56 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:57 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:57 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:26:57 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:57 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:26:59 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:27:00 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:27:02 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:27:02 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:27:03 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:27:03 [http-nio-0.0.0.0-8080-exec-9] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:27:03 [http-nio-0.0.0.0-8080-exec-9] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:27:03 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:27:21 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /notifications/send | Method: UniNest.Backend.controller.NotificationController.send
+2026-03-10 13:27:21 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:27:21 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:27:25 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.NotificationController.send completed successfully
+2026-03-10 13:27:34 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/landlord | Method: UniNest.Backend.controller.TicketController.getTicketsByLandlord
+2026-03-10 13:27:34 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/landlord | Method: UniNest.Backend.controller.TicketController.getTicketsByLandlord
+2026-03-10 13:27:35 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByLandlord completed successfully
+2026-03-10 13:27:36 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByLandlord completed successfully
+2026-03-10 13:28:09 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/landlord | Method: UniNest.Backend.controller.TicketController.getTicketsByLandlord
+2026-03-10 13:28:10 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /buildings/byLandlord | Method: UniNest.Backend.controller.BuildingController.getBuildingsByLandlord
+2026-03-10 13:28:10 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByLandlord completed successfully
+2026-03-10 13:28:13 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BuildingController.getBuildingsByLandlord completed successfully
+2026-03-10 13:28:13 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:28:13 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getByBuilding | Method: UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding
+2026-03-10 13:28:14 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:28:14 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ApartmentController.getApartmentsByBuilding completed successfully
+2026-03-10 13:28:14 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-DA6D148 | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:28:14 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-DA6D148 | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:28:15 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:28:15 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:30:54 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:02 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:03 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:08 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:09 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:10 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 13:31:12 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 13:31:13 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:18 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:19 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:20 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:22 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 13:31:23 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 13:31:28 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:29 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:30 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:32 [http-nio-0.0.0.0-8080-exec-17] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:31:33 [http-nio-0.0.0.0-8080-exec-18] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:31:38 [http-nio-0.0.0.0-8080-exec-19] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:39 [http-nio-0.0.0.0-8080-exec-20] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:31:40 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:31:42 [http-nio-0.0.0.0-8080-exec-22] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:31:43 [http-nio-0.0.0.0-8080-exec-23] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:31:44 [http-nio-0.0.0.0-8080-exec-1] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:31:44 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:31:44 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:31:48 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:31:49 [http-nio-0.0.0.0-8080-exec-24] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:31:50 [http-nio-0.0.0.0-8080-exec-25] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:31:52 [http-nio-0.0.0.0-8080-exec-5] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:31:52 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:31:52 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:31:52 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:31:53 [http-nio-0.0.0.0-8080-exec-4] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:31:53 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:31:53 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:31:53 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:31:58 [http-nio-0.0.0.0-8080-exec-7] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:31:58 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:31:58 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:31:58 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:31:59 [http-nio-0.0.0.0-8080-exec-8] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:31:59 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:31:59 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:31:59 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:32:00 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 13:32:00 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:32:02 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 13:32:02 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:32:03 [http-nio-0.0.0.0-8080-exec-9] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:32:03 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:32:03 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:32:08 [http-nio-0.0.0.0-8080-exec-3] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:32:08 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:32:08 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:32:09 [http-nio-0.0.0.0-8080-exec-2] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:32:09 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:32:09 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:32:09 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /chores/addWithSmartAssign | Method: UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign
+2026-03-10 13:32:10 [http-nio-0.0.0.0-8080-exec-11] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:32:10 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:32:10 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:32:10 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:32:10 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:32:12 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 13:32:13 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 13:32:18 [http-nio-0.0.0.0-8080-exec-14] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:32:18 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:32:18 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:32:19 [http-nio-0.0.0.0-8080-exec-15] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:32:19 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:32:19 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:32:20 [http-nio-0.0.0.0-8080-exec-16] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 13:32:20 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 13:32:20 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 13:32:21 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /chores/addWithSmartAssign | Method: UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign
+2026-03-10 13:32:22 [http-nio-0.0.0.0-8080-exec-17] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.CalendarController.getEventsForHouse failed with message: Failed to fetch events
+2026-03-10 13:32:22 [http-nio-0.0.0.0-8080-exec-17] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleCalendarException
+2026-03-10 13:32:22 [http-nio-0.0.0.0-8080-exec-17] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleCalendarException completed successfully
+2026-03-10 13:32:23 [http-nio-0.0.0.0-8080-exec-18] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.BillController.getBillsByUserId failed with message: Error fetching unpaid bills
+2026-03-10 13:32:23 [http-nio-0.0.0.0-8080-exec-18] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleBillServiceException
+2026-03-10 13:32:23 [http-nio-0.0.0.0-8080-exec-18] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleBillServiceException completed successfully
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-9] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-20] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-20] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-9] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-20] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-22] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-10] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-10] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-6] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-6] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:27 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-24] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-23] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-25] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-19] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-19] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-19] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:32:28 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:32:39 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /chores/addWithSmartAssign | Method: UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign
+2026-03-10 13:32:42 [http-nio-0.0.0.0-8080-exec-12] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:42 [http-nio-0.0.0.0-8080-exec-12] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:48 [http-nio-0.0.0.0-8080-exec-11] INFO  U.B.service.ChoreSchedulingService - >>> AI SCHEDULING: Calculating best assignee for task 'clean kitchen' in house 'APT-EB7215A'
+2026-03-10 13:32:48 [http-nio-0.0.0.0-8080-exec-9] INFO  U.B.service.ChoreSchedulingService - >>> AI SCHEDULING: Calculating best assignee for task 'clean kitchen' in house 'APT-EB7215A'
+2026-03-10 13:32:50 [http-nio-0.0.0.0-8080-exec-9] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:50 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:50 [http-nio-0.0.0.0-8080-exec-9] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:50 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:57 [http-nio-0.0.0.0-8080-exec-12] INFO  U.B.service.ChoreSchedulingService - >>> AI SCHEDULING: Calculating best assignee for task 'clean kitchen' in house 'APT-EB7215A'
+2026-03-10 13:32:58 [http-nio-0.0.0.0-8080-exec-12] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:32:58 [http-nio-0.0.0.0-8080-exec-12] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:32:58 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /chores/addWithSmartAssign | Method: UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign
+2026-03-10 13:33:01 [http-nio-0.0.0.0-8080-exec-13] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:33:01 [http-nio-0.0.0.0-8080-exec-13] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:33:02 [http-nio-0.0.0.0-8080-exec-9] DEBUG U.B.service.ChoreSchedulingService - >>> AI REQ: Sending data to model at https://uninest-ai-service-369284273825.europe-west1.run.app/predict
+2026-03-10 13:33:02 [http-nio-0.0.0.0-8080-exec-11] DEBUG U.B.service.ChoreSchedulingService - >>> AI REQ: Sending data to model at https://uninest-ai-service-369284273825.europe-west1.run.app/predict
+2026-03-10 13:33:09 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:33:10 [http-nio-0.0.0.0-8080-exec-12] DEBUG U.B.service.ChoreSchedulingService - >>> AI REQ: Sending data to model at https://uninest-ai-service-369284273825.europe-west1.run.app/predict
+2026-03-10 13:33:11 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:33:11 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:33:11 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:33:11 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:33:11 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:33:23 [http-nio-0.0.0.0-8080-exec-9] ERROR U.B.service.ChoreSchedulingService - !!! AI SERVER ERROR: I/O error on POST request for "https://uninest-ai-service-369284273825.europe-west1.run.app/predict": Remote host terminated the handshake. Falling back to manual workload balancing.
+2026-03-10 13:33:23 [http-nio-0.0.0.0-8080-exec-11] ERROR U.B.service.ChoreSchedulingService - !!! AI SERVER ERROR: I/O error on POST request for "https://uninest-ai-service-369284273825.europe-west1.run.app/predict": Remote host terminated the handshake. Falling back to manual workload balancing.
+2026-03-10 13:33:25 [http-nio-0.0.0.0-8080-exec-12] ERROR U.B.service.ChoreSchedulingService - !!! AI SERVER ERROR: I/O error on POST request for "https://uninest-ai-service-369284273825.europe-west1.run.app/predict": Remote host terminated the handshake. Falling back to manual workload balancing.
+2026-03-10 13:33:34 [http-nio-0.0.0.0-8080-exec-13] INFO  U.B.service.ChoreSchedulingService - >>> AI SCHEDULING: Calculating best assignee for task 'clean kitchen' in house 'APT-EB7215A'
+2026-03-10 13:33:34 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:33:35 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:33:40 [http-nio-0.0.0.0-8080-exec-13] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:33:40 [http-nio-0.0.0.0-8080-exec-13] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:33:43 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:33:46 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign completed successfully
+2026-03-10 13:33:50 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:33:50 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-4] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-4] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign completed successfully
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign completed successfully
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:33:53 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:33:55 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:33:55 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:33:55 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:33:55 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:33:55 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:33:56 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:33:56 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:33:56 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-4] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-4] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:34:01 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:34:02 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:34:02 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:34:07 [http-nio-0.0.0.0-8080-exec-13] DEBUG U.B.service.ChoreSchedulingService - >>> AI REQ: Sending data to model at https://uninest-ai-service-369284273825.europe-west1.run.app/predict
+2026-03-10 13:34:15 [http-nio-0.0.0.0-8080-exec-13] INFO  U.B.service.ChoreSchedulingService - <<< AI RES: Successfully predicted user index 1 with 38.4% confidence
+2026-03-10 13:34:17 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign completed successfully
+2026-03-10 13:34:26 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /chores/addWithSmartAssign | Method: UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign
+2026-03-10 13:34:26 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:34:26 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:34:35 [http-nio-0.0.0.0-8080-exec-21] INFO  U.B.service.ChoreSchedulingService - >>> AI SCHEDULING: Calculating best assignee for task 'clean kitchen' in house 'APT-EB7215A'
+2026-03-10 13:34:36 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:34:36 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:34:39 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /chores/addWithSmartAssign | Method: UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign
+2026-03-10 13:34:40 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:34:40 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:34:43 [http-nio-0.0.0.0-8080-exec-21] DEBUG U.B.service.ChoreSchedulingService - >>> AI REQ: Sending data to model at https://uninest-ai-service-369284273825.europe-west1.run.app/predict
+2026-03-10 13:34:47 [http-nio-0.0.0.0-8080-exec-21] INFO  U.B.service.ChoreSchedulingService - <<< AI RES: Successfully predicted user index 1 with 39.7% confidence
+2026-03-10 13:34:48 [http-nio-0.0.0.0-8080-exec-2] INFO  U.B.service.ChoreSchedulingService - >>> AI SCHEDULING: Calculating best assignee for task 'clean kitchen' in house 'APT-EB7215A'
+2026-03-10 13:34:48 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:34:48 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:34:54 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign completed successfully
+2026-03-10 13:34:59 [http-nio-0.0.0.0-8080-exec-2] DEBUG U.B.service.ChoreSchedulingService - >>> AI REQ: Sending data to model at https://uninest-ai-service-369284273825.europe-west1.run.app/predict
+2026-03-10 13:35:00 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /chores/addWithSmartAssign | Method: UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign
+2026-03-10 13:35:01 [http-nio-0.0.0.0-8080-exec-15] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:35:01 [http-nio-0.0.0.0-8080-exec-15] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:35:02 [http-nio-0.0.0.0-8080-exec-2] INFO  U.B.service.ChoreSchedulingService - <<< AI RES: Successfully predicted user index 1 with 39.7% confidence
+2026-03-10 13:35:08 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign completed successfully
+2026-03-10 13:35:12 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:35:13 [http-nio-0.0.0.0-8080-exec-15] INFO  U.B.service.ChoreSchedulingService - >>> AI SCHEDULING: Calculating best assignee for task 'clean kitchen' in house 'APT-EB7215A'
+2026-03-10 13:35:13 [http-nio-0.0.0.0-8080-exec-9] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:35:13 [http-nio-0.0.0.0-8080-exec-9] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:35:13 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:35:13 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:35:13 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:35:14 [http-nio-0.0.0.0-8080-exec-15] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:35:14 [http-nio-0.0.0.0-8080-exec-15] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:35:14 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:35:14 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:35:14 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:35:15 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-13] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-13] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-16] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-16] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:35:16 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:35:17 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:35:18 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:35:18 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:35:18 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:35:19 [http-nio-0.0.0.0-8080-exec-4] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:35:19 [http-nio-0.0.0.0-8080-exec-4] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:35:19 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:35:19 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:35:19 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:35:20 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:35:20 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:35:24 [http-nio-0.0.0.0-8080-exec-15] DEBUG U.B.service.ChoreSchedulingService - >>> AI REQ: Sending data to model at https://uninest-ai-service-369284273825.europe-west1.run.app/predict
+2026-03-10 13:35:24 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:35:25 [http-nio-0.0.0.0-8080-exec-13] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:35:25 [http-nio-0.0.0.0-8080-exec-13] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:35:25 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:35:25 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:35:26 [http-nio-0.0.0.0-8080-exec-15] INFO  U.B.service.ChoreSchedulingService - <<< AI RES: Successfully predicted user index 1 with 39.7% confidence
+2026-03-10 13:35:27 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:35:29 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.ChoreController.addChoreWithSmartAssign completed successfully
+2026-03-10 13:36:02 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 13:36:02 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 13:36:02 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 13:36:03 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 13:36:04 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:36:05 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:36:05 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:36:05 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:36:05 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:36:05 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/paidHistory/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getPaidBills
+2026-03-10 13:36:05 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:36:05 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getPaidBills completed successfully
+2026-03-10 13:36:05 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:36:06 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:36:06 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:36:06 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:36:17 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /bills/create | Method: UniNest.Backend.controller.BillController.createBill
+2026-03-10 13:36:25 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /bills/create | Method: UniNest.Backend.controller.BillController.createBill
+2026-03-10 13:36:28 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:36:29 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:36:29 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:36:29 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:36:29 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/paidHistory/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getPaidBills
+2026-03-10 13:36:29 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:36:29 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.createBill completed successfully
+2026-03-10 13:36:29 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:36:29 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getPaidBills completed successfully
+2026-03-10 13:36:30 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:36:31 [http-nio-0.0.0.0-8080-exec-4] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:36:31 [http-nio-0.0.0.0-8080-exec-4] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:36:31 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:36:31 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:36:33 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:36:43 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.createBill completed successfully
+2026-03-10 13:36:50 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:36:51 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:36:51 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:36:51 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:36:51 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/paidHistory/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getPaidBills
+2026-03-10 13:36:51 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:36:51 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getPaidBills completed successfully
+2026-03-10 13:36:52 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:36:54 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:36:54 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:36:54 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:36:54 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:37:15 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: POST /bills/create | Method: UniNest.Backend.controller.BillController.createBill
+2026-03-10 13:37:18 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.createBill completed successfully
+2026-03-10 13:37:18 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:37:19 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:37:28 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/paidHistory/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getPaidBills
+2026-03-10 13:37:28 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:37:29 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:37:29 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:37:29 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:37:29 [http-nio-0.0.0.0-8080-exec-2] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:37:29 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:37:29 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:37:29 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:37:29 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getPaidBills completed successfully
+2026-03-10 13:37:30 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:37:30 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 13:37:32 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:37:33 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:37:33 [http-nio-0.0.0.0-8080-exec-11] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:37:33 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:37:33 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/paidHistory/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getPaidBills
+2026-03-10 13:37:33 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 13:37:33 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getPaidBills completed successfully
+2026-03-10 13:37:33 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 13:37:42 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 13:37:43 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 13:37:43 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 13:37:43 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 13:37:43 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 13:37:45 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 14:02:43 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:02:44 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:02:55 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:02:55 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:02:55 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getAll | Method: UniNest.Backend.controller.ApartmentController.getAllApartments
+2026-03-10 14:02:59 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:03:13 [grpc-default-executor-20] WARN  io.grpc.internal.ManagedChannelImpl - [Channel<1>: (firestore.googleapis.com:443)] Failed to resolve name. status=Status{code=UNAVAILABLE, description=Unable to resolve host firestore.googleapis.com, cause=java.lang.RuntimeException: java.net.UnknownHostException: No such host is known (firestore.googleapis.com)
+	at io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:223)
+	at io.grpc.internal.DnsNameResolver.doResolve(DnsNameResolver.java:282)
+	at io.grpc.grpclb.GrpclbNameResolver.doResolve(GrpclbNameResolver.java:63)
+	at io.grpc.internal.DnsNameResolver$Resolve.run(DnsNameResolver.java:318)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.net.UnknownHostException: No such host is known (firestore.googleapis.com)
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.InetAddress$PlatformNameService.lookupAllHostAddr(InetAddress.java:933)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1529)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(InetAddress.java:852)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1519)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1377)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1305)
+	at io.grpc.internal.DnsNameResolver$JdkAddressResolver.resolveAddress(DnsNameResolver.java:632)
+	at io.grpc.internal.DnsNameResolver.resolveAddresses(DnsNameResolver.java:219)
+	... 6 more
+}
+2026-03-10 14:03:25 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:03:25 [http-nio-0.0.0.0-8080-exec-9] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 14:03:25 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 14:03:25 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 14:03:28 [http-nio-0.0.0.0-8080-exec-13] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.ApartmentController.getAllApartments failed with message: Fetching apartments failed
+2026-03-10 14:03:28 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /apartments/getAll | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleApartmentException
+2026-03-10 14:03:28 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleApartmentException completed successfully
+2026-03-10 14:03:29 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:03:33 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:03:33 [http-nio-0.0.0.0-8080-exec-15] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 14:03:33 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 14:03:33 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 14:32:33 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:32:33 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:32:33 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:32:33 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:32:33 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:32:38 [http-nio-0.0.0.0-8080-exec-14] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 14:32:38 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 14:32:38 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 14:32:38 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:32:43 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:32:43 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:32:43 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:32:47 [http-nio-0.0.0.0-8080-exec-9] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 14:32:47 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 14:32:47 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 14:32:48 [http-nio-0.0.0.0-8080-exec-13] ERROR U.Backend.config.LoggingAspect - !!! API ERR: Method UniNest.Backend.controller.UserController.getRoommates failed with message: Error fetching roommates
+2026-03-10 14:32:48 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException
+2026-03-10 14:32:48 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.GlobalExceptionHandler.handleUserServiceException completed successfully
+2026-03-10 14:32:55 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:32:56 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:35:45 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:35:46 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:35:47 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:35:48 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-16] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-15] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-16] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-15] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-21] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/ZFG30zqKIWccbiTO5DJT0eo2zNt1 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 14:35:51 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 14:35:52 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 14:35:52 [http-nio-0.0.0.0-8080-exec-13] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 14:35:52 [http-nio-0.0.0.0-8080-exec-11] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-10 14:35:52 [http-nio-0.0.0.0-8080-exec-12] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-10 14:36:09 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:36:09 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-10 14:36:09 [http-nio-0.0.0.0-8080-exec-15] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:36:09 [http-nio-0.0.0.0-8080-exec-16] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-10 14:36:12 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-EB7215A | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-10 14:36:12 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokensUpdatedAt found on class UniNest.Backend.model.User
+2026-03-10 14:36:12 [http-nio-0.0.0.0-8080-exec-14] WARN  c.g.c.firestore.CustomClassMapper - No setter/field for tokens found on class UniNest.Backend.model.User
+2026-03-10 14:36:12 [http-nio-0.0.0.0-8080-exec-14] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-10 14:36:12 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-EB7215A | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-10 14:36:12 [http-nio-0.0.0.0-8080-exec-21] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully

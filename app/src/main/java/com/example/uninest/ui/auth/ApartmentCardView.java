@@ -4,20 +4,17 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.annotation.DrawableRes;
 
 import com.example.uninest.R;
 
-/**
- * Reusable card component for an apartment row.
- */
 public class ApartmentCardView extends FrameLayout {
 
     private TextView tvApartmentName;
     private TextView tvTenantInfo;
+
+    private OnClickListener deleteListener;
+    private OnClickListener notifyListener;
 
     public ApartmentCardView(Context context) {
         super(context);
@@ -39,17 +36,23 @@ public class ApartmentCardView extends FrameLayout {
 
         tvApartmentName = findViewById(R.id.tvApartmentName);
         tvTenantInfo = findViewById(R.id.tvTenantInfo);
+
         findViewById(R.id.btnDeleteApartment).setOnClickListener(v -> {
             if (deleteListener != null) deleteListener.onClick(v);
         });
+
+        findViewById(R.id.btnNotifyApartment).setOnClickListener(v -> {
+            if (notifyListener != null) notifyListener.onClick(v);
+        });
     }
 
-    private OnClickListener deleteListener;
     public void setOnDeleteClickListener(OnClickListener listener) {
         this.deleteListener = listener;
     }
 
-    // ---- setters from Activities ---- //
+    public void setOnNotifyClickListener(OnClickListener listener) {
+        this.notifyListener = listener;
+    }
 
     public void setApartmentName(String name) {
         tvApartmentName.setText(name);
@@ -62,7 +65,4 @@ public class ApartmentCardView extends FrameLayout {
     public void setTenantInfoText(String text) {
         tvTenantInfo.setText(text);
     }
-
-
-
 }

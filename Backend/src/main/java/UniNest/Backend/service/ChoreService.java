@@ -2,7 +2,6 @@ package UniNest.Backend.service;
 
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.*;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +18,20 @@ public class ChoreService {
 
     private final CalendarService calendarService;
     private final Firestore firestore;
+    private final NotificationService notificationService;
 
-    public ChoreService(CalendarService calendarService, Firestore firestore) {
+    public ChoreService(CalendarService calendarService, Firestore firestore, NotificationService notificationService) {
         this.calendarService = calendarService;
         this.firestore = firestore;
+        this.notificationService = notificationService;
+    }
+
+    private Long parseIsoToMillis(String isoString) {
+        try {
+            return Instant.parse(isoString).toEpochMilli();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /* =========================
@@ -75,9 +84,6 @@ public class ChoreService {
         }
     }
 
-    /* =========================
-       ADD CHORE
-       ========================= */
     public ChoreRequests addChore(String houseCode, ChoreRequests chore, String userId) {
         if (houseCode == null || houseCode.isBlank()) {
             throw new IllegalArgumentException("houseCode is required");
@@ -101,9 +107,24 @@ public class ChoreService {
             chore.setId(docRef.getId());
             docRef.set(chore).get();
 
-            // Create Calendar Event (single clean call)
             CalendarEventDTO.Create event = buildCalendarEvent(chore, houseCode);
             calendarService.create(event, userId);
+
+            if (chore.getAssignedTo() != null && !chore.getAssignedTo().isBlank()) {
+                List<String> targetUserIds = Collections.singletonList(chore.getAssignedTo());
+                String pushTitle = "New chore assigned";
+                String pushBody = chore.getTaskName();
+
+                notificationService.createChoreNotification(
+                        targetUserIds,
+                        pushTitle,
+                        pushBody,
+                        chore.getId(),
+                        parseIsoToMillis(chore.getScheduledDate())
+                );
+
+                notificationService.sendToUsers(pushTitle, pushBody, targetUserIds, "CHORES", chore.getId());
+            }
 
             return chore;
 
@@ -115,12 +136,7 @@ public class ChoreService {
         }
     }
 
-    /* =========================
-       UPDATE ASSIGNMENT
-       ========================= */
-    public ChoreRequests updateAssignmentByTaskNameAndUserEmail(
-            String houseCode, String taskName, String userEmail
-    ) {
+    public ChoreRequests updateAssignmentByTaskNameAndUserEmail(String houseCode, String taskName, String userEmail) {
         try {
             Query userQuery = firestore.collection("users")
                     .whereEqualTo("email", userEmail)
@@ -146,8 +162,31 @@ public class ChoreService {
             DocumentSnapshot choreDoc = choreSnapshot.getDocuments().get(0);
             choreDoc.getReference().update("assignedTo", userId).get();
 
-            return choreDoc.toObject(ChoreRequests.class);
+            DocumentSnapshot refreshedChoreDoc = choreDoc.getReference().get().get();
+            ChoreRequests updatedChore = refreshedChoreDoc.toObject(ChoreRequests.class);
 
+            if (updatedChore != null) {
+                updatedChore.setId(refreshedChoreDoc.getId());
+
+                List<String> targetUserIds = Collections.singletonList(userId);
+                String pushTitle = "New chore assigned";
+                String pushBody = updatedChore.getTaskName();
+
+                notificationService.createChoreNotification(
+                        targetUserIds,
+                        pushTitle,
+                        pushBody,
+                        updatedChore.getId(),
+                        parseIsoToMillis(updatedChore.getScheduledDate())
+                );
+
+                notificationService.sendToUsers(pushTitle, pushBody, targetUserIds, "CHORES", updatedChore.getId());
+            }
+
+            return updatedChore;
+
+        } catch (ChoreServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ChoreServiceException("Failed to update assignment", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -156,9 +195,7 @@ public class ChoreService {
     /* =========================
        ADD CHORE WITH ASSIGNMENT
        ========================= */
-    public ChoreRequests addChoreWithAssignment(
-            String houseCode, String userEmail, ChoreRequests chore
-    ) {
+    public ChoreRequests addChoreWithAssignment(String houseCode, String userEmail, ChoreRequests chore) {
         try {
             chore.sanitize();
 
@@ -189,12 +226,27 @@ public class ChoreService {
             chore.setId(docRef.getId());
             docRef.set(chore).get();
 
-            // Single calendar event
             CalendarEventDTO.Create event = buildCalendarEvent(chore, houseCode);
             calendarService.create(event, assigneeId);
 
+            List<String> targetUserIds = Collections.singletonList(assigneeId);
+            String pushTitle = "New chore assigned";
+            String pushBody = chore.getTaskName();
+
+            notificationService.createChoreNotification(
+                    targetUserIds,
+                    pushTitle,
+                    pushBody,
+                    chore.getId(),
+                    parseIsoToMillis(chore.getScheduledDate())
+            );
+
+            notificationService.sendToUsers(pushTitle, pushBody, targetUserIds, "CHORES", chore.getId());
+
             return chore;
 
+        } catch (ChoreServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ChoreServiceException(
                     "Failed to add chore with assignment: " + e.getMessage(),
@@ -285,7 +337,12 @@ public class ChoreService {
                         .update(calUpdates);
             }
 
-            return new ChoreRequests();
+            DocumentSnapshot updatedSnap = choreRef.get().get();
+            ChoreRequests updatedChore = updatedSnap.toObject(ChoreRequests.class);
+            if (updatedChore != null) {
+                updatedChore.setId(updatedSnap.getId());
+            }
+            return updatedChore != null ? updatedChore : new ChoreRequests();
 
         } catch (Exception e) {
             throw new ChoreServiceException("Update failed", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -293,7 +350,6 @@ public class ChoreService {
     }
 
     // SPAWN NEXT OCCURRENCE
-
     private void spawnNextOccurrence(String houseCode, ChoreRequests oldChore) {
         Instant currentScheduled = Instant.parse(oldChore.getScheduledDate());
 

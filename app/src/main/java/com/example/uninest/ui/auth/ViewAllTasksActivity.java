@@ -41,7 +41,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
     private RecyclerView rvRoommateFilter;
     private LinearLayout containerOnce, containerWeekly, containerMonthly, containerHistory;
     private TextView tvHeaderOnce, tvHeaderWeekly, tvHeaderMonthly, tvHeaderHistory;
-
+    private String highlightTaskId;
     private SessionManager sessionManager;
     private String houseCode, currentUserId;
     private List<Calendar> allTasks = new ArrayList<>();
@@ -69,7 +69,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         tvHeaderWeekly = findViewById(R.id.tvHeaderWeekly);
         tvHeaderMonthly = findViewById(R.id.tvHeaderMonthly);
         tvHeaderHistory = findViewById(R.id.tvHeaderHistory);
-
+        highlightTaskId = getIntent().getStringExtra("highlight_task_id");
         rvRoommateFilter.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         fetchRoommatesAndTasks();
@@ -100,22 +100,30 @@ public class ViewAllTasksActivity extends AppCompatActivity {
 
                     // Prepare filter list
                     filterList.clear();
-                    User all = new User(); all.setId("ALL"); all.setFirstName("All");
+                    User all = new User();
+                    all.setId("ALL");
+                    all.setFirstName("All");
                     filterList.add(all);
 
-                    User you = new User(); you.setId(currentUserId); you.setFirstName("You");
+                    User you = new User();
+                    you.setId(currentUserId);
+                    you.setFirstName("You");
                     you.setProfileImageUrl(sessionManager.getUserImage());
                     filterList.add(you);
+
                     for (User u : response.body()) {
                         if (!u.getId().equals(currentUserId)) filterList.add(u);
                     }
                     rvRoommateFilter.setAdapter(new FilterAdapter());
 
-
                     loadTasks();
                 }
             }
-            @Override public void onFailure(Call<List<User>> call, Throwable t) { loadTasks(); }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+                loadTasks();
+            }
         });
     }
 
@@ -142,6 +150,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         containerHistory.removeAllViews();
 
         boolean hasOnce = false, hasWeekly = false, hasMonthly = false, hasHistory = false;
+        boolean matchedHighlightedTask = false;
 
         for (Calendar c : allTasks) {
             String type = c.getType() != null ? c.getType() : "";
@@ -150,6 +159,13 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             if (!type.equalsIgnoreCase("CHORE")) continue;
 
             if (!selectedUserId.equals("ALL") && !c.getAssignedTo().equals(selectedUserId)) continue;
+
+            if (!matchedHighlightedTask
+                    && highlightTaskId != null
+                    && highlightTaskId.equals(c.getRelatedChoreId() != null ? c.getRelatedChoreId() : c.getId())) {
+                Toast.makeText(this, "Opened related task", Toast.LENGTH_SHORT).show();
+                matchedHighlightedTask = true;
+            }
 
             // 2. CHECK STATUS FIRST: If completed, it goes to History immediately
             String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
@@ -195,7 +211,6 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         com.google.android.material.button.MaterialButton btnMore = view.findViewById(R.id.btnViewMore);
         ImageView imgAssignee = view.findViewById(R.id.imgAssigneeProfile);
         TextView tvPointsEarned = view.findViewById(R.id.tvPointsEarned);
-
 
         String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
@@ -304,7 +319,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             // 1. SET THE IMAGE & ADJUST FITTING
             int pad = (int) (3 * getResources().getDisplayMetrics().density);
             h.profile.setPadding(pad, pad, pad, pad);
-            
+
             if (u.getId().equals("ALL")) {
                 if (!"ALL".equals(h.lastLoadedKey)) {
                     h.profile.setImageResource(R.drawable.ic_all_users);
@@ -469,6 +484,4 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         }
         return total;
     }
-
-
 }

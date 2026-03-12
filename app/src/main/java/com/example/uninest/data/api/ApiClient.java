@@ -4,7 +4,7 @@ package com.example.uninest.data.api;
 import com.example.uninest.AuthInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+import com.example.uninest.data.api.NotificationApi;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -17,8 +17,7 @@ public class ApiClient {
     //private static final String BASE_URL = "http://192.168.1.89:8080/";
 
     // Make sure this is just the IP and Port
-    public static final String BASE_URL = "https://uninest-backend-369284273825.europe-west1.run.app/";
-
+    public static final String BASE_URL = "http://127.0.0.1:8080/";
     private static Retrofit retrofit;
 
     private static Retrofit getRetrofitInstance() {
@@ -50,6 +49,10 @@ public class ApiClient {
         return retrofit;
     }
 
+
+    private static NotificationApi notificationApi;
+
+
     // --- API Services ---
     public static BuildingApi getBuildingApi() { return getRetrofitInstance().create(BuildingApi.class); }
     public static ApartmentApi getApartmentApi(){ return getRetrofitInstance().create(ApartmentApi.class); }
@@ -58,4 +61,6 @@ public class ApiClient {
     public static CalendarApi getCalendarApi(){ return getRetrofitInstance().create(CalendarApi.class); }
     public static BillsApi getBillsApi(){ return getRetrofitInstance().create(BillsApi.class); }
     public static UserApi getUserApi() { return getRetrofitInstance().create(UserApi.class); }
-}
+    public static NotificationApi getNotificationApi() {return getRetrofitInstance().create(NotificationApi.class);}
+    }
+
