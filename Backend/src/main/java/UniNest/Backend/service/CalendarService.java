@@ -7,11 +7,11 @@ import UniNest.Backend.util.SanitizationUtil;
 import UniNest.Backend.exception.CalendarServiceException;
 
 import com.google.api.core.ApiFuture;
-
 import com.google.cloud.firestore.*;
 import com.google.cloud.Timestamp;
 import com.google.firebase.cloud.FirestoreClient;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
@@ -27,6 +26,9 @@ import java.time.format.DateTimeFormatter;
 public class CalendarService {
 
     private static final String COLLECTION = "calendar_events";
+
+    @Autowired
+    private NotificationService notificationService;
 
     // ---------------- CREATE ----------------
     public CalendarEventDTO.Response create(CalendarEventDTO.Create dto, String createdBy) {
@@ -45,7 +47,6 @@ public class CalendarService {
             event.setTitle(dto.getTitle());
             event.setDescription(dto.getDescription());
 
-            // Initial Status Logic
             event.setStatus("NOT_STARTED");
 
             if (dto.getStartDate() != null) {
@@ -66,6 +67,45 @@ public class CalendarService {
             event.setLocation(dto.getLocation());
 
             docRef.set(event).get();
+
+            List<String> targetUserIds = new ArrayList<>();
+
+            if (event.getAssignedTo() != null && !event.getAssignedTo().isBlank()) {
+                targetUserIds.add(event.getAssignedTo());
+            } else if (event.getHouseCode() != null && !event.getHouseCode().isBlank()) {
+                targetUserIds = notificationService.getTenantUserIdsByHouseCode(event.getHouseCode());
+            }
+
+            Long eventTime = null;
+            if (event.getStartDate() != null) {
+                eventTime = event.getStartDate().toDate().getTime();
+            }
+
+            boolean isChoreLinkedEvent =
+                    event.getRelatedChoreId() != null && !event.getRelatedChoreId().isBlank();
+
+            if (!targetUserIds.isEmpty() && !isChoreLinkedEvent) {
+                notificationService.createCalendarNotification(
+                        targetUserIds,
+                        event.getTitle(),
+                        event.getStartDate() != null
+                                ? "Scheduled event"
+                                : "New calendar event",
+                        event.getId(),
+                        eventTime
+                );
+
+                String pushTitle = event.getTitle() != null && !event.getTitle().isBlank()
+                        ? event.getTitle()
+                        : "Calendar update";
+
+                String pushBody = event.getStartDate() != null
+                        ? "Scheduled event"
+                        : "New calendar event";
+
+                notificationService.sendToUsers(pushTitle, pushBody, targetUserIds, "CALENDAR", event.getId());
+            }
+
             return event;
 
         } catch (InterruptedException e) {
@@ -76,10 +116,8 @@ public class CalendarService {
         }
     }
 
-
     //  GET EVENTS FOR apartment
     public List<CalendarEventDTO.Response> getForapartment(String houseCode) {
-
         try {
             Firestore db = FirestoreClient.getFirestore();
             ApiFuture<QuerySnapshot> future = db.collection(COLLECTION)
@@ -196,7 +234,7 @@ public class CalendarService {
             ApiFuture<QuerySnapshot> future = db.collection(COLLECTION)
                     .whereEqualTo("houseCode", houseCode)
                     .whereLessThanOrEqualTo("startDate", end)
-                    .whereGreaterThanOrEqualTo("endDate", start) // overlap logic
+                    .whereGreaterThanOrEqualTo("endDate", start)
                     .get();
 
             List<QueryDocumentSnapshot> docs = future.get().getDocuments();
@@ -216,7 +254,6 @@ public class CalendarService {
             throw new CalendarServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     // ---------------- HELPERS ----------------
     private Timestamp parse(String iso) {
@@ -238,7 +275,6 @@ public class CalendarService {
         dto.setId(e.getId());
         dto.setHouseCode(e.getHouseCode());
 
-        // Safe enum mapping
         if (e.getType() != null) {
             try {
                 dto.setType(CalendarEventDTO.EventType.valueOf(e.getType()));
@@ -258,7 +294,6 @@ public class CalendarService {
         dto.setAssignedTo(e.getAssignedTo());
         dto.setRelatedChoreId(e.getRelatedChoreId());
 
-        // Recurrence mapping
         if (e.getRecurrence() != null) {
             CalendarEventDTO.Recurrence recDto = new CalendarEventDTO.Recurrence();
             if (e.getRecurrence().getFrequency() != null) {
@@ -270,9 +305,8 @@ public class CalendarService {
             dto.setRecurrence(recDto);
         }
 
-        // Mapping relevant fields for reminders and chores
         dto.setAmount(e.getAmount());
-        dto.setStatus(e.getStatus() != null ? e.getStatus() : "NOT_STARTED"); // Ensure status is never null
+        dto.setStatus(e.getStatus() != null ? e.getStatus() : "NOT_STARTED");
         dto.setEstDuration(e.getEstDuration());
         dto.setActualDuration(e.getActualDuration());
         dto.setDifficultyScore(e.getDifficultyScore());
@@ -280,5 +314,4 @@ public class CalendarService {
 
         return dto;
     }
-
 }

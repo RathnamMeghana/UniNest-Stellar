@@ -38,7 +38,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
     // UI Containers
     private LinearLayout containerRaised, containerInProgress, containerSolved;
     private TextView tvNoTickets;
-
+    private String highlightTicketId;
     // Data
     private TicketApi ticketApi;
     private SessionManager sessionManager;
@@ -51,6 +51,8 @@ public class TenantTicketsActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
         bottomNav.setSelectedItemId(R.id.nav_tickets); // Highlight Tickets
+
+        highlightTicketId = getIntent().getStringExtra("highlight_ticket_id");
 
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -137,12 +139,20 @@ public class TenantTicketsActivity extends AppCompatActivity {
         containerRaised.removeAllViews();
         containerInProgress.removeAllViews();
         containerSolved.removeAllViews();
+        boolean matchedHighlightedTicket = false;
 
         if (tickets.isEmpty()) {
             return;
         }
 
         for (Ticket t : tickets) {
+            if (!matchedHighlightedTicket
+                    && highlightTicketId != null
+                    && highlightTicketId.equals(t.getId())) {
+                Toast.makeText(this, "Opened related ticket", Toast.LENGTH_SHORT).show();
+                matchedHighlightedTicket = true;
+            }
+
             String status = t.getStatus() != null ? t.getStatus() : "Raised";
 
             // LOGIC: Group tickets into 3 categories

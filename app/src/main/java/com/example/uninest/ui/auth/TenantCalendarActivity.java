@@ -73,6 +73,8 @@ public class TenantCalendarActivity extends AppCompatActivity {
     private BillsApi billsApi;
     private List<BillsRequest> allBills = new ArrayList<>();
 
+    private String highlightEventId;
+
     // State
     private boolean isCalendarExpanded = false; // Start collapsed
     private java.util.Calendar currentSelectedDate = java.util.Calendar.getInstance();
@@ -86,6 +88,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
         houseCode = sessionManager.fetchHouseCode();
         currentUserId = sessionManager.getUserId();
 
+        highlightEventId = getIntent().getStringExtra("highlight_event_id");
         if (houseCode == null || currentUserId == null) {
             Toast.makeText(this, "Session Error. Please login again.", Toast.LENGTH_SHORT).show();
         }
@@ -229,8 +232,21 @@ public class TenantCalendarActivity extends AppCompatActivity {
                     updateCalendarDots();
                     setupWeekView();
                     displayTasksForDate(currentSelectedDate);
+                    if (highlightEventId != null && !highlightEventId.isBlank()) {
+                        for (Calendar event : allEvents) {
+                            if (highlightEventId.equals(event.getId()) && event.getStartDate() != null) {
+                                java.util.Calendar selectedDate = java.util.Calendar.getInstance();
+                                selectedDate.setTime(event.getStartDate().toDate());
+                                currentSelectedDate = selectedDate;                                updateDateHeader();
+                                displayTasksForDate(currentSelectedDate);
+                                setupWeekView();
+                                highlightMonthViewDate(currentSelectedDate);
+                                Toast.makeText(TenantCalendarActivity.this, "Opened related event", Toast.LENGTH_SHORT).show();                                break;
+                            }
+                        }}
                 }
             }
+
             @Override
             public void onFailure(Call<List<Calendar>> call, Throwable t) {
                 Toast.makeText(TenantCalendarActivity.this, "Network Error", Toast.LENGTH_SHORT).show();

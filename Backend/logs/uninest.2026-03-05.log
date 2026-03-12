@@ -1,0 +1,34 @@
+2026-03-05 00:41:34 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-00A0D3D | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-05 00:41:36 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-05 00:41:36 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-00A0D3D | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-05 00:41:36 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-05 00:41:40 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-05 00:41:40 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-05 00:41:40 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-05 00:41:40 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-05 00:41:41 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-00A0D3D | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-05 00:41:41 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-05 00:41:41 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/4SxgJugbpgUZQPNCYSWp2sSVLwC2 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-05 00:41:41 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/paidHistory/4SxgJugbpgUZQPNCYSWp2sSVLwC2 | Method: UniNest.Backend.controller.BillController.getPaidBills
+2026-03-05 00:41:41 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-05 00:41:41 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getPaidBills completed successfully
+2026-03-05 00:41:42 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-05 00:41:42 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /tickets/apartment | Method: UniNest.Backend.controller.TicketController.getTicketsByApartment
+2026-03-05 00:41:42 [http-nio-0.0.0.0-8080-exec-2] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-05 00:41:42 [http-nio-0.0.0.0-8080-exec-3] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.TicketController.getTicketsByApartment completed successfully
+2026-03-05 00:41:44 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-00A0D3D | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-05 00:41:44 [http-nio-0.0.0.0-8080-exec-4] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-05 00:41:44 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-00A0D3D | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-05 00:41:44 [http-nio-0.0.0.0-8080-exec-5] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-05 00:41:45 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-00A0D3D | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-05 00:41:45 [http-nio-0.0.0.0-8080-exec-6] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-05 00:41:45 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/4SxgJugbpgUZQPNCYSWp2sSVLwC2 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-05 00:41:45 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-00A0D3D | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-05 00:41:45 [http-nio-0.0.0.0-8080-exec-7] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
+2026-03-05 00:41:45 [http-nio-0.0.0.0-8080-exec-8] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-05 00:41:49 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /users/roommates/APT-00A0D3D | Method: UniNest.Backend.controller.UserController.getRoommates
+2026-03-05 00:41:49 [http-nio-0.0.0.0-8080-exec-9] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.UserController.getRoommates completed successfully
+2026-03-05 00:41:49 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /bills/getBills/4SxgJugbpgUZQPNCYSWp2sSVLwC2 | Method: UniNest.Backend.controller.BillController.getBillsByUserId
+2026-03-05 00:41:49 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - >>> API REQ: GET /calendar/getByApartment/APT-00A0D3D | Method: UniNest.Backend.controller.CalendarController.getEventsForHouse
+2026-03-05 00:41:49 [http-nio-0.0.0.0-8080-exec-1] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.BillController.getBillsByUserId completed successfully
+2026-03-05 00:41:49 [http-nio-0.0.0.0-8080-exec-10] INFO  U.Backend.config.LoggingAspect - <<< API RES: Method UniNest.Backend.controller.CalendarController.getEventsForHouse completed successfully
