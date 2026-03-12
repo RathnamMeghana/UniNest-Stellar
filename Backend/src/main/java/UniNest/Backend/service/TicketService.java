@@ -194,6 +194,7 @@ public class TicketService {
 
             ApiFuture<QuerySnapshot> future = db.collection("tickets")
                     .whereEqualTo("apartmentId", houseCode)
+                    .whereEqualTo("deletedByTenant", false)
                     .get();
 
             return future.get().getDocuments().stream()
