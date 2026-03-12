@@ -143,4 +143,15 @@ public class TicketController {
         }
     }
 
+    @PreAuthorize("hasRole('TENANT')")
+    @DeleteMapping("/{ticketId}")
+    public ResponseEntity<String> softDeleteTicket(@PathVariable String ticketId) {
+        try {
+            String result = ticketService.softDeleteTicket(ticketId);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error soft deleting ticket: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
