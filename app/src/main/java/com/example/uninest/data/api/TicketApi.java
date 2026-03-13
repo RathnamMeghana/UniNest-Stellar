@@ -28,8 +28,10 @@ public interface TicketApi {
     Call<List<Ticket>> getTicketsByApartment(@Query("name") String houseCode);
 
     @GET("tickets/landlord")
-    Call<List<Ticket>> getTicketsByLandlord(@Query("id") String landlordId);
-
+    Call<List<Ticket>> getTicketsByLandlord(
+            @Query("id") String landlordId,
+            @Query("includeDeleted") boolean includeDeleted
+    );
     @retrofit2.http.PUT("tickets/status")
     Call<String> updateStatus(@Body UpdateTicketStatusRequest body);
 

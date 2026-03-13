@@ -44,6 +44,7 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
     private String selectedState = "";
     private String selectedSort = "";
     private boolean aiOnly = false;
+    private boolean showDeleted = false;
 
 
     private List<Ticket> allTickets = new ArrayList<>();
@@ -69,7 +70,7 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
 
         ImageButton btnAiToggle = findViewById(R.id.btnAiToggle);
         btnAiToggle.setOnClickListener(v -> {
-            // 1. Toggle the state
+            // Toggle the state
             aiOnly = !aiOnly;
 
 
@@ -83,7 +84,7 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
                 btnAiToggle.setAlpha(0.7f);
             }
 
-            // 3. Trigger the filter
+            //  Trigger the filter
             adapter.applyAdvancedFilter(selectedPriority, selectedState, selectedSort, aiOnly);
         });
 
@@ -115,7 +116,7 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
 
         if (myAgentId == null) return;
 
-        ticketApi.getTicketsByLandlord(myAgentId).enqueue(new Callback<List<Ticket>>() {
+        ticketApi.getTicketsByLandlord(myAgentId, showDeleted).enqueue(new Callback<List<Ticket>>() {
             @Override
             public void onResponse(Call<List<Ticket>> call, Response<List<Ticket>> response) {
                 if (response.isSuccessful() && response.body() != null) {
