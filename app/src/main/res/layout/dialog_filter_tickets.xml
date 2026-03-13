@@ -102,6 +102,46 @@
         <TextView android:id="@+id/stateSolved" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Solved" android:gravity="center" android:paddingVertical="10dp" android:background="@drawable/bg_chip_unselected" android:textColor="#2E7D32"/>
     </LinearLayout>
 
+    <!-- Deleted Tickets Toggle -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:background="@drawable/bg_filter_item">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show Deleted"
+                android:textColor="#2C3E50"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Include tickets removed by tenants"
+                android:textColor="#888888"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swDeleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:thumbTint="#B792D9"
+            app:trackTint="#D1C4E9" />
+    </LinearLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSubmitFilter"
         android:layout_width="match_parent"

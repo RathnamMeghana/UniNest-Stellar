@@ -9,6 +9,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -27,8 +28,10 @@ public interface TicketApi {
     Call<List<Ticket>> getTicketsByApartment(@Query("name") String houseCode);
 
     @GET("tickets/landlord")
-    Call<List<Ticket>> getTicketsByLandlord(@Query("id") String landlordId);
-
+    Call<List<Ticket>> getTicketsByLandlord(
+            @Query("id") String landlordId,
+            @Query("includeDeleted") boolean includeDeleted
+    );
     @retrofit2.http.PUT("tickets/status")
     Call<String> updateStatus(@Body UpdateTicketStatusRequest body);
 
@@ -37,4 +40,7 @@ public interface TicketApi {
 
     @PUT("tickets/agent-update")
     Call<String> updateAgentData(@Body UpdateTicketAgentDataRequest body);
+
+    @DELETE("tickets/{ticketId}")
+    Call<String> softDeleteTicket(@Path("ticketId") String ticketId);
 }

@@ -105,6 +105,7 @@ public class TicketService {
             ticket.setApartmentName(request.getApartmentName());
             ticket.setCategory(request.getCategory());
             ticket.setPriority(request.getPriority());
+            ticket.setDeletedByTenant(false);
             ticket.setStatus(request.getStatus());
             ticket.setUserId(request.getUserId());
             ticket.setUserName(request.getUserName());
@@ -197,6 +198,7 @@ public class TicketService {
 
             return future.get().getDocuments().stream()
                     .map(doc -> doc.toObject(Ticket.class))
+                    .filter(ticket -> !ticket.isDeletedByTenant())
                     .collect(Collectors.toList());
 
         } catch (InterruptedException e) {
@@ -209,45 +211,40 @@ public class TicketService {
         }
     }
 
-    public List<Ticket> getTicketsByLandlord(String landlordId) {
+    public List<Ticket> getTicketsByLandlord(String landlordId, boolean includeDeleted) {
         if (landlordId == null || landlordId.isBlank()) {
             throw new IllegalArgumentException("LandlordId cannot be null or empty");
         }
 
         try {
             Firestore db = FirestoreClient.getFirestore();
+
+            // Landlord authorization check (Keep this as is)
             DocumentSnapshot landlordDoc = db.collection("users").document(landlordId).get().get();
-
-            if (!landlordDoc.exists()) {
-                throw new TicketServiceException(
-                        "Landlord with ID " + landlordId + " does not exist.",
-                        HttpStatus.NOT_FOUND
-                );
+            if (!landlordDoc.exists() || !"1".equalsIgnoreCase(landlordDoc.getString("role"))) {
+                throw new TicketServiceException("Unauthorized as Landlord", HttpStatus.FORBIDDEN);
             }
 
-            String role = landlordDoc.getString("role");
-            if (!"1".equalsIgnoreCase(role)) {
-                throw new TicketServiceException(
-                        "User exists but is not authorized as a Landlord.",
-                        HttpStatus.FORBIDDEN
-                );
-            }
-
+            // 1. Fetch all tickets for this landlord (Simple query)
             ApiFuture<QuerySnapshot> future = db.collection("tickets")
                     .whereEqualTo("landlordId", landlordId)
                     .get();
 
-            return future.get().getDocuments().stream()
+            List<Ticket> allTickets = future.get().getDocuments().stream()
                     .map(doc -> doc.toObject(Ticket.class))
                     .collect(Collectors.toList());
 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new TicketServiceException("Operation interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (ExecutionException e) {
-            throw new TicketServiceException("Firestore operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (FirestoreException e) {
-            throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
+            // 2. Logic: If agent wants to see deleted, return all. Otherwise, filter them.
+            if (includeDeleted) {
+                return allTickets;
+            } else {
+                return allTickets.stream()
+                        .filter(t -> !t.isDeletedByTenant())
+                        .collect(Collectors.toList());
+            }
+
+        } catch (Exception e) {
+            throw new TicketServiceException("Error fetching tickets", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -491,6 +488,45 @@ public class TicketService {
             throw new TicketServiceException("Error updating agent data", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (FirestoreException e) {
             throw new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public String softDeleteTicket(String ticketId, String currentUserId) {
+        if (ticketId == null || ticketId.isBlank()) {
+            throw new IllegalArgumentException("ticketId required");
+        }
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+
+            // 1. Find the document where the 'id' field matches ticketId
+            ApiFuture<QuerySnapshot> future = db.collection("tickets")
+                    .whereEqualTo("id", ticketId)
+                    .get();
+
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+            if (documents.isEmpty()) {
+                throw new TicketNotFoundException("Ticket not found: " + ticketId);
+            }
+
+            DocumentSnapshot doc = documents.get(0);
+            String ticketOwnerId = doc.getString("userId");
+
+            if (ticketOwnerId == null || !ticketOwnerId.equals(currentUserId)) {
+                // Throwing a custom exception or a standard Security exception
+                throw new TicketServiceException("You are not authorized to delete this ticket", HttpStatus.FORBIDDEN);
+            }
+
+            // 3. Update the deletedByTenant flag
+            doc.getReference().update(
+                    "deletedByTenant", true,
+                    "updatedAt", Timestamp.now()
+            ).get();
+
+            return "Ticket removed successfully";
+
+        } catch (InterruptedException | ExecutionException e) {
+            throw new TicketServiceException("Failed to delete ticket", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

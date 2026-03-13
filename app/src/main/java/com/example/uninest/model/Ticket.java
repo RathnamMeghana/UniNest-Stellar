@@ -26,6 +26,7 @@ public class Ticket implements Serializable{
     private String userName;
     private String prioritySource;
     private String imageUrl;
+    private boolean deletedByTenant;
 
 
     // Getters and Setters
@@ -81,4 +82,12 @@ public class Ticket implements Serializable{
     public void setPrioritySource(String prioritySource) { this.prioritySource = prioritySource; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public boolean isDeletedByTenant() {
+        return deletedByTenant;
+    }
+
+    public void setDeletedByTenant(boolean deletedByTenant) {
+        this.deletedByTenant = deletedByTenant;
+    }
 }
