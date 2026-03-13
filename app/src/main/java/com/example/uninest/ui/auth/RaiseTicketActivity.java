@@ -254,55 +254,61 @@ public class RaiseTicketActivity extends AppCompatActivity {
             return;
         }
 
+    }
+
+
+        private void startProcessingTicket(final String description, final String room,
+        final String category){
         // Lock UI
         predictButton.setEnabled(false);
         predictButton.setText("Processing...");
 
-        new Thread(() -> {
-            try {
-                // --- ML Logic (Tokenization + Inference) ---
-                PyObject pyTokens = predictorModule.callAttr("preprocess_text", description);
-                int[] tokens = pyTokens.toJava(int[].class);
-                int[][] textInput = new int[1][300];
-                for (int i = 0; i < 300; i++) textInput[0][i] = tokens[i];
+            new Thread(() -> {
+                try {
+                    // --- ML Logic (Tokenization + Inference) ---
+                    PyObject pyTokens = predictorModule.callAttr("preprocess_text", description);
+                    int[] tokens = pyTokens.toJava(int[].class);
+                    int[][] textInput = new int[1][300];
+                    for (int i = 0; i < 300; i++) textInput[0][i] = tokens[i];
 
-                float rawUrgent = countKeywords(description, new String[]{"flood", "flooding", "fire", "gas","mouse", "pest", "rat"});
-                float rawMed = countKeywords(description, new String[]{"mildew","not turning on","strange noise","flickering"});
-                float rawLow = countKeywords(description, new String[]{"cosmetic","minor","scratch","loose","paint","dripping","lightbulb"});
+                    float rawUrgent = countKeywords(description, new String[]{"flood", "flooding", "fire", "gas", "mouse", "pest", "rat"});
+                    float rawMed = countKeywords(description, new String[]{"mildew", "not turning on", "strange noise", "flickering"});
+                    float rawLow = countKeywords(description, new String[]{"cosmetic", "minor", "scratch", "loose", "paint", "dripping", "lightbulb"});
 
-                Object[] inputs = {
-                        new int[][]{{CATEGORY_MAP.getOrDefault(category, 0)}},
-                        new float[][]{{(rawUrgent - MU_URGENT) / SIGMA_URGENT}},
-                        new int[][]{{ROOM_MAP.getOrDefault(room, 0)}},
-                        textInput,
-                        new float[][]{{(rawMed - MU_MED) / SIGMA_MED}},
-                        new float[][]{{(rawLow - MU_LOW) / SIGMA_LOW}}
-                };
+                    Object[] inputs = {
+                            new int[][]{{CATEGORY_MAP.getOrDefault(category, 0)}},
+                            new float[][]{{(rawUrgent - MU_URGENT) / SIGMA_URGENT}},
+                            new int[][]{{ROOM_MAP.getOrDefault(room, 0)}},
+                            textInput,
+                            new float[][]{{(rawMed - MU_MED) / SIGMA_MED}},
+                            new float[][]{{(rawLow - MU_LOW) / SIGMA_LOW}}
+                    };
 
-                float[][] output = new float[1][3];
-                Map<Integer, Object> outputs = new HashMap<>();
-                outputs.put(0, output);
-                tflite.runForMultipleInputsOutputs(inputs, outputs);
+                    float[][] output = new float[1][3];
+                    Map<Integer, Object> outputs = new HashMap<>();
+                    outputs.put(0, output);
+                    tflite.runForMultipleInputsOutputs(inputs, outputs);
 
-                String priority = (output[0][0] > 0.40f) ? "High" : (output[0][2] > 0.50f) ? "Medium" : "Low";
-                if (rawUrgent > 0) priority = "High";
+                    String priority = (output[0][0] > 0.40f) ? "High" : (output[0][2] > 0.50f) ? "Medium" : "Low";
+                    if (rawUrgent > 0) priority = "High";
 
-                // --- Send to Backend using Automatic Context ---
-                // Use the Building Name we found in onCreate
-                String finalBuilding = (currentBuildingName != null) ? currentBuildingName : "Unknown Building";
+                    // --- Send to Backend using Automatic Context ---
+                    // Use the Building Name we found in onCreate
+                    String finalBuilding = (currentBuildingName != null) ? currentBuildingName : "Unknown Building";
 
-                sendToBackend(description, finalBuilding, houseCode, room, category, priority);
+                    sendToBackend(description, finalBuilding, houseCode, room, category, priority);
 
-            } catch (Exception e) {
-                Log.e(TAG, "Workflow error", e);
-                runOnUiThread(() -> {
-                    Toast.makeText(RaiseTicketActivity.this, "System error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    predictButton.setEnabled(true);
-                    predictButton.setText("Submit Ticket");
-                });
-            }
-        }).start();
-    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Workflow error", e);
+                    runOnUiThread(() -> {
+                        Toast.makeText(RaiseTicketActivity.this, "System error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        predictButton.setEnabled(true);
+                        predictButton.setText("Submit Ticket");
+                    });
+                }
+            }).start();
+        }
+
 
     private void sendToBackend(String desc, String bld, String houseCode, String rm, String cat, String prio) {
         Ticket ticket = new Ticket();
@@ -345,6 +351,7 @@ public class RaiseTicketActivity extends AppCompatActivity {
             }
         });
     }
+
 
     // --- ML Init Helpers ---
     private void initPython() {
