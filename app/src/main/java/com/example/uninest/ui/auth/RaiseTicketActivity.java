@@ -62,6 +62,9 @@ public class RaiseTicketActivity extends AppCompatActivity {
     private Uri selectedImageUri;
     private String base64Image = null; // Default is null (Optional)
 
+    private static final String[] EMERGENCY_KEYWORDS = {"fire", "gas", "smoke", "flood", "explosion",
+            "burst pipe", "danger", "electric shock"};
+
     // UI Components
     private TextView resultTextView;
     private EditText descriptionEditText;
@@ -250,56 +253,80 @@ public class RaiseTicketActivity extends AppCompatActivity {
             fetchBuildingContext();
             return;
         }
+        // Check for Emergency Keywords
+        boolean isEmergency = false;
+        String lowerDesc = description.toLowerCase();
+        for (String key : EMERGENCY_KEYWORDS) {
+            if (lowerDesc.contains(key)) {
+                isEmergency = true;
+                break;
+            }
+        }
 
+        if (isEmergency) {
+
+           // Toast.makeText(this, "Emergency.", Toast.LENGTH_LONG).show();
+            showEmergencyWarning(description, room, category);
+        } else {
+        //process ticket normally
+            startProcessingTicket(description, room, category);
+        }
+
+    }
+
+
+        private void startProcessingTicket(final String description, final String room,
+        final String category){
         // Lock UI
         predictButton.setEnabled(false);
         predictButton.setText("Processing...");
 
-        new Thread(() -> {
-            try {
-                // --- ML Logic (Tokenization + Inference) ---
-                PyObject pyTokens = predictorModule.callAttr("preprocess_text", description);
-                int[] tokens = pyTokens.toJava(int[].class);
-                int[][] textInput = new int[1][300];
-                for (int i = 0; i < 300; i++) textInput[0][i] = tokens[i];
+            new Thread(() -> {
+                try {
+                    // --- ML Logic (Tokenization + Inference) ---
+                    PyObject pyTokens = predictorModule.callAttr("preprocess_text", description);
+                    int[] tokens = pyTokens.toJava(int[].class);
+                    int[][] textInput = new int[1][300];
+                    for (int i = 0; i < 300; i++) textInput[0][i] = tokens[i];
 
-                float rawUrgent = countKeywords(description, new String[]{"flood", "flooding", "fire", "gas","mouse", "pest", "rat"});
-                float rawMed = countKeywords(description, new String[]{"mildew","not turning on","strange noise","flickering"});
-                float rawLow = countKeywords(description, new String[]{"cosmetic","minor","scratch","loose","paint","dripping","lightbulb"});
+                    float rawUrgent = countKeywords(description, new String[]{"flood", "flooding", "fire", "gas", "mouse", "pest", "rat"});
+                    float rawMed = countKeywords(description, new String[]{"mildew", "not turning on", "strange noise", "flickering"});
+                    float rawLow = countKeywords(description, new String[]{"cosmetic", "minor", "scratch", "loose", "paint", "dripping", "lightbulb"});
 
-                Object[] inputs = {
-                        new int[][]{{CATEGORY_MAP.getOrDefault(category, 0)}},
-                        new float[][]{{(rawUrgent - MU_URGENT) / SIGMA_URGENT}},
-                        new int[][]{{ROOM_MAP.getOrDefault(room, 0)}},
-                        textInput,
-                        new float[][]{{(rawMed - MU_MED) / SIGMA_MED}},
-                        new float[][]{{(rawLow - MU_LOW) / SIGMA_LOW}}
-                };
+                    Object[] inputs = {
+                            new int[][]{{CATEGORY_MAP.getOrDefault(category, 0)}},
+                            new float[][]{{(rawUrgent - MU_URGENT) / SIGMA_URGENT}},
+                            new int[][]{{ROOM_MAP.getOrDefault(room, 0)}},
+                            textInput,
+                            new float[][]{{(rawMed - MU_MED) / SIGMA_MED}},
+                            new float[][]{{(rawLow - MU_LOW) / SIGMA_LOW}}
+                    };
 
-                float[][] output = new float[1][3];
-                Map<Integer, Object> outputs = new HashMap<>();
-                outputs.put(0, output);
-                tflite.runForMultipleInputsOutputs(inputs, outputs);
+                    float[][] output = new float[1][3];
+                    Map<Integer, Object> outputs = new HashMap<>();
+                    outputs.put(0, output);
+                    tflite.runForMultipleInputsOutputs(inputs, outputs);
 
-                String priority = (output[0][0] > 0.40f) ? "High" : (output[0][2] > 0.50f) ? "Medium" : "Low";
-                if (rawUrgent > 0) priority = "High";
+                    String priority = (output[0][0] > 0.40f) ? "High" : (output[0][2] > 0.50f) ? "Medium" : "Low";
+                    if (rawUrgent > 0) priority = "High";
 
-                // --- Send to Backend using Automatic Context ---
-                // Use the Building Name we found in onCreate
-                String finalBuilding = (currentBuildingName != null) ? currentBuildingName : "Unknown Building";
+                    // --- Send to Backend using Automatic Context ---
+                    // Use the Building Name we found in onCreate
+                    String finalBuilding = (currentBuildingName != null) ? currentBuildingName : "Unknown Building";
 
-                sendToBackend(description, finalBuilding, houseCode, room, category, priority);
+                    sendToBackend(description, finalBuilding, houseCode, room, category, priority);
 
-            } catch (Exception e) {
-                Log.e(TAG, "Workflow error", e);
-                runOnUiThread(() -> {
-                    Toast.makeText(RaiseTicketActivity.this, "System error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    predictButton.setEnabled(true);
-                    predictButton.setText("Submit Ticket");
-                });
-            }
-        }).start();
-    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Workflow error", e);
+                    runOnUiThread(() -> {
+                        Toast.makeText(RaiseTicketActivity.this, "System error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        predictButton.setEnabled(true);
+                        predictButton.setText("Submit Ticket");
+                    });
+                }
+            }).start();
+        }
+
 
     private void sendToBackend(String desc, String bld, String houseCode, String rm, String cat, String prio) {
         Ticket ticket = new Ticket();
@@ -343,6 +370,7 @@ public class RaiseTicketActivity extends AppCompatActivity {
         });
     }
 
+
     // --- ML Init Helpers ---
     private void initPython() {
         if (!Python.isStarted()) Python.start(new AndroidPlatform(this));
@@ -372,10 +400,10 @@ public class RaiseTicketActivity extends AppCompatActivity {
     }
 
     private int countKeywords(String text, String[] keys) {
-        int c = 0;
+        int count = 0;
         String t = text.toLowerCase();
-        for (String k : keys) if (t.contains(k)) c++;
-        return c;
+        for (String k : keys) if (t.contains(k)) count++;
+        return count;
     }
 
     private String convertImageToResizedBase64(Uri uri) {
@@ -407,5 +435,29 @@ public class RaiseTicketActivity extends AppCompatActivity {
             android.util.Log.e(TAG, "Image conversion failed", e);
             return null;
         }
+    }
+
+    private void showEmergencyWarning(final String description, final String room, final String category) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("⚠️ EMERGENCY DETECTED")
+                .setMessage("Your description contains keywords suggesting a life-safety emergency.\n\n" +
+                        "Please call Emergency Services (112 / 999) or our Emergency Number immediately at: XXX-XXX-XXXX\n\n" +
+                        "Do you still want to raise this maintenance ticket?")
+                .setPositiveButton("STILL RAISE TICKET", (dialog, which) -> {
+                    // If they click still raise, run the AI and add
+                    startProcessingTicket(description, room, category);
+                })
+                .setNeutralButton("CALL NOW", (dialog, which) -> {
+                    // Open the dialer
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:0123456789")); // hard coded number
+                    startActivity(intent);
+                })
+                .setNegativeButton("CANCEL", (dialog, which) -> {
+                    predictButton.setEnabled(true);
+                    predictButton.setText("Submit Ticket");
+                })
+                .setCancelable(false)
+                .show();
     }
 }
