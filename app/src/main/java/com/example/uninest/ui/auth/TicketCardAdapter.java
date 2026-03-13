@@ -77,7 +77,7 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
     public void onBindViewHolder(@NonNull VH h, int position) {
         Ticket item = filtered.get(position);
 
-        // 1. Building & Subtitle
+        //  Basic Info
         h.tvBuilding.setText(item.getBuilding() != null ? item.getBuilding() : "Unknown");
         String apt = (item.getApartmentName() != null) ? item.getApartmentName() : "Unit";
         String cat = item.getCategory() != null ? item.getCategory() : "General";
@@ -85,50 +85,52 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
 
         String name = (item.getUserName() != null) ? item.getUserName() : "Tenant";
         h.tvRaisedBy.setText("Raised by: " + name);
+        h.tvReportedOn.setText("Reported on: " + parseDate(item.getCreatedAt()));
 
-        // 2. Priority
+        //  Priority & AI Star
         String priority = item.getPriority() != null ? item.getPriority() : "Low";
         h.tvPriorityChip.setText(priority);
 
-        h.tvReportedOn.setText("Reported on: " + parseDate(item.getCreatedAt()));
-
-        // 3. Status & Date Logic
-        String status = item.getStatus() != null ? item.getStatus() : "Open";
-        String finalStatusText;
-
         if (item.getPrioritySource() != null && item.getPrioritySource().equalsIgnoreCase("AI")) {
             h.ivAiStar.setVisibility(View.VISIBLE);
-
             h.ivAiStar.setColorFilter(Color.parseColor("#9C27B0"));
         } else {
             h.ivAiStar.setVisibility(View.GONE);
         }
 
-        // CASE 1: New Ticket
+        // Status & Date String Construction
+        String status = item.getStatus() != null ? item.getStatus() : "Open";
+        String dateSuffix;
+
         if ("Raised".equalsIgnoreCase(status)) {
-            finalStatusText = "Raised : " + parseDate(item.getCreatedAt());
-        }
-        // CASE 2: Scheduled Date exists
-        else if (item.getArrivalDate() != null && !item.getArrivalDate().isEmpty()) {
-            finalStatusText = status + " • Scheduled: " + item.getArrivalDate();
-        }
-        // CASE 3: Solved/Open/Closed
-        else {
+            dateSuffix = parseDate(item.getCreatedAt());
+        } else if (item.getArrivalDate() != null && !item.getArrivalDate().isEmpty()) {
+            dateSuffix = "• Scheduled: " + item.getArrivalDate();
+        } else {
             Object dateObj = (item.getUpdatedAt() != null) ? item.getUpdatedAt() : item.getCreatedAt();
-            finalStatusText = status + " : " + parseDate(dateObj);
+            dateSuffix = parseDate(dateObj);
         }
 
-        h.tvStatusDate.setText(finalStatusText);
+        //  Deleted logic
+        if (Boolean.TRUE.equals(item.isDeletedByTenant())) {
+            // Override text and style for deleted tickets
+            h.tvStatusDate.setText("REMOVED BY TENANT • " + status);
+            h.tvStatusDate.setTextColor(Color.GRAY);
+            h.itemView.setAlpha(0.6f); // Faded
+        } else {
+            // Normal ticket display
+            h.tvStatusDate.setText(status + " : " + dateSuffix);
+            h.itemView.setAlpha(1.0f); // opaque
+            applyStatusDateColor(h.tvStatusDate, status);
+        }
 
-        // 4. Styling
+        //  General Styling
         applyPriorityChip(h.tvPriorityChip, priority);
         applyCardGlowByPriority(h.cardRoot, priority);
-        applyStatusDateColor(h.tvStatusDate, status);
 
         h.cardRoot.setOnClickListener(v -> onCardClick.onClick(item));
     }
 
-    // This handles both Map (Firestore) and String (JSON) formats
     private String parseDate(Object obj) {
         if (obj == null) return "N/A";
         try {
@@ -139,14 +141,10 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
                     long seconds = 0;
                     if (secObj instanceof Double) seconds = ((Double) secObj).longValue();
                     else if (secObj instanceof Long) seconds = (Long) secObj;
-
-                    Date d = new Date(seconds * 1000);
-                    return new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(d);
+                    return new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date(seconds * 1000));
                 }
-            }
-            else if (obj instanceof String) {
+            } else if (obj instanceof String) {
                 String s = (String) obj;
-                // Quick formatting: just take the YYYY-MM-DD part
                 if (s.length() >= 10) return s.substring(0, 10);
                 return s;
             }
@@ -163,7 +161,7 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
 
     static class VH extends RecyclerView.ViewHolder {
         View cardRoot;
-        TextView tvBuilding, tvSubTitle, tvStatusDate, tvPriorityChip, tvRaisedBy,tvReportedOn;
+        TextView tvBuilding, tvSubTitle, tvStatusDate, tvPriorityChip, tvRaisedBy, tvReportedOn;
         ImageView ivAiStar;
 
         VH(@NonNull View itemView) {
@@ -180,33 +178,24 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
     }
 
     private void applyCardGlowByPriority(View root, String priority) {
-        // We use the same border-style backgrounds from the tenant side
         if ("High".equalsIgnoreCase(priority)) {
-            root.setBackgroundResource(R.drawable.bg_card_border_raised); // Red Border
+            root.setBackgroundResource(R.drawable.bg_card_border_raised);
         } else if ("Medium".equalsIgnoreCase(priority)) {
-            root.setBackgroundResource(R.drawable.bg_card_border_progress); // Orange Border
+            root.setBackgroundResource(R.drawable.bg_card_border_progress);
         } else {
-            root.setBackgroundResource(R.drawable.bg_card_border_solved); // Green Border
+            root.setBackgroundResource(R.drawable.bg_card_border_solved);
         }
-
-        // Set elevation to 2dp to match the tenant side look
         root.setElevation(dp(2));
     }
 
     private void applyStatusDateColor(TextView tv, String state) {
         if (state == null) return;
         String s = state.toLowerCase();
-
-        // RED for Raised/Open
         if (s.contains("raised") || s.contains("open")) {
             tv.setTextColor(context.getColor(R.color.state_raised));
-        }
-        // ORANGE for In Progress
-        else if (s.contains("progress")) {
+        } else if (s.contains("progress")) {
             tv.setTextColor(context.getColor(R.color.state_in_progress));
-        }
-        // GREEN for Solved/Closed
-        else if (s.contains("solved") || s.contains("closed") || s.contains("resolved")) {
+        } else if (s.contains("solved") || s.contains("closed") || s.contains("resolved")) {
             tv.setTextColor(context.getColor(R.color.state_solved));
         }
     }
@@ -235,47 +224,26 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
 
     public void applyAdvancedFilter(String priority, String state, String sortType, boolean aiOnly) {
         filtered.clear();
-
-        // 1. FILTERING LOGIC
         for (Ticket t : all) {
-            // Priority Match: If selectedPriority is empty, allow all. Otherwise match.
-            boolean matchesPriority = priority.isEmpty() ||
-                    (t.getPriority() != null && t.getPriority().equalsIgnoreCase(priority));
-
-            // State Match: If selectedState is empty, allow all. Otherwise match.
-            // Remember: UI "In Progress" -> Backend "In_Process"  UI "Solved" -> Backend "Resolved"
-            boolean matchesState = state.isEmpty() ||
-                    (t.getStatus() != null && t.getStatus().equalsIgnoreCase(state));
-
-            boolean matchesAi = !aiOnly ||
-                    (t.getPrioritySource() != null && t.getPrioritySource().equalsIgnoreCase("AI"));
+            boolean matchesPriority = priority.isEmpty() || (t.getPriority() != null && t.getPriority().equalsIgnoreCase(priority));
+            boolean matchesState = state.isEmpty() || (t.getStatus() != null && t.getStatus().equalsIgnoreCase(state));
+            boolean matchesAi = !aiOnly || (t.getPrioritySource() != null && t.getPrioritySource().equalsIgnoreCase("AI"));
 
             if (matchesPriority && matchesState && matchesAi) {
                 filtered.add(t);
             }
         }
 
-        // 2. SORTING LOGIC
         if ("Building".equalsIgnoreCase(sortType)) {
-            filtered.sort((a, b) -> {
-                String b1 = a.getBuilding() != null ? a.getBuilding() : "";
-                String b2 = b.getBuilding() != null ? b.getBuilding() : "";
-                return b1.compareToIgnoreCase(b2);
-            });
-        }
-        else if ("Priority".equalsIgnoreCase(sortType)) {
-            // High (3) > Medium (2) > Low (1)
+            filtered.sort((a, b) -> (a.getBuilding() != null ? a.getBuilding() : "").compareToIgnoreCase(b.getBuilding() != null ? b.getBuilding() : ""));
+        } else if ("Priority".equalsIgnoreCase(sortType)) {
             filtered.sort((a, b) -> Integer.compare(getPriorityRank(b.getPriority()), getPriorityRank(a.getPriority())));
-        }
-        else {
-            // Date sort: Newest (highest seconds) first
+        } else {
             filtered.sort((a, b) -> Long.compare(getTicketSeconds(b), getTicketSeconds(a)));
         }
-
         notifyDataSetChanged();
     }
 
-    // HELPER: Convert Priority string to numeric rank for sorting
     private int getPriorityRank(String p) {
         if (p == null) return 0;
         switch (p.toLowerCase()) {
@@ -286,19 +254,14 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
         }
     }
 
-    // HELPER: Safely extract seconds from Firestore Map or String
     private long getTicketSeconds(Ticket t) {
         Object obj = t.getCreatedAt();
-        if (obj == null) return 0;
-
         if (obj instanceof Map) {
             Map<?, ?> map = (Map<?, ?>) obj;
             if (map.containsKey("seconds")) {
                 Object sec = map.get("seconds");
                 if (sec instanceof Number) return ((Number) sec).longValue();
             }
-        } else if (obj instanceof String) {
-            return 0;
         }
         return 0;
     }

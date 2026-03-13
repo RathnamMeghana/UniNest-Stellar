@@ -150,9 +150,13 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
         RadioGroup rgSort = v.findViewById(R.id.rgSort);
         TextView tvClear = v.findViewById(R.id.tvClearAll);
 
+        androidx.appcompat.widget.SwitchCompat swDeleted = v.findViewById(R.id.swDeleted);
+
+
         TextView[] pChips = { v.findViewById(R.id.chipHigh), v.findViewById(R.id.chipMedium), v.findViewById(R.id.chipLow) };
         TextView[] sChips = { v.findViewById(R.id.stateRaised), v.findViewById(R.id.stateProgress), v.findViewById(R.id.stateSolved) };
 
+        swDeleted.setChecked(showDeleted);
 
         if (selectedSort.equals("Building")) {
             rgSort.check(R.id.rbBuilding);
@@ -194,11 +198,13 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
             selectedState = "";
             selectedSort = "";
 
-
+            showDeleted = false;
+            swDeleted.setChecked(false);
             rgSort.clearCheck();
 
 
             if (etSearch != null) etSearch.setText("");
+
 
             updateChipSelectionUI(pChips, "");
             updateChipSelectionUI(sChips, "");
@@ -216,10 +222,15 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
             else if (checkedId == R.id.rbPriority) selectedSort = "Priority";
             else if (checkedId == R.id.rbDate) selectedSort = "Date";
             else selectedSort = ""; // No sort selected
+            boolean previousShowDeleted = showDeleted;
+            showDeleted = swDeleted.isChecked();
 
-
-            adapter.applyAdvancedFilter(selectedPriority, selectedState, selectedSort, aiOnly);
-            dialog.dismiss();
+            if (showDeleted != previousShowDeleted) {
+                loadTicketsByLandlordId();
+            } else {
+                adapter.applyAdvancedFilter(selectedPriority, selectedState, selectedSort, aiOnly);
+                dialog.dismiss();
+            }
         });
         v.findViewById(R.id.btnClose).setOnClickListener(view -> dialog.dismiss());
     }
