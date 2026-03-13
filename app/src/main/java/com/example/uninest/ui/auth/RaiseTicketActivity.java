@@ -62,6 +62,9 @@ public class RaiseTicketActivity extends AppCompatActivity {
     private Uri selectedImageUri;
     private String base64Image = null; // Default is null (Optional)
 
+    private static final String[] EMERGENCY_KEYWORDS = {"fire", "gas", "smoke", "flood", "explosion",
+            "burst pipe", "danger", "electric shock"};
+
     // UI Components
     private TextView resultTextView;
     private EditText descriptionEditText;
