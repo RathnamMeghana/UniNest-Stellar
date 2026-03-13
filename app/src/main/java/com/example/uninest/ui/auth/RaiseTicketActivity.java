@@ -265,7 +265,8 @@ public class RaiseTicketActivity extends AppCompatActivity {
 
         if (isEmergency) {
 
-            Toast.makeText(this, "Emergency.", Toast.LENGTH_LONG).show();
+           // Toast.makeText(this, "Emergency.", Toast.LENGTH_LONG).show();
+            showEmergencyWarning(description, room, category);
         } else {
         //process ticket normally
             startProcessingTicket(description, room, category);
@@ -399,10 +400,10 @@ public class RaiseTicketActivity extends AppCompatActivity {
     }
 
     private int countKeywords(String text, String[] keys) {
-        int c = 0;
+        int count = 0;
         String t = text.toLowerCase();
-        for (String k : keys) if (t.contains(k)) c++;
-        return c;
+        for (String k : keys) if (t.contains(k)) count++;
+        return count;
     }
 
     private String convertImageToResizedBase64(Uri uri) {
@@ -434,5 +435,29 @@ public class RaiseTicketActivity extends AppCompatActivity {
             android.util.Log.e(TAG, "Image conversion failed", e);
             return null;
         }
+    }
+
+    private void showEmergencyWarning(final String description, final String room, final String category) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("⚠️ EMERGENCY DETECTED")
+                .setMessage("Your description contains keywords suggesting a life-safety emergency.\n\n" +
+                        "Please call Emergency Services (112 / 999) or our Emergency Number immediately at: XXX-XXX-XXXX\n\n" +
+                        "Do you still want to raise this maintenance ticket?")
+                .setPositiveButton("STILL RAISE TICKET", (dialog, which) -> {
+                    // If they click still raise, run the AI and add
+                    startProcessingTicket(description, room, category);
+                })
+                .setNeutralButton("CALL NOW", (dialog, which) -> {
+                    // Open the dialer
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:0123456789")); // hard coded number
+                    startActivity(intent);
+                })
+                .setNegativeButton("CANCEL", (dialog, which) -> {
+                    predictButton.setEnabled(true);
+                    predictButton.setText("Submit Ticket");
+                })
+                .setCancelable(false)
+                .show();
     }
 }
