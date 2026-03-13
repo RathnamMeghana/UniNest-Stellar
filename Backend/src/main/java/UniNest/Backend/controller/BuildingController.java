@@ -51,7 +51,7 @@ public class BuildingController {
 
 
 
-    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @PreAuthorize("hasAnyRole('LETTINGAGENT', 'TENANT')")
     @GetMapping("/{id}")
     public ResponseEntity<Building> getBuildingById(@PathVariable String id) {
         // 1. Sanitize

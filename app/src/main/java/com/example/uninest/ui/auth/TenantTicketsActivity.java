@@ -262,6 +262,10 @@ public class TenantTicketsActivity extends AppCompatActivity {
     private void showTicketDetailsPopup(Ticket t) {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_ticket_details, null);
+        builder.setView(view);
+
+        // 1. Create the dialog instance FIRST so the buttons can reference it
+        android.app.AlertDialog dialog = builder.create();
 
         // References
         TextView tvTitle = view.findViewById(R.id.popTitle);
@@ -273,76 +277,79 @@ public class TenantTicketsActivity extends AppCompatActivity {
         TextView tvAgentMsg = view.findViewById(R.id.popAgentMessage);
         View layoutAgentResponse = view.findViewById(R.id.layoutAgentResponse);
         ImageView ivPopImage = view.findViewById(R.id.popTicketImage);
+
         Button btnClose = view.findViewById(R.id.btnPopClose);
+        Button btnDelete = view.findViewById(R.id.btnPopDelete); // Our new button
 
         // Data population
         String room = t.getRoom() != null ? t.getRoom() : "General";
         String cat = t.getCategory() != null ? t.getCategory() : "Issue";
         tvTitle.setText(room + ": " + cat);
-
         tvDesc.setText(t.getDescription());
         tvLocation.setText(room);
 
         // Raised By Logic
         if (t.getUserId() != null && t.getUserId().equals(sessionManager.getUserId())) {
             tvRaisedBy.setText("Me");
+            // Show delete button ONLY if I am the owner
+            btnDelete.setVisibility(View.VISIBLE);
         } else {
             tvRaisedBy.setText(t.getUserName() != null ? t.getUserName() : "Roommate");
+            btnDelete.setVisibility(View.GONE);
         }
 
         // Status Pill Styling
         String status = t.getStatus() != null ? t.getStatus() : "Raised";
         tvStatus.setText(status.toUpperCase().replace("_", " "));
 
-        if (status.equalsIgnoreCase("Raised") || status.equalsIgnoreCase("Open")) {
-            tvStatus.setTextColor(Color.parseColor("#C62828")); // Dark Red
-            tvStatus.setBackgroundResource(R.drawable.bg_status_pending);
-        } else if (status.toLowerCase().contains("process")) {
-            tvStatus.setTextColor(Color.parseColor("#EF6C00")); // Dark Orange
-            tvStatus.setBackgroundResource(R.drawable.bg_status_progress);
-        } else {
-            tvStatus.setTextColor(Color.parseColor("#2E7D32")); // Dark Green
-            tvStatus.setBackgroundResource(R.drawable.bg_status_completed);
-        }
+        // Delete Button Logic
+        btnDelete.setOnClickListener(v -> {
+            new android.app.AlertDialog.Builder(this)
+                    .setTitle("Delete Ticket")
+                    .setMessage("Are you sure you want to remove this ticket?")
+                    .setPositiveButton("Delete", (dialogInterface, i) -> {
+                        deleteTicket(t.getId());
+                        dialog.dismiss(); // Now 'dialog' is resolved correctly
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
 
-        // Agent Arrival & Message
-        tvArrival.setText(t.getArrivalDate() != null && !t.getArrivalDate().isEmpty() ? t.getArrivalDate() : "Not scheduled");
-
-        if (t.getAgentResponse() != null && !t.getAgentResponse().trim().isEmpty()) {
-            layoutAgentResponse.setVisibility(View.VISIBLE);
-            tvAgentMsg.setText(t.getAgentResponse());
-        } else {
-            layoutAgentResponse.setVisibility(View.GONE);
-        }
-
+        // Image Loading Logic
         if (t.getImageUrl() != null && !t.getImageUrl().isEmpty()) {
             ivPopImage.setVisibility(View.VISIBLE);
             try {
-                // Decode Base64 string to bytes
                 byte[] imageBytes = android.util.Base64.decode(t.getImageUrl(), android.util.Base64.DEFAULT);
-
-                // Load into ImageView using Glide
-                com.bumptech.glide.Glide.with(this)
-                        .asBitmap()
-                        .load(imageBytes)
-                        .placeholder(android.R.drawable.progress_horizontal)
-                        .error(android.R.drawable.ic_menu_report_image)
-                        .into(ivPopImage);
+                com.bumptech.glide.Glide.with(this).asBitmap().load(imageBytes).into(ivPopImage);
             } catch (Exception e) {
                 ivPopImage.setVisibility(View.GONE);
-                Log.e(TAG, "Error decoding popup image", e);
             }
-        } else {
-            ivPopImage.setVisibility(View.GONE);
         }
 
-        // Show Dialog
-        builder.setView(view);
-        android.app.AlertDialog dialog = builder.create();
+        // Dialog styling and show
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
+
         btnClose.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
+
+
+    private void deleteTicket(String ticketId) {
+        ticketApi.softDeleteTicket(ticketId).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(TenantTicketsActivity.this, "Ticket deleted", Toast.LENGTH_SHORT).show();
+                    loadTickets(); // Refresh list
+                }
+            }
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(TenantTicketsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

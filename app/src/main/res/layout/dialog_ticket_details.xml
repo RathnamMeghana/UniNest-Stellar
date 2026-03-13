@@ -91,31 +91,34 @@
             <TextView android:id="@+id/popArrival" android:text="Not scheduled" android:textStyle="bold" android:textColor="#00BCD4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp"/>
         </LinearLayout>
 
-        <!-- Delete Button  beside Arrival -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPopDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_gravity="bottom|end"
-            android:backgroundTint="#FFF0F0"
-            android:text="Delete"
-            android:textColor="#D32F2F"
-            android:textSize="11sp"
-            android:textAllCaps="false"
-            android:paddingHorizontal="12dp"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:visibility="gone"
-            app:cornerRadius="16dp"
-            app:strokeColor="#FFCDD2"
-            app:strokeWidth="1dp"
-            app:icon="@android:drawable/ic_menu_delete"
-            app:iconSize="14dp"
-            app:iconTint="#D32F2F"/>
+
 
     </GridLayout>
+    <!-- Delete Button  -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPopDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_row="1"
+        android:layout_column="1"
+        android:layout_gravity="center_vertical|end"
+        android:backgroundTint="#FFF0F0"
+        android:text="Delete"
+        android:textColor="#D32F2F"
+        android:textSize="11sp"
+        android:textAllCaps="false"
+        android:paddingHorizontal="12dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:visibility="gone"
+        app:cornerRadius="16dp"
+        app:strokeColor="#FFCDD2"
+        app:strokeWidth="1dp"
+        app:icon="@android:drawable/ic_menu_delete"
+        app:iconSize="14dp"
+        app:iconTint="#D32F2F"/>
 
     <LinearLayout
         android:id="@+id/layoutAgentResponse"
