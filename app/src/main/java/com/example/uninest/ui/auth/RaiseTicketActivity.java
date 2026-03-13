@@ -253,6 +253,23 @@ public class RaiseTicketActivity extends AppCompatActivity {
             fetchBuildingContext();
             return;
         }
+        // Check for Emergency Keywords
+        boolean isEmergency = false;
+        String lowerDesc = description.toLowerCase();
+        for (String key : EMERGENCY_KEYWORDS) {
+            if (lowerDesc.contains(key)) {
+                isEmergency = true;
+                break;
+            }
+        }
+
+        if (isEmergency) {
+
+            Toast.makeText(this, "Emergency.", Toast.LENGTH_LONG).show();
+        } else {
+        //process ticket normally
+            startProcessingTicket(description, room, category);
+        }
 
     }
 
