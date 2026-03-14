@@ -2,72 +2,68 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="320dp"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:background="@drawable/bg_tenant_calendar_dialog"
     android:orientation="vertical"
     android:padding="24dp">
 
-    <!-- Title -->
     <TextView
         android:id="@+id/popTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/opensans_bold"
         android:text="Event Title"
-        android:textAlignment="center"
-        android:textColor="#212121"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:textAlignment="viewStart"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="22sp" />
 
-    <!-- Type Badge -->
     <TextView
         android:id="@+id/popTypeBadge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_status_pending"
+        android:fontFamily="@font/opensans_bold"
         android:paddingHorizontal="12dp"
-        android:paddingVertical="4dp"
+        android:paddingVertical="6dp"
         android:text="EVENT"
-        android:textColor="#C62828"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textColor="@color/calendar_status_pending_text"
+        android:textSize="12sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="20dp"
-        android:background="#EEEEEE" />
+        android:background="@color/calendar_primary_soft" />
 
-    <!-- Details Grid -->
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="2">
 
-        <!-- Date -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_marginBottom="16dp"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
                 android:text="DATE"
-                android:textColor="#9E9E9E"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="10sp" />
+
             <TextView
                 android:id="@+id/popDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
                 android:text="Tomorrow"
-                android:textColor="#333333"
-                android:textStyle="bold" />
+                android:textColor="@color/calendar_text_primary" />
         </LinearLayout>
 
-        <!-- Time (Events only) -->
         <LinearLayout
             android:id="@+id/layoutTime"
             android:layout_width="0dp"
@@ -76,23 +72,24 @@
             android:layout_marginBottom="16dp"
             android:orientation="vertical"
             android:visibility="gone">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
                 android:text="TIME"
-                android:textColor="#9E9E9E"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="10sp" />
+
             <TextView
                 android:id="@+id/popTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
                 android:text="14:00"
-                android:textColor="#333333"
-                android:textStyle="bold" />
+                android:textColor="@color/calendar_text_primary" />
         </LinearLayout>
 
-        <!-- Amount (Bills only) -->
         <LinearLayout
             android:id="@+id/layoutAmount"
             android:layout_width="0dp"
@@ -101,40 +98,42 @@
             android:layout_marginBottom="16dp"
             android:orientation="vertical"
             android:visibility="gone">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
                 android:text="AMOUNT"
-                android:textColor="#E65100"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textColor="@color/calendar_reminder_text"
+                android:textSize="10sp" />
+
             <TextView
                 android:id="@+id/popAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
                 android:text="€0.00"
-                android:textColor="#E65100"
-                android:textStyle="bold" />
+                android:textColor="@color/calendar_reminder_text" />
         </LinearLayout>
     </GridLayout>
 
-    <!-- Description Section -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/opensans_bold"
         android:text="DESCRIPTION"
-        android:textColor="#9E9E9E"
-        android:textSize="11sp"
-        android:textStyle="bold" />
+        android:textColor="@color/calendar_text_secondary"
+        android:textSize="11sp" />
 
     <TextView
         android:id="@+id/popDesc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:fontFamily="@font/opensans_regular"
         android:text="No description provided."
-        android:textColor="#424242"
+        android:textColor="@color/calendar_text_primary"
         android:textSize="14sp" />
 
     <Button
@@ -142,8 +141,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:backgroundTint="#B792D9"
+        android:backgroundTint="@color/calendar_primary"
         android:text="Close"
         android:textAllCaps="false"
-        android:textColor="#FFFFFF" />
+        android:textColor="@android:color/white" />
 </LinearLayout>

@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Building Name"
-            android:textColor="#000000"
+            android:textColor="@color/app_text_primary"
             android:textStyle="bold"
             android:textSize="16sp" />
 
@@ -48,7 +48,7 @@
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_gemini_sparkle"
             android:visibility="gone"
-            app:tint="#7B1FA2" />
+            app:tint="@color/app_accent_purple" />
     </LinearLayout>
 
     <TextView
@@ -56,7 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Apartment 29 - Kitchen"
-        android:textColor="#555555"
+        android:textColor="@color/app_text_secondary"
         android:textSize="14sp"
         android:layout_marginBottom="2dp"/>
 
@@ -65,7 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Raised by: Sarah"
-        android:textColor="#757575"
+        android:textColor="@color/app_text_secondary"
         android:textSize="13sp"
         android:layout_marginBottom="6dp" />
 
@@ -75,7 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Reported on: 12/03/2026"
-        android:textColor="#888888"
+        android:textColor="@color/app_text_secondary"
         android:textSize="12sp"
         android:layout_marginBottom="2dp" />
 

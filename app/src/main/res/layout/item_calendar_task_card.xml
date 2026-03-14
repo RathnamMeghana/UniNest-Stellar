@@ -1,81 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:background="@drawable/bg_card_green"
-    android:elevation="2dp"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_marginBottom="6dp"
+    android:background="@drawable/bg_tenant_calendar_surface_alt"
+    android:clickable="true"
+    android:elevation="0dp"
+    android:focusable="true"
+    android:minHeight="84dp"
+    android:paddingStart="12dp"
+    android:paddingTop="11dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="11dp">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:autoSizeMaxTextSize="16sp"
+        android:autoSizeMinTextSize="13sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:ellipsize="end"
+        android:fontFamily="@font/opensans_bold"
+        android:maxLines="1"
+        android:text="Task Title"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/rightColumn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvExtraInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/opensans_regular"
+        android:maxLines="2"
+        android:text="Assigned info..."
+        android:textColor="@color/calendar_text_secondary"
+        android:textSize="11sp"
+        app:layout_constraintEnd_toStartOf="@id/rightColumn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+    <TextView
+        android:id="@+id/tvDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/opensans_regular"
+        android:maxLines="2"
+        android:text="Description"
+        android:textColor="@color/calendar_text_secondary"
+        android:textSize="11sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/rightColumn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvExtraInfo" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:id="@+id/rightColumn"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="end"
+        android:minWidth="80dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Task Title"
-            android:textColor="#000"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <!-- Status Badge -->
         <TextView
             android:id="@+id/popStatusBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_status_pending"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:minHeight="24dp"
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
-            android:text="Not Started"
-            android:textSize="11sp"
-            android:textStyle="bold"
+            android:text="Pending"
+            android:textAlignment="center"
+            android:textSize="9sp"
             android:visibility="gone" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewMore"
+            android:layout_width="72dp"
+            android:layout_height="28dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="8dp"
+            android:text="View"
+            android:textAllCaps="false"
+            android:textColor="@color/calendar_text_inverse"
+            android:textSize="9sp"
+            app:backgroundTint="@color/calendar_primary_dark"
+            app:cornerRadius="14dp"
+            app:elevation="0dp" />
     </LinearLayout>
 
-    <!-- Info Text -->
-    <TextView
-        android:id="@+id/tvExtraInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Assigned info..."
-        android:textColor="#555555"
-        android:textSize="13sp" />
-
-    <!-- Hidden Description -->
-    <TextView
-        android:id="@+id/tvDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Desc"
-        android:textSize="12sp"
-        android:visibility="gone" />
-
-    <!-- ACTION BUTTON -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnViewMore"
-        android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:layout_gravity="end"
-        android:layout_marginTop="8dp"
-        android:text="View Details"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:backgroundTint="#00B53E"
-        app:cornerRadius="18dp"
-        app:elevation="2dp"
-        android:paddingHorizontal="20dp"
-        android:minHeight="0dp"
-        android:minWidth="0dp" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

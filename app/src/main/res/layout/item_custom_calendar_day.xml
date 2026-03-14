@@ -2,26 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center"
-    android:padding="4dp">
-
+    android:orientation="vertical"
+    android:paddingVertical="2dp">
 
     <TextView
         android:id="@id/dayLabel"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:background="@drawable/selector_calendar_day"
+        android:duplicateParentState="true"
+        android:fontFamily="@font/opensans_bold"
         android:gravity="center"
-        android:textColor="#000000"
-        android:textSize="14sp" />
+        android:textColor="@color/selector_calendar_day_text"
+        android:textSize="13sp" />
 
-    <!-- Dot Icon Container -->
     <ImageView
         android:id="@id/dayIcon"
         android:layout_width="wrap_content"
-        android:layout_height="8dp"
-        android:layout_marginTop="2dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="4dp"
+        android:duplicateParentState="true"
         android:scaleType="fitCenter" />
 
 </LinearLayout>

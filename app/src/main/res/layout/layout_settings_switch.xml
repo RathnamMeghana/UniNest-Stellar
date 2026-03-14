@@ -12,7 +12,7 @@
         android:layout_height="24dp"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_dark_mode"
-        app:tint="#555555" />
+        app:tint="@color/app_text_secondary" />
 
     <TextView
         android:id="@+id/tvRowLabel"
@@ -22,7 +22,7 @@
         android:layout_marginStart="16dp"
         android:layout_toEndOf="@id/ivRowIcon"
         android:text="Dark Mode"
-        android:textColor="#1A1A1A"
+        android:textColor="@color/app_text_primary"
         android:textSize="16sp" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial

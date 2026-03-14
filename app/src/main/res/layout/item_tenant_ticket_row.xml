@@ -3,61 +3,67 @@
     android:id="@+id/cardContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/bg_card_border_raised"
     android:layout_marginBottom="12dp"
-    android:elevation="2dp">
+    android:background="@drawable/bg_card_border_raised"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Title: "Kitchen: Oven" -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Kitchen: Oven"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#000000"
-        android:layout_marginBottom="6dp"/>
+        android:textColor="@color/app_text_primary"
+        android:textSize="17sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvRaisedBy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Raised by: Me"
-        android:textSize="13sp"
-        android:textColor="#757575"
-        android:layout_marginBottom="6dp"/>
+        android:layout_marginTop="6dp"
+        android:text="Raised by you"
+        android:textColor="@color/app_text_secondary"
+        android:textSize="13sp" />
 
-    <!-- Row 1: Raised on -->
     <TextView
         android:id="@+id/tvRaisedDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Raised on: 12/03/2026"
-        android:textSize="13sp"
-        android:textColor="#555555"
-        android:layout_marginBottom="2dp"/>
+        android:layout_marginTop="4dp"
+        android:text="Raised: 14 Mar 2026, 2:30 PM"
+        android:textColor="@color/app_text_secondary"
+        android:textSize="13sp" />
 
-    <!-- Row 2: Arrival / Status Message -->
+    <TextView
+        android:id="@+id/tvDescriptionPreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Optional description preview goes here so the issue can be scanned quickly."
+        android:textColor="@color/app_text_primary"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/tvStatusMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Waiting for Letting Agent"
-        android:textStyle="bold"
-        android:textSize="13sp"
-        android:textColor="#777777"
-        android:layout_marginBottom="2dp"/>
+        android:layout_marginTop="12dp"
+        android:text="Waiting for letting agent review"
+        android:textColor="@color/app_text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
-    <!-- Row 3: Solved Date (Hidden by default) -->
     <TextView
         android:id="@+id/tvSolvedDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Solved: -"
+        android:layout_marginTop="6dp"
+        android:text="Solved: 15 Mar 2026, 10:15 AM"
+        android:textColor="@color/app_text_secondary"
         android:textSize="13sp"
-        android:textColor="#333333"
-        android:visibility="gone"/>
-
+        android:visibility="gone" />
 </LinearLayout>

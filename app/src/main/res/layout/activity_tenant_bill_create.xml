@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/app_surface">
 
-    <!-- 1. Header Blob  -->
     <View
         android:id="@+id/headerBgBlob"
         android:layout_width="150dp"
@@ -17,20 +15,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 2. Screen Title  -->
-
-    <!-- 3. Scrollable Content -->
     <TextView
         android:id="@+id/tvScreenTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:text="Create New Bill"
-        android:textColor="#000000"
+        android:textColor="@color/app_text_primary"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.46"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,10 +42,10 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Input Section Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/app_surface_alt"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:cardUseCompatPadding="true">
@@ -62,34 +56,26 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <!-- Title -->
                     <TextView
                         style="@style/LabelStyle"
+                        android:letterSpacing="0.05"
                         android:text="Bill Title"
-                        android:textColor="#888888"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.05"/>
+                        android:textAllCaps="true" />
 
                     <EditText
                         android:id="@+id/etBillTitle"
                         style="@style/InputStyle"
                         android:layout_marginTop="8dp"
                         android:background="@drawable/bg_input_field"
-                        android:hint="e.g. Monthly Rent"
+                        android:hint="e.g. Monthly rent"
                         android:padding="12dp" />
 
-                    <!-- Amount -->
                     <TextView
                         style="@style/LabelStyle"
                         android:layout_marginTop="16dp"
-                        android:text="Total Amount (€)"
-                        android:textColor="#888888"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.05"/>
+                        android:letterSpacing="0.05"
+                        android:text="Total Amount (&#8364;)"
+                        android:textAllCaps="true" />
 
                     <EditText
                         android:id="@+id/etAmount"
@@ -100,16 +86,12 @@
                         android:inputType="numberDecimal"
                         android:padding="12dp" />
 
-                    <!-- Bill Type -->
                     <TextView
                         style="@style/LabelStyle"
                         android:layout_marginTop="16dp"
+                        android:letterSpacing="0.05"
                         android:text="Payment Type"
-                        android:textColor="#888888"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.05"/>
+                        android:textAllCaps="true" />
 
                     <Spinner
                         android:id="@+id/spinnerBillType"
@@ -119,13 +101,11 @@
                         android:background="@drawable/bg_spinner_field"
                         android:spinnerMode="dropdown" />
 
-                    <!-- Frequency (Hidden by default) -->
                     <TextView
                         android:id="@+id/tvFrequencyLabel"
                         style="@style/LabelStyle"
                         android:layout_marginTop="16dp"
                         android:text="Repeat Every"
-                        android:textColor="#888888"
                         android:visibility="gone" />
 
                     <Spinner
@@ -137,16 +117,12 @@
                         android:spinnerMode="dropdown"
                         android:visibility="gone" />
 
-                    <!-- Due Date -->
                     <TextView
                         style="@style/LabelStyle"
                         android:layout_marginTop="16dp"
+                        android:letterSpacing="0.05"
                         android:text="Due Date"
-                        android:textColor="#888888"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.05"/>
+                        android:textAllCaps="true" />
 
                     <TextView
                         android:id="@+id/btnPickDate"
@@ -158,24 +134,24 @@
                         android:gravity="center_vertical"
                         android:paddingHorizontal="12dp"
                         android:text="Select Date"
-                        android:textColor="#333" />
+                        android:textColor="@color/app_text_primary" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Roommate Selection -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="20dp"
                 android:text="Split with Roommates"
-                android:textColor="#000000"
+                android:textColor="@color/app_text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/app_surface_alt"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
                 app:cardUseCompatPadding="true">
@@ -184,19 +160,17 @@
                     android:id="@+id/rvRoommates"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:background="#FFFFFF"
+                    android:background="@color/app_surface_alt"
                     android:padding="8dp" />
             </androidx.cardview.widget.CardView>
 
-            <!-- Split Preview Chip -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="24dp"
-                android:background="@drawable/bg_status_progress"
-                android:backgroundTint="#F0E6F7"
+                android:background="@drawable/bg_summary_chip"
                 android:paddingHorizontal="24dp"
                 android:paddingVertical="12dp">
 
@@ -204,20 +178,19 @@
                     android:id="@+id/tvSplitAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Each person: €0.00"
-                    android:textColor="#B792D9"
+                    android:text="Each person: &#8364;0.00"
+                    android:textColor="@color/app_accent_purple"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Submit Button (Pill Styled) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSubmitBill"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:backgroundTint="#00BCD4"
+                android:backgroundTint="@color/app_accent_purple"
                 android:text="Create Bill"
                 android:textAllCaps="false"
-                android:textColor="#FFFFFF"
+                android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:cornerRadius="30dp"

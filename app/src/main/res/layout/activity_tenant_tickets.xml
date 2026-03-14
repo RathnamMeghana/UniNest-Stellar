@@ -1,187 +1,266 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/app_surface">
 
-    <!-- 1. HEADER BLOB  -->
-    <View
-        android:id="@+id/headerBgBlob"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:background="@drawable/bg_header_blue_circle"
-        android:translationX="-50dp"
-        android:translationY="-50dp"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <!-- 2. FIXED HEADER AREA -->
-    <LinearLayout
-        android:id="@+id/fixedHeaderContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Header Title -->
-        <FrameLayout
-            android:id="@+id/header"
-            android:layout_width="match_parent"
-            android:layout_height="120dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Apartment Tickets"
-                android:textColor="#000000"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"/>
-        </FrameLayout>
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingTop="10dp">
+            android:paddingStart="20dp"
+            android:paddingTop="24dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="28dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Something wrong at home?"
+                android:background="@drawable/bg_app_hero_panel"
+                android:orientation="vertical"
+                android:padding="22dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Maintenance tickets"
+                    android:textColor="@android:color/white"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Track every issue from raised to solved. High-priority tickets now prompt an emergency contact action immediately."
+                    android:textColor="#F4EFFF"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRaiseTicket"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="18dp"
+                    android:backgroundTint="@android:color/white"
+                    android:text="Raise a ticket"
+                    android:textAllCaps="false"
+                    android:textColor="@color/calendar_primary_dark"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="18dp"
+                    app:elevation="0dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvNoTickets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_summary_chip"
                 android:gravity="center"
-                android:textSize="16sp"
-                android:textColor="#333"
-                android:layout_marginBottom="12dp"/>
+                android:padding="16dp"
+                android:text="No tickets yet. Raise an issue here and it will appear in the right section automatically."
+                android:textColor="@color/app_text_secondary"
+                android:textSize="14sp"
+                android:visibility="gone" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRaiseTicket"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:text="+ Raise a ticket"
-                android:textColor="#00BCD4"
-                android:textStyle="bold"
-                android:backgroundTint="#FFFFFF"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                app:strokeColor="#00BCD4"
-                app:strokeWidth="1.5dp"
-                app:cornerRadius="25dp"
-                android:elevation="2dp"
-                android:layout_marginBottom="24dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/headerInProgress"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Apartment tickets"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#000"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10dp"/>
-        </LinearLayout>
-    </LinearLayout>
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_summary_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="58dp"
+                android:orientation="horizontal"
+                android:paddingStart="18dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="12dp">
 
-    <!-- 3. SCROLLABLE AREA -->
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/fixedHeaderContainer"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="In progress"
+                    android:textColor="@color/app_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingBottom="20dp">
+                <TextView
+                    android:id="@+id/tvCountInProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_soft_badge"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="0"
+                    android:textColor="@color/app_text_primary"
+                    android:textStyle="bold"
+                    tools:text="2" />
 
-            <!-- SECTION 1: IN PROGRESS -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="In progress"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#000"
-                android:layout_marginTop="10dp"/>
-            <View
-                android:layout_width="100dp"
-                android:layout_height="1.5dp"
-                android:background="#00BCD4"
-                android:layout_marginBottom="12dp"/>
+                <ImageView
+                    android:id="@+id/ivToggleInProgress"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_calendar_chevron_down"
+                    app:tint="@color/app_text_secondary" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/containerInProgress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:orientation="vertical"
-                android:layout_marginBottom="24dp"/>
+                tools:visibility="visible" />
 
-            <!-- SECTION 2: RAISED -->
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/headerRaised"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Raised"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#000"/>
-            <View
-                android:layout_width="60dp"
-                android:layout_height="1.5dp"
-                android:background="#00BCD4"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_summary_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="58dp"
+                android:orientation="horizontal"
+                android:paddingStart="18dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="12dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Raised"
+                    android:textColor="@color/app_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCountRaised"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_soft_badge"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="0"
+                    android:textColor="@color/app_text_primary"
+                    android:textStyle="bold"
+                    tools:text="4" />
+
+                <ImageView
+                    android:id="@+id/ivToggleRaised"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_calendar_chevron_down"
+                    app:tint="@color/app_text_secondary" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/containerRaised"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:orientation="vertical"
-                android:layout_marginBottom="24dp"/>
+                tools:visibility="visible" />
 
-            <!-- SECTION 3: SOLVED -->
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/headerSolved"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Solved"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#000"/>
-            <View
-                android:layout_width="60dp"
-                android:layout_height="1.5dp"
-                android:background="#4CAF50"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_summary_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="58dp"
+                android:orientation="horizontal"
+                android:paddingStart="18dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="12dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Solved"
+                    android:textColor="@color/app_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCountSolved"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_soft_badge"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="0"
+                    android:textColor="@color/app_text_primary"
+                    android:textStyle="bold"
+                    tools:text="1" />
+
+                <ImageView
+                    android:id="@+id/ivToggleSolved"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_calendar_chevron_down"
+                    app:tint="@color/app_text_secondary" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/containerSolved"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:orientation="vertical"
-                android:layout_marginBottom="40dp"/>
-
+                tools:visibility="visible" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- 4.  BOTTOM NAVIGATION -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="#FFFFFF"
-        android:elevation="16dp"
-        app:menu="@menu/tenant_bottom_nav"
-        app:labelVisibilityMode="labeled"
         style="@style/Widget.Design.BottomNavigationView"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:background="@color/app_surface"
+        android:elevation="16dp"
         app:itemBackground="@drawable/bg_nav_pill_custom"
         app:itemIconSize="50dp"
         app:itemIconTint="@color/selector_nav_icon"
-        app:itemTextColor="#000000"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:itemTextColor="@color/selector_nav_icon"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/tenant_bottom_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
