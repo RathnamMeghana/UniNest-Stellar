@@ -15,6 +15,7 @@ public class SessionManager {
     private static final String KEY_COMPANY_NAME = "company_name";
     private static final String KEY_ID_TOKEN = "id_token";
     private static final String KEY_FIRST_TIME_SETUP = "first_time_setup";
+    private static final String KEY_DARK_MODE_ENABLED = "dark_mode_enabled";
 
     SharedPreferences pref;
     SharedPreferences.Editor editor;
@@ -103,6 +104,15 @@ public class SessionManager {
     public void setFirstTimeSetupCompleted() {
         editor.putBoolean(KEY_FIRST_TIME_SETUP, false);
         editor.apply();
+    }
+
+    public void setDarkModeEnabled(boolean enabled) {
+        editor.putBoolean(KEY_DARK_MODE_ENABLED, enabled);
+        editor.apply();
+    }
+
+    public boolean isDarkModeEnabled() {
+        return pref.getBoolean(KEY_DARK_MODE_ENABLED, false);
     }
     //public void saveTenantSession(String email, String houseCode) {
     //    editor.putString(KEY_USER_EMAIL, email);
