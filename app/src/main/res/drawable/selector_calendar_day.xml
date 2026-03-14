@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- State Selected: Show the Ring -->
-    <item android:state_selected="true" android:drawable="@drawable/bg_calendar_ring"/>
-
-    <!-- Default: Transparent -->
-    <item android:drawable="@android:color/transparent"/>
+    <item android:state_selected="true" android:drawable="@drawable/bg_calendar_selector" />
+    <item android:state_activated="true" android:drawable="@drawable/bg_calendar_selector" />
+    <item android:state_pressed="true" android:drawable="@drawable/bg_calendar_selector" />
+    <item android:drawable="@drawable/bg_tenant_calendar_month_day" />
 </selector>
