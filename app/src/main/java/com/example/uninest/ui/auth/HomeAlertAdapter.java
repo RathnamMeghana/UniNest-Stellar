@@ -1,15 +1,18 @@
 package com.example.uninest.ui.auth;
 
-import android.graphics.Color;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.uninest.R;
@@ -48,43 +51,26 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
     @NonNull
     @Override
     public AlertViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_home_alert, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_home_alert, parent, false);
         return new AlertViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull AlertViewHolder holder, int position) {
         HomeAlert alert = alerts.get(position);
-
         holder.tvTitle.setText(alert.getTitle() != null ? alert.getTitle() : "");
         holder.tvSubtitle.setText(formatSubtitle(alert));
 
-        String type = alert.getType() != null ? alert.getType() : "MESSAGE";
+        AlertPalette palette = paletteFor(holder.itemView.getContext(), alert.getType());
+        holder.tvType.setText(palette.label);
+        holder.icon.setImageResource(palette.iconRes);
+        holder.icon.setImageTintList(ColorStateList.valueOf(palette.accentColor));
+        holder.btnDelete.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_text_secondary)));
+        holder.accentBar.setBackgroundColor(palette.accentColor);
 
-        switch (type) {
-            case "CHORE":
-                holder.background.setBackgroundColor(Color.parseColor("#00C853"));
-                holder.icon.setImageResource(R.drawable.ic_trash_bin);
-                break;
-            case "MAINTENANCE":
-                holder.background.setBackgroundColor(Color.parseColor("#FF7043"));
-                holder.icon.setImageResource(R.drawable.ic_tools);
-                break;
-            case "RENT":
-                holder.background.setBackgroundColor(Color.parseColor("#E91E63"));
-                holder.icon.setImageResource(R.drawable.ic_money_wings);
-                break;
-            case "CALENDAR":
-                holder.background.setBackgroundColor(Color.parseColor("#5C6BC0"));
-                holder.icon.setImageResource(R.drawable.ic_calendar);
-                break;
-            case "MESSAGE":
-            default:
-                holder.background.setBackgroundColor(Color.parseColor("#B792D9"));
-                holder.icon.setImageResource(R.drawable.ic_notifications);
-                break;
-        }
+        tintShape(holder.tvType, withAlpha(palette.accentColor, 0.14f), withAlpha(palette.accentColor, 0.28f));
+        tintShape(holder.iconContainer, withAlpha(palette.accentColor, 0.12f), withAlpha(palette.accentColor, 0.22f));
+        holder.tvType.setTextColor(palette.accentColor);
 
         holder.itemView.setOnClickListener(v -> {
             if (alertClickListener != null) {
@@ -102,6 +88,61 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
     @Override
     public int getItemCount() {
         return alerts.size();
+    }
+
+    private void tintShape(View view, @ColorInt int fillColor, @ColorInt int strokeColor) {
+        GradientDrawable drawable = (GradientDrawable) view.getBackground().mutate();
+        drawable.setColor(fillColor);
+        drawable.setStroke(dp(view, 1), strokeColor);
+    }
+
+    private int dp(View view, int value) {
+        float density = view.getResources().getDisplayMetrics().density;
+        return Math.round(value * density);
+    }
+
+    @ColorInt
+    private int withAlpha(@ColorInt int color, float alpha) {
+        int alphaChannel = Math.round(255 * alpha);
+        return (color & 0x00FFFFFF) | (alphaChannel << 24);
+    }
+
+    private AlertPalette paletteFor(android.content.Context context, String type) {
+        String normalized = type != null ? type.trim().toUpperCase(Locale.getDefault()) : "MESSAGE";
+
+        switch (normalized) {
+            case "CHORE":
+                return new AlertPalette(
+                        "Chore",
+                        ContextCompat.getColor(context, R.color.app_accent_green),
+                        R.drawable.ic_trash_bin
+                );
+            case "MAINTENANCE":
+                return new AlertPalette(
+                        "Maintenance",
+                        ContextCompat.getColor(context, R.color.app_warning),
+                        R.drawable.ic_tools
+                );
+            case "RENT":
+                return new AlertPalette(
+                        "Bills",
+                        ContextCompat.getColor(context, R.color.app_danger),
+                        R.drawable.ic_money_wings
+                );
+            case "CALENDAR":
+                return new AlertPalette(
+                        "Calendar",
+                        ContextCompat.getColor(context, R.color.app_accent_cyan),
+                        R.drawable.ic_calendar
+                );
+            case "MESSAGE":
+            default:
+                return new AlertPalette(
+                        "Message",
+                        ContextCompat.getColor(context, R.color.app_accent_purple),
+                        R.drawable.ic_notifications
+                );
+        }
     }
 
     private String formatSubtitle(HomeAlert alert) {
@@ -136,7 +177,7 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
         }
 
         long diffMillis = time - now.getTimeInMillis();
-        long diffDays = diffMillis / (1000 * 60 * 60 * 24);
+        long diffDays = diffMillis / (1000L * 60 * 60 * 24);
 
         if (diffDays >= 2 && diffDays <= 7) {
             return new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date(time));
@@ -158,18 +199,33 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
     }
 
     static class AlertViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvSubtitle;
+        TextView tvTitle, tvSubtitle, tvType;
         ImageView icon;
-        RelativeLayout background;
+        View accentBar;
         ImageButton btnDelete;
+        FrameLayout iconContainer;
 
-        public AlertViewHolder(@NonNull View itemView) {
+        AlertViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvAlertTitle);
             tvSubtitle = itemView.findViewById(R.id.tvAlertSubtitle);
+            tvType = itemView.findViewById(R.id.tvAlertType);
             icon = itemView.findViewById(R.id.imgAlertIcon);
-            background = itemView.findViewById(R.id.layoutAlertBackground);
+            accentBar = itemView.findViewById(R.id.viewAlertAccent);
             btnDelete = itemView.findViewById(R.id.btnDeleteAlert);
+            iconContainer = itemView.findViewById(R.id.layoutIconBadge);
+        }
+    }
+
+    private static class AlertPalette {
+        final String label;
+        final int accentColor;
+        final int iconRes;
+
+        AlertPalette(String label, int accentColor, int iconRes) {
+            this.label = label;
+            this.accentColor = accentColor;
+            this.iconRes = iconRes;
         }
     }
 }

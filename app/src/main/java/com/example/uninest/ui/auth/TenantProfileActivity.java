@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
+import com.example.uninest.utils.ContactUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,7 +73,7 @@ public class TenantProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // This runs EVERY time you come back to this screen
+
         refreshUserData();
     }
 
@@ -102,6 +103,7 @@ public class TenantProfileActivity extends AppCompatActivity {
         setupRow(R.id.rowAbout, "About Us", R.drawable.ic_info);
         setupRow(R.id.rowFaq, "FAQs", R.drawable.ic_help);
         setupRow(R.id.rowPrivacy, "Privacy Policy", R.drawable.ic_shield);
+        setupRow(R.id.rowSupport, "Contact Support", R.drawable.ic_help);
         setupRow(R.id.rowDarkMode, "Dark Mode", R.drawable.ic_dark_mode);
 
         // Click Listeners
@@ -119,6 +121,10 @@ public class TenantProfileActivity extends AppCompatActivity {
         findViewById(R.id.rowPrivacy).setOnClickListener(v ->
                 startActivity(new Intent(this, PrivacyPolicyActivity.class)));
 
+        findViewById(R.id.rowSupport).setOnClickListener(v -> ContactUtils.emailSupport(this));
+        findViewById(R.id.rowEmergency).setOnClickListener(v -> ContactUtils.dialEmergency(this));
+        findViewById(R.id.btnCallEmergency).setOnClickListener(v -> ContactUtils.dialEmergency(this));
+
         findViewById(R.id.btnLogout).setOnClickListener(v -> handleLogout());
 
         // Dark Mode Toggle Logic
@@ -127,17 +133,15 @@ public class TenantProfileActivity extends AppCompatActivity {
         SwitchMaterial switchDark = darkModeRow.findViewById(R.id.itemSwitch);
 
 // Check current theme to set switch state initially
-        int currentMode = AppCompatDelegate.getDefaultNightMode();
-        switchDark.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
+        switchDark.setChecked(sessionManager.isDarkModeEnabled());
 
         switchDark.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sessionManager.setDarkModeEnabled(isChecked);
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
-            // Optional: Re-create activity to apply theme smoothly if needed
-            // recreate();
         });
 
 // Click listener to toggle switch when row is clicked

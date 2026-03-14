@@ -7,14 +7,15 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
@@ -36,14 +37,18 @@ import retrofit2.Response;
 
 public class CreateTenantBillActivity extends AppCompatActivity {
 
-    private EditText etTitle, etAmount;
-    private TextView tvSplitPreview, tvFrequencyLabel,btnDate;
+    private EditText etTitle;
+    private EditText etAmount;
+    private TextView tvSplitPreview;
+    private TextView tvFrequencyLabel;
+    private TextView btnDate;
     private MaterialButton btnSubmit;
-    private Spinner spinnerBillType, spinnerFrequency;
+    private Spinner spinnerBillType;
+    private Spinner spinnerFrequency;
     private RecyclerView rvRoommates;
     private BillSplittingAdapter roommateAdapter;
 
-    private List<String> selectedIds = new ArrayList<>();
+    private final List<String> selectedIds = new ArrayList<>();
     private SessionManager session;
     private Date dueDate;
 
@@ -53,15 +58,12 @@ public class CreateTenantBillActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tenant_bill_create);
         session = new SessionManager(this);
 
-        // Standard Fields
         etTitle = findViewById(R.id.etBillTitle);
         etAmount = findViewById(R.id.etAmount);
         tvSplitPreview = findViewById(R.id.tvSplitAmount);
         btnDate = findViewById(R.id.btnPickDate);
         btnSubmit = findViewById(R.id.btnSubmitBill);
         rvRoommates = findViewById(R.id.rvRoommates);
-
-
         spinnerBillType = findViewById(R.id.spinnerBillType);
         spinnerFrequency = findViewById(R.id.spinnerFrequency);
         tvFrequencyLabel = findViewById(R.id.tvFrequencyLabel);
@@ -71,9 +73,18 @@ public class CreateTenantBillActivity extends AppCompatActivity {
         setupDatePicker();
 
         etAmount.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {}
-            @Override public void onTextChanged(CharSequence s, int i, int i1, int i2) { updateSplit(); }
-            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateSplit();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         loadBuildingRoommates();
@@ -95,11 +106,14 @@ public class CreateTenantBillActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 BillsRequest.BillType selectedType = (BillsRequest.BillType) spinnerBillType.getSelectedItem();
-                int visibility = (selectedType == BillsRequest.BillType.RECURRING) ? View.VISIBLE : View.GONE;
+                int visibility = selectedType == BillsRequest.BillType.RECURRING ? View.VISIBLE : View.GONE;
                 tvFrequencyLabel.setVisibility(visibility);
                 spinnerFrequency.setVisibility(visibility);
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
     }
 
@@ -107,7 +121,9 @@ public class CreateTenantBillActivity extends AppCompatActivity {
         rvRoommates.setLayoutManager(new LinearLayoutManager(this));
         roommateAdapter = new BillSplittingAdapter(new ArrayList<>(), session.getUserId(), (userId, isChecked) -> {
             if (isChecked) {
-                if (!selectedIds.contains(userId)) selectedIds.add(userId);
+                if (!selectedIds.contains(userId)) {
+                    selectedIds.add(userId);
+                }
             } else {
                 selectedIds.remove(userId);
             }
@@ -118,13 +134,13 @@ public class CreateTenantBillActivity extends AppCompatActivity {
 
     private void setupDatePicker() {
         btnDate.setOnClickListener(v -> {
-            Calendar c = Calendar.getInstance();
-            new DatePickerDialog(this, (view, y, m, d) -> {
-                Calendar cal = Calendar.getInstance();
-                cal.set(y, m, d);
-                dueDate = cal.getTime();
+            Calendar calendar = Calendar.getInstance();
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                Calendar selected = Calendar.getInstance();
+                selected.set(year, month, dayOfMonth);
+                dueDate = selected.getTime();
                 btnDate.setText(DateFormat.getDateInstance().format(dueDate));
-            }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
         });
     }
 
@@ -132,82 +148,87 @@ public class CreateTenantBillActivity extends AppCompatActivity {
         ApiClient.getUserApi().getRoommates(session.fetchHouseCode()).enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                if (response.isSuccessful()) roommateAdapter.updateList(response.body());
+                if (response.isSuccessful() && response.body() != null) {
+                    roommateAdapter.updateList(response.body());
+                }
             }
-            @Override public void onFailure(Call<List<User>> call, Throwable t) {}
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+            }
         });
     }
 
     private void updateSplit() {
-        String val = etAmount.getText().toString();
-        if (val.isEmpty() || selectedIds.isEmpty()) {
-            tvSplitPreview.setText("Each pays: €0.00");
+        String value = etAmount.getText().toString();
+        if (value.isEmpty() || selectedIds.isEmpty()) {
+            tvSplitPreview.setText("Each pays: \u20AC0.00");
             return;
         }
+
         try {
-            double total = Double.parseDouble(val);
+            double total = Double.parseDouble(value);
             double split = total / selectedIds.size();
-            tvSplitPreview.setText(String.format("Each pays: €%.2f", split));
+            tvSplitPreview.setText(String.format(Locale.getDefault(), "Each pays: \u20AC%.2f", split));
         } catch (NumberFormatException e) {
-            tvSplitPreview.setText("Each pays: €0.00");
+            tvSplitPreview.setText("Each pays: \u20AC0.00");
         }
     }
 
     private void saveBill() {
         String title = etTitle.getText().toString().trim();
-        String amtStr = etAmount.getText().toString().trim();
+        String amountString = etAmount.getText().toString().trim();
 
-        if (title.isEmpty() || amtStr.isEmpty() || dueDate == null || selectedIds.isEmpty()) {
+        if (title.isEmpty() || amountString.isEmpty() || dueDate == null || selectedIds.isEmpty()) {
             Toast.makeText(this, "Complete all fields and select roommates", Toast.LENGTH_SHORT).show();
             return;
         }
 
-
         SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         String isoDate = isoFormat.format(dueDate);
 
-
-        double total = Double.parseDouble(amtStr);
+        double total = Double.parseDouble(amountString);
         double perPerson = total / selectedIds.size();
 
-        BillsRequest req = new BillsRequest();
-        req.setTitle(title);
-        req.setTotalAmount(total);
-        req.setDueDate(isoDate);
-        req.setHouseCode(session.fetchHouseCode());
-        req.setCreatorId(session.getUserId());
-        req.setRoommateIds(new ArrayList<>(selectedIds));
-        req.setActive(true);
+        BillsRequest request = new BillsRequest();
+        request.setTitle(title);
+        request.setTotalAmount(total);
+        request.setDueDate(isoDate);
+        request.setHouseCode(session.fetchHouseCode());
+        request.setCreatorId(session.getUserId());
+        request.setRoommateIds(new ArrayList<>(selectedIds));
+        request.setActive(true);
 
         List<BillsRequest.Split> splits = new ArrayList<>();
         for (String id : selectedIds) {
-            BillsRequest.Split s = new BillsRequest.Split();
-            s.setUserId(id);
-            s.setAmountOwed(perPerson);
-            s.setPaid(false);
-            splits.add(s);
+            BillsRequest.Split split = new BillsRequest.Split();
+            split.setUserId(id);
+            split.setAmountOwed(perPerson);
+            split.setPaid(false);
+            splits.add(split);
         }
-        req.setSplits(splits);
-
+        request.setSplits(splits);
 
         BillsRequest.BillType type = (BillsRequest.BillType) spinnerBillType.getSelectedItem();
-        req.setBillType(type);
+        request.setBillType(type);
         if (type == BillsRequest.BillType.RECURRING) {
-            req.setFrequency((BillsRequest.BillFrequency) spinnerFrequency.getSelectedItem());
-            req.setStartDate(isoFormat.format(new Date())); // Matches her logic
+            request.setFrequency((BillsRequest.BillFrequency) spinnerFrequency.getSelectedItem());
+            request.setStartDate(isoFormat.format(new Date()));
         }
 
-        ApiClient.getBillsApi().createBill(req).enqueue(new Callback<List<BillsRequest>>() {
+        ApiClient.getBillsApi().createBill(request).enqueue(new Callback<List<BillsRequest>>() {
             @Override
             public void onResponse(Call<List<BillsRequest>> call, Response<List<BillsRequest>> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(CreateTenantBillActivity.this, "Split Requested!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateTenantBillActivity.this, "Split requested!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
                     Toast.makeText(CreateTenantBillActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
-            @Override public void onFailure(Call<List<BillsRequest>> call, Throwable t) {
+
+            @Override
+            public void onFailure(Call<List<BillsRequest>> call, Throwable t) {
                 Toast.makeText(CreateTenantBillActivity.this, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
