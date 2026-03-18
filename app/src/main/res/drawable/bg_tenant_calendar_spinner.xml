@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/calendar_surface_alt" />
+            <corners android:radius="16dp" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/calendar_stroke" />
+        </shape>
+    </item>
+
+    <item
+        android:gravity="end|center_vertical"
+        android:right="14dp">
+        <vector
+            android:width="18dp"
+            android:height="18dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:fillColor="@color/calendar_primary_dark"
+                android:pathData="M7,10l5,5l5,-5H7z" />
+        </vector>
+    </item>
+</layer-list>
