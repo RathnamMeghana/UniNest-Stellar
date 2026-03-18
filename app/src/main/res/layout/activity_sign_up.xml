@@ -60,6 +60,7 @@
                 android:id="@+id/tvCompanyLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:labelFor="@id/actvCompanyName"
                 android:text="Letting Company"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
@@ -88,6 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:labelFor="@id/etCompanyEmail"
                 android:text="Company Email"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
@@ -109,6 +111,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:labelFor="@id/etPassword"
                 android:text="Password"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
@@ -129,6 +132,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:labelFor="@id/etConfirmPassword"
                 android:text="Confirm Password"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />

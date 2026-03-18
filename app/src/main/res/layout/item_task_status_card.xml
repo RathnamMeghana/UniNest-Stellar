@@ -1,112 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:layout_marginBottom="12dp"
-    android:elevation="4dp">
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_task_card_pending"
+    android:elevation="0dp"
+    android:minHeight="0dp"
+    android:padding="12dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/opensans_bold"
+        android:maxLines="2"
+        android:text="Task Title"
+        android:textColor="@color/app_text_primary"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/tvStatusBadge"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/tvStatusBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_status_pending"
+        android:fontFamily="@font/opensans_bold"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:text="Not Started"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Task Title"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#212121"/>
-
-            <TextView
-                android:id="@+id/tvStatusBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Not Started"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:layout_marginTop="6dp"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="4dp" />
-        </LinearLayout>
+    <FrameLayout
+        android:id="@+id/avatarShell"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_task_avatar_shell"
+        android:padding="3dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
         <ImageView
             android:id="@+id/imgAssigneeProfile"
-            android:layout_width="54dp"
-            android:layout_height="54dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_profile_tenant" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/metaColumn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@id/btnViewMore"
+        app:layout_constraintStart_toEndOf="@id/avatarShell"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+        <TextView
+            android:id="@+id/tvExtraInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/opensans_bold"
+            android:text="Assigned to Me"
+            android:textColor="@color/task_meta_text"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvCreatedBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:fontFamily="@font/opensans_regular"
+            android:text="Created by Roommate"
+            android:textColor="@color/task_muted_text"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tvDateInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:fontFamily="@font/opensans_regular"
+            android:maxLines="2"
+            android:text="Due Jan 23, 2026"
+            android:textColor="@color/task_muted_text"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tvPointsEarned"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_task_points_chip"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:text="+0 pts earned"
+            android:textColor="@color/task_points_text"
+            android:textSize="10sp"
+            android:visibility="gone" />
     </LinearLayout>
-
-    <!-- Points earned chip (visible only for completed tasks) -->
-    <TextView
-        android:id="@+id/tvPointsEarned"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🏆 +0 pts"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:textColor="#FF8F00"
-        android:layout_marginTop="6dp"
-        android:visibility="gone"/>
-
-    <TextView
-        android:id="@+id/tvExtraInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Assigned to: Me"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="#616161"
-        android:layout_marginTop="12dp"/>
-
-    <TextView
-        android:id="@+id/tvDateInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Due on: Jan 23, 2026"
-        android:textSize="13sp"
-        android:textColor="#9E9E9E"
-        android:layout_marginTop="2dp"/>
-
-    <TextView
-        android:id="@+id/tvCreatedBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Created by: Roommate"
-        android:textSize="12sp"
-        android:textColor="#BDBDBD"
-        android:layout_marginTop="2dp"/>
-
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnViewMore"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:layout_gravity="end"
-        android:layout_marginTop="8dp"
-        android:text="View Details"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:backgroundTint="#00B53E"
-        app:cornerRadius="18dp"
-        app:elevation="2dp"
-        android:paddingHorizontal="20dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/opensans_bold"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
         android:minHeight="0dp"
-        android:minWidth="0dp" />
+        android:minWidth="82dp"
+        android:paddingHorizontal="12dp"
+        android:text="Open"
+        android:textAllCaps="false"
+        android:textColor="@color/task_card_pending_text"
+        android:textSize="11sp"
+        app:backgroundTint="@color/task_button_pending_bg"
+        app:cornerRadius="15dp"
+        app:elevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/avatarShell"
+        app:strokeWidth="0dp" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

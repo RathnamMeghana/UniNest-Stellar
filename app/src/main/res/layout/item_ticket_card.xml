@@ -46,6 +46,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginStart="8dp"
+            android:contentDescription="AI priority indicator"
             android:src="@drawable/ic_gemini_sparkle"
             android:visibility="gone"
             app:tint="@color/app_accent_purple" />

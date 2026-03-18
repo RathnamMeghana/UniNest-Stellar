@@ -21,6 +21,8 @@
             android:id="@+id/imgTenantAvatar"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
             android:src="@drawable/ic_profile_tenant"
             android:padding="0dp" />
 

@@ -26,6 +26,7 @@
             android:layout_gravity="center_vertical|start"
             android:layout_marginStart="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Go back"
             android:padding="8dp"
             android:src="@drawable/ic_back_arrow"
             app:tint="@android:color/white" />
@@ -139,6 +140,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:adjustViewBounds="true"
+                        android:contentDescription="Attached ticket image"
                         android:maxHeight="300dp"
                         android:scaleType="fitCenter"
                         android:visibility="gone"

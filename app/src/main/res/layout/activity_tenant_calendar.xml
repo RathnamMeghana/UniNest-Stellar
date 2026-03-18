@@ -34,12 +34,13 @@
                     android:id="@+id/tvEyebrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:accessibilityHeading="true"
                     android:fontFamily="@font/opensans_bold"
                     android:letterSpacing="0.08"
                     android:text="Planner"
                     android:textAllCaps="true"
                     android:textColor="@color/calendar_primary_dark"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/tvTitle"
@@ -80,17 +81,17 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnViewTasks"
                     android:layout_width="0dp"
-                    android:layout_height="34dp"
+                    android:layout_height="44dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_tenant_calendar_action_secondary"
                     android:fontFamily="@font/opensans_bold"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:minHeight="34dp"
+                    android:minHeight="44dp"
                     android:text="View tasks"
                     android:textAllCaps="false"
                     android:textColor="@color/calendar_primary_dark"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     app:backgroundTint="@null"
                     app:cornerRadius="16dp"
                     app:strokeWidth="0dp" />
@@ -98,18 +99,18 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddEvent"
                     android:layout_width="0dp"
-                    android:layout_height="34dp"
+                    android:layout_height="44dp"
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_tenant_calendar_action_primary"
                     android:fontFamily="@font/opensans_bold"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:minHeight="34dp"
+                    android:minHeight="44dp"
                     android:text="+ Add entry"
                     android:textAllCaps="false"
                     android:textColor="@color/calendar_text_inverse"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     app:backgroundTint="@null"
                     app:cornerRadius="16dp"
                     app:strokeWidth="0dp" />
@@ -130,14 +131,15 @@
             <TextView
                 android:id="@+id/filterAll"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="44dp"
                 android:layout_marginEnd="3dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tenant_calendar_filter_all"
+                android:focusable="true"
                 android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:maxLines="1"
-                android:minHeight="38dp"
+                android:minHeight="44dp"
                 android:paddingHorizontal="6dp"
                 android:text="All"
                 android:textColor="@color/calendar_text_inverse"
@@ -146,14 +148,15 @@
             <TextView
                 android:id="@+id/filterChores"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="44dp"
                 android:layout_marginHorizontal="3dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                android:focusable="true"
                 android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:maxLines="1"
-                android:minHeight="38dp"
+                android:minHeight="44dp"
                 android:paddingHorizontal="6dp"
                 android:text="Chores"
                 android:textColor="@color/calendar_text_secondary"
@@ -162,14 +165,15 @@
             <TextView
                 android:id="@+id/filterEvents"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="44dp"
                 android:layout_marginHorizontal="3dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                android:focusable="true"
                 android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:maxLines="1"
-                android:minHeight="38dp"
+                android:minHeight="44dp"
                 android:paddingHorizontal="6dp"
                 android:text="Events"
                 android:textColor="@color/calendar_text_secondary"
@@ -178,14 +182,15 @@
             <TextView
                 android:id="@+id/filterReminders"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="3dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                android:focusable="true"
                 android:fontFamily="@font/opensans_bold"
                 android:gravity="center"
                 android:maxLines="1"
-                android:minHeight="38dp"
+                android:minHeight="44dp"
                 android:paddingHorizontal="6dp"
                 android:text="Reminders"
                 android:textColor="@color/calendar_text_secondary"
@@ -228,12 +233,13 @@
                         android:id="@+id/tvOverviewLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:accessibilityHeading="true"
                         android:fontFamily="@font/opensans_bold"
                         android:letterSpacing="0.05"
                         android:text="Day snapshot"
                         android:textAllCaps="true"
                         android:textColor="@color/calendar_text_secondary"
-                        android:textSize="10sp" />
+                        android:textSize="11sp" />
                 </LinearLayout>
 
                 <TextView
@@ -284,7 +290,7 @@
                             android:maxLines="1"
                             android:text="Visible"
                             android:textColor="#F4EAFF"
-                            android:textSize="10sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -316,7 +322,7 @@
                             android:maxLines="1"
                             android:text="Reminders"
                             android:textColor="@color/calendar_text_secondary"
-                            android:textSize="10sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -348,7 +354,7 @@
                             android:maxLines="1"
                             android:text="Overdue"
                             android:textColor="@color/calendar_reminder_text"
-                            android:textSize="10sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -391,7 +397,7 @@
                             android:text="Viewing"
                             android:textAllCaps="true"
                             android:textColor="#F4EAFF"
-                            android:textSize="9sp"
+                            android:textSize="11sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -502,7 +508,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="6dp"
-                    android:orientation="vertical">
+                    android:background="@drawable/bg_tenant_calendar_section_chore"
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -514,16 +522,19 @@
                             android:layout_width="18dp"
                             android:layout_height="8dp"
                             android:adjustViewBounds="true"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:src="@drawable/ic_dot_green" />
 
                         <TextView
                             android:id="@+id/tvHeaderChores"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:accessibilityHeading="true"
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/opensans_bold"
                             android:text="Chores"
-                            android:textColor="@color/calendar_text_primary"
+                            android:textColor="@color/calendar_chore_text"
                             android:textSize="16sp" />
                     </LinearLayout>
 
@@ -531,7 +542,7 @@
                         android:id="@+id/containerChores"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="vertical" />
                 </LinearLayout>
 
@@ -540,7 +551,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="6dp"
-                    android:orientation="vertical">
+                    android:background="@drawable/bg_tenant_calendar_section_event"
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -552,16 +565,19 @@
                             android:layout_width="18dp"
                             android:layout_height="8dp"
                             android:adjustViewBounds="true"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:src="@drawable/ic_dot_pink" />
 
                         <TextView
                             android:id="@+id/tvHeaderEvents"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:accessibilityHeading="true"
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/opensans_bold"
                             android:text="Events"
-                            android:textColor="@color/calendar_text_primary"
+                            android:textColor="@color/calendar_event_text"
                             android:textSize="16sp" />
                     </LinearLayout>
 
@@ -569,7 +585,7 @@
                         android:id="@+id/containerEvents"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="vertical" />
                 </LinearLayout>
 
@@ -578,7 +594,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:orientation="vertical">
+                    android:background="@drawable/bg_tenant_calendar_section_reminder"
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -590,16 +608,19 @@
                             android:layout_width="18dp"
                             android:layout_height="8dp"
                             android:adjustViewBounds="true"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:src="@drawable/ic_dot_orange" />
 
                         <TextView
                             android:id="@+id/tvHeaderReminders"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:accessibilityHeading="true"
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/opensans_bold"
                             android:text="Reminders"
-                            android:textColor="@color/calendar_text_primary"
+                            android:textColor="@color/calendar_reminder_text"
                             android:textSize="16sp" />
                     </LinearLayout>
 
@@ -607,7 +628,7 @@
                         android:id="@+id/containerReminders"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="vertical" />
                 </LinearLayout>
             </LinearLayout>
@@ -625,7 +646,7 @@
         app:itemIconSize="50dp"
         app:itemIconTint="@color/selector_nav_icon"
         app:itemRippleColor="@null"
-        app:itemTextColor="@color/selector_nav_icon"
+        app:itemTextColor="@color/selector_nav_text"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

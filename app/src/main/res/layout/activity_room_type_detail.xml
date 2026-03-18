@@ -141,6 +141,8 @@
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
                 android:src="@drawable/ic_tickets" />
 
             <TextView
@@ -162,6 +164,8 @@
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
                 android:src="@drawable/ic_apartments" />
 
             <TextView
@@ -183,6 +187,8 @@
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
                 android:src="@drawable/ic_profile" />
 
             <TextView

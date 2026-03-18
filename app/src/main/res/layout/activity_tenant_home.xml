@@ -43,6 +43,7 @@
                         android:layout_height="132dp"
                         android:alpha="0.92"
                         android:background="@drawable/bg_home_orb_primary"
+                        android:importantForAccessibility="no"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -52,9 +53,42 @@
                         android:layout_height="92dp"
                         android:alpha="0.88"
                         android:background="@drawable/bg_home_orb_secondary"
+                        android:importantForAccessibility="no"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/heroOrbLarge"
                         app:layout_constraintStart_toStartOf="parent" />
+
+                    <FrameLayout
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageButton
+                            android:id="@+id/btnOpenNotifications"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_home_notification_button"
+                            android:contentDescription="Open alerts"
+                            android:padding="11dp"
+                            android:src="@drawable/ic_notifications"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/tvAlertBadge"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="top|end"
+                            android:background="@drawable/bg_home_notification_badge"
+                            android:gravity="center"
+                            android:importantForAccessibility="no"
+                            android:text="3"
+                            android:textColor="@android:color/white"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+                    </FrameLayout>
 
                     <LinearLayout
                         android:id="@+id/layoutHeroContent"
@@ -66,24 +100,10 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-                            android:id="@+id/chipLiveState"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_home_live_chip"
-                            android:paddingStart="12dp"
-                            android:paddingTop="7dp"
-                            android:paddingEnd="12dp"
-                            android:paddingBottom="7dp"
-                            android:text="Live apartment view"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
                             android:id="@+id/tvGreeting"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
+                            android:accessibilityHeading="true"
                             android:lineSpacingExtra="-4dp"
                             android:text="Good evening,\nLeyla!"
                             android:textColor="@android:color/white"
@@ -92,12 +112,14 @@
                             tools:text="Good afternoon,\nLeyla!" />
 
                         <TextView
+                            android:id="@+id/tvAlertSummary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
-                            android:text="A calmer, cleaner view of your apartment so the important things stand out first."
+                            android:text="No new alerts right now."
                             android:textColor="#F4EFFF"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            tools:text="3 alerts need your attention today." />
 
                         <LinearLayout
                             android:id="@+id/layoutSupportActions"
@@ -158,10 +180,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:accessibilityHeading="true"
                             android:layout_marginTop="16dp"
                             android:text="Quick access"
                             android:textColor="#E4D6FA"
-                            android:textSize="12sp"
+                            android:textSize="13sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
@@ -176,7 +199,7 @@
                                 android:id="@+id/btnOpenBills"
                                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                                 android:layout_width="0dp"
-                                android:layout_height="40dp"
+                                android:layout_height="44dp"
                                 android:layout_weight="1"
                                 android:backgroundTint="#14FFFFFF"
                                 android:insetTop="0dp"
@@ -195,7 +218,7 @@
                                 android:id="@+id/btnOpenCalendar"
                                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                                 android:layout_width="0dp"
-                                android:layout_height="40dp"
+                                android:layout_height="44dp"
                                 android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:backgroundTint="#14FFFFFF"
@@ -215,7 +238,7 @@
                                 android:id="@+id/btnOpenTickets"
                                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                                 android:layout_width="0dp"
-                                android:layout_height="40dp"
+                                android:layout_height="44dp"
                                 android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:backgroundTint="#14FFFFFF"
@@ -269,6 +292,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
+                        android:accessibilityHeading="true"
                         android:text="Chore leaderboard"
                         android:textColor="@color/app_text_primary"
                         android:textSize="20sp"
@@ -312,6 +336,8 @@
                             android:layout_width="42dp"
                             android:layout_height="42dp"
                             android:layout_marginStart="10dp"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_profile_tenant"
                             app:shapeAppearanceOverlay="@style/CircleImage" />
@@ -342,6 +368,7 @@
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
                                     android:layout_marginStart="6dp"
+                                    android:contentDescription="Top chore leader"
                                     android:src="@drawable/ic_home_trophy"
                                     android:visibility="gone" />
                             </LinearLayout>
@@ -374,6 +401,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
+                        android:accessibilityHeading="true"
                         android:text="Apartment standings"
                         android:textColor="@color/app_text_secondary"
                         android:textSize="12sp"
@@ -387,64 +415,6 @@
                         android:orientation="vertical" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tvNotificationsHeading"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Recent alerts"
-                    android:textColor="@color/app_text_primary"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnClearAllNotifications"
-                    android:layout_width="wrap_content"
-                    android:layout_height="38dp"
-                    android:backgroundTint="@color/app_accent_purple"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minHeight="0dp"
-                    android:minWidth="0dp"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:text="Clear all"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    app:cornerRadius="16dp"
-                    app:elevation="0dp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvNotificationsEmpty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_summary_chip"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="No new alerts right now. When bills, tickets, or chores change, they will show up here."
-                android:textColor="@color/app_text_secondary"
-                android:textSize="14sp"
-                android:visibility="gone" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerNotifications"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:nestedScrollingEnabled="false"
-                tools:itemCount="2"
-                tools:listitem="@layout/item_home_alert" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -458,7 +428,7 @@
         app:itemBackground="@drawable/bg_nav_pill_custom"
         app:itemIconSize="50dp"
         app:itemIconTint="@color/selector_nav_icon"
-        app:itemTextColor="@color/selector_nav_icon"
+        app:itemTextColor="@color/selector_nav_text"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

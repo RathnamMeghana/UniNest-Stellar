@@ -33,29 +33,29 @@
     <style name="SettingsHeaderStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/app_text_secondary</item>
+        <item name="android:fontFamily">@font/opensans_bold</item>
+        <item name="android:textColor">@color/calendar_primary_dark</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:letterSpacing">0.05</item>
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:letterSpacing">0.06</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginStart">2dp</item>
     </style>
 
     <style name="SettingsCardStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="cardBackgroundColor">@color/app_surface_alt</item>
-        <item name="cardCornerRadius">16dp</item>
-        <item name="cardElevation">2dp</item>
+        <item name="cardBackgroundColor">@color/calendar_surface</item>
+        <item name="cardCornerRadius">18dp</item>
+        <item name="cardElevation">0dp</item>
         <item name="cardUseCompatPadding">false</item>
     </style>
 
     <style name="DividerStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">@color/app_outline</item>
-        <item name="android:layout_marginStart">56dp</item>
+        <item name="android:background">@color/calendar_stroke</item>
+        <item name="android:layout_marginStart">68dp</item>
     </style>
 
     <style name="CircleImage">

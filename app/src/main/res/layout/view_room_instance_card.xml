@@ -28,6 +28,8 @@
             android:id="@+id/imgChevron"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
             android:src="@drawable/ic_chevron_white_right"
             app:tint="@android:color/white" />
     </LinearLayout>

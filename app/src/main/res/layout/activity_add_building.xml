@@ -103,6 +103,7 @@
                             android:id="@+id/imgPreview"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:contentDescription="Building image preview"
                             android:scaleType="centerCrop"
                             android:src="@drawable/building_placeholder"
                             android:alpha="0.4"

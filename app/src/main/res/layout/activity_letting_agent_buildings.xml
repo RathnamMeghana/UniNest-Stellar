@@ -117,7 +117,7 @@
         app:itemBackground="@drawable/bg_nav_pill_custom"
         app:itemIconSize="50dp"
         app:itemIconTint="@color/selector_nav_icon"
-        app:itemTextColor="#000000"
+        app:itemTextColor="@color/selector_nav_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

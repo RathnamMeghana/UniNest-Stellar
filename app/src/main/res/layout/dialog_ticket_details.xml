@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,68 +8,91 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_summary_chip"
+        android:background="@drawable/bg_tenant_calendar_surface"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="22dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/opensans_bold"
+            android:letterSpacing="0.08"
+            android:text="Ticket details"
+            android:textAllCaps="true"
+            android:textColor="@color/calendar_primary_dark"
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/popTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/opensans_bold"
             android:text="Kitchen: Oven"
-            android:textAlignment="center"
-            android:textColor="@color/app_text_primary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="23sp" />
 
         <TextView
             android:id="@+id/popStatusBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_status_progress"
+            android:background="@drawable/bg_tenant_calendar_status_progress"
+            android:fontFamily="@font/opensans_bold"
             android:paddingStart="14dp"
-            android:paddingTop="6dp"
+            android:paddingTop="7dp"
             android:paddingEnd="14dp"
-            android:paddingBottom="6dp"
-            android:text="IN PROGRESS"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:paddingBottom="7dp"
+            android:text="In progress"
+            android:textColor="@color/calendar_status_progress_text"
+            android:textSize="12sp" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="Description"
-            android:textColor="@color/app_text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_tenant_ticket_detail_panel"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/popDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="The oven stopped working this morning."
-            android:textColor="@color/app_text_primary"
-            android:textSize="15sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:letterSpacing="0.05"
+                android:text="Description"
+                android:textAllCaps="true"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/popDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/opensans_regular"
+                android:text="The oven stopped working this morning."
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/popTicketImage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_marginTop="14dp"
             android:adjustViewBounds="true"
-            android:background="@drawable/bg_input_field"
+            android:background="@drawable/bg_tenant_ticket_detail_panel"
             android:clipToOutline="true"
+            android:contentDescription="Attached ticket image"
+            android:padding="2dp"
             android:scaleType="centerCrop"
             android:visibility="gone" />
 
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="16dp"
             android:alignmentMode="alignMargins"
             android:columnCount="2"
             android:useDefaultMargins="true">
@@ -78,108 +101,116 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
-                android:background="@drawable/bg_building_card"
+                android:background="@drawable/bg_tenant_ticket_detail_panel"
                 android:orientation="vertical"
                 android:padding="14dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Room"
-                    android:textColor="@color/app_text_secondary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.04"
+                    android:text="Location"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/popLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="7dp"
+                    android:fontFamily="@font/opensans_bold"
                     android:text="Kitchen"
-                    android:textColor="@color/app_text_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
-                android:background="@drawable/bg_building_card"
+                android:background="@drawable/bg_tenant_ticket_detail_panel"
                 android:orientation="vertical"
                 android:padding="14dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Raised by"
-                    android:textColor="@color/app_text_secondary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.04"
+                    android:text="Submitted by"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/popRaisedBy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="7dp"
+                    android:fontFamily="@font/opensans_bold"
                     android:text="You"
-                    android:textColor="@color/app_text_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
-                android:background="@drawable/bg_building_card"
+                android:background="@drawable/bg_tenant_ticket_detail_panel"
                 android:orientation="vertical"
                 android:padding="14dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.04"
                     android:text="Raised at"
-                    android:textColor="@color/app_text_secondary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/popRaisedAt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="7dp"
+                    android:fontFamily="@font/opensans_bold"
                     android:text="14 Mar 2026, 2:30 PM"
-                    android:textColor="@color/app_text_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
-                android:background="@drawable/bg_building_card"
+                android:background="@drawable/bg_tenant_ticket_detail_panel"
                 android:orientation="vertical"
                 android:padding="14dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Agent arrival"
-                    android:textColor="@color/app_text_secondary"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.04"
+                    android:text="Agent visit"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/popArrival"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="7dp"
+                    android:fontFamily="@font/opensans_bold"
                     android:text="Not scheduled"
-                    android:textColor="@color/app_text_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="15sp" />
             </LinearLayout>
         </GridLayout>
 
@@ -187,28 +218,31 @@
             android:id="@+id/layoutAgentResponse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_building_card"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_tenant_ticket_detail_panel"
             android:orientation="vertical"
-            android:padding="14dp"
+            android:padding="16dp"
             android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:letterSpacing="0.05"
                 android:text="Agent note"
-                android:textColor="@color/app_text_secondary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:textAllCaps="true"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/popAgentMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/opensans_regular"
                 android:text="Agent response text."
-                android:textColor="@color/app_text_primary"
-                android:textSize="14sp" />
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="15sp" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -216,28 +250,35 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="18dp"
+            android:fontFamily="@font/opensans_bold"
             android:text="Remove ticket"
             android:textAllCaps="false"
-            android:textColor="@color/app_danger"
-            android:textStyle="bold"
+            android:textColor="@color/calendar_status_overdue_text"
+            android:textSize="13sp"
             android:visibility="gone"
-            app:cornerRadius="18dp"
+            app:cornerRadius="16dp"
             app:elevation="0dp"
-            app:strokeColor="@color/app_danger"
+            app:strokeColor="@color/calendar_status_overdue_text"
             app:strokeWidth="1dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPopClose"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="@color/app_accent_purple"
+            android:layout_height="46dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_tenant_calendar_action_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="46dp"
             android:text="Close"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            app:cornerRadius="18dp"
-            app:elevation="0dp" />
+            android:textColor="@color/calendar_text_inverse"
+            android:textSize="13sp"
+            app:backgroundTint="@null"
+            app:cornerRadius="16dp"
+            app:elevation="0dp"
+            app:strokeWidth="0dp" />
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

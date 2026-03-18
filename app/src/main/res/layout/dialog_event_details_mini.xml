@@ -53,7 +53,7 @@
                 android:fontFamily="@font/opensans_bold"
                 android:text="DATE"
                 android:textColor="@color/calendar_text_secondary"
-                android:textSize="10sp" />
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/popDate"
@@ -79,7 +79,7 @@
                 android:fontFamily="@font/opensans_bold"
                 android:text="TIME"
                 android:textColor="@color/calendar_text_secondary"
-                android:textSize="10sp" />
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/popTime"
@@ -105,7 +105,7 @@
                 android:fontFamily="@font/opensans_bold"
                 android:text="AMOUNT"
                 android:textColor="@color/calendar_reminder_text"
-                android:textSize="10sp" />
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/popAmount"
