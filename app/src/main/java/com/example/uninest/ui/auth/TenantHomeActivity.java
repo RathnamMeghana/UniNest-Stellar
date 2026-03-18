@@ -8,9 +8,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,6 +34,8 @@ import com.example.uninest.model.User;
 import com.example.uninest.utils.ContactUtils;
 import com.example.uninest.utils.ImageUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -61,23 +65,29 @@ public class TenantHomeActivity extends AppCompatActivity {
     private TextView tvYourPoints;
     private ImageView ivYourLeaderBadge;
 
-    private RecyclerView recyclerNotifications;
-    private Button btnClearAllNotifications;
     private Button btnEmergencyContact;
     private Button btnSupport;
-    private TextView tvNotificationsEmpty;
+    private View btnOpenNotifications;
+    private TextView tvAlertBadge;
+    private TextView tvAlertSummary;
 
     private View heroCard;
     private View heroOrbLarge;
     private View heroOrbSmall;
-    private View chipLiveState;
     private View layoutSupportActions;
     private View layoutQuickAccess;
 
-    private HomeAlertAdapter homeAlertAdapter;
+    private FirebaseFirestore firestore;
     private final List<HomeAlert> notificationList = new ArrayList<>();
 
-    private FirebaseFirestore firestore;
+    private BottomSheetDialog notificationCenterDialog;
+    private HomeAlertAdapter notificationCenterAdapter;
+    private RecyclerView rvNotificationCenter;
+    private TextView tvCenterEmpty;
+    private TextView tvCenterAlertCount;
+    private TextView tvCenterCountChip;
+    private View btnCenterClearAll;
+    private AnimatorSet bellPulseAnimator;
 
     private final ActivityResultLauncher<String> notificationPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -95,13 +105,12 @@ public class TenantHomeActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
 
         bindViews();
-        setupNotificationsList();
         setupQuickActions();
         setupHomeAnimations();
 
-        btnClearAllNotifications.setOnClickListener(v -> clearAllNotifications());
         btnEmergencyContact.setOnClickListener(v -> ContactUtils.dialEmergency(this));
         btnSupport.setOnClickListener(v -> ContactUtils.emailSupport(this));
+        btnOpenNotifications.setOnClickListener(v -> showNotificationCenter());
 
         initHeader();
 
@@ -113,7 +122,7 @@ public class TenantHomeActivity extends AppCompatActivity {
         setupBottomNav();
 
         if (getIntent() != null && getIntent().getBooleanExtra("open_notifications", false)) {
-            recyclerNotifications.post(() -> recyclerNotifications.smoothScrollToPosition(0));
+            btnOpenNotifications.post(this::showNotificationCenter);
         }
     }
 
@@ -127,9 +136,14 @@ public class TenantHomeActivity extends AppCompatActivity {
         heroCard = findViewById(R.id.heroCard);
         heroOrbLarge = findViewById(R.id.heroOrbLarge);
         heroOrbSmall = findViewById(R.id.heroOrbSmall);
-        chipLiveState = findViewById(R.id.chipLiveState);
         layoutSupportActions = findViewById(R.id.layoutSupportActions);
         layoutQuickAccess = findViewById(R.id.layoutQuickAccess);
+
+        btnEmergencyContact = findViewById(R.id.btnEmergencyContact);
+        btnSupport = findViewById(R.id.btnSupport);
+        btnOpenNotifications = findViewById(R.id.btnOpenNotifications);
+        tvAlertBadge = findViewById(R.id.tvAlertBadge);
+        tvAlertSummary = findViewById(R.id.tvAlertSummary);
 
         cardLeaderboard = findViewById(R.id.cardLeaderboard);
         layoutLeaderboardRows = findViewById(R.id.layoutLeaderboardRows);
@@ -137,23 +151,6 @@ public class TenantHomeActivity extends AppCompatActivity {
         tvYourRank = findViewById(R.id.tvYourRank);
         tvYourPoints = findViewById(R.id.tvYourPoints);
         ivYourLeaderBadge = findViewById(R.id.ivYourLeaderBadge);
-
-        recyclerNotifications = findViewById(R.id.recyclerNotifications);
-        btnClearAllNotifications = findViewById(R.id.btnClearAllNotifications);
-        btnEmergencyContact = findViewById(R.id.btnEmergencyContact);
-        btnSupport = findViewById(R.id.btnSupport);
-        tvNotificationsEmpty = findViewById(R.id.tvNotificationsEmpty);
-    }
-
-    private void setupNotificationsList() {
-        recyclerNotifications.setLayoutManager(new LinearLayoutManager(this));
-        homeAlertAdapter = new HomeAlertAdapter(
-                notificationList,
-                this::deleteNotification,
-                this::openNotificationDestination
-        );
-        recyclerNotifications.setAdapter(homeAlertAdapter);
-        updateNotificationState();
     }
 
     private void initHeader() {
@@ -201,55 +198,29 @@ public class TenantHomeActivity extends AppCompatActivity {
 
         startFloatingAnimation(heroOrbLarge, 18f, 4800L, 0L);
         startFloatingAnimation(heroOrbSmall, -14f, 4200L, 240L);
-        startPulseAnimation(chipLiveState);
     }
 
     private void startFloatingAnimation(View target, float travel, long duration, long startDelay) {
         ObjectAnimator translateY = ObjectAnimator.ofFloat(target, View.TRANSLATION_Y, 0f, travel, 0f);
         translateY.setDuration(duration);
         translateY.setRepeatCount(ObjectAnimator.INFINITE);
-        translateY.setRepeatMode(ObjectAnimator.RESTART);
         translateY.setStartDelay(startDelay);
         translateY.setInterpolator(new LinearInterpolator());
 
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, View.SCALE_X, 1f, 1.06f, 1f);
         scaleX.setDuration(duration);
         scaleX.setRepeatCount(ObjectAnimator.INFINITE);
-        scaleX.setRepeatMode(ObjectAnimator.RESTART);
         scaleX.setStartDelay(startDelay);
         scaleX.setInterpolator(new LinearInterpolator());
 
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, View.SCALE_Y, 1f, 1.06f, 1f);
         scaleY.setDuration(duration);
         scaleY.setRepeatCount(ObjectAnimator.INFINITE);
-        scaleY.setRepeatMode(ObjectAnimator.RESTART);
         scaleY.setStartDelay(startDelay);
         scaleY.setInterpolator(new LinearInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(translateY, scaleX, scaleY);
-        animatorSet.start();
-    }
-
-    private void startPulseAnimation(View target) {
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, View.SCALE_X, 1f, 1.03f, 1f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, View.SCALE_Y, 1f, 1.03f, 1f);
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(target, View.ALPHA, 1f, 0.88f, 1f);
-
-        scaleX.setDuration(2200L);
-        scaleY.setDuration(2200L);
-        alpha.setDuration(2200L);
-
-        scaleX.setRepeatCount(ObjectAnimator.INFINITE);
-        scaleY.setRepeatCount(ObjectAnimator.INFINITE);
-        alpha.setRepeatCount(ObjectAnimator.INFINITE);
-
-        scaleX.setInterpolator(new LinearInterpolator());
-        scaleY.setInterpolator(new LinearInterpolator());
-        alpha.setInterpolator(new LinearInterpolator());
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(scaleX, scaleY, alpha);
         animatorSet.start();
     }
 
@@ -303,8 +274,10 @@ public class TenantHomeActivity extends AppCompatActivity {
                         notificationList.add(alert);
                     }
 
-                    homeAlertAdapter.notifyDataSetChanged();
-                    updateNotificationState();
+                    if (notificationCenterAdapter != null) {
+                        notificationCenterAdapter.notifyDataSetChanged();
+                    }
+                    updateAlertState();
                 });
     }
 
@@ -328,6 +301,156 @@ public class TenantHomeActivity extends AppCompatActivity {
         return 0L;
     }
 
+    private void updateAlertState() {
+        int count = notificationList.size();
+        if (count > 0) {
+            tvAlertBadge.setVisibility(View.VISIBLE);
+            tvAlertBadge.setText(count > 9 ? "9+" : String.valueOf(count));
+            tvAlertSummary.setText(count == 1
+                    ? "1 alert needs your attention today."
+                    : count + " alerts need your attention today.");
+        } else {
+            tvAlertBadge.setVisibility(View.GONE);
+            tvAlertSummary.setText("No new alerts right now.");
+        }
+
+        updateAlertButtonAccessibility(count);
+        updateNotificationCenterState();
+        toggleBellPulse(count > 0);
+    }
+
+    private void updateAlertButtonAccessibility(int count) {
+        if (btnOpenNotifications == null) {
+            return;
+        }
+
+        String description = count > 0
+                ? String.format(Locale.getDefault(), "Open alerts. %d active alerts.", count)
+                : "Open alerts. No active alerts.";
+        btnOpenNotifications.setContentDescription(description);
+    }
+
+    private void toggleBellPulse(boolean active) {
+        if (!active) {
+            if (bellPulseAnimator != null) {
+                bellPulseAnimator.cancel();
+                bellPulseAnimator = null;
+            }
+            btnOpenNotifications.setScaleX(1f);
+            btnOpenNotifications.setScaleY(1f);
+            btnOpenNotifications.setAlpha(1f);
+            return;
+        }
+
+        if (bellPulseAnimator != null && bellPulseAnimator.isRunning()) {
+            return;
+        }
+
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(btnOpenNotifications, View.SCALE_X, 1f, 1.06f, 1f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(btnOpenNotifications, View.SCALE_Y, 1f, 1.06f, 1f);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(btnOpenNotifications, View.ALPHA, 1f, 0.9f, 1f);
+        scaleX.setDuration(1800L);
+        scaleY.setDuration(1800L);
+        alpha.setDuration(1800L);
+        scaleX.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleY.setRepeatCount(ObjectAnimator.INFINITE);
+        alpha.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleX.setInterpolator(new LinearInterpolator());
+        scaleY.setInterpolator(new LinearInterpolator());
+        alpha.setInterpolator(new LinearInterpolator());
+
+        bellPulseAnimator = new AnimatorSet();
+        bellPulseAnimator.playTogether(scaleX, scaleY, alpha);
+        bellPulseAnimator.start();
+    }
+
+    private void showNotificationCenter() {
+        if (notificationCenterDialog != null && notificationCenterDialog.isShowing()) {
+            return;
+        }
+
+        notificationCenterDialog = new BottomSheetDialog(this);
+        View sheetView = getLayoutInflater().inflate(R.layout.dialog_notification_center, null);
+        notificationCenterDialog.setContentView(sheetView);
+
+        rvNotificationCenter = sheetView.findViewById(R.id.rvNotificationCenter);
+        tvCenterEmpty = sheetView.findViewById(R.id.tvCenterEmpty);
+        tvCenterAlertCount = sheetView.findViewById(R.id.tvCenterAlertCount);
+        tvCenterCountChip = sheetView.findViewById(R.id.tvCenterCountChip);
+        btnCenterClearAll = sheetView.findViewById(R.id.btnCenterClearAll);
+
+        rvNotificationCenter.setLayoutManager(new LinearLayoutManager(this));
+        rvNotificationCenter.setNestedScrollingEnabled(true);
+        rvNotificationCenter.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+        notificationCenterAdapter = new HomeAlertAdapter(
+                notificationList,
+                this::deleteNotification,
+                alert -> {
+                    if (notificationCenterDialog != null) {
+                        notificationCenterDialog.dismiss();
+                    }
+                    openNotificationDestination(alert);
+                }
+        );
+        rvNotificationCenter.setAdapter(notificationCenterAdapter);
+
+        btnCenterClearAll.setOnClickListener(v -> clearAllNotifications());
+        updateNotificationCenterState();
+        notificationCenterDialog.setOnShowListener(dialog -> configureNotificationCenterSheet());
+
+        notificationCenterDialog.setOnDismissListener(dialog -> {
+            notificationCenterAdapter = null;
+            rvNotificationCenter = null;
+            tvCenterEmpty = null;
+            tvCenterAlertCount = null;
+            tvCenterCountChip = null;
+            btnCenterClearAll = null;
+            notificationCenterDialog = null;
+        });
+
+        notificationCenterDialog.show();
+    }
+
+    private void configureNotificationCenterSheet() {
+        if (notificationCenterDialog == null) {
+            return;
+        }
+
+        FrameLayout bottomSheet = notificationCenterDialog.findViewById(
+                com.google.android.material.R.id.design_bottom_sheet
+        );
+        if (bottomSheet == null) {
+            return;
+        }
+
+        ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
+        if (layoutParams != null) {
+            layoutParams.height = Math.round(getResources().getDisplayMetrics().heightPixels * 0.88f);
+            bottomSheet.setLayoutParams(layoutParams);
+        }
+
+        BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setFitToContents(true);
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    private void updateNotificationCenterState() {
+        if (tvCenterAlertCount == null || tvCenterCountChip == null
+                || tvCenterEmpty == null || rvNotificationCenter == null || btnCenterClearAll == null) {
+            return;
+        }
+
+        int count = notificationList.size();
+        tvCenterAlertCount.setText(count == 1 ? "1 active alert" : count + " active alerts");
+        tvCenterCountChip.setText(count > 99 ? "99+" : String.valueOf(count));
+        tvCenterEmpty.setVisibility(count == 0 ? View.VISIBLE : View.GONE);
+        rvNotificationCenter.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
+        btnCenterClearAll.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
+        btnCenterClearAll.setContentDescription(count > 0
+                ? String.format(Locale.getDefault(), "Clear all %d alerts", count)
+                : "Clear all alerts");
+    }
+
     private void deleteNotification(HomeAlert notification) {
         if (currentUserId == null || notification.getId() == null) {
             return;
@@ -340,8 +463,10 @@ public class TenantHomeActivity extends AppCompatActivity {
                 .delete()
                 .addOnSuccessListener(unused -> {
                     notificationList.remove(notification);
-                    homeAlertAdapter.notifyDataSetChanged();
-                    updateNotificationState();
+                    if (notificationCenterAdapter != null) {
+                        notificationCenterAdapter.notifyDataSetChanged();
+                    }
+                    updateAlertState();
                     Toast.makeText(this, "Notification deleted", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e ->
@@ -363,8 +488,10 @@ public class TenantHomeActivity extends AppCompatActivity {
                     }
 
                     notificationList.clear();
-                    homeAlertAdapter.notifyDataSetChanged();
-                    updateNotificationState();
+                    if (notificationCenterAdapter != null) {
+                        notificationCenterAdapter.notifyDataSetChanged();
+                    }
+                    updateAlertState();
                     Toast.makeText(this, "All notifications cleared", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e ->
@@ -503,29 +630,17 @@ public class TenantHomeActivity extends AppCompatActivity {
             rankView.setBackgroundResource(R.drawable.bg_status_pending);
             rankView.setTextColor(ContextCompat.getColor(this, R.color.app_accent_pink));
             badgeView.setVisibility(View.GONE);
-            if (isPinnedCard) {
-                container.setBackgroundResource(R.drawable.bg_leaderboard_you);
-            } else {
-                container.setBackgroundResource(0);
-            }
+            container.setBackgroundResource(isPinnedCard ? R.drawable.bg_leaderboard_you : 0);
         } else if (rank == 3) {
             rankView.setBackgroundResource(R.drawable.bg_status_completed);
             rankView.setTextColor(ContextCompat.getColor(this, R.color.app_accent_green));
             badgeView.setVisibility(View.GONE);
-            if (isPinnedCard) {
-                container.setBackgroundResource(R.drawable.bg_leaderboard_you);
-            } else {
-                container.setBackgroundResource(0);
-            }
+            container.setBackgroundResource(isPinnedCard ? R.drawable.bg_leaderboard_you : 0);
         } else {
             rankView.setBackgroundResource(R.drawable.bg_soft_badge);
             rankView.setTextColor(ContextCompat.getColor(this, R.color.app_text_secondary));
             badgeView.setVisibility(View.GONE);
-            if (isPinnedCard) {
-                container.setBackgroundResource(R.drawable.bg_leaderboard_you);
-            } else {
-                container.setBackgroundResource(0);
-            }
+            container.setBackgroundResource(isPinnedCard ? R.drawable.bg_leaderboard_you : 0);
         }
     }
 
@@ -563,13 +678,6 @@ public class TenantHomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, TenantTicketsActivity.class)));
     }
 
-    private void updateNotificationState() {
-        boolean empty = notificationList.isEmpty();
-        recyclerNotifications.setVisibility(empty ? View.GONE : View.VISIBLE);
-        tvNotificationsEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
-        btnClearAllNotifications.setVisibility(empty ? View.GONE : View.VISIBLE);
-    }
-
     private String resolveAlertType(String type, String targetScreen, String title, String body) {
         if (type != null && !type.trim().isEmpty()) {
             return type.trim().toUpperCase(Locale.getDefault());
@@ -591,7 +699,6 @@ public class TenantHomeActivity extends AppCompatActivity {
         if (haystack.contains("calendar") || haystack.contains("event") || haystack.contains("reminder")) {
             return "CALENDAR";
         }
-
         return "MESSAGE";
     }
 

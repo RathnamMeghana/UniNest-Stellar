@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -204,17 +205,13 @@ public class TenantTicketsActivity extends AppCompatActivity {
                 matchedHighlightedTicket = true;
             }
 
-            String status = ticket.getStatus() != null ? ticket.getStatus() : "Raised";
-            if ("Raised".equalsIgnoreCase(status) || "Open".equalsIgnoreCase(status)) {
-                addTicketView(containerRaised, ticket, 1);
-            } else if ("In_Process".equalsIgnoreCase(status)
-                    || "In Progress".equalsIgnoreCase(status)
-                    || "Medium".equalsIgnoreCase(status)) {
+            String status = canonicalizeStatus(ticket.getStatus());
+            if ("In Progress".equalsIgnoreCase(status)) {
                 addTicketView(containerInProgress, ticket, 2);
-            } else if ("Resolved".equalsIgnoreCase(status)
-                    || "Closed".equalsIgnoreCase(status)
-                    || "Solved".equalsIgnoreCase(status)) {
+            } else if ("Solved".equalsIgnoreCase(status)) {
                 addTicketView(containerSolved, ticket, 3);
+            } else {
+                addTicketView(containerRaised, ticket, 1);
             }
         }
 
@@ -231,13 +228,16 @@ public class TenantTicketsActivity extends AppCompatActivity {
         TextView tvTitle = view.findViewById(R.id.tvTitle);
         TextView tvRaisedBy = view.findViewById(R.id.tvRaisedBy);
         TextView tvRaised = view.findViewById(R.id.tvRaisedDate);
-        TextView tvDescription = view.findViewById(R.id.tvDescriptionPreview);
+        TextView tvStateChip = view.findViewById(R.id.tvStateChip);
         TextView tvStatusMsg = view.findViewById(R.id.tvStatusMessage);
         TextView tvSolved = view.findViewById(R.id.tvSolvedDate);
+        String status = canonicalizeStatus(ticket.getStatus());
 
         String room = ticket.getRoom() != null ? ticket.getRoom() : "General";
         String category = ticket.getCategory() != null ? ticket.getCategory() : "Issue";
         tvTitle.setText(room + ": " + category);
+        tvStateChip.setText(status);
+        applyStatusBadge(tvStateChip, status);
 
         String currentUserId = sessionManager.getUserId();
         if (ticket.getUserId() != null && ticket.getUserId().equals(currentUserId)) {
@@ -249,32 +249,26 @@ public class TenantTicketsActivity extends AppCompatActivity {
 
         tvRaised.setText("Raised: " + formatTimestamp(ticket.getCreatedAt(), true));
 
-        if (ticket.getDescription() != null && !ticket.getDescription().trim().isEmpty()) {
-            tvDescription.setText(ticket.getDescription().trim());
-            tvDescription.setVisibility(View.VISIBLE);
-        } else {
-            tvDescription.setVisibility(View.GONE);
-        }
-
         if (type == 1) {
-            cardContainer.setBackgroundResource(R.drawable.bg_card_border_raised);
-            tvStatusMsg.setText("Waiting for letting agent review");
+            cardContainer.setBackgroundResource(R.drawable.bg_tenant_ticket_card_raised);
+            tvStatusMsg.setText("Awaiting letting agent review");
             tvSolved.setVisibility(View.GONE);
         } else if (type == 2) {
-            cardContainer.setBackgroundResource(R.drawable.bg_card_border_progress);
+            cardContainer.setBackgroundResource(R.drawable.bg_tenant_ticket_card_progress);
             if (ticket.getArrivalDate() != null && !ticket.getArrivalDate().isEmpty()) {
                 tvStatusMsg.setText("Agent arrival: " + ticket.getArrivalDate());
             } else {
-                tvStatusMsg.setText("Agent is reviewing this issue");
+                tvStatusMsg.setText("Agent is actively reviewing this issue");
             }
             tvSolved.setVisibility(View.GONE);
         } else {
-            cardContainer.setBackgroundResource(R.drawable.bg_card_border_solved);
+            cardContainer.setBackgroundResource(R.drawable.bg_tenant_ticket_card_solved);
             if (ticket.getArrivalDate() != null && !ticket.getArrivalDate().isEmpty()) {
                 tvStatusMsg.setText("Agent visit: " + ticket.getArrivalDate());
                 tvStatusMsg.setVisibility(View.VISIBLE);
             } else {
-                tvStatusMsg.setVisibility(View.GONE);
+                tvStatusMsg.setVisibility(View.VISIBLE);
+                tvStatusMsg.setText("This ticket has been marked as solved");
             }
             tvSolved.setVisibility(View.VISIBLE);
             Object solvedAt = ticket.getUpdatedAt() != null ? ticket.getUpdatedAt() : ticket.getCreatedAt();
@@ -283,6 +277,52 @@ public class TenantTicketsActivity extends AppCompatActivity {
 
         cardContainer.setOnClickListener(v -> showTicketDetailsPopup(ticket));
         container.addView(view);
+    }
+
+    private String canonicalizeStatus(String rawStatus) {
+        if (rawStatus == null || rawStatus.trim().isEmpty()) {
+            return "Raised";
+        }
+
+        if ("Raised".equalsIgnoreCase(rawStatus) || "Open".equalsIgnoreCase(rawStatus)) {
+            return "Raised";
+        }
+
+        if ("In_Process".equalsIgnoreCase(rawStatus)
+                || "In Progress".equalsIgnoreCase(rawStatus)
+                || "Medium".equalsIgnoreCase(rawStatus)) {
+            return "In Progress";
+        }
+
+        if ("Resolved".equalsIgnoreCase(rawStatus)
+                || "Closed".equalsIgnoreCase(rawStatus)
+                || "Solved".equalsIgnoreCase(rawStatus)) {
+            return "Solved";
+        }
+
+        return rawStatus.replace("_", " ").trim();
+    }
+
+    private String buildTicketLocation(Ticket ticket) {
+        String room = ticket.getRoom() != null && !ticket.getRoom().trim().isEmpty()
+                ? ticket.getRoom().trim()
+                : "General";
+        String apartment = ticket.getApartmentName() != null && !ticket.getApartmentName().trim().isEmpty()
+                ? ticket.getApartmentName().trim()
+                : currentHouseCode;
+        String building = ticket.getBuilding() != null && !ticket.getBuilding().trim().isEmpty()
+                ? ticket.getBuilding().trim()
+                : null;
+
+        if (building != null && apartment != null && !apartment.isEmpty()) {
+            return room + " / " + apartment + " / " + building;
+        }
+
+        if (apartment != null && !apartment.isEmpty()) {
+            return room + " / " + apartment;
+        }
+
+        return room;
     }
 
     private String formatTimestamp(Object obj, boolean includeTime) {
@@ -367,7 +407,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
         tvDesc.setText(ticket.getDescription() == null || ticket.getDescription().trim().isEmpty()
                 ? "No additional description provided."
                 : ticket.getDescription().trim());
-        tvLocation.setText(room);
+        tvLocation.setText(buildTicketLocation(ticket));
         tvRaisedAt.setText(formatTimestamp(ticket.getCreatedAt(), true));
         tvArrival.setText(ticket.getArrivalDate() != null && !ticket.getArrivalDate().isEmpty()
                 ? ticket.getArrivalDate()
@@ -381,8 +421,8 @@ public class TenantTicketsActivity extends AppCompatActivity {
             btnDelete.setVisibility(View.GONE);
         }
 
-        String status = ticket.getStatus() != null ? ticket.getStatus() : "Raised";
-        tvStatus.setText(status.toUpperCase(Locale.getDefault()).replace("_", " "));
+        String status = canonicalizeStatus(ticket.getStatus());
+        tvStatus.setText(status);
         applyStatusBadge(tvStatus, status);
 
         if (ticket.getAgentResponse() != null && !ticket.getAgentResponse().trim().isEmpty()) {
@@ -420,20 +460,28 @@ public class TenantTicketsActivity extends AppCompatActivity {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
-        btnClose.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.92f),
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+        }
+        btnClose.setOnClickListener(v -> dialog.dismiss());
     }
 
     private void applyStatusBadge(TextView badge, String status) {
         if ("Raised".equalsIgnoreCase(status) || "Open".equalsIgnoreCase(status)) {
-            badge.setBackgroundResource(R.drawable.bg_status_pending);
-            badge.setTextColor(getColor(R.color.app_danger));
-        } else if ("In_Process".equalsIgnoreCase(status) || "In Progress".equalsIgnoreCase(status)) {
-            badge.setBackgroundResource(R.drawable.bg_status_progress);
-            badge.setTextColor(getColor(R.color.app_warning));
+            badge.setBackgroundResource(R.drawable.bg_tenant_calendar_status_pending);
+            badge.setTextColor(getColor(R.color.calendar_status_pending_text));
+        } else if ("In_Process".equalsIgnoreCase(status)
+                || "In Progress".equalsIgnoreCase(status)
+                || "Medium".equalsIgnoreCase(status)) {
+            badge.setBackgroundResource(R.drawable.bg_tenant_calendar_status_progress);
+            badge.setTextColor(getColor(R.color.calendar_status_progress_text));
         } else {
-            badge.setBackgroundResource(R.drawable.bg_status_completed);
-            badge.setTextColor(getColor(R.color.app_accent_green));
+            badge.setBackgroundResource(R.drawable.bg_tenant_calendar_status_completed);
+            badge.setTextColor(getColor(R.color.calendar_status_completed_text));
         }
     }
 

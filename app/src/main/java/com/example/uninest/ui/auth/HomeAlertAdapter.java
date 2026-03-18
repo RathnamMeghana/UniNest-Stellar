@@ -58,19 +58,26 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
     @Override
     public void onBindViewHolder(@NonNull AlertViewHolder holder, int position) {
         HomeAlert alert = alerts.get(position);
-        holder.tvTitle.setText(alert.getTitle() != null ? alert.getTitle() : "");
-        holder.tvSubtitle.setText(formatSubtitle(alert));
-
         AlertPalette palette = paletteFor(holder.itemView.getContext(), alert.getType());
+
         holder.tvType.setText(palette.label);
+        holder.tvTitle.setText(alert.getTitle() != null && !alert.getTitle().trim().isEmpty()
+                ? alert.getTitle().trim()
+                : "New update");
+        holder.tvMeta.setText(formatMeta(alert));
+        holder.tvSubtitle.setText(detailFor(alert));
+
         holder.icon.setImageResource(palette.iconRes);
         holder.icon.setImageTintList(ColorStateList.valueOf(palette.accentColor));
-        holder.btnDelete.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_text_secondary)));
-        holder.accentBar.setBackgroundColor(palette.accentColor);
+        holder.btnDelete.setImageTintList(ColorStateList.valueOf(
+                ContextCompat.getColor(holder.itemView.getContext(), R.color.app_text_secondary)
+        ));
 
-        tintShape(holder.tvType, withAlpha(palette.accentColor, 0.14f), withAlpha(palette.accentColor, 0.28f));
-        tintShape(holder.iconContainer, withAlpha(palette.accentColor, 0.12f), withAlpha(palette.accentColor, 0.22f));
+        tintShape(holder.tvType, withAlpha(palette.accentColor, 0.13f), withAlpha(palette.accentColor, 0.26f));
+        tintShape(holder.iconContainer, withAlpha(palette.accentColor, 0.12f), withAlpha(palette.accentColor, 0.18f));
         holder.tvType.setTextColor(palette.accentColor);
+        holder.itemView.setContentDescription(buildAlertContentDescription(holder, palette));
+        holder.btnDelete.setContentDescription("Delete " + palette.label.toLowerCase(Locale.getDefault()) + " alert");
 
         holder.itemView.setOnClickListener(v -> {
             if (alertClickListener != null) {
@@ -88,6 +95,68 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
     @Override
     public int getItemCount() {
         return alerts.size();
+    }
+
+    private String detailFor(HomeAlert alert) {
+        String original = alert.getSubtitle() != null ? alert.getSubtitle().trim() : "";
+        String title = alert.getTitle() != null ? alert.getTitle().trim() : "";
+
+        if (!original.isEmpty() && !original.equalsIgnoreCase(title)) {
+            return original;
+        }
+
+        String target = alert.getTargetScreen() != null
+                ? alert.getTargetScreen().trim().toUpperCase(Locale.getDefault())
+                : "";
+
+        switch (target) {
+            case "BILLS":
+                return "Opens the bills section for quick action.";
+            case "CHORES":
+                return "Opens the chores section with the related task.";
+            case "CALENDAR":
+                return "Opens the planner on the related day.";
+            case "TICKETS":
+                return "Opens the ticket details so you can review it.";
+            default:
+                return "Tap to view the related update.";
+        }
+    }
+
+    private String buildAlertContentDescription(AlertViewHolder holder, AlertPalette palette) {
+        StringBuilder description = new StringBuilder();
+        description.append(palette.label).append(" alert. ");
+        description.append(holder.tvTitle.getText()).append(". ");
+        description.append(holder.tvMeta.getText()).append(". ");
+        description.append(holder.tvSubtitle.getText());
+        return description.toString().trim();
+    }
+
+    private String formatMeta(HomeAlert alert) {
+        long time = alert.getEventTime() > 0 ? alert.getEventTime() : alert.getCreatedAt();
+        if (time <= 0) {
+            return "Recent";
+        }
+
+        Calendar now = Calendar.getInstance();
+        Calendar event = Calendar.getInstance();
+        event.setTimeInMillis(time);
+
+        if (isSameDay(now, event)) {
+            return "Today at " + new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date(time));
+        }
+
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+        if (isSameDay(tomorrow, event)) {
+            return "Tomorrow";
+        }
+
+        if (isSameWeek(now, event)) {
+            return new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date(time));
+        }
+
+        return new SimpleDateFormat("dd MMM", Locale.getDefault()).format(new Date(time));
     }
 
     private void tintShape(View view, @ColorInt int fillColor, @ColorInt int strokeColor) {
@@ -115,93 +184,52 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
                 return new AlertPalette(
                         "Chore",
                         ContextCompat.getColor(context, R.color.app_accent_green),
-                        R.drawable.ic_trash_bin
+                        R.drawable.ic_alert_chore
                 );
             case "MAINTENANCE":
                 return new AlertPalette(
                         "Maintenance",
                         ContextCompat.getColor(context, R.color.app_warning),
-                        R.drawable.ic_tools
+                        R.drawable.ic_alert_maintenance
                 );
             case "RENT":
                 return new AlertPalette(
                         "Bills",
                         ContextCompat.getColor(context, R.color.app_danger),
-                        R.drawable.ic_money_wings
+                        R.drawable.ic_alert_bills
                 );
             case "CALENDAR":
                 return new AlertPalette(
                         "Calendar",
                         ContextCompat.getColor(context, R.color.app_accent_cyan),
-                        R.drawable.ic_calendar
+                        R.drawable.ic_alert_calendar
                 );
             case "MESSAGE":
             default:
                 return new AlertPalette(
                         "Message",
                         ContextCompat.getColor(context, R.color.app_accent_purple),
-                        R.drawable.ic_notifications
+                        R.drawable.ic_alert_message
                 );
         }
     }
 
-    private String formatSubtitle(HomeAlert alert) {
-        long time = alert.getEventTime() > 0 ? alert.getEventTime() : alert.getCreatedAt();
-        String type = alert.getType() != null ? alert.getType() : "";
-        String original = alert.getSubtitle() != null ? alert.getSubtitle().trim() : "";
-
-        if (time <= 0) {
-            return original.isEmpty() ? "Recent update" : original;
-        }
-
-        Calendar now = Calendar.getInstance();
-        Calendar event = Calendar.getInstance();
-        event.setTimeInMillis(time);
-
-        if ("CHORE".equals(type) && isSameWeek(now, event)) {
-            return "This week";
-        }
-
-        if ("RENT".equals(type) && isSameWeek(now, event)) {
-            return "Due this week";
-        }
-
-        if (isSameDay(now, event)) {
-            return "Today at " + new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date(time));
-        }
-
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
-        if (isSameDay(tomorrow, event)) {
-            return "Tomorrow";
-        }
-
-        long diffMillis = time - now.getTimeInMillis();
-        long diffDays = diffMillis / (1000L * 60 * 60 * 24);
-
-        if (diffDays >= 2 && diffDays <= 7) {
-            return new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date(time));
-        }
-
-        return original.isEmpty()
-                ? new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(new Date(time))
-                : original;
+    private boolean isSameWeek(Calendar first, Calendar second) {
+        return first.get(Calendar.YEAR) == second.get(Calendar.YEAR)
+                && first.get(Calendar.WEEK_OF_YEAR) == second.get(Calendar.WEEK_OF_YEAR);
     }
 
-    private boolean isSameWeek(Calendar c1, Calendar c2) {
-        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
-                && c1.get(Calendar.WEEK_OF_YEAR) == c2.get(Calendar.WEEK_OF_YEAR);
-    }
-
-    private boolean isSameDay(Calendar c1, Calendar c2) {
-        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
-                && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+    private boolean isSameDay(Calendar first, Calendar second) {
+        return first.get(Calendar.YEAR) == second.get(Calendar.YEAR)
+                && first.get(Calendar.DAY_OF_YEAR) == second.get(Calendar.DAY_OF_YEAR);
     }
 
     static class AlertViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvSubtitle, tvType;
+        TextView tvTitle;
+        TextView tvSubtitle;
+        TextView tvType;
+        TextView tvMeta;
         ImageView icon;
-        View accentBar;
         ImageButton btnDelete;
         FrameLayout iconContainer;
 
@@ -210,8 +238,8 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
             tvTitle = itemView.findViewById(R.id.tvAlertTitle);
             tvSubtitle = itemView.findViewById(R.id.tvAlertSubtitle);
             tvType = itemView.findViewById(R.id.tvAlertType);
+            tvMeta = itemView.findViewById(R.id.tvAlertMeta);
             icon = itemView.findViewById(R.id.imgAlertIcon);
-            accentBar = itemView.findViewById(R.id.viewAlertAccent);
             btnDelete = itemView.findViewById(R.id.btnDeleteAlert);
             iconContainer = itemView.findViewById(R.id.layoutIconBadge);
         }

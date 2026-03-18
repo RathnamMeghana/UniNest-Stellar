@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -211,12 +212,13 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         com.google.android.material.button.MaterialButton btnMore = view.findViewById(R.id.btnViewMore);
         ImageView imgAssignee = view.findViewById(R.id.imgAssigneeProfile);
         TextView tvPointsEarned = view.findViewById(R.id.tvPointsEarned);
+        View avatarShell = view.findViewById(R.id.avatarShell);
 
         String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
 
         // 1. Title and Status Text
-        title.setText(status.equalsIgnoreCase("NOT_STARTED") ? c.getTitle() + " !!!" : c.getTitle());
+        title.setText(c.getTitle());
         statusBadge.setText(formatStatus(status));
 
         // 2. Resolve Roommate Names (Ensuring 'effectively final' for lambda)
@@ -228,8 +230,13 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         final String creatorName = (c.getCreatedBy() != null && c.getCreatedBy().equals(currentUserId))
                 ? "Me" : (rawCreator != null ? rawCreator : "Unknown");
 
-        extraInfo.setText("Assigned to: " + assigneeName);
-        tvCreatedBy.setText("Created by: " + creatorName);
+        extraInfo.setText("Assigned to " + assigneeName);
+        String location = c.getLocation() != null && !c.getLocation().trim().isEmpty()
+                ? c.getLocation().trim()
+                : null;
+        tvCreatedBy.setText(location != null
+                ? "Created by " + creatorName + "  •  " + location
+                : "Created by " + creatorName);
 
         // Load assignee's profile image
         String assigneeImage = roommateImageMap.get(c.getAssignedTo());
@@ -240,14 +247,14 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             tvDateInfo.setVisibility(View.VISIBLE); // Ensure it is visible
             if (c.getEndDate() != null) {
                 // Show the actual day it was finished
-                tvDateInfo.setText("Completed on: " + sdf.format(c.getEndDate().toDate()));
+                tvDateInfo.setText("Completed " + sdf.format(c.getEndDate().toDate()));
             } else {
                 tvDateInfo.setText("Completed Today");
             }
         } else {
             if (c.getStartDate() != null) {
                 tvDateInfo.setVisibility(View.VISIBLE);
-                tvDateInfo.setText("Due on: " + sdf.format(c.getStartDate().toDate()));
+                tvDateInfo.setText("Due " + sdf.format(c.getStartDate().toDate()));
             } else {
                 tvDateInfo.setVisibility(View.GONE);
             }
@@ -255,23 +262,53 @@ public class ViewAllTasksActivity extends AppCompatActivity {
 
         // 4. Dynamic Coloring
         if (status.equals("COMPLETED")) {
-            card.setBackgroundResource(R.drawable.bg_card_green);
+            card.setBackgroundResource(R.drawable.bg_task_card_completed);
             statusBadge.setBackgroundResource(R.drawable.bg_status_completed);
-            statusBadge.setTextColor(Color.parseColor("#2E7D32"));
+            statusBadge.setTextColor(ContextCompat.getColor(this, R.color.task_card_completed_text));
+            btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    ContextCompat.getColor(this, R.color.task_button_completed_bg)
+            ));
+            btnMore.setTextColor(ContextCompat.getColor(this, R.color.task_card_completed_text));
+            btnMore.setText("Review");
+            btnMore.setVisibility(View.GONE);
+            avatarShell.setVisibility(View.GONE);
+            card.setOnClickListener(v -> showTaskPopup(c));
+            card.setClickable(true);
+            card.setFocusable(true);
 
             // Show points earned on completed tasks
             int pts = calculateTaskPoints(c);
-            tvPointsEarned.setText("\uD83C\uDFC6 +" + pts + " pts");
+            tvPointsEarned.setText("+" + pts + " pts earned");
             tvPointsEarned.setVisibility(View.VISIBLE);
         } else if (status.equals("IN_PROGRESS")) {
-            card.setBackgroundResource(R.drawable.bg_card_orange);
+            card.setBackgroundResource(R.drawable.bg_task_card_progress);
             statusBadge.setBackgroundResource(R.drawable.bg_status_progress);
-            statusBadge.setTextColor(Color.parseColor("#EF6C00"));
+            statusBadge.setTextColor(ContextCompat.getColor(this, R.color.task_card_progress_text));
+            btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    ContextCompat.getColor(this, R.color.task_button_progress_bg)
+            ));
+            btnMore.setTextColor(ContextCompat.getColor(this, R.color.task_card_progress_text));
+            btnMore.setText("Open");
+            btnMore.setVisibility(View.VISIBLE);
+            avatarShell.setVisibility(View.VISIBLE);
+            card.setOnClickListener(null);
+            card.setClickable(false);
+            card.setFocusable(false);
             tvPointsEarned.setVisibility(View.GONE);
         } else {
-            card.setBackgroundResource(R.drawable.bg_card_red);
+            card.setBackgroundResource(R.drawable.bg_task_card_pending);
             statusBadge.setBackgroundResource(R.drawable.bg_status_pending);
-            statusBadge.setTextColor(Color.parseColor("#C62828"));
+            statusBadge.setTextColor(ContextCompat.getColor(this, R.color.task_card_pending_text));
+            btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    ContextCompat.getColor(this, R.color.task_button_pending_bg)
+            ));
+            btnMore.setTextColor(ContextCompat.getColor(this, R.color.task_card_pending_text));
+            btnMore.setText("Open");
+            btnMore.setVisibility(View.VISIBLE);
+            avatarShell.setVisibility(View.VISIBLE);
+            card.setOnClickListener(null);
+            card.setClickable(false);
+            card.setFocusable(false);
             tvPointsEarned.setVisibility(View.GONE);
         }
 
@@ -317,7 +354,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             h.name.setText(u.getFirstName());
 
             // 1. SET THE IMAGE & ADJUST FITTING
-            int pad = (int) (3 * getResources().getDisplayMetrics().density);
+            int pad = (int) (1 * getResources().getDisplayMetrics().density);
             h.profile.setPadding(pad, pad, pad, pad);
 
             if (u.getId().equals("ALL")) {
@@ -352,9 +389,11 @@ public class ViewAllTasksActivity extends AppCompatActivity {
 
             // 2. HIGHLIGHT SELECTED (BLUE SHADOW)
             if (u.getId().equals(selectedUserId)) {
-                h.frame.setBackgroundResource(R.drawable.bg_circle_outline_selected);
+                h.frame.setBackgroundResource(R.drawable.bg_tasks_filter_circle_selected);
+                h.name.setTextColor(ContextCompat.getColor(ViewAllTasksActivity.this, R.color.calendar_primary_dark));
             } else {
-                h.frame.setBackgroundResource(R.drawable.bg_circle_outline);
+                h.frame.setBackgroundResource(R.drawable.bg_tasks_filter_circle);
+                h.name.setTextColor(ContextCompat.getColor(ViewAllTasksActivity.this, R.color.calendar_text_primary));
             }
 
             h.itemView.setOnClickListener(v -> {
