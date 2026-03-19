@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <queries>
         <package android:name="com.google.android.gms" />
@@ -111,6 +112,9 @@
             android:name=".ui.auth.PrivacyPolicyActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.auth.AboutUsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.auth.FAQActivity"
             android:exported="false" />
         <activity
@@ -211,6 +215,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".notifications.ScheduledNotificationReceiver"
+            android:exported="false" />
 
     </application>
 

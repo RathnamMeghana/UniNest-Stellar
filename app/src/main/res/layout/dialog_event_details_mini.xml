@@ -100,6 +100,7 @@
             android:visibility="gone">
 
             <TextView
+                android:id="@+id/popAmountLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/opensans_bold"
@@ -144,5 +145,5 @@
         android:backgroundTint="@color/calendar_primary"
         android:text="Close"
         android:textAllCaps="false"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/calendar_text_inverse" />
 </LinearLayout>

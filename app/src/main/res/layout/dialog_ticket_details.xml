@@ -37,14 +37,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/bg_tenant_calendar_status_progress"
+            android:background="@drawable/bg_tenant_ticket_status_progress"
             android:fontFamily="@font/opensans_bold"
             android:paddingStart="14dp"
             android:paddingTop="7dp"
             android:paddingEnd="14dp"
             android:paddingBottom="7dp"
             android:text="In progress"
-            android:textColor="@color/calendar_status_progress_text"
+            android:textColor="@color/ticket_progress_text"
             android:textSize="12sp" />
 
         <LinearLayout

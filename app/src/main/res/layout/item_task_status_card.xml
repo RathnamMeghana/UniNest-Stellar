@@ -6,9 +6,12 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
     android:background="@drawable/bg_task_card_pending"
+    android:clickable="true"
     android:elevation="0dp"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     android:minHeight="0dp"
-    android:padding="12dp">
+    android:padding="14dp">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -19,7 +22,7 @@
         android:maxLines="2"
         android:text="Task Title"
         android:textColor="@color/app_text_primary"
-        android:textSize="16sp"
+        android:textSize="17sp"
         app:layout_constraintEnd_toStartOf="@id/tvStatusBadge"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,20 +31,20 @@
         android:id="@+id/tvStatusBadge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_status_pending"
+        android:background="@drawable/bg_task_status_badge"
         android:fontFamily="@font/opensans_bold"
         android:paddingHorizontal="10dp"
-        android:paddingVertical="4dp"
+        android:paddingVertical="5dp"
         android:text="Not Started"
-        android:textSize="10sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/avatarShell"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="12dp"
         android:background="@drawable/bg_task_avatar_shell"
         android:padding="3dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,10 +65,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="0dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@id/btnViewMore"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/avatarShell"
         app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
@@ -76,7 +79,7 @@
             android:fontFamily="@font/opensans_bold"
             android:text="Assigned to Me"
             android:textColor="@color/task_meta_text"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tvCreatedBy"
@@ -86,7 +89,7 @@
             android:fontFamily="@font/opensans_regular"
             android:text="Created by Roommate"
             android:textColor="@color/task_muted_text"
-            android:textSize="11sp" />
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/tvDateInfo"
@@ -97,7 +100,7 @@
             android:maxLines="2"
             android:text="Due Jan 23, 2026"
             android:textColor="@color/task_muted_text"
-            android:textSize="11sp" />
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/tvPointsEarned"
@@ -110,30 +113,8 @@
             android:paddingVertical="4dp"
             android:text="+0 pts earned"
             android:textColor="@color/task_points_text"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:visibility="gone" />
     </LinearLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnViewMore"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/opensans_bold"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:minHeight="0dp"
-        android:minWidth="82dp"
-        android:paddingHorizontal="12dp"
-        android:text="Open"
-        android:textAllCaps="false"
-        android:textColor="@color/task_card_pending_text"
-        android:textSize="11sp"
-        app:backgroundTint="@color/task_button_pending_bg"
-        app:cornerRadius="15dp"
-        app:elevation="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/avatarShell"
-        app:strokeWidth="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

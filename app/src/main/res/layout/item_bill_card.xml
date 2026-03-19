@@ -1,137 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:background="@drawable/bg_card_orange"
-    android:elevation="4dp"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_marginBottom="6dp"
+    android:background="@drawable/bg_tenant_bill_card_due"
+    android:foreground="?attr/selectableItemBackground"
+    android:minHeight="76dp"
+    android:paddingStart="12dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="10dp">
+
+    <TextView
+        android:id="@+id/tvBillTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:autoSizeMaxTextSize="16sp"
+        android:autoSizeMinTextSize="13sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:ellipsize="end"
+        android:fontFamily="@font/opensans_bold"
+        android:maxLines="1"
+        android:text="Title"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/rightColumn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvBillCreatedBy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/opensans_regular"
+        android:maxLines="1"
+        android:text="Created by: Name"
+        android:textColor="@color/calendar_text_secondary"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/rightColumn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBillTitle" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/amountRow"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toStartOf="@id/rightColumn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBillCreatedBy">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvBillTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Title"
-                android:textColor="@color/app_text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvBillStatusBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/bg_status_pending"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:text="UNPAID"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvAmountLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:orientation="vertical">
+            android:fontFamily="@font/opensans_regular"
+            android:text="You owe"
+            android:textColor="@color/calendar_text_secondary"
+            android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tvAmountLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="You owe"
-                android:textColor="@color/app_accent_pink"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvMainAmount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&#8364;0.00"
-                android:textColor="@color/app_accent_pink"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvMainAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:fontFamily="@font/opensans_bold"
+            android:text="&#8364;0.00"
+            android:textColor="@color/bill_due_text"
+            android:textSize="15sp" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="12dp"
-        android:background="@color/app_outline" />
+    <TextView
+        android:id="@+id/tvBillSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/opensans_regular"
+        android:maxLines="2"
+        android:text="Due Mar 19  |  Total EUR 0.00"
+        android:textColor="@color/calendar_text_secondary"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/rightColumn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/amountRow" />
+
+    <TextView
+        android:id="@+id/tvBillDateInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBillSubtitle" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/rightColumn"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:gravity="end"
+        android:minWidth="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tvBillStatusBadge"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:background="@drawable/bg_tenant_bill_status_due"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:minHeight="28dp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="Pending"
+            android:textAlignment="center"
+            android:textColor="@color/bill_due_badge_text"
+            android:textSize="11sp" />
 
-            <TextView
-                android:id="@+id/tvBillSubtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Total bill: &#8364;0.00"
-                android:textColor="@color/app_text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvBillCreatedBy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Created by: Name"
-                android:textColor="@color/app_text_secondary"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvBillDateInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Due on: Date"
-                android:textColor="@color/app_text_secondary"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="6dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBillAction"
-            android:layout_width="wrap_content"
-            android:layout_height="38dp"
+            android:layout_width="84dp"
+            android:layout_height="28dp"
+            android:fontFamily="@font/opensans_bold"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:minHeight="0dp"
             android:minWidth="0dp"
-            android:paddingHorizontal="14dp"
-            android:text="Pay now"
+            android:paddingHorizontal="10dp"
+            android:text="Pay"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
+            android:textColor="@color/calendar_text_inverse"
             android:textSize="12sp"
-            android:textStyle="bold"
-            app:backgroundTint="@color/app_accent_purple"
-            app:cornerRadius="18dp"
-            app:elevation="0dp" />
+            app:backgroundTint="@color/calendar_primary_dark"
+            app:cornerRadius="14dp"
+            app:elevation="0dp"
+            app:strokeWidth="0dp" />
     </LinearLayout>
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

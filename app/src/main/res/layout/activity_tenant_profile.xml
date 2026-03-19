@@ -23,16 +23,22 @@
             android:orientation="horizontal"
             android:padding="14dp">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/ivProfileImage"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
-                android:contentDescription="Profile image"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_profile_tenant"
-                app:shapeAppearanceOverlay="@style/CircleImage"
-                app:strokeColor="@color/calendar_primary_dark"
-                app:strokeWidth="3dp" />
+            <FrameLayout
+                android:layout_width="102dp"
+                android:layout_height="102dp"
+                android:background="@drawable/bg_profile_avatar_ring"
+                android:padding="4dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivProfileImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Profile image"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_profile_tenant"
+                    app:shapeAppearanceOverlay="@style/CircleImage"
+                    app:strokeWidth="0dp" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -246,17 +252,18 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="14dp"
-                android:backgroundTint="@color/calendar_status_overdue_bg"
+                android:background="@drawable/bg_profile_logout_action"
                 android:fontFamily="@font/opensans_bold"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="Logout"
                 android:textAllCaps="false"
-                android:textColor="@color/calendar_status_overdue_text"
-                android:textSize="14sp"
+                android:textColor="@color/calendar_text_inverse"
+                android:textSize="15sp"
+                app:backgroundTint="@null"
                 app:cornerRadius="16dp"
                 app:elevation="0dp" />
         </LinearLayout>

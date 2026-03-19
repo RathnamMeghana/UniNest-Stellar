@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/opensans_regular"
-                android:text="Track every maintenance issue, tap in for full details, and keep raised, active, and solved requests easy to scan."
+                android:text="Track every maintenance ticket and tap in for full details."
                 android:textColor="@color/calendar_text_secondary"
                 android:textSize="12sp" />
 
@@ -137,14 +137,14 @@
                         android:id="@+id/tvCountInProgress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_tenant_calendar_status_progress"
+                        android:background="@drawable/bg_tenant_ticket_status_progress"
                         android:fontFamily="@font/opensans_bold"
                         android:paddingStart="12dp"
                         android:paddingTop="6dp"
                         android:paddingEnd="12dp"
                         android:paddingBottom="6dp"
                         android:text="0"
-                        android:textColor="@color/calendar_status_progress_text"
+                        android:textColor="@color/ticket_progress_text"
                         android:textSize="12sp"
                         tools:text="2" />
 
@@ -156,7 +156,7 @@
                         android:contentDescription="@null"
                         android:importantForAccessibility="no"
                         android:src="@drawable/ic_calendar_chevron_down"
-                        app:tint="@color/calendar_status_progress_text" />
+                        app:tint="@color/ticket_progress_chevron" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -205,14 +205,14 @@
                         android:id="@+id/tvCountRaised"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_tenant_calendar_status_pending"
+                        android:background="@drawable/bg_tenant_ticket_status_raised"
                         android:fontFamily="@font/opensans_bold"
                         android:paddingStart="12dp"
                         android:paddingTop="6dp"
                         android:paddingEnd="12dp"
                         android:paddingBottom="6dp"
                         android:text="0"
-                        android:textColor="@color/calendar_status_pending_text"
+                        android:textColor="@color/ticket_raised_text"
                         android:textSize="12sp"
                         tools:text="4" />
 
@@ -224,7 +224,7 @@
                         android:contentDescription="@null"
                         android:importantForAccessibility="no"
                         android:src="@drawable/ic_calendar_chevron_down"
-                        app:tint="@color/calendar_status_pending_text" />
+                        app:tint="@color/ticket_raised_chevron" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -273,14 +273,14 @@
                         android:id="@+id/tvCountSolved"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_tenant_calendar_status_completed"
+                        android:background="@drawable/bg_tenant_ticket_status_solved"
                         android:fontFamily="@font/opensans_bold"
                         android:paddingStart="12dp"
                         android:paddingTop="6dp"
                         android:paddingEnd="12dp"
                         android:paddingBottom="6dp"
                         android:text="0"
-                        android:textColor="@color/calendar_status_completed_text"
+                        android:textColor="@color/ticket_solved_text"
                         android:textSize="12sp"
                         tools:text="1" />
 
@@ -292,7 +292,7 @@
                         android:contentDescription="@null"
                         android:importantForAccessibility="no"
                         android:src="@drawable/ic_calendar_chevron_down"
-                        app:tint="@color/calendar_status_completed_text" />
+                        app:tint="@color/ticket_solved_chevron" />
                 </LinearLayout>
 
                 <LinearLayout

@@ -133,6 +133,110 @@
             android:textSize="13sp" />
     </LinearLayout>
 
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:clipToPadding="false"
+        android:fillViewport="false"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/filterAlertsAll"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="center"
+                android:minWidth="64dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="All"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/filterAlertsMessages"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="center"
+                android:minWidth="84dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="Messages"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/filterAlertsBills"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="center"
+                android:minWidth="68dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="Bills"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/filterAlertsChores"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="Chores"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/filterAlertsMaintenance"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="center"
+                android:minWidth="100dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="Maintenance"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/filterAlertsCalendar"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:fontFamily="@font/opensans_bold"
+                android:gravity="center"
+                android:minWidth="74dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="Events"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -145,7 +249,7 @@
             android:layout_height="wrap_content"
             android:accessibilityHeading="true"
             android:layout_weight="1"
-            android:text="Latest"
+            android:text="Showing"
             android:textColor="@color/app_text_secondary"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -175,18 +279,74 @@
             app:strokeWidth="1dp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvCenterEmpty"
+    <LinearLayout
+        android:id="@+id/layoutCenterEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:background="@drawable/bg_summary_chip"
-        android:gravity="center"
-        android:padding="18dp"
-        android:text="No new alerts right now."
-        android:textColor="@color/app_text_secondary"
-        android:textSize="14sp"
-        android:visibility="gone" />
+        android:background="@drawable/bg_tenant_calendar_empty_state"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="22dp"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="124dp"
+            android:layout_height="104dp"
+            android:importantForAccessibility="no">
+
+            <View
+                android:layout_width="82dp"
+                android:layout_height="82dp"
+                android:layout_gravity="top|end"
+                android:background="@drawable/bg_home_orb_primary" />
+
+            <View
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="bottom|start"
+                android:background="@drawable/bg_home_orb_secondary" />
+
+            <FrameLayout
+                android:id="@+id/layoutCenterEmptyIconShell"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:padding="18dp">
+
+                <ImageView
+                    android:id="@+id/imgCenterEmptyIcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_notifications"
+                    app:tint="@color/app_accent_purple" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvCenterEmptyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/opensans_bold"
+            android:text="All caught up"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvCenterEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/opensans_regular"
+            android:gravity="center"
+            android:text="Fresh apartment updates will land here as soon as something needs your attention."
+            android:textColor="@color/calendar_text_secondary"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotificationCenter"

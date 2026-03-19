@@ -57,14 +57,14 @@
             android:id="@+id/tvStateChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_tenant_calendar_status_pending"
+            android:background="@drawable/bg_tenant_ticket_status_raised"
             android:fontFamily="@font/opensans_bold"
             android:paddingStart="10dp"
             android:paddingTop="6dp"
             android:paddingEnd="10dp"
             android:paddingBottom="6dp"
             android:text="Raised"
-            android:textColor="@color/calendar_status_pending_text"
+            android:textColor="@color/ticket_raised_text"
             android:textSize="11sp" />
     </LinearLayout>
 

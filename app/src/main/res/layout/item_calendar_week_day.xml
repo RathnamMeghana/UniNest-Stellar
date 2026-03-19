@@ -32,13 +32,13 @@
     <ImageView
         android:id="@+id/imgDayDot"
         android:layout_width="wrap_content"
-        android:layout_height="6dp"
+        android:layout_height="8dp"
         android:layout_marginTop="4dp"
         android:adjustViewBounds="true"
         android:contentDescription="@null"
         android:importantForAccessibility="no"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_dot_green"
+        android:src="@drawable/ic_dot_event"
         android:visibility="invisible" />
 
 </LinearLayout>

@@ -39,7 +39,7 @@
                     android:letterSpacing="0.08"
                     android:text="Planner"
                     android:textAllCaps="true"
-                    android:textColor="@color/calendar_primary_dark"
+                    android:textColor="@color/calendar_text_primary"
                     android:textSize="11sp" />
 
                 <TextView
@@ -90,7 +90,7 @@
                     android:minHeight="44dp"
                     android:text="View tasks"
                     android:textAllCaps="false"
-                    android:textColor="@color/calendar_primary_dark"
+                    android:textColor="@color/calendar_text_primary"
                     android:textSize="12sp"
                     app:backgroundTint="@null"
                     app:cornerRadius="16dp"
@@ -279,7 +279,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:maxLines="1"
                             android:text="0"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/calendar_text_inverse"
                             android:textSize="19sp" />
 
                         <TextView
@@ -289,7 +289,7 @@
                             android:fontFamily="@font/opensans_regular"
                             android:maxLines="1"
                             android:text="Visible"
-                            android:textColor="#F4EAFF"
+                            android:textColor="@color/calendar_text_inverse"
                             android:textSize="11sp" />
                     </LinearLayout>
 
@@ -343,7 +343,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:maxLines="1"
                             android:text="0"
-                            android:textColor="@color/calendar_reminder_text"
+                            android:textColor="@color/calendar_status_overdue_text"
                             android:textSize="19sp" />
 
                         <TextView
@@ -353,7 +353,7 @@
                             android:fontFamily="@font/opensans_regular"
                             android:maxLines="1"
                             android:text="Overdue"
-                            android:textColor="@color/calendar_reminder_text"
+                            android:textColor="@color/calendar_status_overdue_text"
                             android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -396,7 +396,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:text="Viewing"
                             android:textAllCaps="true"
-                            android:textColor="#F4EAFF"
+                            android:textColor="@color/calendar_text_inverse"
                             android:textSize="11sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -410,7 +410,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:maxLines="1"
                             android:text="Today"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/calendar_text_inverse"
                             android:textSize="15sp"
                             app:layout_constraintEnd_toStartOf="@id/imgToggleArrow"
                             app:layout_constraintStart_toStartOf="parent"
@@ -425,7 +425,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="@android:color/white" />
+                            app:tint="@color/calendar_text_inverse" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <com.applandeo.materialcalendarview.CalendarView
@@ -437,17 +437,17 @@
                         android:clipToOutline="true"
                         android:visibility="gone"
                         app:abbreviationsBarColor="@color/calendar_primary_softer"
-                        app:abbreviationsLabelsColor="@color/calendar_primary_dark"
+                        app:abbreviationsLabelsColor="@color/calendar_text_primary"
                         app:daysLabelsColor="@color/calendar_text_primary"
                         app:eventsEnabled="true"
                         app:forwardButtonSrc="@drawable/ic_calendar_chevron_right"
                         app:headerColor="@color/calendar_surface"
-                        app:headerLabelColor="@color/calendar_primary_dark"
+                        app:headerLabelColor="@color/calendar_text_primary"
                         app:pagesColor="@color/calendar_surface_alt"
                         app:previousButtonSrc="@drawable/ic_calendar_chevron_left"
                         app:selectionColor="@color/calendar_primary"
                         app:selectionLabelColor="@color/calendar_text_inverse"
-                        app:todayLabelColor="@color/calendar_primary_dark"
+                        app:todayLabelColor="@color/calendar_text_primary"
                         app:type="one_day_picker" />
 
                     <LinearLayout
@@ -567,7 +567,7 @@
                             android:adjustViewBounds="true"
                             android:contentDescription="@null"
                             android:importantForAccessibility="no"
-                            android:src="@drawable/ic_dot_pink" />
+                            android:src="@drawable/ic_dot_event" />
 
                         <TextView
                             android:id="@+id/tvHeaderEvents"
@@ -610,7 +610,7 @@
                             android:adjustViewBounds="true"
                             android:contentDescription="@null"
                             android:importantForAccessibility="no"
-                            android:src="@drawable/ic_dot_orange" />
+                            android:src="@drawable/ic_dot_reminder" />
 
                         <TextView
                             android:id="@+id/tvHeaderReminders"
@@ -619,7 +619,7 @@
                             android:accessibilityHeading="true"
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/opensans_bold"
-                            android:text="Reminders"
+                            android:text="Reminders &amp; Bills"
                             android:textColor="@color/calendar_reminder_text"
                             android:textSize="16sp" />
                     </LinearLayout>

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="320dp"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:background="@drawable/bg_tenant_calendar_dialog"
     android:orientation="vertical"
     android:padding="24dp">
 
@@ -10,48 +10,50 @@
         android:id="@+id/popTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/opensans_bold"
         android:text="Task Title"
-        android:textAlignment="center"
-        android:textColor="#212121"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:textAlignment="viewStart"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="22sp" />
 
     <TextView
         android:id="@+id/popStatusBadge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="8dp"
+        android:background="@drawable/bg_task_status_badge"
+        android:fontFamily="@font/opensans_bold"
         android:paddingHorizontal="12dp"
-        android:paddingVertical="4dp"
+        android:paddingVertical="6dp"
         android:text="Status"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="13sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="20dp"
-        android:background="#EEEEEE" />
+        android:background="@color/calendar_primary_soft" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/opensans_bold"
         android:text="DESCRIPTION"
-        android:textColor="#9E9E9E"
-        android:textSize="11sp"
-        android:textStyle="bold" />
+        android:textColor="@color/calendar_text_secondary"
+        android:textSize="11sp" />
 
     <TextView
         android:id="@+id/popDesc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:fontFamily="@font/opensans_regular"
+        android:lineSpacingExtra="3dp"
         android:text="Description goes here..."
-        android:textColor="#424242"
-        android:textSize="14sp" />
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="15sp" />
 
-    <!-- Details Grid -->
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,45 +61,141 @@
         android:columnCount="2"
         android:rowCount="3">
 
-        <!-- Location -->
-        <LinearLayout android:orientation="vertical" android:layout_columnWeight="1" android:layout_marginBottom="16dp">
-            <TextView android:text="LOCATION" android:textSize="11sp" android:textColor="#9E9E9E" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-            <TextView android:id="@+id/popLocation" android:text="Kitchen" android:textStyle="bold" android:textColor="#333" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="LOCATION"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/popLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="Kitchen"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="15sp" />
         </LinearLayout>
 
-        <!-- Assigned To -->
-        <LinearLayout android:orientation="vertical" android:layout_columnWeight="1" android:layout_marginBottom="16dp">
-            <TextView android:text="ASSIGNED TO" android:textSize="11sp" android:textColor="#9E9E9E" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-            <TextView android:id="@+id/popAssignee" android:text="Name" android:textStyle="bold" android:textColor="#333" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="ASSIGNED TO"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/popAssignee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="Name"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="15sp" />
         </LinearLayout>
 
-        <!-- Est Time -->
-        <LinearLayout android:orientation="vertical" android:layout_columnWeight="1" android:layout_marginBottom="16dp">
-            <TextView android:text="EST. TIME" android:textSize="11sp" android:textColor="#9E9E9E" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-            <TextView android:id="@+id/popEstTime" android:text="-- Mins" android:textStyle="bold" android:textColor="#333" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="EST. TIME"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/popEstTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="-- Mins"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="15sp" />
         </LinearLayout>
 
-        <!-- Actual Time -->
-        <LinearLayout android:id="@+id/layoutActualTime" android:orientation="vertical" android:layout_columnWeight="1" android:layout_marginBottom="16dp">
-            <TextView android:text="ACTUAL TIME" android:textSize="11sp" android:textColor="#2E7D32" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-            <TextView android:id="@+id/popActualTime" android:text="-- Mins" android:textStyle="bold" android:textColor="#2E7D32" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:id="@+id/layoutActualTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="ACTUAL TIME"
+                android:textColor="@color/calendar_status_completed_text"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/popActualTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="-- Mins"
+                android:textColor="@color/calendar_status_completed_text"
+                android:textSize="15sp" />
         </LinearLayout>
 
-        <!-- Due On Date (New Field) -->
-        <LinearLayout android:orientation="vertical" android:layout_columnWeight="1">
-            <TextView android:text="DUE ON" android:textSize="11sp" android:textColor="#9E9E9E" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-            <TextView android:id="@+id/popDueDate" android:text="-- --" android:textStyle="bold" android:textColor="#333" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="DUE ON"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/popDueDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="-- --"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="15sp" />
+        </LinearLayout>
     </GridLayout>
 
     <Button
         android:id="@+id/btnPopClose"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="24dp"
-        android:backgroundTint="#B792D9"
+        android:backgroundTint="@color/calendar_primary"
+        android:fontFamily="@font/opensans_bold"
         android:text="Close"
         android:textAllCaps="false"
-        android:textColor="#FFFFFF" />
+        android:textColor="@color/calendar_text_inverse"
+        android:textSize="14sp" />
 </LinearLayout>
