@@ -10,7 +10,7 @@
             -->
             <item android:gravity="center_horizontal|top" android:top="15dp">
                 <shape android:shape="rectangle">
-                    <solid android:color="#B094CA"/> <!-- Purple -->
+                    <solid android:color="@color/calendar_primary_dark"/>
                     <corners android:radius="20dp"/> <!-- Round edges -->
                     <size android:width="60dp" android:height="40dp"/> <!-- Fixed Pill Size -->
                 </shape>

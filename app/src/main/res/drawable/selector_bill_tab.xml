@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Selected state: The Blue Glow Pill -->
     <item android:state_selected="true">
-        <inset android:insetLeft="4dp" android:insetRight="4dp" android:insetTop="4dp" android:insetBottom="4dp">
-            <layer-list>
-                <item>
-                    <shape android:shape="rectangle">
-                        <corners android:radius="25dp" />
-                        <solid android:color="@color/app_surface"/>
-                    </shape>
-                </item>
-                <item>
-                    <shape android:shape="rectangle">
-                        <corners android:radius="25dp" />
-                        <stroke android:width="2dp" android:color="@color/app_accent_cyan" />
-                        <solid android:color="#1500BCD4" />
-                    </shape>
-                </item>
-            </layer-list>
+        <inset
+            android:insetLeft="4dp"
+            android:insetTop="4dp"
+            android:insetRight="4dp"
+            android:insetBottom="4dp">
+            <shape android:shape="rectangle">
+                <corners android:radius="16dp" />
+                <gradient
+                    android:angle="315"
+                    android:endColor="@color/calendar_primary_dark"
+                    android:startColor="@color/calendar_primary"
+                    android:type="linear" />
+            </shape>
         </inset>
     </item>
 
