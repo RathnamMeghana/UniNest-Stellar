@@ -9,6 +9,8 @@ public class HomeAlert {
     private String entityId;
     private long createdAt;
     private long eventTime;
+    private String metaOverride;
+    private boolean dismissible = true;
 
     public HomeAlert() {}
 
@@ -47,4 +49,10 @@ public class HomeAlert {
 
     public long getEventTime() { return eventTime; }
     public void setEventTime(long eventTime) { this.eventTime = eventTime; }
+
+    public String getMetaOverride() { return metaOverride; }
+    public void setMetaOverride(String metaOverride) { this.metaOverride = metaOverride; }
+
+    public boolean isDismissible() { return dismissible; }
+    public void setDismissible(boolean dismissible) { this.dismissible = dismissible; }
 }

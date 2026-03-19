@@ -111,7 +111,6 @@ public class TenantLoginActivity extends AppCompatActivity {
     }
 
     private void performLogin(String email, String password) {
-        // Disable button
         btnTenantLogin.setEnabled(false);
         btnTenantLogin.setText("Signing In...");
 
@@ -120,7 +119,6 @@ public class TenantLoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // Automatically sync token with backend
                             syncTokenWithBackend(user);
                         }
                     } else {
@@ -133,7 +131,6 @@ public class TenantLoginActivity extends AppCompatActivity {
 
     private void syncTokenWithBackend(FirebaseUser user) {
         final String firebaseUid = user.getUid();
-
         user.getIdToken(true).addOnCompleteListener(tokenTask -> {
             if (!tokenTask.isSuccessful()) {
                 resetUI();
@@ -192,7 +189,6 @@ public class TenantLoginActivity extends AppCompatActivity {
                                         runOnUiThread(() -> {
                                             Toast.makeText(TenantLoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
 
-                                            // Register FCM token after login succeeds
                                             FirebaseMessaging.getInstance().getToken()
                                                     .addOnSuccessListener(token -> {
                                                         Log.d("FCM", "Login token: " + token);

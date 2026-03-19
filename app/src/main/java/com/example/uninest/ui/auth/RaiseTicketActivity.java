@@ -369,7 +369,7 @@ public class RaiseTicketActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     resetSubmitButton();
                     if (response.isSuccessful()) {
-                        Toast.makeText(RaiseTicketActivity.this, "Ticket submitted! Priority: " + priority, Toast.LENGTH_LONG).show();
+                        Toast.makeText(RaiseTicketActivity.this, "Ticket submitted", Toast.LENGTH_LONG).show();
                         finish();
                     } else {
                         Toast.makeText(RaiseTicketActivity.this, "Submission failed: " + response.code(), Toast.LENGTH_SHORT).show();

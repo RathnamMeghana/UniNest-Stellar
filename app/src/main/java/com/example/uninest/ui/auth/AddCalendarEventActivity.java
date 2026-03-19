@@ -74,6 +74,7 @@ public class AddCalendarEventActivity extends AppCompatActivity {
         initViews();
         setupSpinners();
         setupPickers();
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         btnSave.setOnClickListener(v -> handleSave());
 
@@ -124,10 +125,10 @@ public class AddCalendarEventActivity extends AppCompatActivity {
                     // Create Adapter
                     ArrayAdapter<User> adapter = new ArrayAdapter<>(
                             AddCalendarEventActivity.this,
-                            android.R.layout.simple_spinner_item,
+                            R.layout.item_calendar_spinner_selected,
                             roommateList
                     );
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
                     spinnerAssignedTo.setAdapter(adapter);
                 }
             }
@@ -350,8 +351,8 @@ public class AddCalendarEventActivity extends AppCompatActivity {
     }
 
     private void setAdapter(Spinner s, String[] data) {
-        ArrayAdapter<String> a = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, data);
-        a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> a = new ArrayAdapter<>(this, R.layout.item_calendar_spinner_selected, data);
+        a.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         s.setAdapter(a);
     }
 

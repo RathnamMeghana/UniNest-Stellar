@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,7 +24,6 @@ import com.example.uninest.model.BillsRequest;
 import com.example.uninest.model.User;
 import com.google.android.material.button.MaterialButton;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +67,7 @@ public class CreateTenantBillActivity extends AppCompatActivity {
         spinnerBillType = findViewById(R.id.spinnerBillType);
         spinnerFrequency = findViewById(R.id.spinnerFrequency);
         tvFrequencyLabel = findViewById(R.id.tvFrequencyLabel);
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         setupSpinners();
         setupList();
@@ -92,20 +93,26 @@ public class CreateTenantBillActivity extends AppCompatActivity {
     }
 
     private void setupSpinners() {
-        ArrayAdapter<BillsRequest.BillType> typeAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, BillsRequest.BillType.values());
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(
+                this,
+                R.layout.item_calendar_spinner_selected,
+                buildDisplayLabels(BillsRequest.BillType.values())
+        );
+        typeAdapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         spinnerBillType.setAdapter(typeAdapter);
 
-        ArrayAdapter<BillsRequest.BillFrequency> freqAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, BillsRequest.BillFrequency.values());
-        freqAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> freqAdapter = new ArrayAdapter<>(
+                this,
+                R.layout.item_calendar_spinner_selected,
+                buildDisplayLabels(BillsRequest.BillFrequency.values())
+        );
+        freqAdapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         spinnerFrequency.setAdapter(freqAdapter);
 
         spinnerBillType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                BillsRequest.BillType selectedType = (BillsRequest.BillType) spinnerBillType.getSelectedItem();
+                BillsRequest.BillType selectedType = BillsRequest.BillType.values()[position];
                 int visibility = selectedType == BillsRequest.BillType.RECURRING ? View.VISIBLE : View.GONE;
                 tvFrequencyLabel.setVisibility(visibility);
                 spinnerFrequency.setVisibility(visibility);
@@ -139,7 +146,8 @@ public class CreateTenantBillActivity extends AppCompatActivity {
                 Calendar selected = Calendar.getInstance();
                 selected.set(year, month, dayOfMonth);
                 dueDate = selected.getTime();
-                btnDate.setText(DateFormat.getDateInstance().format(dueDate));
+                btnDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(dueDate));
+                btnDate.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_primary));
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
         });
     }
@@ -162,16 +170,21 @@ public class CreateTenantBillActivity extends AppCompatActivity {
     private void updateSplit() {
         String value = etAmount.getText().toString();
         if (value.isEmpty() || selectedIds.isEmpty()) {
-            tvSplitPreview.setText("Each pays: \u20AC0.00");
+            tvSplitPreview.setText("Each selected roommate pays: \u20AC0.00");
             return;
         }
 
         try {
             double total = Double.parseDouble(value);
             double split = total / selectedIds.size();
-            tvSplitPreview.setText(String.format(Locale.getDefault(), "Each pays: \u20AC%.2f", split));
+            tvSplitPreview.setText(String.format(
+                    Locale.getDefault(),
+                    "Each of %d selected roommates pays: \u20AC%.2f",
+                    selectedIds.size(),
+                    split
+            ));
         } catch (NumberFormatException e) {
-            tvSplitPreview.setText("Each pays: \u20AC0.00");
+            tvSplitPreview.setText("Each selected roommate pays: \u20AC0.00");
         }
     }
 
@@ -209,10 +222,10 @@ public class CreateTenantBillActivity extends AppCompatActivity {
         }
         request.setSplits(splits);
 
-        BillsRequest.BillType type = (BillsRequest.BillType) spinnerBillType.getSelectedItem();
+        BillsRequest.BillType type = BillsRequest.BillType.values()[spinnerBillType.getSelectedItemPosition()];
         request.setBillType(type);
         if (type == BillsRequest.BillType.RECURRING) {
-            request.setFrequency((BillsRequest.BillFrequency) spinnerFrequency.getSelectedItem());
+            request.setFrequency(BillsRequest.BillFrequency.values()[spinnerFrequency.getSelectedItemPosition()]);
             request.setStartDate(isoFormat.format(new Date()));
         }
 
@@ -232,5 +245,25 @@ public class CreateTenantBillActivity extends AppCompatActivity {
                 Toast.makeText(CreateTenantBillActivity.this, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private <T extends Enum<T>> List<String> buildDisplayLabels(T[] values) {
+        List<String> labels = new ArrayList<>();
+        for (T value : values) {
+            String lower = value.name().toLowerCase(Locale.getDefault()).replace('_', ' ');
+            String[] parts = lower.split(" ");
+            StringBuilder label = new StringBuilder();
+            for (String part : parts) {
+                if (part.isEmpty()) {
+                    continue;
+                }
+                if (label.length() > 0) {
+                    label.append(' ');
+                }
+                label.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1));
+            }
+            labels.add(label.toString());
+        }
+        return labels;
     }
 }

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.uninest.R;
 import com.example.uninest.model.HomeAlert;
+import com.google.android.material.card.MaterialCardView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -64,20 +65,31 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
         holder.tvTitle.setText(alert.getTitle() != null && !alert.getTitle().trim().isEmpty()
                 ? alert.getTitle().trim()
                 : "New update");
-        holder.tvMeta.setText(formatMeta(alert));
+        String metaText = formatMeta(alert);
+        holder.tvMeta.setText(metaText);
+        holder.tvMeta.setTextColor(ContextCompat.getColor(
+                holder.itemView.getContext(),
+                isUrgentMeta(metaText) ? R.color.app_danger : R.color.app_text_secondary
+        ));
         holder.tvSubtitle.setText(detailFor(alert));
+        holder.tvTitle.setMaxLines(1);
+        holder.tvSubtitle.setVisibility(View.GONE);
 
         holder.icon.setImageResource(palette.iconRes);
         holder.icon.setImageTintList(ColorStateList.valueOf(palette.accentColor));
         holder.btnDelete.setImageTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(holder.itemView.getContext(), R.color.app_text_secondary)
         ));
+        holder.cardAlert.setCardBackgroundColor(palette.surfaceColor);
+        holder.cardAlert.setStrokeColor(palette.borderColor);
 
         tintShape(holder.tvType, withAlpha(palette.accentColor, 0.13f), withAlpha(palette.accentColor, 0.26f));
         tintShape(holder.iconContainer, withAlpha(palette.accentColor, 0.12f), withAlpha(palette.accentColor, 0.18f));
         holder.tvType.setTextColor(palette.accentColor);
         holder.itemView.setContentDescription(buildAlertContentDescription(holder, palette));
         holder.btnDelete.setContentDescription("Delete " + palette.label.toLowerCase(Locale.getDefault()) + " alert");
+        holder.btnDelete.setVisibility(alert.isDismissible() ? View.VISIBLE : View.GONE);
+        holder.btnDelete.setOnClickListener(null);
 
         holder.itemView.setOnClickListener(v -> {
             if (alertClickListener != null) {
@@ -85,11 +97,13 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
             }
         });
 
-        holder.btnDelete.setOnClickListener(v -> {
-            if (deleteClickListener != null) {
-                deleteClickListener.onDelete(alert);
-            }
-        });
+        if (alert.isDismissible()) {
+            holder.btnDelete.setOnClickListener(v -> {
+                if (deleteClickListener != null) {
+                    deleteClickListener.onDelete(alert);
+                }
+            });
+        }
     }
 
     @Override
@@ -133,6 +147,11 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
     }
 
     private String formatMeta(HomeAlert alert) {
+        String metaOverride = alert.getMetaOverride() != null ? alert.getMetaOverride().trim() : "";
+        if (!metaOverride.isEmpty()) {
+            return metaOverride;
+        }
+
         long time = alert.getEventTime() > 0 ? alert.getEventTime() : alert.getCreatedAt();
         if (time <= 0) {
             return "Recent";
@@ -159,6 +178,15 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
         return new SimpleDateFormat("dd MMM", Locale.getDefault()).format(new Date(time));
     }
 
+    private boolean isUrgentMeta(String metaText) {
+        if (metaText == null) {
+            return false;
+        }
+
+        String normalized = metaText.trim().toLowerCase(Locale.getDefault());
+        return normalized.contains("overdue") || normalized.contains("due today");
+    }
+
     private void tintShape(View view, @ColorInt int fillColor, @ColorInt int strokeColor) {
         GradientDrawable drawable = (GradientDrawable) view.getBackground().mutate();
         drawable.setColor(fillColor);
@@ -183,32 +211,42 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
             case "CHORE":
                 return new AlertPalette(
                         "Chore",
-                        ContextCompat.getColor(context, R.color.app_accent_green),
+                        ContextCompat.getColor(context, R.color.calendar_chore_text),
+                        ContextCompat.getColor(context, R.color.calendar_chore_bg),
+                        ContextCompat.getColor(context, R.color.calendar_chore_border),
                         R.drawable.ic_alert_chore
                 );
             case "MAINTENANCE":
                 return new AlertPalette(
                         "Maintenance",
-                        ContextCompat.getColor(context, R.color.app_warning),
+                        ContextCompat.getColor(context, R.color.alert_maintenance_accent),
+                        ContextCompat.getColor(context, R.color.alert_maintenance_bg),
+                        ContextCompat.getColor(context, R.color.alert_maintenance_border),
                         R.drawable.ic_alert_maintenance
                 );
             case "RENT":
                 return new AlertPalette(
                         "Bills",
-                        ContextCompat.getColor(context, R.color.app_danger),
+                        ContextCompat.getColor(context, R.color.calendar_bill_text),
+                        ContextCompat.getColor(context, R.color.calendar_bill_bg),
+                        ContextCompat.getColor(context, R.color.calendar_bill_border),
                         R.drawable.ic_alert_bills
                 );
             case "CALENDAR":
                 return new AlertPalette(
-                        "Calendar",
-                        ContextCompat.getColor(context, R.color.app_accent_cyan),
+                        "Event",
+                        ContextCompat.getColor(context, R.color.calendar_event_text),
+                        ContextCompat.getColor(context, R.color.calendar_event_bg),
+                        ContextCompat.getColor(context, R.color.calendar_event_border),
                         R.drawable.ic_alert_calendar
                 );
             case "MESSAGE":
             default:
                 return new AlertPalette(
                         "Message",
-                        ContextCompat.getColor(context, R.color.app_accent_purple),
+                        ContextCompat.getColor(context, R.color.alert_message_accent),
+                        ContextCompat.getColor(context, R.color.alert_message_bg),
+                        ContextCompat.getColor(context, R.color.alert_message_border),
                         R.drawable.ic_alert_message
                 );
         }
@@ -225,6 +263,7 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
     }
 
     static class AlertViewHolder extends RecyclerView.ViewHolder {
+        MaterialCardView cardAlert;
         TextView tvTitle;
         TextView tvSubtitle;
         TextView tvType;
@@ -235,6 +274,7 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
 
         AlertViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardAlert = itemView.findViewById(R.id.cardAlert);
             tvTitle = itemView.findViewById(R.id.tvAlertTitle);
             tvSubtitle = itemView.findViewById(R.id.tvAlertSubtitle);
             tvType = itemView.findViewById(R.id.tvAlertType);
@@ -248,11 +288,15 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
     private static class AlertPalette {
         final String label;
         final int accentColor;
+        final int surfaceColor;
+        final int borderColor;
         final int iconRes;
 
-        AlertPalette(String label, int accentColor, int iconRes) {
+        AlertPalette(String label, int accentColor, int surfaceColor, int borderColor, int iconRes) {
             this.label = label;
             this.accentColor = accentColor;
+            this.surfaceColor = surfaceColor;
+            this.borderColor = borderColor;
             this.iconRes = iconRes;
         }
     }

@@ -48,7 +48,7 @@ public class TenantProfileActivity extends AppCompatActivity {
                 if (uri != null) {
                     imageUri = uri;
                     // Update UI immediately
-                    ivProfileImage.setImageURI(uri);
+                    Glide.with(this).load(uri).circleCrop().into(ivProfileImage);
                     // Upload to Firebase
                     uploadImageToFirebase();
                 }
@@ -115,6 +115,9 @@ public class TenantProfileActivity extends AppCompatActivity {
         findViewById(R.id.rowEditPassword).setOnClickListener(v ->
                 startActivity(new Intent(this, ChangePasswordActivity.class)));
 
+        findViewById(R.id.rowAbout).setOnClickListener(v ->
+                startActivity(new Intent(this, AboutUsActivity.class)));
+
         findViewById(R.id.rowFaq).setOnClickListener(v ->
                 startActivity(new Intent(this, FAQActivity.class)));
 
@@ -160,12 +163,12 @@ public class TenantProfileActivity extends AppCompatActivity {
 
                     // If the string starts with "http", it's a URL. If not, it's Base64.
                     if (imageStr.startsWith("http")) {
-                        Glide.with(this).load(imageStr).into(ivProfileImage);
+                        Glide.with(this).load(imageStr).circleCrop().into(ivProfileImage);
                     } else {
                         // Decode Base64 string to image
                         byte[] decodedString = Base64.decode(imageStr, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivProfileImage.setImageBitmap(decodedByte);
+                        Glide.with(this).load(decodedByte).circleCrop().into(ivProfileImage);
                     }
                 }
             }

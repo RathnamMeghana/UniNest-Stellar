@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +17,7 @@ import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.BillsRequest;
 import com.example.uninest.model.OwedToUser;
 import com.example.uninest.model.User;
+import com.example.uninest.notifications.LocalNotificationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
@@ -40,7 +42,8 @@ public class TenantBillsActivity extends AppCompatActivity {
     private TenantPaidHistoryAdapter historyAdapter;
     private TenantOwedToMeAdapter owedToMeAdapter;
     private String highlightBillId;
-    private TextView tvSummary, tvHistoryHeader, tvActiveHeader, tvBillsInfo;
+    private String highlightMessage;
+    private TextView tvSummary, tvSummaryCaption, tvHistoryHeader, tvActiveHeader;
     private TabLayout tabLayout;
     private SessionManager sessionManager;
     private String currentUserId, houseCode;
@@ -55,6 +58,7 @@ public class TenantBillsActivity extends AppCompatActivity {
         currentUserId = sessionManager.getUserId();
         houseCode = sessionManager.fetchHouseCode();
         highlightBillId = getIntent().getStringExtra("highlight_bill_id");
+        highlightMessage = getIntent().getStringExtra(LocalNotificationHelper.EXTRA_HIGHLIGHT_MESSAGE);
 
         initViews();
         setupBottomNav();
@@ -69,10 +73,9 @@ public class TenantBillsActivity extends AppCompatActivity {
     private void initViews() {
         tabLayout = findViewById(R.id.billTabLayout);
         tvSummary = findViewById(R.id.tvTotalSummary);
+        tvSummaryCaption = findViewById(R.id.tvSummaryCaption);
         tvActiveHeader = findViewById(R.id.tvActiveHeader);
         tvHistoryHeader = findViewById(R.id.tvHistoryHeader);
-        tvBillsInfo = findViewById(R.id.tvBillsInfo);
-
         rvActive = findViewById(R.id.rvBillsActive);
         rvHistory = findViewById(R.id.rvBillsHistory);
 
@@ -107,15 +110,19 @@ public class TenantBillsActivity extends AppCompatActivity {
         if (tabLayout.getSelectedTabPosition() == 0) {
             tvActiveHeader.setText("Bills to Pay");
             tvHistoryHeader.setText("Paid History");
+            tvSummaryCaption.setText("Currently Due");
+            tvActiveHeader.setTextColor(ContextCompat.getColor(this, R.color.bill_due_text));
+            tvHistoryHeader.setTextColor(ContextCompat.getColor(this, R.color.bill_settled_text));
             findViewById(R.id.btnAddBill).setVisibility(View.VISIBLE);
-            tvBillsInfo.setText("Only bills that involve you appear here, so other housemates do not see unrelated personal charges.");
             fetchActiveBills();
             fetchPaidHistory();
         } else {
             tvActiveHeader.setText("Money Owed to You");
             tvHistoryHeader.setText("Received History");
+            tvSummaryCaption.setText("Expected Back");
+            tvActiveHeader.setTextColor(ContextCompat.getColor(this, R.color.bill_awaiting_text));
+            tvHistoryHeader.setTextColor(ContextCompat.getColor(this, R.color.bill_settled_text));
             findViewById(R.id.btnAddBill).setVisibility(View.GONE);
-            tvBillsInfo.setText("Track shared bills you created, who still owes you, and what has already been paid back.");
             fetchOwedToMe();
             fetchReceivedHistory();
         }
@@ -140,14 +147,30 @@ public class TenantBillsActivity extends AppCompatActivity {
                     activeAdapter.setData(list);
                     rvActive.setAdapter(activeAdapter);
 
+                    boolean consumedHighlight = false;
                     if (highlightBillId != null && !highlightBillId.isBlank()) {
                         for (int i = 0; i < list.size(); i++) {
                             if (highlightBillId.equals(list.get(i).getId())) {
                                 rvActive.scrollToPosition(i);
-                                Toast.makeText(TenantBillsActivity.this, "Opened related bill", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(
+                                        TenantBillsActivity.this,
+                                        highlightMessage != null && !highlightMessage.trim().isEmpty()
+                                                ? highlightMessage
+                                                : "View bills here",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                consumedHighlight = true;
+                                highlightBillId = null;
+                                highlightMessage = null;
                                 break;
                             }
                         }
+                    }
+
+                    if (!consumedHighlight && highlightMessage != null && !highlightMessage.trim().isEmpty()) {
+                        Toast.makeText(TenantBillsActivity.this, highlightMessage, Toast.LENGTH_SHORT).show();
+                        highlightBillId = null;
+                        highlightMessage = null;
                     }
 
                     double total = 0;
@@ -162,7 +185,7 @@ public class TenantBillsActivity extends AppCompatActivity {
                         }
                     }
 
-                    tvSummary.setText(String.format(Locale.getDefault(), "Total you owe: \u20AC%.2f", total));
+                    tvSummary.setText(String.format(Locale.getDefault(), "\u20AC%.2f", total));
                 }
             }
 
@@ -218,7 +241,7 @@ public class TenantBillsActivity extends AppCompatActivity {
                         total += owedToUser.getAmountOwed();
                     }
 
-                    tvSummary.setText(String.format(Locale.getDefault(), "Total owed to you: \u20AC%.2f", total));
+                    tvSummary.setText(String.format(Locale.getDefault(), "\u20AC%.2f", total));
                 } else {
                     Toast.makeText(TenantBillsActivity.this, "OwedToMe error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

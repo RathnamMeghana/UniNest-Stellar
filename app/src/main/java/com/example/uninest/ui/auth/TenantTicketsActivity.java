@@ -22,6 +22,7 @@ import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.TicketApi;
 import com.example.uninest.model.Ticket;
+import com.example.uninest.notifications.LocalNotificationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
@@ -52,6 +53,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
     private TextView tvCountSolved;
     private TextView tvNoTickets;
     private String highlightTicketId;
+    private String highlightMessage;
 
     private TicketApi ticketApi;
     private SessionManager sessionManager;
@@ -69,6 +71,7 @@ public class TenantTicketsActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
         bottomNav.setSelectedItemId(R.id.nav_tickets);
         highlightTicketId = getIntent().getStringExtra("highlight_ticket_id");
+        highlightMessage = getIntent().getStringExtra(LocalNotificationHelper.EXTRA_HIGHLIGHT_MESSAGE);
 
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -191,18 +194,17 @@ public class TenantTicketsActivity extends AppCompatActivity {
         containerInProgress.removeAllViews();
         containerSolved.removeAllViews();
 
-        boolean matchedHighlightedTicket = false;
+        Ticket highlightedTicket = null;
 
         for (Ticket ticket : tickets) {
             if (ticket.isDeletedByTenant()) {
                 continue;
             }
 
-            if (!matchedHighlightedTicket
+            if (highlightedTicket == null
                     && highlightTicketId != null
                     && highlightTicketId.equals(ticket.getId())) {
-                Toast.makeText(this, "Opened related ticket", Toast.LENGTH_SHORT).show();
-                matchedHighlightedTicket = true;
+                highlightedTicket = ticket;
             }
 
             String status = canonicalizeStatus(ticket.getStatus());
@@ -219,6 +221,15 @@ public class TenantTicketsActivity extends AppCompatActivity {
         applySectionState(containerRaised, ivToggleRaised, raisedExpanded);
         applySectionState(containerInProgress, ivToggleInProgress, inProgressExpanded);
         applySectionState(containerSolved, ivToggleSolved, solvedExpanded);
+
+        if (highlightedTicket != null) {
+            if (highlightMessage != null && !highlightMessage.trim().isEmpty()) {
+                Toast.makeText(this, highlightMessage, Toast.LENGTH_SHORT).show();
+            }
+            showTicketDetailsPopup(highlightedTicket);
+            highlightTicketId = null;
+            highlightMessage = null;
+        }
     }
 
     private void addTicketView(LinearLayout container, Ticket ticket, int type) {
@@ -472,16 +483,16 @@ public class TenantTicketsActivity extends AppCompatActivity {
 
     private void applyStatusBadge(TextView badge, String status) {
         if ("Raised".equalsIgnoreCase(status) || "Open".equalsIgnoreCase(status)) {
-            badge.setBackgroundResource(R.drawable.bg_tenant_calendar_status_pending);
-            badge.setTextColor(getColor(R.color.calendar_status_pending_text));
+            badge.setBackgroundResource(R.drawable.bg_tenant_ticket_status_raised);
+            badge.setTextColor(getColor(R.color.ticket_raised_text));
         } else if ("In_Process".equalsIgnoreCase(status)
                 || "In Progress".equalsIgnoreCase(status)
                 || "Medium".equalsIgnoreCase(status)) {
-            badge.setBackgroundResource(R.drawable.bg_tenant_calendar_status_progress);
-            badge.setTextColor(getColor(R.color.calendar_status_progress_text));
+            badge.setBackgroundResource(R.drawable.bg_tenant_ticket_status_progress);
+            badge.setTextColor(getColor(R.color.ticket_progress_text));
         } else {
-            badge.setBackgroundResource(R.drawable.bg_tenant_calendar_status_completed);
-            badge.setTextColor(getColor(R.color.calendar_status_completed_text));
+            badge.setBackgroundResource(R.drawable.bg_tenant_ticket_status_solved);
+            badge.setTextColor(getColor(R.color.ticket_solved_text));
         }
     }
 

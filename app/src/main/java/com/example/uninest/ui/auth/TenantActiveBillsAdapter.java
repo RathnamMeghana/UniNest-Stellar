@@ -1,6 +1,5 @@
 package com.example.uninest.ui.auth;
 
-import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +57,8 @@ public class TenantActiveBillsAdapter extends RecyclerView.Adapter<TenantActiveB
         if (bill.getCreatorId() != null && bill.getCreatorId().equals(myId)) {
             creatorName = "Me";
         }
-        holder.createdBy.setText("Created by: " + (creatorName != null ? creatorName : "Unknown"));
+        holder.createdBy.setVisibility(View.VISIBLE);
+        holder.createdBy.setText("By " + (creatorName != null ? creatorName : "Unknown"));
         holder.createdBy.setVisibility(View.VISIBLE);
 
         double myOwe = 0;
@@ -73,39 +73,53 @@ public class TenantActiveBillsAdapter extends RecyclerView.Adapter<TenantActiveB
 
         holder.label.setText("You owe");
         holder.amount.setText(String.format(Locale.getDefault(), "\u20AC%.2f", myOwe));
-        holder.subtitle.setText(String.format(Locale.getDefault(), "Total bill: \u20AC%.2f", bill.getTotalAmount()));
+        holder.date.setVisibility(View.GONE);
 
         Date dueDate = parseDueDate(bill.getDueDate());
         boolean isOverdue = isOverdue(dueDate);
         boolean isDueToday = isDueToday(dueDate);
+        String dueText = dueDate != null
+                ? new SimpleDateFormat("MMM d", Locale.US).format(dueDate)
+                : "Soon";
 
         if (isOverdue) {
             holder.badge.setText("OVERDUE");
-            holder.badge.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_danger));
-            holder.badge.setBackgroundResource(R.drawable.bg_status_overdue);
-            holder.cardContainer.setBackgroundResource(R.drawable.bg_card_border_raised);
-            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_danger));
-            holder.date.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_danger));
-            holder.date.setText("Was due: " + formatDueDate(dueDate, bill.getDueDate()));
-            styleActionButton(holder.btn, R.color.app_danger, android.R.color.white);
+            holder.badge.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.bill_overdue_badge_text));
+            holder.badge.setBackgroundResource(R.drawable.bg_tenant_bill_status_overdue);
+            holder.cardContainer.setBackgroundResource(R.drawable.bg_tenant_bill_card_overdue);
+            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.bill_overdue_text));
+            holder.subtitle.setText(String.format(
+                    Locale.getDefault(),
+                    "Was due %s  |  Total EUR %.2f",
+                    dueText,
+                    bill.getTotalAmount()
+            ));
+            holder.subtitle.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.bill_overdue_text));
         } else if (isDueToday) {
             holder.badge.setText("DUE TODAY");
-            holder.badge.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_danger));
-            holder.badge.setBackgroundResource(R.drawable.bg_status_overdue);
-            holder.cardContainer.setBackgroundResource(R.drawable.bg_card_border_raised);
-            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_danger));
-            holder.date.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_danger));
-            holder.date.setText("Due today");
-            styleActionButton(holder.btn, R.color.app_danger, android.R.color.white);
+            holder.badge.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.bill_overdue_badge_text));
+            holder.badge.setBackgroundResource(R.drawable.bg_tenant_bill_status_overdue);
+            holder.cardContainer.setBackgroundResource(R.drawable.bg_tenant_bill_card_overdue);
+            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.bill_overdue_text));
+            holder.subtitle.setText(String.format(
+                    Locale.getDefault(),
+                    "Due today  |  Total EUR %.2f",
+                    bill.getTotalAmount()
+            ));
+            holder.subtitle.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.bill_overdue_text));
         } else {
             holder.badge.setText("UNPAID");
-            holder.badge.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_accent_pink));
-            holder.badge.setBackgroundResource(R.drawable.bg_status_pending);
-            holder.cardContainer.setBackgroundResource(R.drawable.bg_card_orange);
-            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_accent_pink));
-            holder.date.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.app_text_secondary));
-            holder.date.setText("Due: " + formatDueDate(dueDate, bill.getDueDate()));
-            styleActionButton(holder.btn, R.color.app_accent_purple, android.R.color.white);
+            holder.badge.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.bill_due_badge_text));
+            holder.badge.setBackgroundResource(R.drawable.bg_tenant_bill_status_due);
+            holder.cardContainer.setBackgroundResource(R.drawable.bg_tenant_bill_card_due);
+            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.bill_due_text));
+            holder.subtitle.setText(String.format(
+                    Locale.getDefault(),
+                    "Due %s  |  Total EUR %.2f",
+                    dueText,
+                    bill.getTotalAmount()
+            ));
+            holder.subtitle.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.calendar_text_secondary));
         }
 
         holder.btn.setVisibility(View.VISIBLE);
@@ -116,18 +130,6 @@ public class TenantActiveBillsAdapter extends RecyclerView.Adapter<TenantActiveB
     @Override
     public int getItemCount() {
         return list.size();
-    }
-
-    private void styleActionButton(MaterialButton button, int backgroundColorRes, int textColorRes) {
-        button.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(button.getContext(), backgroundColorRes)));
-        button.setTextColor(ContextCompat.getColor(button.getContext(), textColorRes));
-    }
-
-    private String formatDueDate(Date dueDate, String fallback) {
-        if (dueDate == null) {
-            return fallback == null || fallback.isBlank() ? "--" : fallback;
-        }
-        return new SimpleDateFormat("dd MMM yyyy", Locale.US).format(dueDate);
     }
 
     private Date parseDueDate(String raw) {

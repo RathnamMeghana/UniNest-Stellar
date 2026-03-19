@@ -19,6 +19,9 @@ public class Calendar {
     @SerializedName("type")
     private String type;
 
+    @SerializedName("allDay")
+    private boolean allDay;
+
     private FirestoreTimestamp startDate;
     private FirestoreTimestamp endDate;
 
@@ -88,6 +91,9 @@ public class Calendar {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public boolean isAllDay() { return allDay; }
+    public void setAllDay(boolean allDay) { this.allDay = allDay; }
 
     public FirestoreTimestamp getStartDate() { return startDate; }
     public void setStartDate(FirestoreTimestamp startDate) { this.startDate = startDate; }

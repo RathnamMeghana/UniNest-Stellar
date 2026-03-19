@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.example.uninest.notifications.TenantRealtimeNotificationMonitor;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
@@ -12,6 +13,7 @@ import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 public class UniNestApplication extends Application {
 
     private static final String TAG = "UniNestApp";
+    private TenantRealtimeNotificationMonitor tenantRealtimeNotificationMonitor;
 
     @Override
     public void onCreate() {
@@ -40,6 +42,9 @@ public class UniNestApplication extends Application {
         firebaseAppCheck.installAppCheckProviderFactory(
                 DebugAppCheckProviderFactory.getInstance()
         );
+
+        tenantRealtimeNotificationMonitor = new TenantRealtimeNotificationMonitor(this);
+        tenantRealtimeNotificationMonitor.register();
 
     }
 }

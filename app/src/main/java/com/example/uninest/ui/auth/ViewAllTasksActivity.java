@@ -2,7 +2,8 @@ package com.example.uninest.ui.auth;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,11 +24,11 @@ import com.example.uninest.R;
 import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.Calendar;
-import com.example.uninest.model.Recurrence;
 import com.example.uninest.model.User;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -39,18 +40,41 @@ import retrofit2.Response;
 
 public class ViewAllTasksActivity extends AppCompatActivity {
 
+    private static final String FILTER_ALL_USERS = "ALL";
+    private static final String SECTION_ALL = "ALL";
+    private static final String SECTION_ONCE = "ONCE";
+    private static final String SECTION_WEEKLY = "WEEKLY";
+    private static final String SECTION_MONTHLY = "MONTHLY";
+    private static final String SECTION_HISTORY = "HISTORY";
+
     private RecyclerView rvRoommateFilter;
-    private LinearLayout containerOnce, containerWeekly, containerMonthly, containerHistory;
-    private TextView tvHeaderOnce, tvHeaderWeekly, tvHeaderMonthly, tvHeaderHistory;
+    private LinearLayout containerOnce;
+    private LinearLayout containerWeekly;
+    private LinearLayout containerMonthly;
+    private LinearLayout containerHistory;
+    private LinearLayout emptyStateCard;
+    private TextView tvHeaderOnce;
+    private TextView tvHeaderWeekly;
+    private TextView tvHeaderMonthly;
+    private TextView tvHeaderHistory;
+    private TextView tvEmptyTitle;
+    private TextView tvEmptyBody;
+    private TextView filterSectionAll;
+    private TextView filterSectionOnce;
+    private TextView filterSectionWeekly;
+    private TextView filterSectionMonthly;
+    private TextView filterSectionHistory;
     private String highlightTaskId;
     private SessionManager sessionManager;
-    private String houseCode, currentUserId;
+    private String houseCode;
+    private String currentUserId;
     private List<Calendar> allTasks = new ArrayList<>();
-    private List<User> filterList = new ArrayList<>();
-    private String selectedUserId = "ALL"; // Default filter
-
-    private Map<String, String> roommateNameMap = new HashMap<>();
-    private Map<String, String> roommateImageMap = new HashMap<>();
+    private final List<User> filterList = new ArrayList<>();
+    private final Map<String, String> roommateNameMap = new HashMap<>();
+    private final Map<String, String> roommateImageMap = new HashMap<>();
+    private String selectedUserId = FILTER_ALL_USERS;
+    private String selectedSection = SECTION_ALL;
+    private FilterAdapter filterAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +90,27 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         containerWeekly = findViewById(R.id.containerWeekly);
         containerMonthly = findViewById(R.id.containerMonthly);
         containerHistory = findViewById(R.id.containerHistory);
+        emptyStateCard = findViewById(R.id.emptyStateCard);
         tvHeaderOnce = findViewById(R.id.tvHeaderOnce);
         tvHeaderWeekly = findViewById(R.id.tvHeaderWeekly);
         tvHeaderMonthly = findViewById(R.id.tvHeaderMonthly);
         tvHeaderHistory = findViewById(R.id.tvHeaderHistory);
+        tvEmptyTitle = findViewById(R.id.tvEmptyTitle);
+        tvEmptyBody = findViewById(R.id.tvEmptyBody);
+        filterSectionAll = findViewById(R.id.filterSectionAll);
+        filterSectionOnce = findViewById(R.id.filterSectionOnce);
+        filterSectionWeekly = findViewById(R.id.filterSectionWeekly);
+        filterSectionMonthly = findViewById(R.id.filterSectionMonthly);
+        filterSectionHistory = findViewById(R.id.filterSectionHistory);
         highlightTaskId = getIntent().getStringExtra("highlight_task_id");
-        rvRoommateFilter.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
+        rvRoommateFilter.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        filterAdapter = new FilterAdapter();
+        rvRoommateFilter.setAdapter(filterAdapter);
+
+        setupSectionFilters();
+        updateSectionFilterUi();
+        updateEmptyState(0);
         fetchRoommatesAndTasks();
     }
 
@@ -88,41 +126,53 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         ApiClient.getUserApi().getRoommates(houseCode).enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                roommateNameMap.clear();
+                roommateImageMap.clear();
+                filterList.clear();
+
+                User all = new User();
+                all.setId(FILTER_ALL_USERS);
+                all.setFirstName("All");
+                filterList.add(all);
+
+                User you = new User();
+                you.setId(currentUserId);
+                you.setFirstName("You");
+                you.setProfileImageUrl(sessionManager.getUserImage());
+                filterList.add(you);
+
                 if (response.isSuccessful() && response.body() != null) {
-                    // Clear and rebuild map
-                    roommateNameMap.clear();
-                    roommateImageMap.clear();
-                    for (User u : response.body()) {
-                        roommateNameMap.put(u.getId(), u.getFullName());
-                        roommateImageMap.put(u.getId(), u.getProfileImageUrl());
+                    for (User user : response.body()) {
+                        roommateNameMap.put(user.getId(), user.getFullName());
+                        roommateImageMap.put(user.getId(), user.getProfileImageUrl());
+                        if (!currentUserId.equals(user.getId())) {
+                            filterList.add(user);
+                        }
                     }
-                    // Also store current user's image from session
-                    roommateImageMap.put(currentUserId, sessionManager.getUserImage());
-
-                    // Prepare filter list
-                    filterList.clear();
-                    User all = new User();
-                    all.setId("ALL");
-                    all.setFirstName("All");
-                    filterList.add(all);
-
-                    User you = new User();
-                    you.setId(currentUserId);
-                    you.setFirstName("You");
-                    you.setProfileImageUrl(sessionManager.getUserImage());
-                    filterList.add(you);
-
-                    for (User u : response.body()) {
-                        if (!u.getId().equals(currentUserId)) filterList.add(u);
-                    }
-                    rvRoommateFilter.setAdapter(new FilterAdapter());
-
-                    loadTasks();
                 }
+
+                roommateImageMap.put(currentUserId, sessionManager.getUserImage());
+                filterAdapter.notifyDataSetChanged();
+                loadTasks();
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
+                filterList.clear();
+
+                User all = new User();
+                all.setId(FILTER_ALL_USERS);
+                all.setFirstName("All");
+                filterList.add(all);
+
+                User you = new User();
+                you.setId(currentUserId);
+                you.setFirstName("You");
+                you.setProfileImageUrl(sessionManager.getUserImage());
+                filterList.add(you);
+
+                roommateImageMap.put(currentUserId, sessionManager.getUserImage());
+                filterAdapter.notifyDataSetChanged();
                 loadTasks();
             }
         });
@@ -133,7 +183,8 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Calendar>> call, Response<List<Calendar>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    allTasks = response.body();
+                    allTasks = new ArrayList<>(response.body());
+                    filterAdapter.notifyDataSetChanged();
                     updateUi();
                 }
             }
@@ -144,63 +195,197 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUi() {
-        containerOnce.removeAllViews();
-        containerWeekly.removeAllViews();
-        containerMonthly.removeAllViews();
-        containerHistory.removeAllViews();
+    private void setupSectionFilters() {
+        bindSectionFilter(filterSectionAll, SECTION_ALL);
+        bindSectionFilter(filterSectionOnce, SECTION_ONCE);
+        bindSectionFilter(filterSectionWeekly, SECTION_WEEKLY);
+        bindSectionFilter(filterSectionMonthly, SECTION_MONTHLY);
+        bindSectionFilter(filterSectionHistory, SECTION_HISTORY);
+    }
 
-        boolean hasOnce = false, hasWeekly = false, hasMonthly = false, hasHistory = false;
+    private void bindSectionFilter(TextView view, String section) {
+        view.setOnClickListener(v -> {
+            if (!section.equals(selectedSection)) {
+                selectedSection = section;
+                updateSectionFilterUi();
+                updateUi();
+            }
+        });
+    }
+
+    private void updateSectionFilterUi() {
+        applySectionChipState(filterSectionAll, SECTION_ALL.equals(selectedSection));
+        applySectionChipState(filterSectionOnce, SECTION_ONCE.equals(selectedSection));
+        applySectionChipState(filterSectionWeekly, SECTION_WEEKLY.equals(selectedSection));
+        applySectionChipState(filterSectionMonthly, SECTION_MONTHLY.equals(selectedSection));
+        applySectionChipState(filterSectionHistory, SECTION_HISTORY.equals(selectedSection));
+    }
+
+    private void applySectionChipState(TextView chip, boolean selected) {
+        chip.setBackgroundResource(selected
+                ? R.drawable.bg_tenant_calendar_filter_all
+                : R.drawable.bg_tenant_calendar_filter_neutral);
+        chip.setTextColor(ContextCompat.getColor(this, selected
+                ? R.color.calendar_text_inverse
+                : R.color.calendar_text_secondary));
+    }
+
+    private void updateUi() {
+        clearSection(containerOnce, tvHeaderOnce);
+        clearSection(containerWeekly, tvHeaderWeekly);
+        clearSection(containerMonthly, tvHeaderMonthly);
+        clearSection(containerHistory, tvHeaderHistory);
+
+        List<Calendar> onceTasks = new ArrayList<>();
+        List<Calendar> weeklyTasks = new ArrayList<>();
+        List<Calendar> monthlyTasks = new ArrayList<>();
+        List<Calendar> historyTasks = new ArrayList<>();
         boolean matchedHighlightedTask = false;
 
-        for (Calendar c : allTasks) {
-            String type = c.getType() != null ? c.getType() : "";
+        for (Calendar task : allTasks) {
+            if (!"CHORE".equalsIgnoreCase(safeText(task.getType()))) {
+                continue;
+            }
+            if (!matchesSelectedUser(task)) {
+                continue;
+            }
 
-            // Only allow CHORE. This hides Bills, Reminders, etc.
-            if (!type.equalsIgnoreCase("CHORE")) continue;
-
-            if (!selectedUserId.equals("ALL") && !c.getAssignedTo().equals(selectedUserId)) continue;
+            String section = resolveSection(task);
+            if (!SECTION_ALL.equals(selectedSection) && !selectedSection.equals(section)) {
+                continue;
+            }
 
             if (!matchedHighlightedTask
                     && highlightTaskId != null
-                    && highlightTaskId.equals(c.getRelatedChoreId() != null ? c.getRelatedChoreId() : c.getId())) {
+                    && highlightTaskId.equals(getHighlightKey(task))) {
                 Toast.makeText(this, "Opened related task", Toast.LENGTH_SHORT).show();
                 matchedHighlightedTask = true;
             }
 
-            // 2. CHECK STATUS FIRST: If completed, it goes to History immediately
-            String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
-            if (status.equalsIgnoreCase("COMPLETED")) {
-                containerHistory.addView(createCard(c, containerHistory));
-                hasHistory = true;
-                continue; // Skip the frequency sorting below
-            }
-
-            String freq = "ONCE";
-            if (c.getRecurrence() != null && c.getRecurrence().getFrequency() != null) {
-                freq = c.getRecurrence().getFrequency().toUpperCase();
-            }
-
-            if (freq.equals("WEEKLY")) {
-                containerWeekly.addView(createCard(c, containerWeekly));
-                hasWeekly = true;
-            } else if (freq.equals("MONTHLY")) {
-                containerMonthly.addView(createCard(c, containerMonthly));
-                hasMonthly = true;
+            if (SECTION_HISTORY.equals(section)) {
+                historyTasks.add(task);
+            } else if (SECTION_WEEKLY.equals(section)) {
+                weeklyTasks.add(task);
+            } else if (SECTION_MONTHLY.equals(section)) {
+                monthlyTasks.add(task);
             } else {
-                containerOnce.addView(createCard(c, containerOnce));
-                hasOnce = true;
+                onceTasks.add(task);
             }
         }
 
-        tvHeaderOnce.setVisibility(hasOnce ? View.VISIBLE : View.GONE);
-        tvHeaderWeekly.setVisibility(hasWeekly ? View.VISIBLE : View.GONE);
-        tvHeaderMonthly.setVisibility(hasMonthly ? View.VISIBLE : View.GONE);
-        tvHeaderHistory.setVisibility(hasHistory ? View.VISIBLE : View.GONE);
+        sortTasks(onceTasks, false);
+        sortTasks(weeklyTasks, false);
+        sortTasks(monthlyTasks, false);
+        sortTasks(historyTasks, true);
+
+        populateSection(containerOnce, tvHeaderOnce, onceTasks);
+        populateSection(containerWeekly, tvHeaderWeekly, weeklyTasks);
+        populateSection(containerMonthly, tvHeaderMonthly, monthlyTasks);
+        populateSection(containerHistory, tvHeaderHistory, historyTasks);
+
+        int visibleTaskCount = onceTasks.size() + weeklyTasks.size() + monthlyTasks.size() + historyTasks.size();
+        updateEmptyState(visibleTaskCount);
     }
 
-    private View createCard(Calendar c, ViewGroup parent) {
+    private void clearSection(LinearLayout container, TextView header) {
+        container.removeAllViews();
+        header.setVisibility(View.GONE);
+    }
 
+    private void populateSection(LinearLayout container, TextView header, List<Calendar> tasks) {
+        if (tasks.isEmpty()) {
+            return;
+        }
+
+        header.setVisibility(View.VISIBLE);
+        for (Calendar task : tasks) {
+            container.addView(createCard(task, container));
+        }
+    }
+
+    private void updateEmptyState(int visibleTaskCount) {
+        if (visibleTaskCount > 0) {
+            emptyStateCard.setVisibility(View.GONE);
+            return;
+        }
+
+        String roommateLabel = FILTER_ALL_USERS.equals(selectedUserId)
+                ? "everyone"
+                : getRoommateLabel(selectedUserId);
+
+        String title;
+        if (SECTION_HISTORY.equals(selectedSection)) {
+            title = "No completed tasks yet";
+        } else if (SECTION_WEEKLY.equals(selectedSection)) {
+            title = "No weekly tasks right now";
+        } else if (SECTION_MONTHLY.equals(selectedSection)) {
+            title = "No monthly tasks right now";
+        } else if (SECTION_ONCE.equals(selectedSection)) {
+            title = "No one-time tasks right now";
+        } else {
+            title = "No tasks to show";
+        }
+
+        String body = FILTER_ALL_USERS.equals(selectedUserId)
+                ? "Try another section or check back when new chores are assigned."
+                : "There is nothing in this view for " + roommateLabel + " yet. Try another roommate or section.";
+
+        tvEmptyTitle.setText(title);
+        tvEmptyBody.setText(body);
+        emptyStateCard.setVisibility(View.VISIBLE);
+    }
+
+    private boolean matchesSelectedUser(Calendar task) {
+        if (FILTER_ALL_USERS.equals(selectedUserId)) {
+            return true;
+        }
+        return selectedUserId.equals(task.getAssignedTo());
+    }
+
+    private String resolveSection(Calendar task) {
+        String status = normalizeStatus(task.getStatus());
+        if ("COMPLETED".equals(status)) {
+            return SECTION_HISTORY;
+        }
+
+        if (task.getRecurrence() != null && task.getRecurrence().getFrequency() != null) {
+            String frequency = task.getRecurrence().getFrequency().trim().toUpperCase(Locale.US);
+            if (SECTION_WEEKLY.equals(frequency)) {
+                return SECTION_WEEKLY;
+            }
+            if (SECTION_MONTHLY.equals(frequency)) {
+                return SECTION_MONTHLY;
+            }
+        }
+        return SECTION_ONCE;
+    }
+
+    private void sortTasks(List<Calendar> tasks, boolean historySection) {
+        Comparator<Calendar> comparator = Comparator.comparingLong(task -> getSortTime(task, historySection));
+        if (historySection) {
+            comparator = comparator.reversed();
+        }
+        tasks.sort(comparator);
+    }
+
+    private long getSortTime(Calendar task, boolean historySection) {
+        if (historySection) {
+            if (task.getEndDate() != null) {
+                return task.getEndDate().toDate().getTime();
+            }
+            if (task.getStartDate() != null) {
+                return task.getStartDate().toDate().getTime();
+            }
+            return Long.MIN_VALUE;
+        }
+
+        if (task.getStartDate() != null) {
+            return task.getStartDate().toDate().getTime();
+        }
+        return Long.MAX_VALUE;
+    }
+
+    private View createCard(Calendar task, ViewGroup parent) {
         View view = LayoutInflater.from(this).inflate(R.layout.item_task_status_card, parent, false);
 
         View card = view.findViewById(R.id.cardContainer);
@@ -209,195 +394,263 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         TextView extraInfo = view.findViewById(R.id.tvExtraInfo);
         TextView tvCreatedBy = view.findViewById(R.id.tvCreatedBy);
         TextView tvDateInfo = view.findViewById(R.id.tvDateInfo);
-        com.google.android.material.button.MaterialButton btnMore = view.findViewById(R.id.btnViewMore);
-        ImageView imgAssignee = view.findViewById(R.id.imgAssigneeProfile);
         TextView tvPointsEarned = view.findViewById(R.id.tvPointsEarned);
         View avatarShell = view.findViewById(R.id.avatarShell);
+        ImageView imgAssignee = view.findViewById(R.id.imgAssigneeProfile);
 
-        String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
+        String status = normalizeStatus(task.getStatus());
+        boolean isOverdue = isTaskOverdue(task);
+        String displayStatus = isOverdue ? "OVERDUE" : status;
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
 
-        // 1. Title and Status Text
-        title.setText(c.getTitle());
-        statusBadge.setText(formatStatus(status));
+        title.setText(getDisplayText(task.getTitle(), "Untitled task"));
+        statusBadge.setText(formatStatus(displayStatus));
+        applyTaskStatusBadge(statusBadge, displayStatus);
 
-        // 2. Resolve Roommate Names (Ensuring 'effectively final' for lambda)
-        String rawAssignee = roommateNameMap.get(c.getAssignedTo());
-        final String assigneeName = (c.getAssignedTo() != null && c.getAssignedTo().equals(currentUserId))
-                ? "Me" : (rawAssignee != null ? rawAssignee : "Unassigned");
-
-        String rawCreator = roommateNameMap.get(c.getCreatedBy());
-        final String creatorName = (c.getCreatedBy() != null && c.getCreatedBy().equals(currentUserId))
-                ? "Me" : (rawCreator != null ? rawCreator : "Unknown");
+        String assigneeName = getPersonLabel(task.getAssignedTo());
+        String creatorName = getPersonLabel(task.getCreatedBy());
+        String location = cleanText(task.getLocation());
 
         extraInfo.setText("Assigned to " + assigneeName);
-        String location = c.getLocation() != null && !c.getLocation().trim().isEmpty()
-                ? c.getLocation().trim()
-                : null;
         tvCreatedBy.setText(location != null
-                ? "Created by " + creatorName + "  •  " + location
+                ? "Created by " + creatorName + "  |  " + location
                 : "Created by " + creatorName);
 
-        // Load assignee's profile image
-        String assigneeImage = roommateImageMap.get(c.getAssignedTo());
-        com.example.uninest.utils.ImageUtils.loadProfileImage(imgAssignee, assigneeImage);
+        loadTaskProfileImage(imgAssignee, roommateImageMap.get(task.getAssignedTo()));
 
-        // 3. LOGIC FOR DATE (DUE ON vs COMPLETED ON)
-        if (status.equalsIgnoreCase("COMPLETED")) {
-            tvDateInfo.setVisibility(View.VISIBLE); // Ensure it is visible
-            if (c.getEndDate() != null) {
-                // Show the actual day it was finished
-                tvDateInfo.setText("Completed " + sdf.format(c.getEndDate().toDate()));
+        if ("COMPLETED".equals(status)) {
+            if (task.getEndDate() != null) {
+                tvDateInfo.setText("Completed " + sdf.format(task.getEndDate().toDate()));
             } else {
-                tvDateInfo.setText("Completed Today");
+                tvDateInfo.setText("Completed recently");
             }
+            tvDateInfo.setVisibility(View.VISIBLE);
+            avatarShell.setVisibility(View.VISIBLE);
+            tvPointsEarned.setText("+" + calculateTaskPoints(task) + " pts earned");
+            tvPointsEarned.setVisibility(View.VISIBLE);
         } else {
-            if (c.getStartDate() != null) {
+            if (task.getStartDate() != null) {
+                tvDateInfo.setText((isOverdue ? "Was due " : "Due ") + sdf.format(task.getStartDate().toDate()));
                 tvDateInfo.setVisibility(View.VISIBLE);
-                tvDateInfo.setText("Due " + sdf.format(c.getStartDate().toDate()));
             } else {
                 tvDateInfo.setVisibility(View.GONE);
             }
-        }
-
-        // 4. Dynamic Coloring
-        if (status.equals("COMPLETED")) {
-            card.setBackgroundResource(R.drawable.bg_task_card_completed);
-            statusBadge.setBackgroundResource(R.drawable.bg_status_completed);
-            statusBadge.setTextColor(ContextCompat.getColor(this, R.color.task_card_completed_text));
-            btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                    ContextCompat.getColor(this, R.color.task_button_completed_bg)
-            ));
-            btnMore.setTextColor(ContextCompat.getColor(this, R.color.task_card_completed_text));
-            btnMore.setText("Review");
-            btnMore.setVisibility(View.GONE);
-            avatarShell.setVisibility(View.GONE);
-            card.setOnClickListener(v -> showTaskPopup(c));
-            card.setClickable(true);
-            card.setFocusable(true);
-
-            // Show points earned on completed tasks
-            int pts = calculateTaskPoints(c);
-            tvPointsEarned.setText("+" + pts + " pts earned");
-            tvPointsEarned.setVisibility(View.VISIBLE);
-        } else if (status.equals("IN_PROGRESS")) {
-            card.setBackgroundResource(R.drawable.bg_task_card_progress);
-            statusBadge.setBackgroundResource(R.drawable.bg_status_progress);
-            statusBadge.setTextColor(ContextCompat.getColor(this, R.color.task_card_progress_text));
-            btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                    ContextCompat.getColor(this, R.color.task_button_progress_bg)
-            ));
-            btnMore.setTextColor(ContextCompat.getColor(this, R.color.task_card_progress_text));
-            btnMore.setText("Open");
-            btnMore.setVisibility(View.VISIBLE);
             avatarShell.setVisibility(View.VISIBLE);
-            card.setOnClickListener(null);
-            card.setClickable(false);
-            card.setFocusable(false);
-            tvPointsEarned.setVisibility(View.GONE);
-        } else {
-            card.setBackgroundResource(R.drawable.bg_task_card_pending);
-            statusBadge.setBackgroundResource(R.drawable.bg_status_pending);
-            statusBadge.setTextColor(ContextCompat.getColor(this, R.color.task_card_pending_text));
-            btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                    ContextCompat.getColor(this, R.color.task_button_pending_bg)
-            ));
-            btnMore.setTextColor(ContextCompat.getColor(this, R.color.task_card_pending_text));
-            btnMore.setText("Open");
-            btnMore.setVisibility(View.VISIBLE);
-            avatarShell.setVisibility(View.VISIBLE);
-            card.setOnClickListener(null);
-            card.setClickable(false);
-            card.setFocusable(false);
             tvPointsEarned.setVisibility(View.GONE);
         }
 
-        // 5. Click Logic: ONLY ON THE ARROW
-        btnMore.setOnClickListener(v -> {
-            if (status.equalsIgnoreCase("COMPLETED")) {
-                showTaskPopup(c);
-            } else if (c.getAssignedTo() != null && c.getAssignedTo().equals(currentUserId)) {
+        applyTaskCardStyle(card, displayStatus);
+        card.setClickable(true);
+        card.setFocusable(true);
+        card.setOnClickListener(v -> {
+            if ("COMPLETED".equals(status)) {
+                showTaskPopup(task);
+            } else if (task.getAssignedTo() != null && task.getAssignedTo().equals(currentUserId)) {
                 Intent intent = new Intent(this, ChoreDetailActivity.class);
-                intent.putExtra("CHORE_ID", c.getRelatedChoreId());
+                intent.putExtra("CHORE_ID", task.getRelatedChoreId());
                 intent.putExtra("HOUSE_CODE", houseCode);
-                intent.putExtra("TITLE", c.getTitle());
+                intent.putExtra("TITLE", task.getTitle());
                 intent.putExtra("CURRENT_STATUS", status);
-                intent.putExtra("DESCRIPTION", c.getDescription());
-                intent.putExtra("LOCATION", c.getLocation());
-                intent.putExtra("EST_DURATION", c.getEstDuration());
+                intent.putExtra("DESCRIPTION", task.getDescription());
+                intent.putExtra("LOCATION", task.getLocation());
+                intent.putExtra("EST_DURATION", task.getEstDuration());
                 intent.putExtra("ASSIGNED_TO_NAME", assigneeName);
                 intent.putExtra("CREATED_BY_NAME", creatorName);
 
-                if (c.getStartDate() != null) {
-                    intent.putExtra("DUE_DATE", sdf.format(c.getStartDate().toDate()));
+                if (task.getStartDate() != null) {
+                    intent.putExtra("DUE_DATE", sdf.format(task.getStartDate().toDate()));
                 }
                 startActivity(intent);
             } else {
-                showTaskPopup(c);
+                showTaskPopup(task);
             }
         });
 
         return view;
     }
 
-    // Update FilterAdapter to use your "All" image
+    private void applyTaskCardStyle(View card, String status) {
+        int cardBackgroundRes;
+
+        if ("OVERDUE".equals(status)) {
+            cardBackgroundRes = R.drawable.bg_task_card_overdue;
+        } else if ("COMPLETED".equals(status)) {
+            cardBackgroundRes = R.drawable.bg_task_card_completed;
+        } else if ("IN_PROGRESS".equals(status)) {
+            cardBackgroundRes = R.drawable.bg_task_card_progress;
+        } else {
+            cardBackgroundRes = R.drawable.bg_task_card_pending;
+        }
+
+        card.setBackgroundResource(cardBackgroundRes);
+    }
+
+    private void applyTaskStatusBadge(TextView badge, String status) {
+        int badgeBackgroundColorRes;
+        if ("OVERDUE".equals(status)) {
+            badgeBackgroundColorRes = R.color.task_badge_overdue_bg;
+        } else if ("COMPLETED".equals(status)) {
+            badgeBackgroundColorRes = R.color.task_badge_completed_bg;
+        } else if ("IN_PROGRESS".equals(status)) {
+            badgeBackgroundColorRes = R.color.task_badge_progress_bg;
+        } else {
+            badgeBackgroundColorRes = R.color.task_badge_pending_bg;
+        }
+
+        badge.setBackgroundResource(R.drawable.bg_task_status_badge);
+        badge.setBackgroundTintList(ColorStateList.valueOf(
+                ContextCompat.getColor(this, badgeBackgroundColorRes)
+        ));
+        badge.setTextColor(ContextCompat.getColor(this, isDarkMode() ? R.color.black : R.color.app_text_primary));
+    }
+
+    private boolean isDarkMode() {
+        int mode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return mode == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    private String getPersonLabel(String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            return "Unassigned";
+        }
+        if (userId.equals(currentUserId)) {
+            return "Me";
+        }
+        String name = roommateNameMap.get(userId);
+        return name != null && !name.trim().isEmpty() ? name : "Roommate";
+    }
+
+    private String getRoommateLabel(String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            return "this roommate";
+        }
+        if (userId.equals(currentUserId)) {
+            return "you";
+        }
+        String name = roommateNameMap.get(userId);
+        return name != null && !name.trim().isEmpty() ? name : "this roommate";
+    }
+
+    private String getDisplayText(String value, String fallback) {
+        String cleaned = cleanText(value);
+        return cleaned != null ? cleaned : fallback;
+    }
+
+    private String cleanText(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private String safeText(String value) {
+        return value != null ? value : "";
+    }
+
+    private String normalizeStatus(String status) {
+        return safeText(status).trim().toUpperCase(Locale.US);
+    }
+
+    private boolean isTaskOverdue(Calendar task) {
+        if (task == null || task.getStartDate() == null) {
+            return false;
+        }
+
+        String status = normalizeStatus(task.getStatus());
+        if ("COMPLETED".equals(status)) {
+            return false;
+        }
+
+        java.util.Calendar dueDate = java.util.Calendar.getInstance();
+        dueDate.setTime(task.getStartDate().toDate());
+        dueDate.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        dueDate.set(java.util.Calendar.MINUTE, 0);
+        dueDate.set(java.util.Calendar.SECOND, 0);
+        dueDate.set(java.util.Calendar.MILLISECOND, 0);
+
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        today.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        today.set(java.util.Calendar.MINUTE, 0);
+        today.set(java.util.Calendar.SECOND, 0);
+        today.set(java.util.Calendar.MILLISECOND, 0);
+        return dueDate.before(today);
+    }
+
+    private String getHighlightKey(Calendar task) {
+        return task.getRelatedChoreId() != null ? task.getRelatedChoreId() : task.getId();
+    }
+
+    private void loadTaskProfileImage(ImageView imageView, String imageSource) {
+        String cleaned = cleanText(imageSource);
+        if (cleaned == null || cleaned.length() < 10) {
+            imageView.setImageResource(R.drawable.ic_profile_tenant);
+            if (isDarkMode()) {
+                imageView.setColorFilter(ContextCompat.getColor(this, R.color.white));
+            } else {
+                imageView.clearColorFilter();
+            }
+            return;
+        }
+
+        imageView.clearColorFilter();
+        com.example.uninest.utils.ImageUtils.loadProfileImage(imageView, cleaned);
+    }
+
     class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.VH> {
         @NonNull
         @Override
-        public VH onCreateViewHolder(@NonNull ViewGroup p, int t) {
-            return new VH(LayoutInflater.from(p.getContext()).inflate(R.layout.item_roommate_filter, p, false));
+        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new VH(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_roommate_filter, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(@NonNull VH h, int pos) {
-            User u = filterList.get(pos);
-            h.name.setText(u.getFirstName());
+        public void onBindViewHolder(@NonNull VH holder, int position) {
+            User user = filterList.get(position);
+            holder.name.setText(getDisplayText(user.getFirstName(), "Roommate"));
 
-            // 1. SET THE IMAGE & ADJUST FITTING
-            int pad = (int) (1 * getResources().getDisplayMetrics().density);
-            h.profile.setPadding(pad, pad, pad, pad);
+            int padding = (int) (1 * getResources().getDisplayMetrics().density);
+            holder.profile.setPadding(padding, padding, padding, padding);
 
-            if (u.getId().equals("ALL")) {
-                if (!"ALL".equals(h.lastLoadedKey)) {
-                    h.profile.setImageResource(R.drawable.ic_all_users);
-                    h.profile.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    h.lastLoadedKey = "ALL";
+            if (FILTER_ALL_USERS.equals(user.getId())) {
+                if (!FILTER_ALL_USERS.equals(holder.lastLoadedKey)) {
+                    holder.profile.clearColorFilter();
+                    holder.profile.setImageResource(R.drawable.ic_all_users);
+                    holder.profile.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    holder.lastLoadedKey = FILTER_ALL_USERS;
                 }
             } else {
-                // Build a key to track what's loaded — skip Glide if unchanged (prevents glitch)
-                String imageUrl = u.getProfileImageUrl();
-                String key = imageUrl != null ? imageUrl : "default_" + u.getId();
-                if (!key.equals(h.lastLoadedKey)) {
-                    h.profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    com.example.uninest.utils.ImageUtils.loadProfileImage(h.profile, imageUrl);
-                    h.lastLoadedKey = key;
+                String imageUrl = cleanText(user.getProfileImageUrl());
+                String key = imageUrl != null ? imageUrl : "default_" + user.getId();
+                if (!key.equals(holder.lastLoadedKey)) {
+                    holder.profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    loadTaskProfileImage(holder.profile, imageUrl);
+                    holder.lastLoadedKey = key;
                 }
             }
 
-            // 3. SHOW POINTS BADGE
-            if (u.getId().equals("ALL")) {
-                h.points.setVisibility(View.GONE);
+            if (FILTER_ALL_USERS.equals(user.getId())) {
+                holder.points.setVisibility(View.GONE);
             } else {
-                int pts = calculateUserPoints(u.getId());
-                if (pts > 0) {
-                    h.points.setText(pts + " pts");
-                    h.points.setVisibility(View.VISIBLE);
+                int points = calculateUserPoints(user.getId());
+                if (points > 0) {
+                    holder.points.setText(points + " pts");
+                    holder.points.setVisibility(View.VISIBLE);
                 } else {
-                    h.points.setVisibility(View.GONE);
+                    holder.points.setVisibility(View.GONE);
                 }
             }
 
-            // 2. HIGHLIGHT SELECTED (BLUE SHADOW)
-            if (u.getId().equals(selectedUserId)) {
-                h.frame.setBackgroundResource(R.drawable.bg_tasks_filter_circle_selected);
-                h.name.setTextColor(ContextCompat.getColor(ViewAllTasksActivity.this, R.color.calendar_primary_dark));
+            if (user.getId().equals(selectedUserId)) {
+                holder.frame.setBackgroundResource(R.drawable.bg_tasks_filter_circle_selected);
+                holder.name.setTextColor(ContextCompat.getColor(ViewAllTasksActivity.this, R.color.calendar_primary_dark));
             } else {
-                h.frame.setBackgroundResource(R.drawable.bg_tasks_filter_circle);
-                h.name.setTextColor(ContextCompat.getColor(ViewAllTasksActivity.this, R.color.calendar_text_primary));
+                holder.frame.setBackgroundResource(R.drawable.bg_tasks_filter_circle);
+                holder.name.setTextColor(ContextCompat.getColor(ViewAllTasksActivity.this, R.color.calendar_text_primary));
             }
 
-            h.itemView.setOnClickListener(v -> {
-                selectedUserId = u.getId();
+            holder.itemView.setOnClickListener(v -> {
+                selectedUserId = user.getId();
                 notifyDataSetChanged();
                 updateUi();
             });
@@ -409,23 +662,23 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         }
 
         class VH extends RecyclerView.ViewHolder {
-            TextView name;
-            TextView points;
-            View frame;
-            ImageView profile;
+            final TextView name;
+            final TextView points;
+            final View frame;
+            final ImageView profile;
             String lastLoadedKey;
 
-            VH(View v) {
-                super(v);
-                name = v.findViewById(R.id.tvRoommateName);
-                points = v.findViewById(R.id.tvPoints);
-                frame = v.findViewById(R.id.frameCircle);
-                profile = v.findViewById(R.id.imgProfile);
+            VH(View view) {
+                super(view);
+                name = view.findViewById(R.id.tvRoommateName);
+                points = view.findViewById(R.id.tvPoints);
+                frame = view.findViewById(R.id.frameCircle);
+                profile = view.findViewById(R.id.imgProfile);
             }
         }
     }
 
-    private void showTaskPopup(Calendar c) {
+    private void showTaskPopup(Calendar task) {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_task_details_mini);
@@ -434,91 +687,71 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        // New/Updated view finders
-        TextView tvDueDate = dialog.findViewById(R.id.popDueDate);
-        TextView tvActual = dialog.findViewById(R.id.popActualTime);
-        View layoutActual = dialog.findViewById(R.id.layoutActualTime);
-
-        // Existing finders
         TextView tvTitle = dialog.findViewById(R.id.popTitle);
         TextView tvStatusBadge = dialog.findViewById(R.id.popStatusBadge);
         TextView tvDesc = dialog.findViewById(R.id.popDesc);
         TextView tvLocation = dialog.findViewById(R.id.popLocation);
         TextView tvAssignee = dialog.findViewById(R.id.popAssignee);
         TextView tvEst = dialog.findViewById(R.id.popEstTime);
+        TextView tvActual = dialog.findViewById(R.id.popActualTime);
+        TextView tvDueDate = dialog.findViewById(R.id.popDueDate);
+        View layoutActual = dialog.findViewById(R.id.layoutActualTime);
 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
-        String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
+        String status = normalizeStatus(task.getStatus());
+        String displayStatus = isTaskOverdue(task) ? "OVERDUE" : status;
 
-        // 1. Populate Basic Info
-        tvTitle.setText(c.getTitle());
-        tvDesc.setText(c.getDescription() != null && !c.getDescription().isEmpty() ? c.getDescription() : "No description provided.");
-        tvLocation.setText(c.getLocation() != null ? c.getLocation() : "General");
+        tvTitle.setText(getDisplayText(task.getTitle(), "Untitled task"));
+        tvStatusBadge.setText(formatStatus(displayStatus));
+        applyTaskStatusBadge(tvStatusBadge, displayStatus);
+        tvDesc.setText(getDisplayText(task.getDescription(), "No additional notes yet."));
+        tvLocation.setText(getDisplayText(task.getLocation(), "General"));
+        tvAssignee.setText(getPersonLabel(task.getAssignedTo()));
+        tvEst.setText(task.getEstDuration() > 0 ? task.getEstDuration() + " mins" : "Not set");
+        tvDueDate.setText(task.getStartDate() != null
+                ? sdf.format(task.getStartDate().toDate())
+                : "No due date");
 
-        String rawName = roommateNameMap.get(c.getAssignedTo());
-        String displayName;
-        if (c.getAssignedTo() != null && c.getAssignedTo().equals(currentUserId)) {
-            displayName = "Me";
-        } else {
-            displayName = (rawName != null) ? rawName : "Unassigned";
-        }
-        tvAssignee.setText(displayName);
-
-        // 2. Dates
-        if (c.getStartDate() != null) {
-            tvDueDate.setText(sdf.format(c.getStartDate().toDate()));
-        }
-
-        // 3. Time Taken & Status Styling
-        tvEst.setText(c.getEstDuration() + " Mins");
-
-        if (c.getStatus() != null && c.getStatus().equalsIgnoreCase("COMPLETED")) {
+        if ("COMPLETED".equals(status)) {
             layoutActual.setVisibility(View.VISIBLE);
-            // Ensure you have added getActualDuration() to your Calendar.java model!
-            tvActual.setText(c.getActualDuration() + " Mins");
-
-            tvStatusBadge.setBackgroundResource(R.drawable.bg_status_completed);
-            tvStatusBadge.setTextColor(Color.parseColor("#2E7D32"));
+            tvActual.setText(task.getActualDuration() > 0 ? task.getActualDuration() + " mins" : "Not logged");
         } else {
-            layoutActual.setVisibility(View.GONE); // Hide "Actual Time" if not finished
-            tvStatusBadge.setBackgroundResource(status.equalsIgnoreCase("IN_PROGRESS") ?
-                    R.drawable.bg_status_progress : R.drawable.bg_status_pending);
-            tvStatusBadge.setTextColor(status.equalsIgnoreCase("IN_PROGRESS") ?
-                    Color.parseColor("#EF6C00") : Color.parseColor("#C62828"));
+            layoutActual.setVisibility(View.GONE);
         }
 
-        tvStatusBadge.setText(formatStatus(status));
         dialog.findViewById(R.id.btnPopClose).setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 
-    private String formatStatus(String s) {
-        if ("NOT_STARTED".equals(s)) return "Not Started";
-        if ("IN_PROGRESS".equals(s)) return "In Progress";
-        if ("COMPLETED".equals(s)) return "Completed";
+    private String formatStatus(String status) {
+        if ("OVERDUE".equals(status)) {
+            return "Overdue";
+        }
+        if ("NOT_STARTED".equals(status)) {
+            return "Not Started";
+        }
+        if ("IN_PROGRESS".equals(status)) {
+            return "In Progress";
+        }
+        if ("COMPLETED".equals(status)) {
+            return "Completed";
+        }
         return "Pending";
     }
 
-    // ======== POINTS SYSTEM ========
-
-    /**
-     * Calculate points earned for a single completed task.
-     * Base = estDuration (min 10), Speed Bonus +10, On-Time Bonus +15
-     */
-    private int calculateTaskPoints(Calendar c) {
-        int diff = Math.max(c.getDifficultyScore(), 1);
-        int estTime = Math.max(c.getEstDuration(), 10);
-        return diff * estTime;
+    private int calculateTaskPoints(Calendar task) {
+        int difficulty = Math.max(task.getDifficultyScore(), 1);
+        int estimatedTime = Math.max(task.getEstDuration(), 10);
+        return difficulty * estimatedTime;
     }
 
-    /** Sum points for all completed chores assigned to a specific user. */
     private int calculateUserPoints(String userId) {
         int total = 0;
-        for (Calendar c : allTasks) {
-            if ("CHORE".equalsIgnoreCase(c.getType())
-                    && "COMPLETED".equalsIgnoreCase(c.getStatus())
-                    && userId.equals(c.getAssignedTo())) {
-                total += calculateTaskPoints(c);
+        for (Calendar task : allTasks) {
+            if ("CHORE".equalsIgnoreCase(task.getType())
+                    && "COMPLETED".equalsIgnoreCase(task.getStatus())
+                    && userId.equals(task.getAssignedTo())) {
+                total += calculateTaskPoints(task);
             }
         }
         return total;
