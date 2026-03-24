@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_tenant_calendar_metric_soft"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvWatchBuildingName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/opensans_bold"
+            android:text="Mourne View"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tvWatchStateChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tenant_calendar_today_chip"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:text="Quiet"
+            android:textColor="@color/calendar_today_chip_text"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvWatchBuildingSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/opensans_regular"
+        android:text="Quiet right now."
+        android:textColor="@color/calendar_text_secondary"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvWatchApartmentsChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tenant_calendar_today_chip"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:text="8 apartments"
+            android:textColor="@color/calendar_today_chip_text"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tvWatchTicketsChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_soft_badge"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:text="3 active"
+            android:textColor="@color/app_text_primary"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tvWatchUrgentChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_tenant_ticket_status_raised"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:text="1 urgent"
+            android:textColor="@color/ticket_raised_text"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+</LinearLayout>

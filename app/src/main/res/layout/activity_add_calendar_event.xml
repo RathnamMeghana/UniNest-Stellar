@@ -74,6 +74,7 @@
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/formScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
@@ -613,5 +614,74 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/networkErrorState"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="28dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fixedHeaderContainer">
+
+        <FrameLayout
+            android:layout_width="126dp"
+            android:layout_height="126dp"
+            android:background="@drawable/bg_add_calendar_error_illustration"
+            android:padding="30dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_alert_calendar" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvNetworkErrorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="@font/opensans_bold"
+            android:text="Something went wrong"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/tvNetworkErrorBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/opensans_regular"
+            android:gravity="center"
+            android:text="Check your connection and try again."
+            android:textColor="@color/calendar_text_secondary"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRetryNetwork"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_tenant_calendar_action_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="28dp"
+            android:text="Try Again"
+            android:textAllCaps="false"
+            android:textColor="@color/calendar_text_inverse"
+            android:textSize="15sp"
+            app:backgroundTint="@null"
+            app:cornerRadius="18dp"
+            app:elevation="0dp"
+            app:strokeWidth="0dp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

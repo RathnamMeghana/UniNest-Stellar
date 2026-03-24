@@ -261,16 +261,6 @@
                     android:textColor="@color/calendar_primary_dark"
                     android:textSize="11sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/opensans_regular"
-                    android:lineSpacingExtra="2dp"
-                    android:text="Choose everyone who should be included in this shared charge."
-                    android:textColor="@color/calendar_text_secondary"
-                    android:textSize="13sp" />
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvRoommates"
                     android:layout_width="match_parent"
@@ -309,15 +299,6 @@
                     android:textColor="@color/calendar_text_inverse"
                     android:textSize="21sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/opensans_regular"
-                    android:text="This updates as you change the amount or who is included."
-                    android:textColor="@color/calendar_text_inverse"
-                    android:textSize="12sp"
-                    android:alpha="0.92" />
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -329,7 +310,6 @@
                 android:fontFamily="@font/opensans_bold"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:minHeight="58dp"
                 android:text="Create &amp; Split Bill"
                 android:textAllCaps="false"
                 android:textColor="@color/calendar_text_inverse"

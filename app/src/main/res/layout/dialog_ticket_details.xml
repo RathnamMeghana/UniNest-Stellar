@@ -76,18 +76,17 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/popTicketImage"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:adjustViewBounds="true"
-            android:background="@drawable/bg_tenant_ticket_detail_panel"
-            android:clipToOutline="true"
             android:contentDescription="Attached ticket image"
-            android:padding="2dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
+            android:maxHeight="360dp"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/RoundedPanelImage" />
 
         <GridLayout
             android:layout_width="match_parent"
@@ -271,7 +270,6 @@
             android:fontFamily="@font/opensans_bold"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:minHeight="46dp"
             android:text="Close"
             android:textAllCaps="false"
             android:textColor="@color/calendar_text_inverse"

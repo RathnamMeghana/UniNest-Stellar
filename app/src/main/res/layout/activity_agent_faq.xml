@@ -120,19 +120,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/bg_tenant_calendar_section_chore"
+                android:background="@drawable/bg_tenant_calendar_surface"
                 android:orientation="vertical"
                 android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_tenant_calendar_status_completed"
+                    android:background="@drawable/bg_tenant_calendar_today_chip"
                     android:fontFamily="@font/opensans_bold"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
                     android:text="Buildings"
-                    android:textColor="@color/calendar_status_completed_text"
+                    android:textColor="@color/calendar_today_chip_text"
                     android:textSize="11sp" />
 
                 <TextView
@@ -158,19 +158,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/bg_tenant_calendar_section_event"
+                android:background="@drawable/bg_tenant_calendar_surface"
                 android:orientation="vertical"
                 android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_tenant_calendar_status_event"
+                    android:background="@drawable/bg_tenant_calendar_today_chip"
                     android:fontFamily="@font/opensans_bold"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
                     android:text="Apartments"
-                    android:textColor="@color/calendar_text_inverse"
+                    android:textColor="@color/calendar_today_chip_text"
                     android:textSize="11sp" />
 
                 <TextView
@@ -196,19 +196,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/bg_tenant_calendar_section_reminder"
+                android:background="@drawable/bg_tenant_calendar_surface"
                 android:orientation="vertical"
                 android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_tenant_calendar_status_reminder"
+                    android:background="@drawable/bg_tenant_calendar_today_chip"
                     android:fontFamily="@font/opensans_bold"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
                     android:text="Tickets"
-                    android:textColor="@color/calendar_text_inverse"
+                    android:textColor="@color/calendar_today_chip_text"
                     android:textSize="11sp" />
 
                 <TextView

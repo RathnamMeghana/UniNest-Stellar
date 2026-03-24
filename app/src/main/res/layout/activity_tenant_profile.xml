@@ -125,6 +125,12 @@
                     <View style="@style/DividerStyle" />
 
                     <include
+                        android:id="@+id/rowNotifications"
+                        layout="@layout/layout_settings_item" />
+
+                    <View style="@style/DividerStyle" />
+
+                    <include
                         android:id="@+id/rowDarkMode"
                         layout="@layout/layout_settings_switch" />
                 </LinearLayout>

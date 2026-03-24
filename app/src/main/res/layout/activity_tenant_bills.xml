@@ -60,7 +60,6 @@
                 android:fontFamily="@font/opensans_bold"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:minHeight="48dp"
                 android:text="Create &amp; Split a Bill"
                 android:textAllCaps="false"
                 android:textColor="@color/calendar_text_inverse"
@@ -185,6 +184,36 @@
                 android:textColor="@color/bill_due_text"
                 android:textSize="13sp" />
 
+            <LinearLayout
+                android:id="@+id/emptyStateCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_tenant_calendar_empty_state"
+                android:orientation="vertical"
+                android:padding="14dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvEmptyTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="No bills to pay"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/tvEmptyBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="When a shared bill is added, it will show up here."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvBillsActive"
                 android:layout_width="match_parent"
@@ -192,24 +221,56 @@
                 android:layout_marginTop="8dp"
                 android:nestedScrollingEnabled="false" />
 
-            <TextView
-                android:id="@+id/tvHistoryHeader"
+            <LinearLayout
+                android:id="@+id/layoutHistoryHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:fontFamily="@font/opensans_bold"
-                android:letterSpacing="0.06"
-                android:text="Paid History"
-                android:textAllCaps="true"
-                android:textColor="@color/bill_settled_text"
-                android:textSize="13sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvHistoryHeader"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.06"
+                    android:text="Paid History"
+                    android:textAllCaps="true"
+                    android:textColor="@color/bill_settled_text"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnToggleHistory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                    android:fontFamily="@font/opensans_bold"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="14dp"
+                    android:text="Show paid"
+                    android:textAllCaps="false"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="16dp"
+                    app:elevation="0dp"
+                    app:strokeWidth="0dp" />
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvBillsHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:nestedScrollingEnabled="false" />
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

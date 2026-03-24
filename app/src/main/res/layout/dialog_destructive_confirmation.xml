@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_tenant_calendar_dialog"
+    android:orientation="vertical"
+    android:padding="22dp">
+
+    <TextView
+        android:id="@+id/tvConfirmEyebrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/opensans_bold"
+        android:letterSpacing="0.08"
+        android:text="Delete item"
+        android:textAllCaps="true"
+        android:textColor="@color/calendar_primary_dark"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/tvConfirmTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/opensans_bold"
+        android:text="Remove this item?"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/tvConfirmMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/opensans_regular"
+        android:text="This change will remove the item from your space."
+        android:textColor="@color/calendar_text_secondary"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:id="@+id/layoutConfirmImpact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/bg_delete_confirmation_highlight"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <FrameLayout
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_delete_confirmation_icon"
+            android:padding="11dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
+                android:src="@drawable/delete"
+                app:tint="@color/calendar_status_overdue_text" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="Before you continue"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvConfirmImpact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/opensans_regular"
+                android:text="This action cannot be undone."
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirmAction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/bg_delete_confirmation_primary"
+        android:fontFamily="@font/opensans_bold"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:maxLines="2"
+        android:minHeight="46dp"
+        android:paddingVertical="10dp"
+        android:text="Delete"
+        android:textAllCaps="false"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        app:backgroundTint="@null"
+        app:cornerRadius="16dp"
+        app:elevation="0dp"
+        app:strokeWidth="0dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCancelAction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_tenant_calendar_action_secondary"
+        android:fontFamily="@font/opensans_bold"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:maxLines="2"
+        android:minHeight="46dp"
+        android:paddingVertical="10dp"
+        android:text="Keep it"
+        android:textAllCaps="false"
+        android:textAlignment="center"
+        android:textColor="@color/calendar_primary_dark"
+        android:textSize="14sp"
+        app:backgroundTint="@null"
+        app:cornerRadius="16dp"
+        app:elevation="0dp"
+        app:strokeWidth="0dp" />
+
+</LinearLayout>

@@ -6,4 +6,18 @@
         <item name="android:navigationBarColor">@color/app_surface</item>
         <item name="android:forceDarkAllowed">true</item>
     </style>
+
+    <style name="ThemeOverlay.UniNest.CalendarPicker" parent="ThemeOverlay.Material3.MaterialCalendar">
+        <item name="colorPrimary">@color/calendar_primary</item>
+        <item name="colorOnPrimary">@color/calendar_text_inverse</item>
+        <item name="colorSurface">@color/calendar_surface</item>
+        <item name="colorOnSurface">@color/calendar_text_primary</item>
+    </style>
+
+    <style name="ThemeOverlay.UniNest.TimePicker" parent="ThemeOverlay.Material3.MaterialTimePicker">
+        <item name="colorPrimary">@color/calendar_primary</item>
+        <item name="colorOnPrimary">@color/calendar_text_inverse</item>
+        <item name="colorSurface">@color/calendar_surface</item>
+        <item name="colorOnSurface">@color/calendar_text_primary</item>
+    </style>
 </resources>

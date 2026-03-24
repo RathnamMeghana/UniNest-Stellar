@@ -334,7 +334,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/opensans_regular"
-                        android:text="Lead Backend, User Testing"
+                        android:text="Lead Database, User Testing"
                         android:textColor="@color/calendar_text_secondary"
                         android:textSize="13sp" />
                 </LinearLayout>

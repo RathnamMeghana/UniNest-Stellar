@@ -4,90 +4,120 @@
     android:id="@+id/cardRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:background="@drawable/bg_card_border_raised"
-    android:elevation="2dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_tenant_ticket_card_raised"
+    android:clickable="true"
+    android:elevation="1dp"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="12dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginBottom="6dp">
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvBuilding"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Building Name"
-            android:textColor="@color/app_text_primary"
-            android:textStyle="bold"
-            android:textSize="16sp" />
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tvBuilding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/opensans_bold"
+                android:maxLines="2"
+                android:text="Kitchen: Oven"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/opensans_regular"
+                android:maxLines="1"
+                android:text="Setanta | Apt 2"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvPriorityChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_priority_chip"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
             android:text="High"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="#C0392B" />
+            android:textColor="@color/chip_high_text"
+            android:textSize="11sp" />
 
-        <!-- The AI Indicator Star -->
         <ImageView
             android:id="@+id/ivAiStar"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginStart="6dp"
             android:contentDescription="AI priority indicator"
             android:src="@drawable/ic_gemini_sparkle"
             android:visibility="gone"
-            app:tint="@color/app_accent_purple" />
+            app:tint="@color/calendar_primary_dark" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvRaisedBy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/opensans_regular"
+            android:maxLines="1"
+            android:text="Raised by: Sarah"
+            android:textColor="@color/calendar_text_secondary"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvReportedOn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/opensans_regular"
+            android:maxLines="1"
+            android:text="Reported: 12/03/2026"
+            android:textColor="@color/calendar_text_secondary"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tvSubTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Apartment 29 - Kitchen"
-        android:textColor="@color/app_text_secondary"
-        android:textSize="14sp"
-        android:layout_marginBottom="2dp"/>
-
-    <TextView
-        android:id="@+id/tvRaisedBy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Raised by: Sarah"
-        android:textColor="@color/app_text_secondary"
-        android:textSize="13sp"
-        android:layout_marginBottom="6dp" />
-
-    <!-- Extra Field: Reported on -->
-    <TextView
-        android:id="@+id/tvReportedOn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Reported on: 12/03/2026"
-        android:textColor="@color/app_text_secondary"
-        android:textSize="12sp"
-        android:layout_marginBottom="2dp" />
-
-    <!-- Main dynamic status line -->
-    <TextView
         android:id="@+id/tvStatusDate"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Raised on: 12/03/2026"
-        android:textStyle="bold"
-        android:textColor="#D10000"
-        android:textSize="13sp" />
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_tenant_ticket_status_raised"
+        android:fontFamily="@font/opensans_bold"
+        android:paddingStart="10dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="6dp"
+        android:text="Raised"
+        android:textColor="@color/ticket_raised_text"
+        android:textSize="11sp" />
 
 </LinearLayout>

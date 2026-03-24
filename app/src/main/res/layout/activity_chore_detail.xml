@@ -371,7 +371,6 @@
                     android:fontFamily="@font/opensans_bold"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:minHeight="48dp"
                     android:text="Save updates"
                     android:textAllCaps="false"
                     android:textColor="@color/calendar_text_inverse"

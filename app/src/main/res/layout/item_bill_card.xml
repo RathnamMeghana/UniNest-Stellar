@@ -143,8 +143,6 @@
             android:fontFamily="@font/opensans_bold"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
             android:paddingHorizontal="10dp"
             android:text="Pay"
             android:textAllCaps="false"

@@ -116,6 +116,20 @@
                     android:textSize="13sp" />
 
                 <TextView
+                    android:id="@+id/tvOfflineHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_tenant_calendar_metric_alert"
+                    android:fontFamily="@font/opensans_bold"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="8dp"
+                    android:text="Internet needed to save name changes."
+                    android:textColor="@color/calendar_status_overdue_text"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"

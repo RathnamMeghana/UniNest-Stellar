@@ -133,7 +133,6 @@
                             android:background="@drawable/bg_tenant_calendar_filter_all"
                             android:fontFamily="@font/opensans_bold"
                             android:gravity="center"
-                            android:minHeight="44dp"
                             android:paddingHorizontal="16dp"
                             android:text="All"
                             android:textColor="@color/calendar_text_inverse"
@@ -147,7 +146,6 @@
                             android:background="@drawable/bg_tenant_calendar_filter_neutral"
                             android:fontFamily="@font/opensans_bold"
                             android:gravity="center"
-                            android:minHeight="44dp"
                             android:paddingHorizontal="16dp"
                             android:text="One-Time"
                             android:textColor="@color/calendar_text_secondary"
@@ -161,7 +159,6 @@
                             android:background="@drawable/bg_tenant_calendar_filter_neutral"
                             android:fontFamily="@font/opensans_bold"
                             android:gravity="center"
-                            android:minHeight="44dp"
                             android:paddingHorizontal="16dp"
                             android:text="Weekly"
                             android:textColor="@color/calendar_text_secondary"
@@ -175,7 +172,6 @@
                             android:background="@drawable/bg_tenant_calendar_filter_neutral"
                             android:fontFamily="@font/opensans_bold"
                             android:gravity="center"
-                            android:minHeight="44dp"
                             android:paddingHorizontal="16dp"
                             android:text="Monthly"
                             android:textColor="@color/calendar_text_secondary"
@@ -189,7 +185,6 @@
                             android:background="@drawable/bg_tenant_calendar_filter_neutral"
                             android:fontFamily="@font/opensans_bold"
                             android:gravity="center"
-                            android:minHeight="44dp"
                             android:paddingHorizontal="16dp"
                             android:text="Completed"
                             android:textColor="@color/calendar_text_secondary"
@@ -293,18 +288,48 @@
                 android:layout_marginBottom="8dp"
                 android:orientation="vertical" />
 
-            <TextView
-                android:id="@+id/tvHeaderHistory"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/layoutHistoryHeader"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:fontFamily="@font/opensans_bold"
-                android:letterSpacing="0.06"
-                android:text="Completed History"
-                android:textAllCaps="true"
-                android:textColor="@color/task_card_completed_text"
-                android:textSize="13sp"
-                android:visibility="gone" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvHeaderHistory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.06"
+                    android:text="Completed History"
+                    android:textAllCaps="true"
+                    android:textColor="@color/task_card_completed_text"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnToggleHistory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                    android:fontFamily="@font/opensans_bold"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="14dp"
+                    android:text="Show completed"
+                    android:textAllCaps="false"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="16dp"
+                    app:elevation="0dp"
+                    app:strokeWidth="0dp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/containerHistory"
@@ -312,7 +337,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="12dp"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:visibility="gone" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
