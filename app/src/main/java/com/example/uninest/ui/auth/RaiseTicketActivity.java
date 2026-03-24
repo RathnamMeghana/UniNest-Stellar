@@ -3,6 +3,8 @@ package com.example.uninest.ui.auth;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
@@ -36,6 +39,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.FileInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -59,6 +63,7 @@ public class RaiseTicketActivity extends AppCompatActivity {
     private String currentApartmentName;
     private ImageView imgPreview;
     private Uri selectedImageUri;
+    private Uri cameraImageUri;
     private String base64Image;
 
     private static final String[] EMERGENCY_KEYWORDS = {
@@ -138,10 +143,20 @@ public class RaiseTicketActivity extends AppCompatActivity {
                     result -> {
                         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                             selectedImageUri = result.getData().getData();
-                            imgPreview.setVisibility(ImageView.VISIBLE);
-                            com.bumptech.glide.Glide.with(this).load(selectedImageUri).into(imgPreview);
-
+                            renderSelectedImage(selectedImageUri);
                             new Thread(() -> base64Image = convertImageToResizedBase64(selectedImageUri)).start();
+                        }
+                    });
+
+    private final ActivityResultLauncher<Uri> takePictureLauncher =
+            registerForActivityResult(new ActivityResultContracts.TakePicture(),
+                    success -> {
+                        if (success && cameraImageUri != null) {
+                            selectedImageUri = cameraImageUri;
+                            renderSelectedImage(selectedImageUri);
+                            new Thread(() -> base64Image = convertImageToResizedBase64(selectedImageUri)).start();
+                        } else {
+                            cameraImageUri = null;
                         }
                     });
 
@@ -207,7 +222,10 @@ public class RaiseTicketActivity extends AppCompatActivity {
         typeSpinner = findViewById(R.id.typeSpinner);
         predictButton = findViewById(R.id.predictButton);
         imgPreview = findViewById(R.id.imgTicketPreview);
+        Button btnTakePhoto = findViewById(R.id.btnTakePhoto);
         Button btnAttach = findViewById(R.id.btnAttachImage);
+
+        btnTakePhoto.setOnClickListener(v -> launchCameraCapture());
 
         btnAttach.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
@@ -225,8 +243,15 @@ public class RaiseTicketActivity extends AppCompatActivity {
         String[] rooms = {"Kitchen", "Bathroom", "Bedroom", "Living Room", "Unit", "Other"};
         String[] categories = {"Plumbing", "Electrical", "Heating", "Appliance", "Pest Control", "Safety", "Other"};
 
-        roomSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, rooms));
-        typeSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories));
+        setSpinnerAdapter(roomSpinner, rooms);
+        setSpinnerAdapter(typeSpinner, categories);
+    }
+
+    private void setSpinnerAdapter(Spinner spinner, String[] items) {
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, R.layout.item_calendar_spinner_selected, items);
+        adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
+        spinner.setAdapter(adapter);
     }
 
     private void runHiddenPriorityWorkflow() {
@@ -381,7 +406,10 @@ public class RaiseTicketActivity extends AppCompatActivity {
             public void onFailure(Call<String> call, Throwable t) {
                 runOnUiThread(() -> {
                     resetSubmitButton();
-                    Toast.makeText(RaiseTicketActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                    com.example.uninest.utils.NetworkErrorDialog.show(
+                            RaiseTicketActivity.this,
+                            () -> sendToBackend(desc, buildingName, homeCode, room, category, priority)
+                    );
                 });
             }
         });
@@ -429,10 +457,21 @@ public class RaiseTicketActivity extends AppCompatActivity {
 
     private String convertImageToResizedBase64(Uri uri) {
         try {
-            InputStream is = getContentResolver().openInputStream(uri);
-            android.graphics.Bitmap original = android.graphics.BitmapFactory.decodeStream(is);
+            Bitmap original = decodeScaledBitmapFromUri(uri, 1600);
+            return convertBitmapToResizedBase64(original);
+        } catch (Exception e) {
+            Log.e(TAG, "Image conversion failed", e);
+            return null;
+        }
+    }
 
-            int maxSize = 600;
+    private String convertBitmapToResizedBase64(Bitmap original) {
+        if (original == null) {
+            return null;
+        }
+
+        try {
+            int maxSize = 1280;
             int width = original.getWidth();
             int height = original.getHeight();
 
@@ -445,16 +484,74 @@ public class RaiseTicketActivity extends AppCompatActivity {
                 width = (int) (height * bitmapRatio);
             }
 
-            android.graphics.Bitmap scaled = android.graphics.Bitmap.createScaledBitmap(original, width, height, true);
+            Bitmap scaled = Bitmap.createScaledBitmap(original, width, height, true);
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            scaled.compress(android.graphics.Bitmap.CompressFormat.JPEG, 50, baos);
+            scaled.compress(Bitmap.CompressFormat.JPEG, 82, baos);
             byte[] bytes = baos.toByteArray();
 
             return android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
         } catch (Exception e) {
-            Log.e(TAG, "Image conversion failed", e);
+            Log.e(TAG, "Bitmap conversion failed", e);
             return null;
         }
+    }
+
+    private void renderSelectedImage(Object imageSource) {
+        imgPreview.setVisibility(ImageView.VISIBLE);
+        com.bumptech.glide.Glide.with(this)
+                .load(imageSource)
+                .fitCenter()
+                .into(imgPreview);
+    }
+
+    private void launchCameraCapture() {
+        try {
+            cameraImageUri = createCameraImageUri();
+            takePictureLauncher.launch(cameraImageUri);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to launch camera capture", e);
+            Toast.makeText(this, "Couldn't open the camera right now.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private Uri createCameraImageUri() throws java.io.IOException {
+        File cameraDir = new File(getCacheDir(), "ticket-photos");
+        if (!cameraDir.exists() && !cameraDir.mkdirs()) {
+            throw new IllegalStateException("Unable to create camera cache directory");
+        }
+
+        File imageFile = File.createTempFile("ticket_", ".jpg", cameraDir);
+        return FileProvider.getUriForFile(
+                this,
+                getPackageName() + ".fileprovider",
+                imageFile
+        );
+    }
+
+    private Bitmap decodeScaledBitmapFromUri(Uri uri, int maxDimension) throws Exception {
+        BitmapFactory.Options boundsOptions = new BitmapFactory.Options();
+        boundsOptions.inJustDecodeBounds = true;
+        try (InputStream boundsStream = getContentResolver().openInputStream(uri)) {
+            BitmapFactory.decodeStream(boundsStream, null, boundsOptions);
+        }
+
+        BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+        decodeOptions.inSampleSize = calculateInSampleSize(boundsOptions, maxDimension, maxDimension);
+        try (InputStream decodeStream = getContentResolver().openInputStream(uri)) {
+            return BitmapFactory.decodeStream(decodeStream, null, decodeOptions);
+        }
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        int height = options.outHeight;
+        int width = options.outWidth;
+        int inSampleSize = 1;
+
+        while ((height / inSampleSize) > reqHeight || (width / inSampleSize) > reqWidth) {
+            inSampleSize *= 2;
+        }
+
+        return Math.max(1, inSampleSize);
     }
 
     private void showEmergencyWarning(final String description, final String room, final String category) {

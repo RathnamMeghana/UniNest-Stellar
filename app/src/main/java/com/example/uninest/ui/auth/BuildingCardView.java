@@ -2,7 +2,6 @@ package com.example.uninest.ui.auth;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -10,6 +9,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.uninest.R;
 import com.example.uninest.model.Building;
+import com.example.uninest.utils.ImageUtils;
 
 public class BuildingCardView extends FrameLayout {
 
@@ -46,7 +46,6 @@ public class BuildingCardView extends FrameLayout {
 
     // ADDED THIS METHOD BACK TO FIX YOUR ERROR
     public void setBuildingImage(int resId) {
-        Glide.with(getContext()).clear(imgBuilding);
         imgBuilding.setImageResource(resId);
     }
 
@@ -70,29 +69,12 @@ public class BuildingCardView extends FrameLayout {
 //    }
 
     public void setBuildingImageFromBase64(Building building) {
-        if (building == null) return;
-
-
-        byte[] imageBytes = building.getCachedImageBytes();
-
-        if (imageBytes == null) {
-
-            Glide.with(getContext()).clear(imgBuilding);
-            imgBuilding.setImageResource(android.R.color.darker_gray);
-
+        if (building == null) {
+            ImageUtils.loadBuildingImageImmediate(imgBuilding, null);
             return;
         }
-        Glide.with(getContext())
-                .asBitmap()
-                .load(imageBytes)
-                // Change the placeholder to transparent or a neutral color
-                .placeholder(android.R.color.transparent)
-                // Disable animations to prevent the flash
-                .dontAnimate()
 
-                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
-                .centerCrop()
-                .into(imgBuilding);
+        ImageUtils.loadBuildingImageImmediate(imgBuilding, building.getCachedImageBytes());
 //        Glide.with(getContext())
 //                .asBitmap()
 //                .load(imageBytes)

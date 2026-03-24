@@ -16,13 +16,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.TicketApi;
 import com.example.uninest.model.Ticket;
 import com.example.uninest.notifications.LocalNotificationHelper;
+import com.example.uninest.utils.DestructiveConfirmationDialog;
+import com.example.uninest.utils.ImageUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
@@ -184,7 +185,10 @@ public class TenantTicketsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<Ticket>> call, Throwable t) {
                 Log.e(TAG, "Network Error", t);
-                Toast.makeText(TenantTicketsActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        TenantTicketsActivity.this,
+                        TenantTicketsActivity.this::loadTickets
+                );
             }
         });
     }
@@ -285,7 +289,6 @@ public class TenantTicketsActivity extends AppCompatActivity {
             Object solvedAt = ticket.getUpdatedAt() != null ? ticket.getUpdatedAt() : ticket.getCreatedAt();
             tvSolved.setText("Solved: " + formatTimestamp(solvedAt, true));
         }
-
         cardContainer.setOnClickListener(v -> showTicketDetailsPopup(ticket));
         container.addView(view);
     }
@@ -444,25 +447,25 @@ public class TenantTicketsActivity extends AppCompatActivity {
         }
 
         btnDelete.setOnClickListener(v -> {
-            new AlertDialog.Builder(this)
-                    .setTitle("Remove Ticket")
-                    .setMessage("Are you sure you want to remove this ticket?")
-                    .setPositiveButton("Remove", (dialogInterface, i) -> {
+            String ticketLabel = room + ": " + category;
+
+            DestructiveConfirmationDialog.show(
+                    this,
+                    "Remove ticket",
+                    "Remove " + ticketLabel + "?",
+                    "This ticket will disappear from your active list.",
+                    "You can't undo this from the app.",
+                    "Remove ticket",
+                    () -> {
                         deleteTicket(ticket.getId());
                         dialog.dismiss();
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
+                    }
+            );
         });
 
         if (ticket.getImageUrl() != null && !ticket.getImageUrl().isEmpty()) {
             ivPopImage.setVisibility(View.VISIBLE);
-            try {
-                byte[] imageBytes = android.util.Base64.decode(ticket.getImageUrl(), android.util.Base64.DEFAULT);
-                Glide.with(this).asBitmap().load(imageBytes).into(ivPopImage);
-            } catch (Exception e) {
-                ivPopImage.setVisibility(View.GONE);
-            }
+            ImageUtils.loadTicketImage(ivPopImage, ticket.getImageUrl());
         } else {
             ivPopImage.setVisibility(View.GONE);
         }

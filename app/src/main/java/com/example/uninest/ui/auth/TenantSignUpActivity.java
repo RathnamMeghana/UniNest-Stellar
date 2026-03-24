@@ -161,7 +161,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
                                             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                                                 runOnUiThread(() -> {
                                                     Toast.makeText(TenantSignUpActivity.this,
-                                                            "Backend sync failed", Toast.LENGTH_SHORT).show();
+                                                            "We couldn't finish setup right now. Check your internet and try again.", Toast.LENGTH_SHORT).show();
                                                     btnTenantSignUp.setEnabled(true);
                                                     btnTenantSignUp.setText("Sign Up");
                                                 });
@@ -181,7 +181,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
                                                             finish();
                                                         } else {
                                                             Toast.makeText(TenantSignUpActivity.this,
-                                                                    "Failed to refresh token", Toast.LENGTH_SHORT).show();
+                                                                    "We couldn't finish sign-up right now. Please try again.", Toast.LENGTH_SHORT).show();
                                                             btnTenantSignUp.setEnabled(true);
                                                             btnTenantSignUp.setText("Sign Up");
                                                         }
@@ -243,7 +243,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     btnTenantSignUp.setEnabled(true);
                     btnTenantSignUp.setText("Sign Up");
-                    Toast.makeText(TenantSignUpActivity.this, "Network Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TenantSignUpActivity.this, "We couldn't verify that apartment right now. Check your internet and try again.", Toast.LENGTH_SHORT).show();
                 });
     }
 }

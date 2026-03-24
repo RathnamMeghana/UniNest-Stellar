@@ -72,8 +72,9 @@ public class SignUpActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.letting_companies,
-                android.R.layout.simple_list_item_1
+                R.layout.item_calendar_spinner_selected
         );
+        adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         actvCompanyName.setAdapter(adapter);
     }
 

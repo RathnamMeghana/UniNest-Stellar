@@ -36,6 +36,7 @@ import com.example.uninest.model.User;
 import com.example.uninest.notifications.LocalNotificationHelper;
 import com.example.uninest.utils.ContactUtils;
 import com.example.uninest.utils.ImageUtils;
+import com.example.uninest.utils.NetworkErrorDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -100,6 +101,9 @@ public class TenantHomeActivity extends AppCompatActivity {
     private String activeAlertFilter = ALERT_FILTER_ALL;
     private int notificationLoadToken = 0;
     private int pendingNotificationSourceLoads = 0;
+    private boolean notificationLoadHadFailure = false;
+    private boolean leaderboardLoadFailed = false;
+    private boolean homeNetworkErrorVisible = false;
 
     private BottomSheetDialog notificationCenterDialog;
     private HomeAlertAdapter notificationCenterAdapter;
@@ -161,6 +165,9 @@ public class TenantHomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadNotifications();
+        if (houseCode != null && !houseCode.trim().isEmpty()) {
+            loadLeaderboardData();
+        }
     }
 
     private void bindViews() {
@@ -275,6 +282,7 @@ public class TenantHomeActivity extends AppCompatActivity {
         }
         final int loadToken = ++notificationLoadToken;
         pendingNotificationSourceLoads = 0;
+        notificationLoadHadFailure = false;
 
         requestFirestoreNotifications(loadToken);
         requestBillNotifications(loadToken);
@@ -296,9 +304,8 @@ public class TenantHomeActivity extends AppCompatActivity {
                         return;
                     }
 
-                    firestoreNotificationList.clear();
-
                     if (task.isSuccessful() && task.getResult() != null) {
+                        firestoreNotificationList.clear();
                         for (DocumentSnapshot doc : task.getResult().getDocuments()) {
                             HomeAlert alert = new HomeAlert();
                             alert.setId(doc.getId());
@@ -318,7 +325,7 @@ public class TenantHomeActivity extends AppCompatActivity {
                             firestoreNotificationList.add(alert);
                         }
                     } else {
-                        Toast.makeText(this, "Failed to load notifications", Toast.LENGTH_SHORT).show();
+                        notificationLoadHadFailure = true;
                     }
 
                     onNotificationSourceLoaded(loadToken);
@@ -334,9 +341,13 @@ public class TenantHomeActivity extends AppCompatActivity {
                     return;
                 }
 
-                alertBills.clear();
-                if (response.isSuccessful() && response.body() != null) {
-                    alertBills.addAll(response.body());
+                if (response.isSuccessful()) {
+                    alertBills.clear();
+                    if (response.body() != null) {
+                        alertBills.addAll(response.body());
+                    }
+                } else {
+                    notificationLoadHadFailure = true;
                 }
                 onNotificationSourceLoaded(loadToken);
             }
@@ -347,7 +358,7 @@ public class TenantHomeActivity extends AppCompatActivity {
                     return;
                 }
 
-                alertBills.clear();
+                notificationLoadHadFailure = true;
                 onNotificationSourceLoaded(loadToken);
             }
         });
@@ -362,9 +373,13 @@ public class TenantHomeActivity extends AppCompatActivity {
                     return;
                 }
 
-                alertCalendarItems.clear();
-                if (response.isSuccessful() && response.body() != null) {
-                    alertCalendarItems.addAll(response.body());
+                if (response.isSuccessful()) {
+                    alertCalendarItems.clear();
+                    if (response.body() != null) {
+                        alertCalendarItems.addAll(response.body());
+                    }
+                } else {
+                    notificationLoadHadFailure = true;
                 }
                 onNotificationSourceLoaded(loadToken);
             }
@@ -375,7 +390,7 @@ public class TenantHomeActivity extends AppCompatActivity {
                     return;
                 }
 
-                alertCalendarItems.clear();
+                notificationLoadHadFailure = true;
                 onNotificationSourceLoaded(loadToken);
             }
         });
@@ -391,9 +406,11 @@ public class TenantHomeActivity extends AppCompatActivity {
             return;
         }
 
+        syncScheduledDueNotifications();
         rebuildNotificationFeed();
         rebuildFilteredNotifications();
         updateAlertState();
+        updateHomeNetworkState();
     }
 
     private long parseMillis(Object raw) {
@@ -531,6 +548,136 @@ public class TenantHomeActivity extends AppCompatActivity {
                 alert.setDismissible(true);
                 addAlertIfMissing(feed, feedKeyForAlert(alert), alert);
             }
+        }
+    }
+
+    private void syncScheduledDueNotifications() {
+        if (isBlank(currentUserId)) {
+            return;
+        }
+        syncBillReminderNotifications();
+        syncCalendarBillReminderNotifications();
+        syncChoreReminderNotifications();
+        syncEventReminderNotifications();
+    }
+
+    private void syncBillReminderNotifications() {
+        for (BillsRequest bill : alertBills) {
+            BillsRequest.Split mySplit = findCurrentUserSplit(bill);
+            Date dueDate = parseBillDate(bill != null ? bill.getDueDate() : null);
+            String deliveryKey = deliveryKeyForBill(bill);
+            if (bill == null || mySplit == null || mySplit.isPaid() || dueDate == null || isBlank(deliveryKey)) {
+                continue;
+            }
+
+            String subtitle = String.format(
+                    Locale.getDefault(),
+                    "You owe EUR %.2f of EUR %.2f total. %s",
+                    mySplit.getAmountOwed(),
+                    bill.getTotalAmount(),
+                    isOverdue(dueDate) ? "This bill is overdue." : "This bill is due today."
+            );
+
+            LocalNotificationHelper.scheduleOrShowNotification(
+                    this,
+                    firstNonBlank(bill.getTitle(), "Bill due"),
+                    subtitle,
+                    "BILLS",
+                    bill.getId(),
+                    notificationTriggerMillisForBill(dueDate),
+                    deliveryKey
+            );
+        }
+    }
+
+    private void syncCalendarBillReminderNotifications() {
+        for (Calendar item : alertCalendarItems) {
+            Date dueDate = dateFromTimestamp(item != null ? item.getStartDate() : null);
+            String deliveryKey = deliveryKeyForCalendarBill(item);
+            if (item == null || !matchesCalendarFilter(item, ALERT_FILTER_BILLS) || isCompleted(item)
+                    || dueDate == null || isBlank(deliveryKey)) {
+                continue;
+            }
+
+            String description = safeTrim(item.getDescription());
+            boolean reminderStyle = safeTrim(item.getTitle()).toLowerCase(Locale.getDefault()).contains("reminder");
+            String fallbackDescription;
+            if (item.getAmount() != null && item.getAmount() > 0) {
+                fallbackDescription = String.format(
+                        Locale.getDefault(),
+                        "%s Amount due: EUR %.2f.",
+                        reminderStyle
+                                ? (isOverdue(dueDate) ? "This reminder is overdue." : "This reminder is due today.")
+                                : (isOverdue(dueDate) ? "This bill is overdue." : "This bill is due today."),
+                        item.getAmount()
+                );
+            } else {
+                fallbackDescription = reminderStyle
+                        ? (isOverdue(dueDate) ? "This reminder is overdue." : "This reminder is due today.")
+                        : (isOverdue(dueDate) ? "This bill is overdue." : "This bill is due today.");
+            }
+
+            LocalNotificationHelper.scheduleOrShowNotification(
+                    this,
+                    firstNonBlank(item.getTitle(), reminderStyle ? "Reminder due" : "Bill due"),
+                    firstNonBlank(description, fallbackDescription),
+                    "BILLS",
+                    item.getId(),
+                    notificationTriggerMillisForCalendarBill(item, dueDate),
+                    deliveryKey
+            );
+        }
+    }
+
+    private void syncChoreReminderNotifications() {
+        for (Calendar item : alertCalendarItems) {
+            Date dueDate = dateFromTimestamp(item != null ? item.getStartDate() : null);
+            String entityId = item != null ? firstNonBlank(item.getRelatedChoreId(), item.getId()) : null;
+            String deliveryKey = deliveryKeyForChore(item);
+            if (item == null || !matchesCalendarFilter(item, ALERT_FILTER_CHORES) || !isAssignedToCurrentUser(item)
+                    || isCompleted(item) || dueDate == null || isBlank(entityId) || isBlank(deliveryKey)) {
+                continue;
+            }
+
+            String leadText = isOverdue(dueDate) ? "This chore is overdue." : "This chore is due today.";
+            String description = safeTrim(item.getDescription());
+
+            LocalNotificationHelper.scheduleOrShowNotification(
+                    this,
+                    firstNonBlank(item.getTitle(), "Chore due"),
+                    firstNonBlank(combineSentences(leadText, description), leadText),
+                    "CHORES",
+                    entityId,
+                    notificationTriggerMillisForChore(dueDate),
+                    deliveryKey
+            );
+        }
+    }
+
+    private void syncEventReminderNotifications() {
+        for (Calendar item : alertCalendarItems) {
+            Date startDate = dateFromTimestamp(item != null ? item.getStartDate() : null);
+            String deliveryKey = deliveryKeyForEvent(item);
+            if (item == null || startDate == null || isBlank(deliveryKey) || !shouldShowEventAlert(item)) {
+                continue;
+            }
+
+            boolean allDay = item.isAllDay();
+            String timeLabel = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(startDate);
+            String description = safeTrim(item.getDescription());
+            String fallbackDescription = allDay
+                    ? "All-day event scheduled for today."
+                    : "Event starts at " + timeLabel + ".";
+
+            LocalNotificationHelper.scheduleOrShowNotification(
+                    this,
+                    firstNonBlank(item.getTitle(), "Today's event"),
+                    firstNonBlank(description, fallbackDescription),
+                    "CALENDAR",
+                    item.getId(),
+                    notificationTriggerMillisForEvent(item, startDate),
+                    deliveryKey
+            );
         }
     }
 
@@ -959,6 +1106,36 @@ public class TenantHomeActivity extends AppCompatActivity {
         return calendar.getTimeInMillis();
     }
 
+    private long startOfNextDayMillis(Date date) {
+        if (date == null) {
+            return 0L;
+        }
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.setTime(date);
+        normalizeCalendarDay(calendar);
+        calendar.add(java.util.Calendar.DAY_OF_YEAR, 1);
+        return calendar.getTimeInMillis();
+    }
+
+    private long notificationTriggerMillisForBill(Date dueDate) {
+        return isOverdue(dueDate) ? startOfNextDayMillis(dueDate) : startOfDayMillis(dueDate);
+    }
+
+    private long notificationTriggerMillisForCalendarBill(Calendar item, Date dueDate) {
+        if (isOverdue(dueDate)) {
+            return startOfNextDayMillis(dueDate);
+        }
+        return item != null && item.isAllDay() ? startOfDayMillis(dueDate) : dueDate.getTime();
+    }
+
+    private long notificationTriggerMillisForChore(Date dueDate) {
+        return isOverdue(dueDate) ? startOfNextDayMillis(dueDate) : startOfDayMillis(dueDate);
+    }
+
+    private long notificationTriggerMillisForEvent(Calendar item, Date startDate) {
+        return item != null && item.isAllDay() ? startOfDayMillis(startDate) : startDate.getTime();
+    }
+
     private String buildDueMetaLabel(Date dueDate) {
         if (dueDate == null) {
             return "Needs attention";
@@ -1041,7 +1218,7 @@ public class TenantHomeActivity extends AppCompatActivity {
         if (bill == null || dueDate == null || isBlank(bill.getId())) {
             return null;
         }
-        return buildDeliveryKey("BILLS", bill.getId(), startOfDayMillis(dueDate));
+        return buildDeliveryKey("BILLS_" + notificationStateToken(dueDate), bill.getId(), notificationTriggerMillisForBill(dueDate));
     }
 
     private String deliveryKeyForCalendarBill(Calendar item) {
@@ -1049,7 +1226,7 @@ public class TenantHomeActivity extends AppCompatActivity {
         if (item == null || dueDate == null || isBlank(item.getId())) {
             return null;
         }
-        long triggerAt = item.isAllDay() ? startOfDayMillis(dueDate) : dueDate.getTime();
+        long triggerAt = notificationTriggerMillisForCalendarBill(item, dueDate);
         return buildDeliveryKey("BILLS", item.getId(), triggerAt);
     }
 
@@ -1059,7 +1236,7 @@ public class TenantHomeActivity extends AppCompatActivity {
         if (dueDate == null || isBlank(entityId)) {
             return null;
         }
-        return buildDeliveryKey("CHORES", entityId, startOfDayMillis(dueDate));
+        return buildDeliveryKey("CHORES_" + notificationStateToken(dueDate), entityId, notificationTriggerMillisForChore(dueDate));
     }
 
     private String deliveryKeyForEvent(Calendar item) {
@@ -1067,8 +1244,12 @@ public class TenantHomeActivity extends AppCompatActivity {
         if (item == null || startDate == null || isBlank(item.getId())) {
             return null;
         }
-        long triggerAt = item.isAllDay() ? startOfDayMillis(startDate) : startDate.getTime();
+        long triggerAt = notificationTriggerMillisForEvent(item, startDate);
         return buildDeliveryKey("CALENDAR", item.getId(), triggerAt);
+    }
+
+    private String notificationStateToken(Date dueDate) {
+        return isOverdue(dueDate) ? "OVERDUE" : "DUE";
     }
 
     private String buildDeliveryKey(String targetScreen, String entityId, long triggerAtMillis) {
@@ -1426,12 +1607,17 @@ public class TenantHomeActivity extends AppCompatActivity {
                     userMap.put(currentUserId, me);
 
                     fetchTasksAndBuildLeaderboard(userMap);
+                    return;
                 }
+
+                leaderboardLoadFailed = true;
+                updateHomeNetworkState();
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
-                t.printStackTrace();
+                leaderboardLoadFailed = true;
+                updateHomeNetworkState();
             }
         });
     }
@@ -1442,14 +1628,48 @@ public class TenantHomeActivity extends AppCompatActivity {
             public void onResponse(Call<List<Calendar>> call, Response<List<Calendar>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     calculatePointsAndDisplay(response.body(), userMap);
+                    leaderboardLoadFailed = false;
+                    updateHomeNetworkState();
+                    return;
                 }
+
+                leaderboardLoadFailed = true;
+                updateHomeNetworkState();
             }
 
             @Override
             public void onFailure(Call<List<Calendar>> call, Throwable t) {
-                t.printStackTrace();
+                leaderboardLoadFailed = true;
+                updateHomeNetworkState();
             }
         });
+    }
+
+    private void updateHomeNetworkState() {
+        boolean hasConnectionIssue = notificationLoadHadFailure || leaderboardLoadFailed;
+        if (!hasConnectionIssue) {
+            homeNetworkErrorVisible = false;
+            NetworkErrorDialog.dismiss(this);
+            return;
+        }
+
+        if (homeNetworkErrorVisible || isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        homeNetworkErrorVisible = true;
+        NetworkErrorDialog.show(
+                this,
+                "Couldn't refresh your dashboard",
+                "Check your internet connection and try again.",
+                () -> {
+                    homeNetworkErrorVisible = false;
+                    loadNotifications();
+                    if (houseCode != null && !houseCode.trim().isEmpty()) {
+                        loadLeaderboardData();
+                    }
+                }
+        );
     }
 
     private void calculatePointsAndDisplay(List<Calendar> tasks, Map<String, User> userMap) {
@@ -1489,9 +1709,7 @@ public class TenantHomeActivity extends AppCompatActivity {
 
         ImageView ivYourProfile = findViewById(R.id.ivYourProfile);
         User meUser = userMap.get(currentUserId);
-        if (meUser != null) {
-            ImageUtils.loadProfileImage(ivYourProfile, meUser.getProfileImageUrl());
-        }
+        ImageUtils.loadProfileImage(ivYourProfile, meUser != null ? meUser.getProfileImageUrl() : null);
 
         layoutLeaderboardRows.removeAllViews();
         for (int i = 0; i < sortedEntries.size(); i++) {

@@ -1,6 +1,5 @@
 package com.example.uninest.ui.auth;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -20,8 +19,15 @@ import com.example.uninest.model.Ticket;
 import com.example.uninest.model.UpdateTicketAgentDataRequest;
 import com.example.uninest.model.UpdateTicketPriorityRequest;
 import com.example.uninest.model.UpdateTicketStatusRequest;
+import com.example.uninest.utils.ImageUtils;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.text.SimpleDateFormat;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,9 +39,11 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
 
     // UI Elements
     private TextView tvTicketCategory, tvLocationInfo, tvDescription, tvDateSelector;
+    private TextView tvPrioritySummary, tvStatusSummary, tvScheduleSummary, tvRaisedBySummary, tvOverviewEyebrow;
     private Spinner spinnerPriority, spinnerStatus;
     private EditText etAgentResponse;
     private ImageView ivTicketImage;
+    private View overviewCard;
 
     // Variables
     private String selectedDate = "";
@@ -56,6 +64,11 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
         tvTicketCategory = findViewById(R.id.tvTicketCategory);
         tvLocationInfo = findViewById(R.id.tvLocationInfo);
         tvDescription = findViewById(R.id.tvDescription);
+        tvPrioritySummary = findViewById(R.id.tvPrioritySummary);
+        tvStatusSummary = findViewById(R.id.tvStatusSummary);
+        tvScheduleSummary = findViewById(R.id.tvScheduleSummary);
+        tvRaisedBySummary = findViewById(R.id.tvRaisedBySummary);
+        tvOverviewEyebrow = findViewById(R.id.tvOverviewEyebrow);
 
         spinnerPriority = findViewById(R.id.spinnerPriority);
         spinnerStatus = findViewById(R.id.spinnerStatus);
@@ -63,6 +76,7 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
         tvDateSelector = findViewById(R.id.tvDateSelector);
         etAgentResponse = findViewById(R.id.etAgentResponse);
         ivTicketImage = findViewById(R.id.ivTicketImage);
+        overviewCard = findViewById(R.id.overviewCard);
 
         Button btnSave = findViewById(R.id.btnSaveChanges);
         View btnBack = findViewById(R.id.btnBack);
@@ -72,24 +86,9 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
 
             if (ticket.getImageUrl() != null && !ticket.getImageUrl().isEmpty()) {
                 ivTicketImage.setVisibility(View.VISIBLE);
-
-                try {
-                    // Convert Base64 String to byte array
-                    byte[] imageBytes = android.util.Base64.decode(ticket.getImageUrl(), android.util.Base64.DEFAULT);
-
-                    // Load using Glide
-                    com.bumptech.glide.Glide.with(this)
-                            .asBitmap()
-                            .load(imageBytes)
-                            .placeholder(android.R.drawable.progress_horizontal)
-                            .error(android.R.drawable.ic_menu_report_image)
-                            .into(ivTicketImage);
-                } catch (Exception e) {
-                    ivTicketImage.setVisibility(View.GONE);
-                    android.util.Log.e("IMAGE_ERROR", "Failed to decode image", e);
-                }
+                ImageUtils.loadTicketImage(ivTicketImage, ticket.getImageUrl());
             } else {
-                ivTicketImage.setVisibility(View.GONE); // Ensure it's hidden if no image
+                ivTicketImage.setVisibility(View.GONE);
             }
 
             tvTicketCategory.setText(ticket.getCategory() != null ? ticket.getCategory() : "Maintenance Ticket");
@@ -98,17 +97,24 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
 
             String apt = ticket.getApartmentName() != null ? ticket.getApartmentName() : "Unit";
             String room = ticket.getRoom() != null ? ticket.getRoom() : "General";
-            //tvLocationInfo.setText(apt + " - " + room);
             tvLocationInfo.setText(building + " | " + apt + " - " + room);
-            // Set Description
-            tvDescription.setText(ticket.getDescription());
+            tvDescription.setText(ticket.getDescription() != null && !ticket.getDescription().trim().isEmpty()
+                    ? ticket.getDescription()
+                    : "No description was added for this ticket.");
+            tvPrioritySummary.setText(ticket.getPriority() != null ? ticket.getPriority() : "Not set");
+            tvStatusSummary.setText(prettyStatus(ticket.getStatus()));
+            tvScheduleSummary.setText(ticket.getArrivalDate() != null && !ticket.getArrivalDate().trim().isEmpty()
+                    ? ticket.getArrivalDate()
+                    : "Not set");
+            tvRaisedBySummary.setText(ticket.getUserName() != null && !ticket.getUserName().trim().isEmpty()
+                    ? ticket.getUserName()
+                    : "Tenant");
+            applyOverviewStyle(ticket.getStatus());
 
-            // Set Agent Response if exists
             if(ticket.getAgentResponse() != null) {
                 etAgentResponse.setText(ticket.getAgentResponse());
             }
 
-            // Set Date if exists
             if(ticket.getArrivalDate() != null) {
                 selectedDate = ticket.getArrivalDate();
                 tvDateSelector.setText("Scheduled: " + selectedDate);
@@ -124,19 +130,29 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
     }
 
     private void showDatePicker() {
-        final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+        builder.setTitleText("Schedule visit");
+        builder.setSelection(getUtcSelectionForScheduledDate());
+        builder.setTheme(R.style.ThemeOverlay_UniNest_CalendarPicker);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                (view, year1, monthOfYear, dayOfMonth) -> {
-                    selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1;
-                    tvDateSelector.setText("Scheduled: " + selectedDate);
-                },
-                year, month, day);
-        datePickerDialog.show();
+        MaterialDatePicker<Long> picker = builder.build();
+        picker.addOnPositiveButtonClickListener(selection -> {
+            if (selection == null) {
+                return;
+            }
+
+            Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            utcCalendar.setTimeInMillis(selection);
+            selectedDate = String.format(
+                    Locale.getDefault(),
+                    "%d/%d/%d",
+                    utcCalendar.get(Calendar.DAY_OF_MONTH),
+                    utcCalendar.get(Calendar.MONTH) + 1,
+                    utcCalendar.get(Calendar.YEAR)
+            );
+            tvDateSelector.setText("Scheduled: " + selectedDate);
+        });
+        picker.show(getSupportFragmentManager(), "ticket_schedule_picker");
     }
 
     private void saveAllChanges() {
@@ -183,24 +199,101 @@ public class LettingAgentTicketDetailsActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Toast.makeText(LettingAgentTicketDetailsActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        LettingAgentTicketDetailsActivity.this,
+                        LettingAgentTicketDetailsActivity.this::saveAllChanges
+                );
             }
         });
     }
 
     private void setupSpinners() {
         String[] priorities = {"Low", "Medium", "High"};
-        ArrayAdapter<String> pAdapt = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, priorities);
+        ArrayAdapter<String> pAdapt = new ArrayAdapter<>(this, R.layout.item_calendar_spinner_selected, priorities);
+        pAdapt.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         spinnerPriority.setAdapter(pAdapt);
         if(ticket != null && ticket.getPriority() != null) {
             spinnerPriority.setSelection(pAdapt.getPosition(ticket.getPriority()));
         }
 
         String[] statuses = {"Open", "In_Process", "Resolved", "Closed"};
-        ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, statuses);
+        ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.item_calendar_spinner_selected, statuses);
+        sAdapt.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         spinnerStatus.setAdapter(sAdapt);
         if(ticket != null && ticket.getStatus() != null) {
             spinnerStatus.setSelection(sAdapt.getPosition(ticket.getStatus()));
         }
+    }
+
+    private void applyOverviewStyle(String rawStatus) {
+        String canonical = canonicalStatus(rawStatus);
+        if ("progress".equals(canonical)) {
+            overviewCard.setBackgroundResource(R.drawable.bg_tenant_ticket_section_progress);
+            tvOverviewEyebrow.setTextColor(getColor(R.color.ticket_progress_text));
+            tvStatusSummary.setTextColor(getColor(R.color.ticket_progress_text));
+        } else if ("solved".equals(canonical)) {
+            overviewCard.setBackgroundResource(R.drawable.bg_tenant_ticket_section_solved);
+            tvOverviewEyebrow.setTextColor(getColor(R.color.ticket_solved_text));
+            tvStatusSummary.setTextColor(getColor(R.color.ticket_solved_text));
+        } else {
+            overviewCard.setBackgroundResource(R.drawable.bg_tenant_ticket_section_raised);
+            tvOverviewEyebrow.setTextColor(getColor(R.color.ticket_raised_text));
+            tvStatusSummary.setTextColor(getColor(R.color.ticket_raised_text));
+        }
+    }
+
+    private String prettyStatus(String rawStatus) {
+        String canonical = canonicalStatus(rawStatus);
+        if ("progress".equals(canonical)) {
+            return "In progress";
+        }
+        if ("solved".equals(canonical)) {
+            return "Solved";
+        }
+        return "Raised";
+    }
+
+    private String canonicalStatus(String rawStatus) {
+        if (rawStatus == null || rawStatus.trim().isEmpty()) {
+            return "raised";
+        }
+
+        String normalized = rawStatus.trim()
+                .toLowerCase(Locale.ROOT)
+                .replace('_', ' ')
+                .replace('-', ' ')
+                .replaceAll("\\s+", " ");
+
+        if ("in progress".equals(normalized) || "in process".equals(normalized)) {
+            return "progress";
+        }
+
+        if ("resolved".equals(normalized) || "closed".equals(normalized) || "solved".equals(normalized)) {
+            return "solved";
+        }
+
+        return "raised";
+    }
+
+    private long getUtcSelectionForScheduledDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        if (selectedDate == null || selectedDate.trim().isEmpty()) {
+            return calendar.getTimeInMillis();
+        }
+
+        String[] patterns = {"d/M/yyyy", "dd/MM/yyyy"};
+        for (String pattern : patterns) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.getDefault());
+                sdf.setLenient(false);
+                Date parsed = sdf.parse(selectedDate.trim());
+                if (parsed != null) {
+                    calendar.setTime(parsed);
+                    return calendar.getTimeInMillis();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return calendar.getTimeInMillis();
     }
 }

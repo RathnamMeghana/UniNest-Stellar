@@ -2,11 +2,11 @@ package com.example.uninest.ui.auth;
 
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uninest.R;
+import com.example.uninest.utils.NetworkErrorDialog;
 import com.example.uninest.model.Ticket;
 
 import java.util.List;
@@ -59,7 +59,10 @@ public class DisplayTicketsbyBuilding extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Ticket>> call, Response<List<Ticket>> response) {
                 if (!response.isSuccessful()) {
-                    textTickets.setText("Error: " + response.code());
+                    NetworkErrorDialog.show(
+                            DisplayTicketsbyBuilding.this,
+                            () -> loadTickets(building)
+                    );
                     return;
                 }
 
@@ -85,7 +88,10 @@ public class DisplayTicketsbyBuilding extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Ticket>> call, Throwable t) {
-                textTickets.setText("Network error occurred.");
+                NetworkErrorDialog.show(
+                        DisplayTicketsbyBuilding.this,
+                        () -> loadTickets(building)
+                );
             }
         });
     }

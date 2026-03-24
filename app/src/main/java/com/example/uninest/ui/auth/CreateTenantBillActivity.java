@@ -1,6 +1,5 @@
 package com.example.uninest.ui.auth;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,6 +22,7 @@ import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.BillsRequest;
 import com.example.uninest.model.User;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -140,16 +141,7 @@ public class CreateTenantBillActivity extends AppCompatActivity {
     }
 
     private void setupDatePicker() {
-        btnDate.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-                Calendar selected = Calendar.getInstance();
-                selected.set(year, month, dayOfMonth);
-                dueDate = selected.getTime();
-                btnDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(dueDate));
-                btnDate.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_primary));
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-        });
+        btnDate.setOnClickListener(v -> showDueDatePicker());
     }
 
     private void loadBuildingRoommates() {
@@ -242,7 +234,10 @@ public class CreateTenantBillActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<BillsRequest>> call, Throwable t) {
-                Toast.makeText(CreateTenantBillActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        CreateTenantBillActivity.this,
+                        CreateTenantBillActivity.this::saveBill
+                );
             }
         });
     }
@@ -265,5 +260,53 @@ public class CreateTenantBillActivity extends AppCompatActivity {
             labels.add(label.toString());
         }
         return labels;
+    }
+
+    private void showDueDatePicker() {
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+        builder.setTitleText("Select due date");
+        builder.setSelection(getUtcDateSelectionFromDueDate());
+        builder.setTheme(R.style.ThemeOverlay_UniNest_CalendarPicker);
+
+        MaterialDatePicker<Long> picker = builder.build();
+        picker.addOnPositiveButtonClickListener(selection -> {
+            if (selection == null) {
+                return;
+            }
+
+            Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            utcCalendar.setTimeInMillis(selection);
+            Calendar localCalendar = Calendar.getInstance();
+            localCalendar.set(
+                    utcCalendar.get(Calendar.YEAR),
+                    utcCalendar.get(Calendar.MONTH),
+                    utcCalendar.get(Calendar.DAY_OF_MONTH),
+                    0,
+                    0,
+                    0
+            );
+            localCalendar.set(Calendar.MILLISECOND, 0);
+
+            dueDate = localCalendar.getTime();
+            btnDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(dueDate));
+            btnDate.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_primary));
+        });
+        picker.show(getSupportFragmentManager(), "bill_due_date_picker");
+    }
+
+    private long getUtcDateSelectionFromDueDate() {
+        Calendar source = Calendar.getInstance();
+        if (dueDate != null) {
+            source.setTime(dueDate);
+        }
+
+        Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        utcCalendar.clear();
+        utcCalendar.set(
+                source.get(Calendar.YEAR),
+                source.get(Calendar.MONTH),
+                source.get(Calendar.DAY_OF_MONTH)
+        );
+        return utcCalendar.getTimeInMillis();
     }
 }

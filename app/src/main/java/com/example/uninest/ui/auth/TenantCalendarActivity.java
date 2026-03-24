@@ -295,7 +295,10 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Calendar>> call, Throwable t) {
-                Toast.makeText(TenantCalendarActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        TenantCalendarActivity.this,
+                        TenantCalendarActivity.this::fetchRoommatesAndEvents
+                );
             }
         });
     }
@@ -816,7 +819,10 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Calendar> call, Throwable t) {
-                Toast.makeText(TenantCalendarActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        TenantCalendarActivity.this,
+                        () -> markReminderAsDone(c)
+                );
             }
         });
     }

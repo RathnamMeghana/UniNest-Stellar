@@ -36,7 +36,7 @@ public class SplashActivity extends AppCompatActivity {
             if ("agent".equals(BuildConfig.FLAVOR)) {
                 // AGENT APP ROUTING
                 if ("1".equals(role)) {
-                    intent = new Intent(SplashActivity.this, LettingAgentBuildingsActivity.class);
+                    intent = new Intent(SplashActivity.this, LettingAgentHomeActivity.class);
                 } else {
                     intent = new Intent(SplashActivity.this, LettingAgentLoginActivity.class);
                 }

@@ -14,6 +14,7 @@ import com.example.uninest.R;
 import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.RegisterTokenRequest;
+import com.example.uninest.utils.NetworkErrorDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -83,7 +84,7 @@ public class TenantLoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(TenantLoginActivity.this, "Password reset email sent!", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(TenantLoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(TenantLoginActivity.this, "We couldn't send the reset email right now.", Toast.LENGTH_LONG).show();
                         }
                     });
         });
@@ -124,7 +125,7 @@ public class TenantLoginActivity extends AppCompatActivity {
                     } else {
                         btnTenantLogin.setEnabled(true);
                         btnTenantLogin.setText("Login");
-                        Toast.makeText(this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "We couldn't sign you in. Check your details and try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -134,7 +135,7 @@ public class TenantLoginActivity extends AppCompatActivity {
         user.getIdToken(true).addOnCompleteListener(tokenTask -> {
             if (!tokenTask.isSuccessful()) {
                 resetUI();
-                Toast.makeText(this, "Failed to get auth token", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "We couldn't finish sign-in. Please try again.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -178,7 +179,12 @@ public class TenantLoginActivity extends AppCompatActivity {
                                 public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
                                     runOnUiThread(() -> {
                                         resetUI();
-                                        Toast.makeText(TenantLoginActivity.this, "Backend sync failed", Toast.LENGTH_SHORT).show();
+                                        NetworkErrorDialog.show(
+                                                TenantLoginActivity.this,
+                                                "Something went wrong",
+                                                "Check your connection and try again.",
+                                                () -> syncTokenWithBackend(user)
+                                        );
                                     });
                                 }
 
@@ -216,19 +222,24 @@ public class TenantLoginActivity extends AppCompatActivity {
                                     } else {
                                         runOnUiThread(() -> {
                                             resetUI();
-                                            Toast.makeText(TenantLoginActivity.this, "Server error during sync", Toast.LENGTH_SHORT).show();
+                                            NetworkErrorDialog.show(
+                                                    TenantLoginActivity.this,
+                                                    "Something went wrong",
+                                                    "Check your connection and try again.",
+                                                    () -> syncTokenWithBackend(user)
+                                            );
                                         });
                                     }
                                 }
                             });
                         } else {
                             resetUI();
-                            Toast.makeText(this, "User profile not found in database", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "We couldn't find your tenant profile. Please try again or contact support.", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(e -> {
                         resetUI();
-                        Toast.makeText(this, "Error fetching data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "We couldn't load your account right now. Please try again.", Toast.LENGTH_SHORT).show();
                     });
         });
     }

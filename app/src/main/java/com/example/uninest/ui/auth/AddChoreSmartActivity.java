@@ -75,7 +75,10 @@ public class AddChoreSmartActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Chore> call, Throwable t) {
-                Toast.makeText(AddChoreSmartActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        AddChoreSmartActivity.this,
+                        AddChoreSmartActivity.this::saveChoreSmart
+                );
             }
         });
     }

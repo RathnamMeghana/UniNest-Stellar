@@ -1,6 +1,7 @@
 package com.example.uninest.notifications;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -106,6 +107,63 @@ public final class LocalNotificationHelper {
 
         if (dedupeKey != null && !dedupeKey.trim().isEmpty()) {
             markDelivered(context, dedupeKey);
+        }
+    }
+
+    public static void scheduleOrShowNotification(Context context,
+                                                  String title,
+                                                  String body,
+                                                  String targetScreen,
+                                                  String entityId,
+                                                  long triggerAtMillis,
+                                                  String dedupeKey) {
+        if (context == null) {
+            return;
+        }
+
+        if (dedupeKey != null && !dedupeKey.trim().isEmpty() && wasDelivered(context, dedupeKey)) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        if (triggerAtMillis <= 0L || triggerAtMillis <= now) {
+            showNotification(context, title, body, targetScreen, entityId, dedupeKey);
+            return;
+        }
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) {
+            showNotification(context, title, body, targetScreen, entityId, dedupeKey);
+            return;
+        }
+
+        Intent intent = new Intent(context, ScheduledNotificationReceiver.class);
+        intent.putExtra(EXTRA_TITLE, title);
+        intent.putExtra(EXTRA_BODY, body);
+        intent.putExtra(EXTRA_TARGET_SCREEN, targetScreen);
+        intent.putExtra(EXTRA_ENTITY_ID, entityId);
+        intent.putExtra(EXTRA_DEDUPE_KEY, dedupeKey);
+
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+
+        int requestCode = Math.abs((firstNonBlank(targetScreen, "HOME")
+                + ":" + firstNonBlank(entityId, "unknown")
+                + ":" + triggerAtMillis).hashCode());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, flags);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
+            } catch (SecurityException exactAlarmError) {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
         }
     }
 

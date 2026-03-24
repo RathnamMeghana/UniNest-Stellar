@@ -2,6 +2,8 @@ package com.example.uninest.ui.auth;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,6 +26,7 @@ import com.example.uninest.data.api.BuildingApi;
 import com.example.uninest.data.api.TicketApi;
 import com.example.uninest.model.Building;
 import com.example.uninest.model.Ticket;
+import com.example.uninest.utils.AgentBottomNavHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -39,6 +42,7 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
     private TicketCardAdapter adapter;
     private TicketApi ticketApi;
     private EditText etSearch;
+    private ImageButton btnAiToggle;
 
     private String selectedPriority = "";
     private String selectedState = "";
@@ -68,24 +72,15 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
 
         rv.setAdapter(adapter);
 
-        ImageButton btnAiToggle = findViewById(R.id.btnAiToggle);
+        btnAiToggle = findViewById(R.id.btnAiToggle);
+        updateAiToggleUi();
         btnAiToggle.setOnClickListener(v -> {
-            // Toggle the state
             aiOnly = !aiOnly;
-
-
+            updateAiToggleUi();
             if (aiOnly) {
-                btnAiToggle.setColorFilter(Color.parseColor("#FFD700"));
-                btnAiToggle.setAlpha(1.0f);
                 Toast.makeText(this, "AI Prioritized Only", Toast.LENGTH_SHORT).show();
-
-            } else {
-                btnAiToggle.setColorFilter(Color.WHITE);
-                btnAiToggle.setAlpha(0.7f);
             }
-
-            //  Trigger the filter
-            adapter.applyAdvancedFilter(selectedPriority, selectedState, selectedSort, aiOnly);
+            applyTicketFilters();
         });
 
         loadTicketsByLandlordId();
@@ -100,12 +95,13 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
 
         // Navigation
         findViewById(R.id.btnFilter).setOnClickListener(v -> showFilterDialog());
-        setupBottomNav(R.id.nav_tickets);
+        AgentBottomNavHelper.setup(this, R.id.nav_tickets);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        AgentBottomNavHelper.syncSelected(this, R.id.nav_tickets);
         loadTicketsByLandlordId();
     }
 
@@ -138,7 +134,10 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<Ticket>> call, Throwable t) {
                 Log.e("DEBUG_TICKETS", "Network Error", t);
-                Toast.makeText(LettingAgentTicketsActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        LettingAgentTicketsActivity.this,
+                        LettingAgentTicketsActivity.this::loadTicketsByLandlordId
+                );
             }
         });
     }
@@ -155,6 +154,8 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
 
         TextView[] pChips = { v.findViewById(R.id.chipHigh), v.findViewById(R.id.chipMedium), v.findViewById(R.id.chipLow) };
         TextView[] sChips = { v.findViewById(R.id.stateRaised), v.findViewById(R.id.stateProgress), v.findViewById(R.id.stateSolved) };
+        final String[] dialogPriority = {selectedPriority};
+        final String[] dialogState = {selectedState};
 
         swDeleted.setChecked(showDeleted);
 
@@ -169,68 +170,74 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
         }
 
         // Initial UI update for chips
-        updateChipSelectionUI(pChips, selectedPriority);
-        updateChipSelectionUI(sChips, selectedState);
+        updateChipSelectionUI(pChips, dialogPriority[0]);
+        updateChipSelectionUI(sChips, dialogState[0]);
 
-        // --- 2. Click Listeners ---
         for (TextView chip : pChips) {
             chip.setOnClickListener(view -> {
-                selectedPriority = ((TextView)view).getText().toString();
-                updateChipSelectionUI(pChips, selectedPriority);
+                String value = ((TextView) view).getText().toString();
+                dialogPriority[0] = value.equalsIgnoreCase(dialogPriority[0]) ? "" : value;
+                updateChipSelectionUI(pChips, dialogPriority[0]);
             });
         }
 
         for (TextView chip : sChips) {
             chip.setOnClickListener(view -> {
-                String text = ((TextView)view).getText().toString();
-                // Map UI names to backend names
-                if (text.equals("In Progress")) selectedState = "In_Process";
-                else if (text.equals("Solved")) selectedState = "Resolved";
-                else selectedState = "Raised";
-
-                updateChipSelectionUI(sChips, selectedState);
+                String mappedState = mapDialogState(((TextView) view).getText().toString());
+                dialogState[0] = mappedState.equalsIgnoreCase(dialogState[0]) ? "" : mappedState;
+                updateChipSelectionUI(sChips, dialogState[0]);
             });
         }
 
-        // --- 3. CLEAR ALL Logic ---
         tvClear.setOnClickListener(view -> {
+            dialogPriority[0] = "";
+            dialogState[0] = "";
+            swDeleted.setChecked(false);
+            rgSort.clearCheck();
+            updateChipSelectionUI(pChips, "");
+            updateChipSelectionUI(sChips, "");
+
+            boolean previousShowDeleted = showDeleted;
             selectedPriority = "";
             selectedState = "";
             selectedSort = "";
-
             showDeleted = false;
-            swDeleted.setChecked(false);
-            rgSort.clearCheck();
 
-
-            if (etSearch != null) etSearch.setText("");
-
-
-            updateChipSelectionUI(pChips, "");
-            updateChipSelectionUI(sChips, "");
+            if (showDeleted != previousShowDeleted) {
+                loadTicketsByLandlordId();
+            } else {
+                applyTicketFilters();
+            }
         });
 
         builder.setView(v);
         android.app.AlertDialog dialog = builder.create();
         dialog.show();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
 
         v.findViewById(R.id.btnSubmitFilter).setOnClickListener(view -> {
 
-            // Capture Sort selection
             int checkedId = rgSort.getCheckedRadioButtonId();
-            if (checkedId == R.id.rbBuilding) selectedSort = "Building";
-            else if (checkedId == R.id.rbPriority) selectedSort = "Priority";
-            else if (checkedId == R.id.rbDate) selectedSort = "Date";
-            else selectedSort = ""; // No sort selected
+            String dialogSort;
+            if (checkedId == R.id.rbBuilding) dialogSort = "Building";
+            else if (checkedId == R.id.rbPriority) dialogSort = "Priority";
+            else if (checkedId == R.id.rbDate) dialogSort = "Date";
+            else dialogSort = "";
+
             boolean previousShowDeleted = showDeleted;
+            selectedPriority = dialogPriority[0];
+            selectedState = dialogState[0];
+            selectedSort = dialogSort;
             showDeleted = swDeleted.isChecked();
 
             if (showDeleted != previousShowDeleted) {
                 loadTicketsByLandlordId();
             } else {
-                adapter.applyAdvancedFilter(selectedPriority, selectedState, selectedSort, aiOnly);
-                dialog.dismiss();
+                applyTicketFilters();
             }
+            dialog.dismiss();
         });
         v.findViewById(R.id.btnClose).setOnClickListener(view -> dialog.dismiss());
     }
@@ -243,51 +250,85 @@ public class LettingAgentTicketsActivity extends AppCompatActivity {
             if (chipVal.equals("In Progress") && selectedValue.equals("In_Process")) chipVal = "In_Process";
             if (chipVal.equals("Solved") && selectedValue.equals("Resolved")) chipVal = "Resolved";
 
-            if (chipVal.equalsIgnoreCase(selectedValue)) {
-
-                chip.setBackgroundResource(R.drawable.bg_chip_selected);
-                chip.setTypeface(null, Typeface.BOLD);
-            } else {
-
-                chip.setBackgroundResource(R.drawable.bg_chip_unselected);
-                chip.setTypeface(null, Typeface.NORMAL);
-            }
+            boolean isSelected = chipVal.equalsIgnoreCase(selectedValue);
+            applyFilterChipStyle(chip, isSelected);
         }
     }
 
-    private void setupBottomNav(int selectedId) {
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
-        bottomNav.setSelectedItemId(selectedId);
+    private void applyTicketFilters() {
+        adapter.applyAdvancedFilter(selectedPriority, selectedState, selectedSort, aiOnly);
+    }
 
-        bottomNav.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
+    private void updateAiToggleUi() {
+        if (btnAiToggle == null) {
+            return;
+        }
 
-            // Prevent reloading the same activity
-            if (itemId == selectedId) return true;
+        btnAiToggle.setBackgroundResource(R.drawable.bg_tenant_calendar_action_primary);
+        btnAiToggle.setAlpha(1.0f);
 
-            if (itemId == R.id.nav_tickets) {
-                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_buildings) {
-                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;}
-                else if (itemId == R.id.nav_notifications) {
-                    startActivity(new Intent(this, LettingAgentNotificationsActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-            } else if (itemId == R.id.nav_profile) {
-                startActivity(new Intent(this, LettingAgentProfileActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-            return false;
-        });
+        if (aiOnly) {
+            btnAiToggle.setColorFilter(Color.parseColor("#FFD700"));
+        } else {
+            btnAiToggle.setColorFilter(Color.WHITE);
+        }
+    }
+
+    private String mapDialogState(String text) {
+        if ("In Progress".equals(text)) {
+            return "In_Process";
+        }
+        if ("Solved".equals(text)) {
+            return "Resolved";
+        }
+        return "Raised";
+    }
+
+    private void applyFilterChipStyle(TextView chip, boolean isSelected) {
+        int fillColor;
+        int strokeColor;
+        int textColor;
+
+        int chipId = chip.getId();
+        if (chipId == R.id.chipHigh) {
+            fillColor = getColor(isSelected ? R.color.chip_high_text : R.color.chip_high_bg);
+            strokeColor = getColor(R.color.chip_high_text);
+            textColor = isSelected ? Color.WHITE : getColor(R.color.chip_high_text);
+        } else if (chipId == R.id.chipMedium) {
+            fillColor = getColor(isSelected ? R.color.chip_medium_text : R.color.chip_medium_bg);
+            strokeColor = getColor(R.color.chip_medium_text);
+            textColor = isSelected ? Color.WHITE : getColor(R.color.chip_medium_text);
+        } else if (chipId == R.id.chipLow) {
+            fillColor = getColor(isSelected ? R.color.chip_low_text : R.color.chip_low_bg);
+            strokeColor = getColor(R.color.chip_low_text);
+            textColor = isSelected ? Color.WHITE : getColor(R.color.chip_low_text);
+        } else if (chipId == R.id.stateProgress) {
+            fillColor = getColor(isSelected ? R.color.ticket_progress_text : R.color.ticket_progress_badge_bg);
+            strokeColor = getColor(R.color.ticket_progress_text);
+            textColor = isSelected ? Color.WHITE : getColor(R.color.ticket_progress_text);
+        } else if (chipId == R.id.stateSolved) {
+            fillColor = getColor(isSelected ? R.color.ticket_solved_text : R.color.ticket_solved_badge_bg);
+            strokeColor = getColor(R.color.ticket_solved_text);
+            textColor = isSelected ? Color.WHITE : getColor(R.color.ticket_solved_text);
+        } else {
+            fillColor = getColor(isSelected ? R.color.ticket_raised_text : R.color.ticket_raised_badge_bg);
+            strokeColor = getColor(R.color.ticket_raised_text);
+            textColor = isSelected ? Color.WHITE : getColor(R.color.ticket_raised_text);
+        }
+
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(dp(18));
+        background.setColor(fillColor);
+        background.setStroke(dp(isSelected ? 2 : 1), strokeColor);
+
+        chip.setBackground(background);
+        chip.setTextColor(textColor);
+        chip.setTypeface(null, Typeface.BOLD);
+        chip.setAlpha(isSelected ? 1f : 0.96f);
+    }
+
+    private int dp(int value) {
+        return Math.round(getResources().getDisplayMetrics().density * value);
     }
 
 }

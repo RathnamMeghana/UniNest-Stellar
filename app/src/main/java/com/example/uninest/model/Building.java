@@ -57,8 +57,11 @@ public class Building {
     public byte[] getCachedImageBytes() {
         if (cachedImageBytes == null && imageUrl != null && !imageUrl.isEmpty()) {
             try {
-                // Decode once and save it
-                cachedImageBytes = android.util.Base64.decode(imageUrl, android.util.Base64.DEFAULT);
+                String cleanImage = imageUrl.replace("data:image/jpeg;base64,", "")
+                        .replace("data:image/png;base64,", "")
+                        .replace("data:image/jpg;base64,", "")
+                        .replaceAll("\\s+", "");
+                cachedImageBytes = android.util.Base64.decode(cleanImage, android.util.Base64.DEFAULT);
             } catch (Exception e) {
                 return null;
             }

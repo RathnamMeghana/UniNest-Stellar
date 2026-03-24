@@ -25,6 +25,7 @@ import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.Calendar;
 import com.example.uninest.model.User;
+import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
     private LinearLayout containerWeekly;
     private LinearLayout containerMonthly;
     private LinearLayout containerHistory;
+    private LinearLayout layoutHistoryHeader;
     private LinearLayout emptyStateCard;
     private TextView tvHeaderOnce;
     private TextView tvHeaderWeekly;
@@ -75,6 +77,9 @@ public class ViewAllTasksActivity extends AppCompatActivity {
     private String selectedUserId = FILTER_ALL_USERS;
     private String selectedSection = SECTION_ALL;
     private FilterAdapter filterAdapter;
+    private MaterialButton btnToggleHistory;
+    private boolean isHistoryExpanded = false;
+    private boolean tasksUnavailable = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +95,13 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         containerWeekly = findViewById(R.id.containerWeekly);
         containerMonthly = findViewById(R.id.containerMonthly);
         containerHistory = findViewById(R.id.containerHistory);
+        layoutHistoryHeader = findViewById(R.id.layoutHistoryHeader);
         emptyStateCard = findViewById(R.id.emptyStateCard);
         tvHeaderOnce = findViewById(R.id.tvHeaderOnce);
         tvHeaderWeekly = findViewById(R.id.tvHeaderWeekly);
         tvHeaderMonthly = findViewById(R.id.tvHeaderMonthly);
         tvHeaderHistory = findViewById(R.id.tvHeaderHistory);
+        btnToggleHistory = findViewById(R.id.btnToggleHistory);
         tvEmptyTitle = findViewById(R.id.tvEmptyTitle);
         tvEmptyBody = findViewById(R.id.tvEmptyBody);
         filterSectionAll = findViewById(R.id.filterSectionAll);
@@ -107,6 +114,10 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         rvRoommateFilter.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         filterAdapter = new FilterAdapter();
         rvRoommateFilter.setAdapter(filterAdapter);
+        btnToggleHistory.setOnClickListener(v -> {
+            isHistoryExpanded = !isHistoryExpanded;
+            updateUi();
+        });
 
         setupSectionFilters();
         updateSectionFilterUi();
@@ -183,7 +194,13 @@ public class ViewAllTasksActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Calendar>> call, Response<List<Calendar>> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    tasksUnavailable = false;
                     allTasks = new ArrayList<>(response.body());
+                    filterAdapter.notifyDataSetChanged();
+                    updateUi();
+                } else {
+                    tasksUnavailable = true;
+                    allTasks = new ArrayList<>();
                     filterAdapter.notifyDataSetChanged();
                     updateUi();
                 }
@@ -191,6 +208,10 @@ public class ViewAllTasksActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Calendar>> call, Throwable t) {
+                tasksUnavailable = true;
+                allTasks = new ArrayList<>();
+                filterAdapter.notifyDataSetChanged();
+                updateUi();
             }
         });
     }
@@ -207,6 +228,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         view.setOnClickListener(v -> {
             if (!section.equals(selectedSection)) {
                 selectedSection = section;
+                isHistoryExpanded = SECTION_HISTORY.equals(section);
                 updateSectionFilterUi();
                 updateUi();
             }
@@ -235,6 +257,9 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         clearSection(containerWeekly, tvHeaderWeekly);
         clearSection(containerMonthly, tvHeaderMonthly);
         clearSection(containerHistory, tvHeaderHistory);
+        layoutHistoryHeader.setVisibility(View.GONE);
+        btnToggleHistory.setVisibility(View.GONE);
+        containerHistory.setVisibility(View.GONE);
 
         List<Calendar> onceTasks = new ArrayList<>();
         List<Calendar> weeklyTasks = new ArrayList<>();
@@ -281,7 +306,7 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         populateSection(containerOnce, tvHeaderOnce, onceTasks);
         populateSection(containerWeekly, tvHeaderWeekly, weeklyTasks);
         populateSection(containerMonthly, tvHeaderMonthly, monthlyTasks);
-        populateSection(containerHistory, tvHeaderHistory, historyTasks);
+        populateHistorySection(historyTasks);
 
         int visibleTaskCount = onceTasks.size() + weeklyTasks.size() + monthlyTasks.size() + historyTasks.size();
         updateEmptyState(visibleTaskCount);
@@ -303,7 +328,44 @@ public class ViewAllTasksActivity extends AppCompatActivity {
         }
     }
 
+    private void populateHistorySection(List<Calendar> tasks) {
+        if (tasks.isEmpty()) {
+            return;
+        }
+
+        layoutHistoryHeader.setVisibility(View.VISIBLE);
+        tvHeaderHistory.setVisibility(View.VISIBLE);
+
+        boolean forceExpanded = SECTION_HISTORY.equals(selectedSection);
+        boolean showCards = forceExpanded || isHistoryExpanded;
+        if (forceExpanded) {
+            isHistoryExpanded = true;
+            btnToggleHistory.setVisibility(View.GONE);
+        } else {
+            btnToggleHistory.setVisibility(View.VISIBLE);
+            btnToggleHistory.setText(showCards
+                    ? "Hide completed (" + tasks.size() + ")"
+                    : "Show completed (" + tasks.size() + ")");
+        }
+
+        containerHistory.setVisibility(showCards ? View.VISIBLE : View.GONE);
+        if (!showCards) {
+            return;
+        }
+
+        for (Calendar task : tasks) {
+            containerHistory.addView(createCard(task, containerHistory));
+        }
+    }
+
     private void updateEmptyState(int visibleTaskCount) {
+        if (tasksUnavailable) {
+            tvEmptyTitle.setText("You're offline");
+            tvEmptyBody.setText("Reconnect to load chores and completed history for this planner view.");
+            emptyStateCard.setVisibility(View.VISIBLE);
+            return;
+        }
+
         if (visibleTaskCount > 0) {
             emptyStateCard.setVisibility(View.GONE);
             return;

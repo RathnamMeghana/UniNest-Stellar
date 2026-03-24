@@ -1,10 +1,16 @@
 package com.example.uninest.ui.auth;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.uninest.R;
+import com.example.uninest.utils.NetworkErrorDialog;
+import com.example.uninest.utils.NetworkUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -15,6 +21,7 @@ public class AgentChangePasswordActivity extends AppCompatActivity {
 
     private EditText etCurrentPassword, etNewPassword, etConfirmNewPassword;
     private MaterialButton btnUpdatePassword;
+    private TextView tvOfflineHint;
     private FirebaseAuth mAuth;
 
     @Override
@@ -28,10 +35,34 @@ public class AgentChangePasswordActivity extends AppCompatActivity {
         etNewPassword = findViewById(R.id.etNewPassword);
         etConfirmNewPassword = findViewById(R.id.etConfirmNewPassword);
         btnUpdatePassword = findViewById(R.id.btnUpdatePassword);
+        tvOfflineHint = findViewById(R.id.tvOfflineHint);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
-
         btnUpdatePassword.setOnClickListener(v -> performPasswordChange());
+        updateConnectivityUi();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateConnectivityUi();
+    }
+
+    private void updateConnectivityUi() {
+        boolean hasConnection = NetworkUtils.hasConnection(this);
+        btnUpdatePassword.setEnabled(hasConnection);
+        btnUpdatePassword.setAlpha(hasConnection ? 1f : 0.6f);
+        tvOfflineHint.setVisibility(hasConnection ? View.GONE : View.VISIBLE);
+    }
+
+    private void showOfflineActionState(String title, String body) {
+        updateConnectivityUi();
+        NetworkErrorDialog.show(this, title, body, this::performPasswordChange);
+    }
+
+    private void resetButtonState() {
+        updateConnectivityUi();
+        btnUpdatePassword.setText("Update Password");
     }
 
     private void performPasswordChange() {
@@ -39,7 +70,6 @@ public class AgentChangePasswordActivity extends AppCompatActivity {
         String newPass = etNewPassword.getText().toString();
         String confirmPass = etConfirmNewPassword.getText().toString();
 
-        // 1. Basic Validations
         if (currentPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -55,35 +85,59 @@ public class AgentChangePasswordActivity extends AppCompatActivity {
             return;
         }
 
+        if (!NetworkUtils.hasConnection(this)) {
+            showOfflineActionState(
+                    "Couldn't update your password",
+                    "You'll need an internet connection to change your password."
+            );
+            return;
+        }
+
         btnUpdatePassword.setEnabled(false);
+        btnUpdatePassword.setAlpha(1f);
         btnUpdatePassword.setText("Verifying...");
 
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null && user.getEmail() != null) {
-
-            // 2. Re-authenticate the user first (Security requirement)
-            AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), currentPass);
-
-            user.reauthenticate(credential).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    // 3. Update the password
-                    user.updatePassword(newPass).addOnCompleteListener(updateTask -> {
-                        if (updateTask.isSuccessful()) {
-                            Toast.makeText(this, "Password Updated!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            btnUpdatePassword.setEnabled(true);
-                            btnUpdatePassword.setText("Update Password");
-                            Toast.makeText(this, "Update Failed: " + updateTask.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } else {
-                    btnUpdatePassword.setEnabled(true);
-                    btnUpdatePassword.setText("Update Password");
-                    etCurrentPassword.setError("Incorrect current password");
-                    Toast.makeText(this, "Authentication Failed", Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (user == null || user.getEmail() == null) {
+            resetButtonState();
+            Toast.makeText(this, "Please sign in again to update your password.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), currentPass);
+
+        user.reauthenticate(credential).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                user.updatePassword(newPass).addOnCompleteListener(updateTask -> {
+                    if (updateTask.isSuccessful()) {
+                        NetworkErrorDialog.dismiss(this);
+                        Toast.makeText(this, "Password Updated!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        resetButtonState();
+                        if (!NetworkUtils.hasConnection(this)) {
+                            showOfflineActionState(
+                                    "Couldn't update your password",
+                                    "You'll need an internet connection to change your password."
+                            );
+                        } else {
+                            Toast.makeText(this, "We couldn't update your password right now.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                return;
+            }
+
+            resetButtonState();
+            if (!NetworkUtils.hasConnection(this)) {
+                showOfflineActionState(
+                        "Couldn't verify your password",
+                        "You'll need an internet connection to change your password."
+                );
+            } else {
+                etCurrentPassword.setError("Incorrect current password");
+                Toast.makeText(this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
