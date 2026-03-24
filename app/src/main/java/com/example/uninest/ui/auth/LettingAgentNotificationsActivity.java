@@ -22,10 +22,11 @@ import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.model.Apartment;
 import com.example.uninest.model.SendNotificationRequest;
 import com.example.uninest.model.User;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.snackbar.Snackbar;
+import com.example.uninest.utils.AgentBottomNavHelper;
+import com.example.uninest.utils.NetworkErrorDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,14 +42,18 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
 
     private Chip chipEveryone;
     private Chip chipPickTenants;
+    private Spinner spinnerBuildings;
     private Spinner spinnerApartments;
     private Spinner spinnerTenants;
     private EditText etTitle;
     private EditText etBody;
     private MaterialButton btnSend;
+    private TextView tvSelectedBuilding;
     private TextView tvSelectedApartment;
     private TextView tvMessageCount;
 
+    private final List<Building> buildingList = new ArrayList<>();
+    private final List<String> buildingNames = new ArrayList<>();
     private final List<Apartment> apartmentList = new ArrayList<>();
     private final List<String> apartmentNames = new ArrayList<>();
 
@@ -58,6 +63,7 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
     private String apartmentName;
     private String houseCode;
     private String selectedBuildingId;
+    private String selectedBuildingName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,18 +74,21 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
 
         chipEveryone = findViewById(R.id.chipEveryone);
         chipPickTenants = findViewById(R.id.chipPickTenants);
+        spinnerBuildings = findViewById(R.id.spinnerBuildings);
         spinnerApartments = findViewById(R.id.spinnerApartments);
         spinnerTenants = findViewById(R.id.spinnerTenants);
         etTitle = findViewById(R.id.etNotificationTitle);
         etBody = findViewById(R.id.etNotificationBody);
         btnSend = findViewById(R.id.btnSendNotification);
         tvMessageCount = findViewById(R.id.tvMessageCount);
+        tvSelectedBuilding = findViewById(R.id.tvSelectedBuilding);
         tvSelectedApartment = findViewById(R.id.tvSelectedApartment);
 
         houseCode = getIntent().getStringExtra("EXTRA_HOUSE_CODE");
         apartmentName = getIntent().getStringExtra("EXTRA_APARTMENT_NAME");
         selectedBuildingId = getIntent().getStringExtra("EXTRA_BUILDING_ID");
 
+        updateBuildingLabel();
         updateApartmentLabel();
 
         chipEveryone.setChecked(true);
@@ -95,6 +104,35 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
             chipPickTenants.setChecked(true);
             chipEveryone.setChecked(false);
             spinnerTenants.setVisibility(View.VISIBLE);
+        });
+
+        spinnerBuildings.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                if (position >= 0 && position < buildingList.size()) {
+                    Building selectedBuilding = buildingList.get(position);
+                    if (selectedBuilding == null) return;
+
+                    boolean changed = selectedBuildingId == null
+                            || !selectedBuilding.getId().equals(selectedBuildingId);
+
+                    selectedBuildingId = selectedBuilding.getId();
+                    selectedBuildingName = selectedBuilding.getName();
+                    updateBuildingLabel();
+
+                    if (changed) {
+                        apartmentName = null;
+                        houseCode = null;
+                        updateApartmentLabel();
+                        clearTenantOptions();
+                    }
+
+                    loadApartmentsForBuilding(selectedBuildingId);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) { }
         });
 
         spinnerApartments.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
@@ -132,10 +170,16 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) { }
         });
 
-        loadApartments();
-        setupBottomNav(R.id.nav_notifications);
+        loadBuildings();
+        AgentBottomNavHelper.setup(this, R.id.nav_notifications);
 
         btnSend.setOnClickListener(v -> sendNotification());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AgentBottomNavHelper.syncSelected(this, R.id.nav_notifications);
     }
 
     private void updateApartmentLabel() {
@@ -148,8 +192,15 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
         }
     }
 
-    private void loadApartments() {
-        ApartmentApi apartmentApi = ApiClient.getApartmentApi();
+    private void updateBuildingLabel() {
+        if (selectedBuildingName == null || selectedBuildingName.isEmpty()) {
+            tvSelectedBuilding.setText("Building: Not selected");
+        } else {
+            tvSelectedBuilding.setText("Building: " + selectedBuildingName);
+        }
+    }
+
+    private void loadBuildings() {
         BuildingApi buildingApi = ApiClient.getBuildingApi();
 
         String landlordId = FirebaseAuth.getInstance().getUid();
@@ -158,78 +209,113 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
             return;
         }
 
-        // If notifications page was opened from a specific building/apartment,
-        // keep that filtering.
-        if (selectedBuildingId != null && !selectedBuildingId.isEmpty()) {
-            apartmentApi.getApartmentsByBuilding(selectedBuildingId).enqueue(new Callback<List<Apartment>>() {
-                @Override
-                public void onResponse(Call<List<Apartment>> call, Response<List<Apartment>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        bindApartments(response.body());
-                    } else {
-                        Toast.makeText(LettingAgentNotificationsActivity.this,
-                                "Failed to load apartments", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<Apartment>> call, Throwable t) {
-                    Toast.makeText(LettingAgentNotificationsActivity.this,
-                            "Failed to load apartments", Toast.LENGTH_SHORT).show();
-                }
-            });
-            return;
-        }
-
-        // Otherwise load only buildings owned by this agent,
-        // then load apartments inside those buildings.
         buildingApi.getBuildingsByLandlord(landlordId).enqueue(new Callback<List<Building>>() {
             @Override
             public void onResponse(Call<List<Building>> call, Response<List<Building>> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    Toast.makeText(LettingAgentNotificationsActivity.this,
-                            "Failed to load buildings", Toast.LENGTH_SHORT).show();
+                    NetworkErrorDialog.show(
+                            LettingAgentNotificationsActivity.this,
+                            "Something went wrong",
+                            "Check your connection and try again.",
+                            LettingAgentNotificationsActivity.this::loadBuildings
+                    );
                     return;
                 }
 
                 List<Building> buildings = response.body();
                 if (buildings.isEmpty()) {
-                    bindApartments(new ArrayList<>());
+                    bindBuildings(new ArrayList<>());
                     return;
                 }
 
-                List<Apartment> allAgentApartments = new ArrayList<>();
-                final int[] remaining = {buildings.size()};
-
-                for (Building building : buildings) {
-                    apartmentApi.getApartmentsByBuilding(building.getId()).enqueue(new Callback<List<Apartment>>() {
-                        @Override
-                        public void onResponse(Call<List<Apartment>> call, Response<List<Apartment>> apartmentResponse) {
-                            if (apartmentResponse.isSuccessful() && apartmentResponse.body() != null) {
-                                allAgentApartments.addAll(apartmentResponse.body());
-                            }
-
-                            remaining[0]--;
-                            if (remaining[0] == 0) {
-                                bindApartments(allAgentApartments);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<Apartment>> call, Throwable t) {
-                            remaining[0]--;
-                            if (remaining[0] == 0) {
-                                bindApartments(allAgentApartments);
-                            }
-                        }
-                    });
-                }
+                bindBuildings(buildings);
             }
 
             @Override
             public void onFailure(Call<List<Building>> call, Throwable t) {
-                Toast.makeText(LettingAgentNotificationsActivity.this,
-                        "Failed to load buildings", Toast.LENGTH_SHORT).show();
+                NetworkErrorDialog.show(
+                        LettingAgentNotificationsActivity.this,
+                        "Something went wrong",
+                        "Check your connection and try again.",
+                        LettingAgentNotificationsActivity.this::loadBuildings
+                );
+            }
+        });
+    }
+
+    private void bindBuildings(List<Building> buildings) {
+        buildingList.clear();
+        buildingNames.clear();
+
+        buildingList.addAll(buildings);
+        for (Building building : buildings) {
+            buildingNames.add(building.getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                R.layout.item_calendar_spinner_selected,
+                buildingNames
+        );
+        adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
+        spinnerBuildings.setAdapter(adapter);
+
+        if (buildings.isEmpty()) {
+            selectedBuildingId = null;
+            selectedBuildingName = null;
+            updateBuildingLabel();
+            bindApartments(new ArrayList<>());
+            return;
+        }
+
+        int targetIndex = 0;
+        if (selectedBuildingId != null && !selectedBuildingId.isEmpty()) {
+            for (int i = 0; i < buildingList.size(); i++) {
+                if (selectedBuildingId.equals(buildingList.get(i).getId())) {
+                    targetIndex = i;
+                    break;
+                }
+            }
+        }
+
+        Building building = buildingList.get(targetIndex);
+        selectedBuildingId = building.getId();
+        selectedBuildingName = building.getName();
+        updateBuildingLabel();
+        spinnerBuildings.setSelection(targetIndex);
+    }
+
+    private void loadApartmentsForBuilding(String buildingId) {
+        if (buildingId == null || buildingId.isEmpty()) {
+            bindApartments(new ArrayList<>());
+            return;
+        }
+
+        ApiClient.getApartmentApi().getApartmentsByBuilding(buildingId).enqueue(new Callback<List<Apartment>>() {
+            @Override
+            public void onResponse(Call<List<Apartment>> call, Response<List<Apartment>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    bindApartments(response.body());
+                } else {
+                    bindApartments(new ArrayList<>());
+                    NetworkErrorDialog.show(
+                            LettingAgentNotificationsActivity.this,
+                            "Something went wrong",
+                            "Check your connection and try again.",
+                            () -> loadApartmentsForBuilding(buildingId)
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Apartment>> call, Throwable t) {
+                bindApartments(new ArrayList<>());
+                NetworkErrorDialog.show(
+                        LettingAgentNotificationsActivity.this,
+                        "Something went wrong",
+                        "Check your connection and try again.",
+                        () -> loadApartmentsForBuilding(buildingId)
+                );
             }
         });
     }
@@ -246,11 +332,19 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.item_calendar_spinner_selected,
                 apartmentNames
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         spinnerApartments.setAdapter(adapter);
+
+        if (apartments.isEmpty()) {
+            apartmentName = null;
+            houseCode = null;
+            updateApartmentLabel();
+            clearTenantOptions();
+            return;
+        }
 
         if (houseCode != null && !houseCode.isEmpty()) {
             for (int i = 0; i < apartmentList.size(); i++) {
@@ -266,6 +360,18 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
             updateApartmentLabel();
             loadTenants();
         }
+    }
+
+    private void clearTenantOptions() {
+        tenantUsers.clear();
+        tenantNames.clear();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                R.layout.item_calendar_spinner_selected,
+                tenantNames
+        );
+        adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
+        spinnerTenants.setAdapter(adapter);
     }
 
     private void loadTenants() {
@@ -284,21 +390,32 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
                             tenantNames.add(user.getFullName());
                         }
                     }
+                } else {
+                    NetworkErrorDialog.show(
+                            LettingAgentNotificationsActivity.this,
+                            "Something went wrong",
+                            "Check your connection and try again.",
+                            LettingAgentNotificationsActivity.this::loadTenants
+                    );
                 }
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         LettingAgentNotificationsActivity.this,
-                        android.R.layout.simple_spinner_item,
+                        R.layout.item_calendar_spinner_selected,
                         tenantNames
                 );
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
                 spinnerTenants.setAdapter(adapter);
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
-                Toast.makeText(LettingAgentNotificationsActivity.this,
-                        "Failed to load tenants", Toast.LENGTH_SHORT).show();
+                NetworkErrorDialog.show(
+                        LettingAgentNotificationsActivity.this,
+                        "Something went wrong",
+                        "Check your connection and try again.",
+                        LettingAgentNotificationsActivity.this::loadTenants
+                );
             }
         });
     }
@@ -372,30 +489,4 @@ public class LettingAgentNotificationsActivity extends AppCompatActivity {
         });
     }
 
-    private void setupBottomNav(int selectedId) {
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
-        bottomNav.setSelectedItemId(selectedId);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            if (itemId == selectedId) return true;
-
-            if (itemId == R.id.nav_tickets) {
-                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
-            } else if (itemId == R.id.nav_buildings) {
-                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
-            } else if (itemId == R.id.nav_notifications) {
-                startActivity(new Intent(this, LettingAgentNotificationsActivity.class));
-            } else if (itemId == R.id.nav_profile) {
-                startActivity(new Intent(this, LettingAgentProfileActivity.class));
-            } else {
-                return false;
-            }
-
-            overridePendingTransition(0, 0);
-            finish();
-            return true;
-        });
-    }
 }

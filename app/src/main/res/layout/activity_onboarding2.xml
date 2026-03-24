@@ -28,6 +28,7 @@
         android:layout_height="23dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
+        android:contentDescription="Onboarding page 2 of 3"
         android:src="@drawable/onboarding_dots_2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -45,6 +46,8 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="68dp"
         android:layout_marginEnd="24dp"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"
         android:scaleType="fitCenter"
         android:src="@drawable/onboard_bills_illustration"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,7 +78,7 @@
         android:layout_marginTop="12dp"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:text="Add shared purchases, upload receipts, and track what everyone owes in seconds."
+        android:text="Add shared purchases and track what everyone owes in seconds."
         android:textColor="#EDEDED"
         android:textSize="17sp"
         app:layout_constraintTop_toBottomOf="@id/onboardingTitle"
@@ -105,6 +108,8 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
             android:src="@drawable/ic_arrow_right" />
     </LinearLayout>
 

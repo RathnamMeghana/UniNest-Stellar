@@ -1,10 +1,7 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Intent;
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -17,9 +14,10 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.model.Apartment;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.example.uninest.SessionManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.uninest.utils.AgentBottomNavHelper;
+import com.example.uninest.utils.DestructiveConfirmationDialog;
+import com.example.uninest.utils.NetworkErrorDialog;
 
 import java.util.List;
 
@@ -75,12 +73,13 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        setupBottomNav(R.id.nav_buildings);
+        AgentBottomNavHelper.setup(this, R.id.nav_buildings);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        AgentBottomNavHelper.syncSelected(this, R.id.nav_buildings);
         loadApartments();
     }
 
@@ -95,13 +94,24 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
                         addApartmentCard(apartment);
                     }
                 } else {
-                    Toast.makeText(LettingAgentApartmentsActivity.this, "Failed to load", Toast.LENGTH_SHORT).show();
+                    NetworkErrorDialog.show(
+                            LettingAgentApartmentsActivity.this,
+                            "Something went wrong",
+                            "Check your connection and try again.",
+                            LettingAgentApartmentsActivity.this::loadApartments
+                    );
                 }
             }
 
             @Override
             public void onFailure(Call<List<Apartment>> call, Throwable t) {
                 Log.e("ApartmentAPI", "Error: " + t.getMessage());
+                NetworkErrorDialog.show(
+                        LettingAgentApartmentsActivity.this,
+                        "Something went wrong",
+                        "Check your connection and try again.",
+                        LettingAgentApartmentsActivity.this::loadApartments
+                );
             }
         });
     }
@@ -136,10 +146,24 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
     }
 
     private void showApartmentDeleteConfirmation(Apartment apartment) {
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setTitle("Delete Apartment?")
-                .setMessage("This will delete the apartment and unassign any tenants. This action cannot be undone.")
-                .setPositiveButton("Delete", (d, which) -> {
+        String apartmentName = apartment.getName() != null && !apartment.getName().trim().isEmpty()
+                ? apartment.getName().trim()
+                : "this apartment";
+        String title = "this apartment".equals(apartmentName)
+                ? "Delete this apartment?"
+                : "Delete " + apartmentName + "?";
+        String message = buildingName != null && !buildingName.trim().isEmpty()
+                ? "This apartment will be removed from " + buildingName.trim() + "."
+                : "This apartment will be removed from the building.";
+
+        DestructiveConfirmationDialog.show(
+                this,
+                "Delete apartment",
+                title,
+                message,
+                "Any assigned tenants will be unassigned, and this can't be undone.",
+                "Delete apartment",
+                () -> {
                     apartmentApi.deleteApartment(apartment.getCode()).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
@@ -156,11 +180,8 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
                             Toast.makeText(LettingAgentApartmentsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.RED);
+                }
+        );
     }
 
     private void openApartmentTenants(Apartment apartment) {
@@ -180,42 +201,4 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void setupBottomNav(int selectedId) {
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
-        bottomNav.setSelectedItemId(selectedId);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            if (itemId == selectedId) return true;
-
-            if (itemId == R.id.nav_tickets) {
-                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_buildings) {
-                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_notifications) {
-                startActivity(new Intent(this, LettingAgentNotificationsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;}
-                else if (itemId == R.id.nav_notifications) {
-                    startActivity(new Intent(this, LettingAgentNotificationsActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-            } else if (itemId == R.id.nav_profile) {
-                startActivity(new Intent(this, LettingAgentProfileActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-            return false;
-        });
-    }
 }

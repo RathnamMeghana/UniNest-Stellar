@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutNetworkErrorOverlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:clickable="false"
+    android:focusable="false"
+    android:paddingHorizontal="28dp"
+    android:paddingVertical="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_tenant_calendar_surface"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <FrameLayout
+            android:layout_width="126dp"
+            android:layout_height="126dp"
+            android:background="@drawable/bg_add_calendar_error_illustration"
+            android:padding="18dp">
+
+            <ImageView
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:src="@drawable/warning" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvDialogNetworkErrorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:text="Something went wrong"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/tvDialogNetworkErrorBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/opensans_regular"
+            android:gravity="center"
+            android:text="Check your connection and try again."
+            android:textColor="@color/calendar_text_secondary"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDialogRetryNetwork"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_tenant_calendar_action_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="28dp"
+            android:text="Try Again"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:backgroundTint="@null"
+            app:cornerRadius="18dp"
+            app:elevation="0dp"
+            app:strokeWidth="0dp" />
+    </LinearLayout>
+</FrameLayout>

@@ -4,235 +4,474 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/app_surface">
 
-    <!-- Background Blobs -->
-    <ImageView
-        android:id="@+id/blob1"
-        android:layout_width="128dp"
-        android:layout_height="93dp"
-        android:layout_marginStart="-15dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/blob_1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/blob2"
-        android:layout_width="274dp"
-        android:layout_height="181dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/blob_2"
-        android:translationX="50dp"
-        android:translationY="-14dp"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollHome"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Greeting Section -->
-    <LinearLayout
-        android:id="@+id/layoutGreeting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="100dp"
-        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/tvGreeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="-8dp"
-            android:text="Good evening,\nLeyla!"
-            android:textColor="#000000"
-            android:textSize="36sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- Don't forget label -->
-    <TextView
-        android:id="@+id/tvForgetLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Don’t forget!"
-        android:textColor="#000000"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutGreeting" />
-
-    <!-- Main Scroll Content -->
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
-        app:layout_constraintTop_toBottomOf="@id/tvForgetLabel">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            android:paddingBottom="20dp">
+            android:paddingStart="20dp"
+            android:paddingTop="22dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="28dp">
 
-            <!-- Leaderboard Card -->
+            <FrameLayout
+                android:id="@+id/heroCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_home_hero_shell"
+                    android:padding="22dp">
+
+                    <View
+                        android:id="@+id/heroOrbLarge"
+                        android:layout_width="132dp"
+                        android:layout_height="132dp"
+                        android:alpha="0.92"
+                        android:background="@drawable/bg_home_orb_primary"
+                        android:importantForAccessibility="no"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/heroOrbSmall"
+                        android:layout_width="92dp"
+                        android:layout_height="92dp"
+                        android:alpha="0.88"
+                        android:background="@drawable/bg_home_orb_secondary"
+                        android:importantForAccessibility="no"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/heroOrbLarge"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <FrameLayout
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageButton
+                            android:id="@+id/btnOpenNotifications"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_home_notification_button"
+                            android:contentDescription="Open alerts"
+                            android:padding="11dp"
+                            android:src="@drawable/ic_notifications"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/tvAlertBadge"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="top|end"
+                            android:background="@drawable/bg_home_notification_badge"
+                            android:gravity="center"
+                            android:importantForAccessibility="no"
+                            android:text="3"
+                            android:textColor="@android:color/white"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutHeroContent"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <FrameLayout
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_home_notification_button"
+                                android:padding="6dp">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:adjustViewBounds="true"
+                                    android:contentDescription="UniNest logo"
+                                    android:scaleType="centerInside"
+                                    android:src="@drawable/ic_uninest_logo" />
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/opensans_bold"
+                                    android:letterSpacing="0.05"
+                                    android:text="UniNest"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvGreeting"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:accessibilityHeading="true"
+                            android:lineSpacingExtra="-4dp"
+                            android:text="Good evening,\nLeyla!"
+                            android:textColor="@android:color/white"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            tools:text="Good afternoon,\nLeyla!" />
+
+                        <TextView
+                            android:id="@+id/tvAlertSummary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="No new alerts right now."
+                            android:textColor="#F4EFFF"
+                            android:textSize="14sp"
+                            tools:text="3 alerts need your attention today." />
+
+                        <LinearLayout
+                            android:id="@+id/layoutSupportActions"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
+                            android:baselineAligned="false"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnEmergencyContact"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@android:color/white"
+                                android:gravity="center"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="Emergency"
+                                android:textAllCaps="false"
+                                android:textColor="@color/calendar_primary_dark"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="18dp"
+                                app:elevation="0dp"
+                                app:icon="@android:drawable/ic_menu_call"
+                                app:iconGravity="textStart"
+                                app:iconPadding="8dp"
+                                app:iconTint="@color/calendar_primary_dark" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnSupport"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="#18FFFFFF"
+                                android:gravity="center"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="Support"
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="18dp"
+                                app:elevation="0dp"
+                                app:icon="@android:drawable/ic_dialog_email"
+                                app:iconGravity="textStart"
+                                app:iconPadding="8dp"
+                                app:iconTint="@android:color/white"
+                                app:strokeColor="#36FFFFFF"
+                                app:strokeWidth="1dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:accessibilityHeading="true"
+                            android:layout_marginTop="16dp"
+                            android:text="Quick access"
+                            android:textColor="#E4D6FA"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/layoutQuickAccess"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnOpenBills"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="44dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="#14FFFFFF"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="Bills"
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="16dp"
+                                app:elevation="0dp"
+                                app:strokeColor="#2EFFFFFF"
+                                app:strokeWidth="1dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnOpenCalendar"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="44dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="#14FFFFFF"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="Planner"
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="16dp"
+                                app:elevation="0dp"
+                                app:strokeColor="#2EFFFFFF"
+                                app:strokeWidth="1dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnOpenTickets"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="44dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="#14FFFFFF"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="Tickets"
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="16dp"
+                                app:elevation="0dp"
+                                app:strokeColor="#2EFFFFFF"
+                                app:strokeWidth="1dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </FrameLayout>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardLeaderboard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginTop="18dp"
                 android:visibility="gone"
-                app:cardBackgroundColor="#B094CA"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="6dp">
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/bg_home_leaderboard_shell"
                     android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="10dp">
+                    android:padding="18dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="4dp">
+                        android:background="@drawable/bg_soft_badge"
+                        android:paddingStart="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="5dp"
+                        android:text="This week"
+                        android:textColor="@color/app_text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🏆"
-                            android:textSize="24sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:accessibilityHeading="true"
+                        android:text="Chore leaderboard"
+                        android:textColor="@color/app_text_primary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="Chore Leaderboard"
-                            android:textColor="#1A1A1A"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Top cleaners get a brighter spotlight, so you can tell the leader at a glance."
+                        android:textColor="@color/app_text_secondary"
+                        android:textSize="13sp" />
 
-                    <!-- Your stats row -->
                     <LinearLayout
+                        android:id="@+id/layoutYourStanding"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:background="@drawable/bg_leaderboard_you"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="4dp"
-                        android:paddingVertical="10dp">
+                        android:paddingStart="12dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="12dp">
 
                         <TextView
                             android:id="@+id/tvYourRank"
-                            android:layout_width="42dp"
-                            android:layout_height="wrap_content"
+                            android:layout_width="44dp"
+                            android:layout_height="34dp"
+                            android:background="@drawable/bg_soft_badge"
+                            android:gravity="center"
                             android:text="#1"
-                            android:textColor="#555555"
-                            android:textSize="22sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/app_text_secondary"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            tools:text="#2" />
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/ivYourProfile"
-                            android:layout_width="38dp"
-                            android:layout_height="38dp"
-                            android:layout_marginStart="4dp"
+                            android:layout_width="42dp"
+                            android:layout_height="42dp"
+                            android:layout_marginStart="10dp"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_profile_tenant"
                             app:shapeAppearanceOverlay="@style/CircleImage" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:layout_weight="1"
-                            android:text="You"
-                            android:textColor="#1A1A1A"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="You"
+                                    android:textColor="@color/app_text_primary"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <ImageView
+                                    android:id="@+id/ivYourLeaderBadge"
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_marginStart="6dp"
+                                    android:contentDescription="Top chore leader"
+                                    android:src="@drawable/ic_home_trophy"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:text="Your current chore score"
+                                android:textColor="@color/app_text_secondary"
+                                android:textSize="12sp" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvYourPoints"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="34dp"
+                            android:background="@drawable/bg_soft_badge"
+                            android:gravity="center"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
                             android:text="0 pts"
-                            android:textColor="#1A1A1A"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            tools:text="190 pts" />
                     </LinearLayout>
 
-                    <!-- Other roommates container -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:accessibilityHeading="true"
+                        android:text="Apartment standings"
+                        android:textColor="@color/app_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
                     <LinearLayout
                         android:id="@+id/layoutLeaderboardRows"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="vertical" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-
-            <!-- Notifications Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tvNotificationsHeading"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Notifications"
-                    android:textColor="#111111"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnClearAllNotifications"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#7B4DDB"
-                    android:text="Clear all"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF" />
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerNotifications"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:nestedScrollingEnabled="false" />
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         style="@style/Widget.Design.BottomNavigationView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="80dp"
-        android:background="#FFFFFF"
+        android:background="@color/app_surface"
         android:elevation="16dp"
         app:itemBackground="@drawable/bg_nav_pill_custom"
         app:itemIconSize="50dp"
         app:itemIconTint="@color/selector_nav_icon"
-        app:itemTextColor="#000000"
+        app:itemTextColor="@color/selector_nav_text"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/tenant_bottom_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,12 +1,8 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Intent;
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -17,7 +13,9 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.BuildingApi;
 import com.example.uninest.model.Building;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.example.uninest.utils.AgentBottomNavHelper;
+import com.example.uninest.utils.DestructiveConfirmationDialog;
+import com.example.uninest.utils.NetworkErrorDialog;
 
 import java.util.List;
 
@@ -28,7 +26,6 @@ import retrofit2.Response;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -40,7 +37,7 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
     private BuildingApi buildingApi;
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener authListener;
+    private boolean hasLoadedBuildings;
 
 
     //  Refresh only when AddBuildingActivity returns RESULT_OK
@@ -72,7 +69,8 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
 
 
         // Bottom nav clicks
-        setupBottomNav(R.id.nav_buildings);
+        AgentBottomNavHelper.setup(this, R.id.nav_buildings);
+        loadBuildingsIfNeeded();
 
 
     }
@@ -80,33 +78,13 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        // 1. Explicitly check and load if user exists
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            loadBuildingsFromApi();
-        }
-
-        // 2. Keep the listener for state changes (logouts/logins)
-        if (authListener == null) {
-            authListener = firebaseAuth -> {
-                if (firebaseAuth.getCurrentUser() != null) {
-                    loadBuildingsFromApi();
-                }
-            };
-        }
-        mAuth.addAuthStateListener(authListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (authListener != null) mAuth.removeAuthStateListener(authListener);
+        loadBuildingsIfNeeded();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        AgentBottomNavHelper.syncSelected(this, R.id.nav_buildings);
     }
 
     private void loadBuildingsFromApi() {
@@ -121,12 +99,17 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Building>> call, Response<List<Building>> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    Toast.makeText(LettingAgentBuildingsActivity.this,
-                            "Failed to load buildings", Toast.LENGTH_SHORT).show();
+                    NetworkErrorDialog.show(
+                            LettingAgentBuildingsActivity.this,
+                            "Something went wrong",
+                            "Check your connection and try again.",
+                            LettingAgentBuildingsActivity.this::loadBuildingsFromApi
+                    );
                     return;
                 }
 
                 buildingList.removeAllViews();
+                hasLoadedBuildings = true;
 
                 List<Building> buildings = response.body();
                 if (buildings.isEmpty()) {
@@ -140,11 +123,23 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Building>> call, Throwable t) {
+                hasLoadedBuildings = false;
                 Log.e("Buildings", "Error", t);
-                Toast.makeText(LettingAgentBuildingsActivity.this,
-                        "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                NetworkErrorDialog.show(
+                        LettingAgentBuildingsActivity.this,
+                        "Something went wrong",
+                        "Check your connection and try again.",
+                        LettingAgentBuildingsActivity.this::loadBuildingsFromApi
+                );
             }
         });
+    }
+
+    private void loadBuildingsIfNeeded() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null && !hasLoadedBuildings) {
+            loadBuildingsFromApi();
+        }
     }
 
 
@@ -186,10 +181,21 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
     }
 
     private void showBuildingDeleteConfirmation(Building building) {
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setTitle("Delete Building?")
-                .setMessage("This will also delete ALL apartments inside this building. This action cannot be undone.")
-                .setPositiveButton("Delete", (d, which) -> {
+        String buildingName = building.getName() != null && !building.getName().trim().isEmpty()
+                ? building.getName().trim()
+                : "this building";
+        String title = "this building".equals(buildingName)
+                ? "Delete this building?"
+                : "Delete " + buildingName + "?";
+
+        DestructiveConfirmationDialog.show(
+                this,
+                "Delete building",
+                title,
+                "This building will be removed from your portfolio.",
+                "Every apartment inside it will be deleted too, and this can't be undone.",
+                "Delete building",
+                () -> {
                     buildingApi.deleteBuilding(building.getId()).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
@@ -206,47 +212,8 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
                             Toast.makeText(LettingAgentBuildingsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.RED);
+                }
+        );
     }
 
-    private void setupBottomNav(int selectedId) {
-
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
-        bottomNav.setSelectedItemId(selectedId);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-
-            int itemId = item.getItemId();
-
-            if (itemId == selectedId) {
-                return true;
-            }
-
-            Intent intent = null;
-
-            if (itemId == R.id.nav_buildings) {
-                intent = new Intent(this, LettingAgentBuildingsActivity.class);
-            }
-            else if (itemId == R.id.nav_tickets) {
-                intent = new Intent(this, LettingAgentTicketsActivity.class);
-            }
-            else if (itemId == R.id.nav_notifications) {
-                intent = new Intent(this, LettingAgentNotificationsActivity.class);
-            }
-            else if (itemId == R.id.nav_profile) {
-                intent = new Intent(this, LettingAgentProfileActivity.class);
-            }
-
-            if (intent != null) {
-                startActivity(intent);
-                overridePendingTransition(0,0);
-            }
-
-            return true;
-        });
-    }
 }

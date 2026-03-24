@@ -1,80 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="90dp"
-    android:layout_marginBottom="16dp"
-    android:background="@drawable/bg_building_card"
-    android:clipToOutline="true">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_tenant_calendar_surface"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="14dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#D4BAF1"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvApartmentName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="Apartment 1" />
-
-            <TextView
-                android:id="@+id/tvTenantInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text=""
-                android:textColor="#6A6A6A"
-                android:textSize="14sp"
-                tools:text="5/5 Tenants" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="8dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/btnNotifyApartment"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_delete_circle_purple"
-            android:contentDescription="Notify Tenants"
-            android:padding="8dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_notifications"
-            android:tint="@android:color/white" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/opensans_bold"
+            android:letterSpacing="0.06"
+            android:text="Apartment"
+            android:textAllCaps="true"
+            android:textColor="@color/calendar_primary_dark"
+            android:textSize="11sp" />
 
-        <ImageButton
-            android:id="@+id/btnDeleteApartment"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/bg_delete_circle_purple"
-            android:contentDescription="Delete Apartment"
-            android:padding="8dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/delete"
-            android:tint="@android:color/white" />
+        <TextView
+            android:id="@+id/tvApartmentName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/opensans_bold"
+            android:text="Apartment 1"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tvTenantInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_tenant_calendar_today_chip"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:text="5/5 Tenants"
+            android:textColor="@color/calendar_today_chip_text"
+            android:textSize="12sp" />
     </LinearLayout>
 
-</FrameLayout>
+    <ImageButton
+        android:id="@+id/btnNotifyApartment"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_tenant_calendar_action_primary"
+        android:contentDescription="Notify Tenants"
+        android:padding="9dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_notifications"
+        android:tint="@color/calendar_text_inverse" />
+
+    <ImageButton
+        android:id="@+id/btnDeleteApartment"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_agent_delete_outline"
+        android:contentDescription="Delete Apartment"
+        android:padding="9dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/delete"
+        android:tint="@color/calendar_status_overdue_text" />
+
+</LinearLayout>

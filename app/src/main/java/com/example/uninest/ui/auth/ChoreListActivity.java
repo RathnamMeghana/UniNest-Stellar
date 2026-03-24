@@ -57,14 +57,20 @@ public class ChoreListActivity extends AppCompatActivity {
                         displayChoreCard(chore);
                     }
                 } else {
-                    Toast.makeText(ChoreListActivity.this, "Failed to load chores", Toast.LENGTH_SHORT).show();
+                    com.example.uninest.utils.NetworkErrorDialog.show(
+                            ChoreListActivity.this,
+                            ChoreListActivity.this::loadChores
+                    );
                 }
             }
 
             @Override
             public void onFailure(Call<List<Chore>> call, Throwable t) {
                 Log.e("ChoreAPI", "Error: " + t.getMessage());
-                Toast.makeText(ChoreListActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        ChoreListActivity.this,
+                        ChoreListActivity.this::loadChores
+                );
             }
         });
     }

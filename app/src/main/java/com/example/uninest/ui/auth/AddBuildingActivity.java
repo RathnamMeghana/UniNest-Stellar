@@ -107,6 +107,7 @@ public class AddBuildingActivity extends AppCompatActivity {
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(AddBuildingActivity.this, "Building Created!", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                     finish();
                 } else {
                     btnSave.setEnabled(true);
@@ -117,7 +118,10 @@ public class AddBuildingActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 btnSave.setEnabled(true);
-                Toast.makeText(AddBuildingActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        AddBuildingActivity.this,
+                        AddBuildingActivity.this::saveBuilding
+                );
             }
         });
     }

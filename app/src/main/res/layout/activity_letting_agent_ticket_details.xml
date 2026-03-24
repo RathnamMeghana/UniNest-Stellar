@@ -1,282 +1,451 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E9E2EE"
+    android:background="@drawable/bg_tenant_calendar_screen"
     tools:context=".ui.auth.LettingAgentTicketDetailsActivity">
 
-    <!-- Top Purple Banner -->
-    <FrameLayout
-        android:id="@+id/headerBanner"
-        android:layout_width="0dp"
-        android:layout_height="140dp"
-        android:background="#B792D9"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Back Button -->
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="64dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center_vertical|start"
-            android:layout_marginStart="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
-            android:src="@drawable/ic_back_arrow"
-            app:tint="@android:color/white" />
-
-        <TextView
-            android:id="@+id/tvHeaderTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Ticket Details"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:textSize="32sp" />
-    </FrameLayout>
-
-    <!-- Ticket Category/Title -->
-    <TextView
-        android:id="@+id/tvTicketCategory"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/fixedHeaderContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Plumbing Issue"
-        android:textStyle="bold"
-        android:textSize="24sp"
-        android:textColor="@android:color/black"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="24dp"
-        android:layout_marginHorizontal="24dp"
-        app:layout_constraintTop_toBottomOf="@id/headerBanner"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <!-- Divider -->
-    <View
-        android:id="@+id/divider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#BDBDBD"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/tvTicketCategory"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tenant_calendar_surface"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
 
-    <!-- Scrollable Content -->
+            <FrameLayout
+                android:id="@+id/btnBack"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:clickable="true"
+                android:contentDescription="Go back"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_back_arrow"
+                    app:tint="@color/calendar_primary_dark" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Support"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_primary_dark"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="Ticket Details"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="22sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollContent"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        android:layout_marginTop="16dp"
         android:clipToPadding="false"
-        android:background="#E9E2EE"
-        app:layout_constraintTop_toBottomOf="@id/divider"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/fixedHeaderContainer">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
             android:paddingBottom="24dp">
 
-            <!-- 1. INFO CARD (Tenant Info) -->
-            <androidx.cardview.widget.CardView
+            <LinearLayout
+                android:id="@+id/overviewCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF">
+                android:background="@drawable/bg_tenant_ticket_section_raised"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvOverviewEyebrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.06"
+                    android:text="Issue Overview"
+                    android:textAllCaps="true"
+                    android:textColor="@color/ticket_raised_text"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/tvTicketCategory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="Plumbing Issue"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="24sp"
+                    tools:text="Plumbing Issue" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ISSUE REPORT"
-                        android:textStyle="bold"
-                        android:textColor="#888888"
-                        android:textSize="12sp"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tvLocationInfo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="Apt 2 - Kitchen"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#5B2C83"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tvDescription"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        tools:text="The sink is leaking heavily and causing water damage to the floor."
-                        android:textColor="#333333"
-                        android:lineSpacingExtra="4dp"
-                        android:textSize="15sp"/>
-
-                    <ImageView
-                        android:id="@+id/ivTicketImage"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:adjustViewBounds="true"
-                        android:maxHeight="300dp"
-                        android:scaleType="fitCenter"
-                        android:visibility="gone"
-                        android:background="#F5F5F5"
-                        tools:visibility="visible"
-                        tools:src="@android:drawable/ic_menu_report_image" />
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-
-            <!-- 2. AGENT ACTION CARD -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF">
-
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvLocationInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="Setanta | Apt 2 - Kitchen"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="14sp"
+                    tools:text="Setanta | Apt 2 - Kitchen" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MANAGE TICKET"
-                        android:textStyle="bold"
-                        android:textColor="#888888"
-                        android:textSize="12sp"
-                        android:layout_marginBottom="16dp"/>
+                <TextView
+                    android:id="@+id/tvDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:lineSpacingExtra="5dp"
+                    android:text="The sink is leaking heavily and causing water damage to the floor."
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="16sp"
+                    tools:text="The sink is leaking heavily and causing water damage to the floor." />
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:columnCount="2">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:baselineAligned="false"
-                        android:layout_marginBottom="16dp">
+                        android:layout_columnWeight="1"
+                        android:layout_marginEnd="6dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/bg_tenant_calendar_surface_alt"
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:layout_marginEnd="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Priority"
-                                android:textStyle="bold"
-                                android:textColor="#000"/>
-                            <Spinner
-                                android:id="@+id/spinnerPriority"
-                                android:layout_width="match_parent"
-                                android:layout_height="48dp"
-                                android:background="#F0F0F0"
-                                android:layout_marginTop="4dp"/>
-                        </LinearLayout>
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Priority"
+                            android:textAllCaps="true"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="10sp" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:id="@+id/tvPrioritySummary"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:layout_marginStart="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Status"
-                                android:textStyle="bold"
-                                android:textColor="#000"/>
-                            <Spinner
-                                android:id="@+id/spinnerStatus"
-                                android:layout_width="match_parent"
-                                android:layout_height="48dp"
-                                android:background="#F0F0F0"
-                                android:layout_marginTop="4dp"/>
-                        </LinearLayout>
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Medium"
+                            android:textColor="@color/calendar_text_primary"
+                            android:textSize="15sp"
+                            tools:text="Medium" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Scheduled Arrival"
-                        android:textStyle="bold"
-                        android:textColor="#000"
-                        android:layout_marginBottom="4dp"/>
+                        android:layout_columnWeight="1"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/bg_tenant_calendar_surface_alt"
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
-                    <TextView
-                        android:id="@+id/tvDateSelector"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:background="#E0F7FA"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:text="Tap to select date"
-                        android:textColor="#000000"
-                        android:textSize="15sp"
-                        app:drawableEndCompat="@android:drawable/ic_menu_my_calendar"
-                        android:layout_marginBottom="16dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Status"
+                            android:textAllCaps="true"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="10sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:id="@+id/tvStatusSummary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Raised"
+                            android:textColor="@color/ticket_raised_text"
+                            android:textSize="15sp"
+                            tools:text="Raised" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Message to Tenant"
-                        android:textStyle="bold"
-                        android:textColor="#000"
-                        android:layout_marginBottom="4dp"/>
+                        android:layout_columnWeight="1"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_tenant_calendar_surface_alt"
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
-                    <EditText
-                        android:id="@+id/etAgentResponse"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="#F0F0F0"
-                        android:gravity="top|start"
-                        android:hint="Type message..."
-                        android:padding="12dp"
-                        android:textSize="14sp"
-                        android:inputType="textMultiLine"
-                        android:layout_marginBottom="24dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Visit Date"
+                            android:textAllCaps="true"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="10sp" />
 
-                    <Button
-                        android:id="@+id/btnSaveChanges"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="Update Ticket"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#FFFFFF"
-                        android:backgroundTint="#5B2C83"/>
+                        <TextView
+                            android:id="@+id/tvScheduleSummary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Not set"
+                            android:textColor="@color/calendar_text_primary"
+                            android:textSize="15sp"
+                            tools:text="24/03/2026" />
+                    </LinearLayout>
 
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_tenant_calendar_surface_alt"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Raised By"
+                            android:textAllCaps="true"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="10sp" />
+
+                        <TextView
+                            android:id="@+id/tvRaisedBySummary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Tenant"
+                            android:textColor="@color/calendar_text_primary"
+                            android:textSize="15sp"
+                            tools:text="Test11 Last" />
+                    </LinearLayout>
+                </GridLayout>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivTicketImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="Attached ticket image"
+                    android:maxHeight="360dp"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/RoundedPanelImage"
+                    tools:src="@android:drawable/ic_menu_report_image"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tenant_calendar_surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.06"
+                    android:text="Update Ticket"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_primary_dark"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="Adjust the priority, update the status, schedule a visit, and send a note to the tenant."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Priority"
+                            android:textColor="@color/calendar_text_primary"
+                            android:textSize="13sp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerPriority"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_tenant_calendar_spinner"
+                            android:gravity="center_vertical"
+                            android:paddingEnd="40dp"
+                            android:popupBackground="@drawable/bg_tenant_calendar_dialog"
+                            android:spinnerMode="dropdown" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="1dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Status"
+                            android:textColor="@color/calendar_text_primary"
+                            android:textSize="13sp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_tenant_calendar_spinner"
+                            android:gravity="center_vertical"
+                            android:paddingEnd="40dp"
+                            android:popupBackground="@drawable/bg_tenant_calendar_dialog"
+                            android:spinnerMode="dropdown" />
+                    </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="Scheduled arrival"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvDateSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
+                    android:drawablePadding="10dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:gravity="center_vertical"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:text="Tap to select date"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="14sp"
+                    app:drawableEndCompat="@android:drawable/ic_menu_my_calendar" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="Message to tenant"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etAgentResponse"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
+                    android:fontFamily="@font/opensans_regular"
+                    android:gravity="top|start"
+                    android:hint="Type your update..."
+                    android:inputType="textMultiLine"
+                    android:padding="14dp"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textColorHint="@color/calendar_text_secondary"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveChanges"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/bg_tenant_calendar_action_primary"
+                    android:fontFamily="@font/opensans_bold"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="Save updates"
+                    android:textAllCaps="false"
+                    android:textColor="@color/calendar_text_inverse"
+                    android:textSize="15sp"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="16dp"
+                    app:elevation="0dp"
+                    app:strokeWidth="0dp" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

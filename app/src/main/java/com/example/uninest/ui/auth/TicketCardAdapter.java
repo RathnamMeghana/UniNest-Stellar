@@ -1,7 +1,6 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +32,11 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
 
     private final List<Ticket> all = new ArrayList<>();
     private final List<Ticket> filtered = new ArrayList<>();
+    private String searchQuery = "";
+    private String selectedPriority = "";
+    private String selectedState = "";
+    private String selectedSort = "";
+    private boolean aiOnly = false;
 
     public TicketCardAdapter(Context context, List<Ticket> data, OnCardClick onCardClick) {
         this.context = context;
@@ -42,28 +46,15 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
 
     public void setData(List<Ticket> data) {
         all.clear();
-        all.addAll(data);
-        filter("");
+        if (data != null) {
+            all.addAll(data);
+        }
+        reapplyFilters();
     }
 
     public void filter(String q) {
-        filtered.clear();
-        String query = (q == null) ? "" : q.toLowerCase().trim();
-
-        for (Ticket t : all) {
-            String building = t.getBuilding() != null ? t.getBuilding() : "";
-            String room = t.getRoom() != null ? t.getRoom() : "";
-            String priority = t.getPriority() != null ? t.getPriority() : "";
-            String status = t.getStatus() != null ? t.getStatus() : "";
-            String category = t.getCategory() != null ? t.getCategory() : "";
-
-            String hay = (building + " " + room + " " + category + " " + priority + " " + status).toLowerCase();
-
-            if (hay.contains(query)) {
-                filtered.add(t);
-            }
-        }
-        notifyDataSetChanged();
+        searchQuery = (q == null) ? "" : q.trim();
+        reapplyFilters();
     }
 
     @NonNull
@@ -77,56 +68,54 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
     public void onBindViewHolder(@NonNull VH h, int position) {
         Ticket item = filtered.get(position);
 
-        //  Basic Info
-        h.tvBuilding.setText(item.getBuilding() != null ? item.getBuilding() : "Unknown");
-        String apt = (item.getApartmentName() != null) ? item.getApartmentName() : "Unit";
-        String cat = item.getCategory() != null ? item.getCategory() : "General";
-        h.tvSubTitle.setText(apt + " - " + cat);
+        String building = item.getBuilding() != null ? item.getBuilding() : "";
+        String apartment = item.getApartmentName() != null ? item.getApartmentName() : "";
+        String room = item.getRoom() != null ? item.getRoom() : "";
+        String category = item.getCategory() != null ? item.getCategory() : "";
 
-        String name = (item.getUserName() != null) ? item.getUserName() : "Tenant";
+        h.tvBuilding.setText(buildIssueTitle(room, category));
+        h.tvSubTitle.setText(buildLocationLine(building, apartment));
+
+        String name = item.getUserName() != null ? item.getUserName() : "Tenant";
         h.tvRaisedBy.setText("Raised by: " + name);
-        h.tvReportedOn.setText("Reported on: " + parseDate(item.getCreatedAt()));
 
-        //  Priority & AI Star
         String priority = item.getPriority() != null ? item.getPriority() : "Low";
         h.tvPriorityChip.setText(priority);
 
         if (item.getPrioritySource() != null && item.getPrioritySource().equalsIgnoreCase("AI")) {
             h.ivAiStar.setVisibility(View.VISIBLE);
-            h.ivAiStar.setColorFilter(Color.parseColor("#9C27B0"));
+            h.ivAiStar.setColorFilter(context.getColor(R.color.calendar_primary_dark));
         } else {
             h.ivAiStar.setVisibility(View.GONE);
         }
 
-        // Status & Date String Construction
         String status = item.getStatus() != null ? item.getStatus() : "Open";
+        String canonicalStatus = canonicalStatus(status);
         String dateSuffix;
-
-        if ("Raised".equalsIgnoreCase(status)) {
+        if ("raised".equals(canonicalStatus)) {
             dateSuffix = parseDate(item.getCreatedAt());
         } else if (item.getArrivalDate() != null && !item.getArrivalDate().isEmpty()) {
-            dateSuffix = "• Scheduled: " + item.getArrivalDate();
+            dateSuffix = "Scheduled: " + item.getArrivalDate();
         } else {
-            Object dateObj = (item.getUpdatedAt() != null) ? item.getUpdatedAt() : item.getCreatedAt();
+            Object dateObj = item.getUpdatedAt() != null ? item.getUpdatedAt() : item.getCreatedAt();
             dateSuffix = parseDate(dateObj);
         }
 
-        //  Deleted logic
+        h.tvReportedOn.setText(buildDateLabel(item, canonicalStatus, dateSuffix));
+
         if (Boolean.TRUE.equals(item.isDeletedByTenant())) {
-            // Override text and style for deleted tickets
-            h.tvStatusDate.setText("REMOVED BY TENANT • " + status);
-            h.tvStatusDate.setTextColor(Color.GRAY);
-            h.itemView.setAlpha(0.6f); // Faded
+            h.tvStatusDate.setText("Removed");
+            h.tvStatusDate.setBackgroundResource(R.drawable.bg_tenant_ticket_note);
+            h.tvStatusDate.setTextColor(context.getColor(R.color.calendar_text_secondary));
+            h.itemView.setAlpha(0.6f);
         } else {
-            // Normal ticket display
-            h.tvStatusDate.setText(status + " : " + dateSuffix);
-            h.itemView.setAlpha(1.0f); // opaque
-            applyStatusDateColor(h.tvStatusDate, status);
+            h.tvStatusDate.setText(prettyStatus(canonicalStatus));
+            h.itemView.setAlpha(1.0f);
+            applyStatusBadgeStyle(h.tvStatusDate, canonicalStatus);
         }
 
-        //  General Styling
         applyPriorityChip(h.tvPriorityChip, priority);
-        applyCardGlowByPriority(h.cardRoot, priority);
+        applyCardStyleByStatus(h.cardRoot, canonicalStatus);
 
         h.cardRoot.setOnClickListener(v -> onCardClick.onClick(item));
     }
@@ -141,7 +130,8 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
                     long seconds = 0;
                     if (secObj instanceof Double) seconds = ((Double) secObj).longValue();
                     else if (secObj instanceof Long) seconds = (Long) secObj;
-                    return new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date(seconds * 1000));
+                    return new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            .format(new Date(seconds * 1000));
                 }
             } else if (obj instanceof String) {
                 String s = (String) obj;
@@ -154,6 +144,47 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
         return "N/A";
     }
 
+    private String buildIssueTitle(String room, String category) {
+        String cleanRoom = room == null ? "" : room.trim();
+        String cleanCategory = category == null ? "" : category.trim();
+
+        if (!cleanRoom.isEmpty() && !cleanCategory.isEmpty()) {
+            if (cleanRoom.equalsIgnoreCase(cleanCategory)) {
+                return cleanCategory;
+            }
+            return cleanRoom + ": " + cleanCategory;
+        }
+
+        if (!cleanCategory.isEmpty()) {
+            return cleanCategory;
+        }
+
+        if (!cleanRoom.isEmpty()) {
+            return cleanRoom;
+        }
+
+        return "Maintenance issue";
+    }
+
+    private String buildLocationLine(String building, String apartment) {
+        String cleanBuilding = building == null ? "" : building.trim();
+        String cleanApartment = apartment == null ? "" : apartment.trim();
+
+        if (!cleanBuilding.isEmpty() && !cleanApartment.isEmpty()) {
+            return cleanBuilding + " | " + cleanApartment;
+        }
+
+        if (!cleanBuilding.isEmpty()) {
+            return cleanBuilding;
+        }
+
+        if (!cleanApartment.isEmpty()) {
+            return cleanApartment;
+        }
+
+        return "Unknown location";
+    }
+
     @Override
     public int getItemCount() {
         return filtered.size();
@@ -161,7 +192,12 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
 
     static class VH extends RecyclerView.ViewHolder {
         View cardRoot;
-        TextView tvBuilding, tvSubTitle, tvStatusDate, tvPriorityChip, tvRaisedBy, tvReportedOn;
+        TextView tvBuilding;
+        TextView tvSubTitle;
+        TextView tvStatusDate;
+        TextView tvPriorityChip;
+        TextView tvRaisedBy;
+        TextView tvReportedOn;
         ImageView ivAiStar;
 
         VH(@NonNull View itemView) {
@@ -177,31 +213,78 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
         }
     }
 
-    private void applyCardGlowByPriority(View root, String priority) {
-        if ("High".equalsIgnoreCase(priority)) {
-            root.setBackgroundResource(R.drawable.bg_card_border_raised);
-        } else if ("Medium".equalsIgnoreCase(priority)) {
-            root.setBackgroundResource(R.drawable.bg_card_border_progress);
+    private void applyCardStyleByStatus(View root, String status) {
+        if ("progress".equals(status)) {
+            root.setBackgroundResource(R.drawable.bg_tenant_ticket_card_progress);
+        } else if ("solved".equals(status)) {
+            root.setBackgroundResource(R.drawable.bg_tenant_ticket_card_solved);
         } else {
-            root.setBackgroundResource(R.drawable.bg_card_border_solved);
+            root.setBackgroundResource(R.drawable.bg_tenant_ticket_card_raised);
         }
-        root.setElevation(dp(2));
+        root.setElevation(dp(1));
     }
 
-    private void applyStatusDateColor(TextView tv, String state) {
-        if (state == null) return;
-        String s = state.toLowerCase();
-        if (s.contains("raised") || s.contains("open")) {
-            tv.setTextColor(context.getColor(R.color.state_raised));
-        } else if (s.contains("progress")) {
-            tv.setTextColor(context.getColor(R.color.state_in_progress));
-        } else if (s.contains("solved") || s.contains("closed") || s.contains("resolved")) {
-            tv.setTextColor(context.getColor(R.color.state_solved));
+    private void applyStatusBadgeStyle(TextView tv, String state) {
+        if ("raised".equals(state)) {
+            tv.setBackgroundResource(R.drawable.bg_tenant_ticket_status_raised);
+            tv.setTextColor(context.getColor(R.color.ticket_raised_text));
+        } else if ("progress".equals(state)) {
+            tv.setBackgroundResource(R.drawable.bg_tenant_ticket_status_progress);
+            tv.setTextColor(context.getColor(R.color.ticket_progress_text));
+        } else if ("solved".equals(state)) {
+            tv.setBackgroundResource(R.drawable.bg_tenant_ticket_status_solved);
+            tv.setTextColor(context.getColor(R.color.ticket_solved_text));
+        } else {
+            tv.setBackgroundResource(R.drawable.bg_tenant_ticket_status_raised);
+            tv.setTextColor(context.getColor(R.color.ticket_raised_text));
         }
+    }
+
+    private String prettyStatus(String status) {
+        if ("progress".equals(status)) return "In progress";
+        if ("solved".equals(status)) return "Solved";
+        return "Raised";
+    }
+
+    private String buildDateLabel(Ticket item, String status, String dateSuffix) {
+        if ("progress".equals(status) && item.getArrivalDate() != null && !item.getArrivalDate().isEmpty()) {
+            return "Scheduled: " + item.getArrivalDate();
+        }
+        if ("solved".equals(status)) {
+            return "Updated: " + dateSuffix;
+        }
+        return "Reported: " + parseDate(item.getCreatedAt());
+    }
+
+    private String canonicalStatus(String rawStatus) {
+        if (rawStatus == null || rawStatus.trim().isEmpty()) {
+            return "raised";
+        }
+
+        String normalized = rawStatus.trim()
+                .toLowerCase(Locale.ROOT)
+                .replace('_', ' ')
+                .replace('-', ' ')
+                .replaceAll("\\s+", " ");
+
+        if ("in progress".equals(normalized) || "in process".equals(normalized)) {
+            return "progress";
+        }
+
+        if ("resolved".equals(normalized) || "closed".equals(normalized) || "solved".equals(normalized)) {
+            return "solved";
+        }
+
+        if ("open".equals(normalized) || "raised".equals(normalized)) {
+            return "raised";
+        }
+
+        return "raised";
     }
 
     private void applyPriorityChip(TextView chip, String priority) {
-        int bg, text;
+        int bg;
+        int text;
         if ("High".equalsIgnoreCase(priority)) {
             bg = context.getColor(R.color.chip_high_bg);
             text = context.getColor(R.color.chip_high_text);
@@ -223,34 +306,71 @@ public class TicketCardAdapter extends RecyclerView.Adapter<TicketCardAdapter.VH
     }
 
     public void applyAdvancedFilter(String priority, String state, String sortType, boolean aiOnly) {
-        filtered.clear();
-        for (Ticket t : all) {
-            boolean matchesPriority = priority.isEmpty() || (t.getPriority() != null && t.getPriority().equalsIgnoreCase(priority));
-            boolean matchesState = state.isEmpty() || (t.getStatus() != null && t.getStatus().equalsIgnoreCase(state));
-            boolean matchesAi = !aiOnly || (t.getPrioritySource() != null && t.getPrioritySource().equalsIgnoreCase("AI"));
+        selectedPriority = priority == null ? "" : priority.trim();
+        selectedState = state == null ? "" : state.trim();
+        selectedSort = sortType == null ? "" : sortType.trim();
+        this.aiOnly = aiOnly;
+        reapplyFilters();
+    }
 
-            if (matchesPriority && matchesState && matchesAi) {
+    private void reapplyFilters() {
+        filtered.clear();
+        String query = searchQuery.toLowerCase(Locale.ROOT).trim();
+        String normalizedState = normalizeSelectedState(selectedState);
+
+        for (Ticket t : all) {
+            String building = t.getBuilding() != null ? t.getBuilding() : "";
+            String apartment = t.getApartmentName() != null ? t.getApartmentName() : "";
+            String room = t.getRoom() != null ? t.getRoom() : "";
+            String priority = t.getPriority() != null ? t.getPriority() : "";
+            String status = t.getStatus() != null ? t.getStatus() : "";
+            String category = t.getCategory() != null ? t.getCategory() : "";
+            String hay = (building + " " + apartment + " " + room + " " + category + " " + priority + " " + status)
+                    .toLowerCase(Locale.ROOT);
+
+            boolean matchesSearch = query.isEmpty() || hay.contains(query);
+            boolean matchesPriority = selectedPriority.isEmpty()
+                    || (t.getPriority() != null && t.getPriority().equalsIgnoreCase(selectedPriority));
+            boolean matchesState = normalizedState.isEmpty()
+                    || normalizedState.equals(canonicalStatus(t.getStatus()));
+            boolean matchesAi = !this.aiOnly
+                    || (t.getPrioritySource() != null
+                    && t.getPrioritySource().equalsIgnoreCase("AI"));
+
+            if (matchesSearch && matchesPriority && matchesState && matchesAi) {
                 filtered.add(t);
             }
         }
 
-        if ("Building".equalsIgnoreCase(sortType)) {
-            filtered.sort((a, b) -> (a.getBuilding() != null ? a.getBuilding() : "").compareToIgnoreCase(b.getBuilding() != null ? b.getBuilding() : ""));
-        } else if ("Priority".equalsIgnoreCase(sortType)) {
+        if ("Building".equalsIgnoreCase(selectedSort)) {
+            filtered.sort((a, b) -> (a.getBuilding() != null ? a.getBuilding() : "")
+                    .compareToIgnoreCase(b.getBuilding() != null ? b.getBuilding() : ""));
+        } else if ("Priority".equalsIgnoreCase(selectedSort)) {
             filtered.sort((a, b) -> Integer.compare(getPriorityRank(b.getPriority()), getPriorityRank(a.getPriority())));
-        } else {
+        } else if ("Date".equalsIgnoreCase(selectedSort)) {
             filtered.sort((a, b) -> Long.compare(getTicketSeconds(b), getTicketSeconds(a)));
         }
         notifyDataSetChanged();
     }
 
+    private String normalizeSelectedState(String rawState) {
+        if (rawState == null || rawState.trim().isEmpty()) {
+            return "";
+        }
+        return canonicalStatus(rawState);
+    }
+
     private int getPriorityRank(String p) {
         if (p == null) return 0;
-        switch (p.toLowerCase()) {
-            case "high": return 3;
-            case "medium": return 2;
-            case "low": return 1;
-            default: return 0;
+        switch (p.toLowerCase(Locale.ROOT)) {
+            case "high":
+                return 3;
+            case "medium":
+                return 2;
+            case "low":
+                return 1;
+            default:
+                return 0;
         }
     }
 

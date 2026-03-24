@@ -1,160 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E9E2EE"
-    tools:context=".ui.auth.AddApartmentActivity">
+    android:background="@drawable/bg_tenant_calendar_screen">
 
-    <!-- Top banner -->
-    <FrameLayout
-        android:id="@+id/headerBanner"
-        android:layout_width="0dp"
-        android:layout_height="140dp"
-        android:background="#B792D9"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:id="@+id/tvHeaderTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="New Apartment"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:textSize="28sp" />
-    </FrameLayout>
-
-    <!-- Smaller, centered white card with form -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/formCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="24dp"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerBanner"
-        app:layout_constraintVertical_bias="0.426">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="vertical">
 
-            <!-- Apartment Name label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Apartment Name"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <!-- Apartment Name input -->
-            <EditText
-                android:id="@+id/etApartmentName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_textfield"
-                android:hint="e.g. Apartment 1"
-                android:padding="12dp"
-                android:textSize="14sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Max Tenants"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-
-            <EditText
-                android:id="@+id/etMaxTenants"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_textfield"
-                android:hint="e.g. 5"
-                android:inputType="number"
-                android:padding="12dp"
-                android:textSize="14sp" />
-
-
-            <!-- Total Rooms label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Total Rooms"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <!-- Total Rooms input
-            <EditText
-                android:id="@+id/etTotalRooms"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_textfield"
-                android:hint="e.g. 5"
-                android:inputType="number"
-                android:padding="12dp"
-                android:textSize="14sp" /> -->
-
-            <!-- Spacer before buttons -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="16dp" />
-
-            <!-- Buttons row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_tenant_calendar_surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Portfolio"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_primary_dark"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/tvHeaderTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="New Apartment"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="23sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="Create a new apartment unit and set the occupancy limit before tenants join it."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tenant_calendar_surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Apartment Name"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/etApartmentName"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
+                    android:gravity="center_vertical"
+                    android:hint="e.g. Apartment 1"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textColorHint="@color/calendar_text_secondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Max Tenants"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/etMaxTenants"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
+                    android:gravity="center_vertical"
+                    android:hint="e.g. 5"
+                    android:inputType="number"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textColorHint="@color/calendar_text_secondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="Room setup can be added afterwards from the apartment details screen."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:gravity="end"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btnCancel"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="44dp"
                     android:background="@android:color/transparent"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="18dp"
                     android:text="Cancel"
                     android:textAllCaps="false"
-                    android:textColor="#6A6A6A" />
+                    android:textColor="@color/calendar_text_secondary" />
 
                 <Space
-                    android:layout_width="12dp"
+                    android:layout_width="10dp"
                     android:layout_height="0dp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSaveApartment"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_new_item_button"
-                    android:paddingHorizontal="24dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="@color/calendar_primary_dark"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
                     android:text="Save Apartment"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@color/calendar_text_inverse"
+                    android:textStyle="bold"
+                    app:cornerRadius="16dp"
+                    app:elevation="0dp" />
             </LinearLayout>
-
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

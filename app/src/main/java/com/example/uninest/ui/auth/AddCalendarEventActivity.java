@@ -1,11 +1,11 @@
 package com.example.uninest.ui.auth;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 
 import com.example.uninest.SessionManager;
 import com.example.uninest.model.FirestoreTimestamp;
@@ -18,12 +18,17 @@ import com.example.uninest.model.Chore;
 import com.example.uninest.model.DateUtils;
 import com.example.uninest.data.api.UserApi;
 import com.example.uninest.model.User;
+import com.example.uninest.utils.NetworkErrorDialog;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Date;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,6 +62,8 @@ public class AddCalendarEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_calendar_event);
+        selectedCal.set(java.util.Calendar.SECOND, 0);
+        selectedCal.set(java.util.Calendar.MILLISECOND, 0);
 
         // Get Session Data
         sessionManager = new SessionManager(this);
@@ -74,6 +81,7 @@ public class AddCalendarEventActivity extends AppCompatActivity {
         initViews();
         setupSpinners();
         setupPickers();
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         btnSave.setOnClickListener(v -> handleSave());
 
@@ -111,6 +119,7 @@ public class AddCalendarEventActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    hideNetworkErrorState();
                     roommateList = response.body();
 
                     for (User u : roommateList) {
@@ -124,16 +133,26 @@ public class AddCalendarEventActivity extends AppCompatActivity {
                     // Create Adapter
                     ArrayAdapter<User> adapter = new ArrayAdapter<>(
                             AddCalendarEventActivity.this,
-                            android.R.layout.simple_spinner_item,
+                            R.layout.item_calendar_spinner_selected,
                             roommateList
                     );
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
                     spinnerAssignedTo.setAdapter(adapter);
+                } else {
+                    showNetworkErrorState(
+                            "Something went wrong",
+                            "Check your connection and try again.",
+                            AddCalendarEventActivity.this::loadRoommates
+                    );
                 }
             }
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
-                Toast.makeText(AddCalendarEventActivity.this, "Failed to load roommates", Toast.LENGTH_SHORT).show();
+                showNetworkErrorState(
+                        "Something went wrong",
+                        "Check your connection and try again.",
+                        AddCalendarEventActivity.this::loadRoommates
+                );
             }
         });
     }
@@ -190,28 +209,14 @@ public class AddCalendarEventActivity extends AppCompatActivity {
 
     private void setupPickers() {
         updateDateLabel();
-        tvSelectDate.setOnClickListener(v -> {
-            new DatePickerDialog(this, (view, year, month, day) -> {
-                selectedCal.set(java.util.Calendar.YEAR, year);
-                selectedCal.set(java.util.Calendar.MONTH, month);
-                selectedCal.set(java.util.Calendar.DAY_OF_MONTH, day);
-                updateDateLabel();
-            },
-                    selectedCal.get(java.util.Calendar.YEAR),
-                    selectedCal.get(java.util.Calendar.MONTH),
-                    selectedCal.get(java.util.Calendar.DAY_OF_MONTH)).show();
-        });
+        updateTimeLabel();
+        tvSelectDate.setOnClickListener(v -> showStyledDatePicker());
 
-        tvSelectTime.setOnClickListener(v -> {
-            new TimePickerDialog(this, (view, hour, minute) -> {
-                selectedCal.set(java.util.Calendar.HOUR_OF_DAY, hour);
-                selectedCal.set(java.util.Calendar.MINUTE, minute);
-                tvSelectTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hour, minute));
-            }, 12, 0, true).show();
-        });
+        tvSelectTime.setOnClickListener(v -> showStyledTimePicker());
     }
 
     private void handleSave() {
+        hideNetworkErrorState();
         btnSave.setEnabled(false);
         String cat = spinnerCategory.getSelectedItem().toString();
 
@@ -310,17 +315,26 @@ public class AddCalendarEventActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Calendar> call, Response<Calendar> response) {
                 if (response.isSuccessful()) {
+                    hideNetworkErrorState();
                     Toast.makeText(AddCalendarEventActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Toast.makeText(AddCalendarEventActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                     btnSave.setEnabled(true);
+                    showNetworkErrorState(
+                            "Something went wrong",
+                            "Check your connection and try again.",
+                            AddCalendarEventActivity.this::handleSave
+                    );
                 }
             }
             @Override
             public void onFailure(Call<Calendar> call, Throwable t) {
-                Toast.makeText(AddCalendarEventActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
                 btnSave.setEnabled(true);
+                showNetworkErrorState(
+                        "Something went wrong",
+                        "Check your connection and try again.",
+                        AddCalendarEventActivity.this::handleSave
+                );
             }
         });
     }
@@ -330,28 +344,104 @@ public class AddCalendarEventActivity extends AppCompatActivity {
         @Override
         public void onResponse(Call<Chore> call, Response<Chore> response) {
             if (response.isSuccessful()) {
+                hideNetworkErrorState();
                 Toast.makeText(AddCalendarEventActivity.this, "Chore Added!", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
-                Toast.makeText(AddCalendarEventActivity.this, "Chore Failed: " + response.code(), Toast.LENGTH_SHORT).show();
                 btnSave.setEnabled(true);
+                showNetworkErrorState(
+                        "Something went wrong",
+                        "Check your connection and try again.",
+                        AddCalendarEventActivity.this::handleSave
+                );
             }
         }
         @Override
         public void onFailure(Call<Chore> call, Throwable t) {
-            Toast.makeText(AddCalendarEventActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
             btnSave.setEnabled(true);
+            showNetworkErrorState(
+                    "Something went wrong",
+                    "Check your connection and try again.",
+                    AddCalendarEventActivity.this::handleSave
+            );
         }
     };
+
+    private void showStyledDatePicker() {
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+        builder.setTitleText("Select date");
+        builder.setSelection(getUtcSelectionFromCalendar());
+        builder.setTheme(R.style.ThemeOverlay_UniNest_CalendarPicker);
+
+        MaterialDatePicker<Long> picker = builder.build();
+        picker.addOnPositiveButtonClickListener(selection -> {
+            if (selection == null) {
+                return;
+            }
+
+            java.util.Calendar utcCalendar = java.util.Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            utcCalendar.setTimeInMillis(selection);
+            selectedCal.set(java.util.Calendar.YEAR, utcCalendar.get(java.util.Calendar.YEAR));
+            selectedCal.set(java.util.Calendar.MONTH, utcCalendar.get(java.util.Calendar.MONTH));
+            selectedCal.set(java.util.Calendar.DAY_OF_MONTH, utcCalendar.get(java.util.Calendar.DAY_OF_MONTH));
+            updateDateLabel();
+        });
+        picker.show(getSupportFragmentManager(), "schedule_date_picker");
+    }
+
+    private void showStyledTimePicker() {
+        MaterialTimePicker picker = new MaterialTimePicker.Builder()
+                .setTitleText("Select time")
+                .setHour(selectedCal.get(java.util.Calendar.HOUR_OF_DAY))
+                .setMinute(selectedCal.get(java.util.Calendar.MINUTE))
+                .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
+                .setTimeFormat(DateFormat.is24HourFormat(this) ? TimeFormat.CLOCK_24H : TimeFormat.CLOCK_12H)
+                .setTheme(R.style.ThemeOverlay_UniNest_TimePicker)
+                .build();
+
+        picker.addOnPositiveButtonClickListener(v -> {
+            selectedCal.set(java.util.Calendar.HOUR_OF_DAY, picker.getHour());
+            selectedCal.set(java.util.Calendar.MINUTE, picker.getMinute());
+            selectedCal.set(java.util.Calendar.SECOND, 0);
+            selectedCal.set(java.util.Calendar.MILLISECOND, 0);
+            updateTimeLabel();
+        });
+
+        picker.show(getSupportFragmentManager(), "schedule_time_picker");
+    }
+
+    private long getUtcSelectionFromCalendar() {
+        java.util.Calendar utcCalendar = java.util.Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        utcCalendar.clear();
+        utcCalendar.set(
+                selectedCal.get(java.util.Calendar.YEAR),
+                selectedCal.get(java.util.Calendar.MONTH),
+                selectedCal.get(java.util.Calendar.DAY_OF_MONTH)
+        );
+        return utcCalendar.getTimeInMillis();
+    }
+
+    private void showNetworkErrorState(String title, String body, Runnable retryAction) {
+        NetworkErrorDialog.show(this, title, body, retryAction);
+    }
+
+    private void hideNetworkErrorState() {
+        NetworkErrorDialog.dismiss(this);
+    }
 
     private void updateDateLabel() {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault());
         tvSelectDate.setText(sdf.format(selectedCal.getTime()));
     }
 
+    private void updateTimeLabel() {
+        java.text.DateFormat timeFormat = DateFormat.getTimeFormat(this);
+        tvSelectTime.setText(timeFormat.format(selectedCal.getTime()));
+    }
+
     private void setAdapter(Spinner s, String[] data) {
-        ArrayAdapter<String> a = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, data);
-        a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> a = new ArrayAdapter<>(this, R.layout.item_calendar_spinner_selected, data);
+        a.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         s.setAdapter(a);
     }
 

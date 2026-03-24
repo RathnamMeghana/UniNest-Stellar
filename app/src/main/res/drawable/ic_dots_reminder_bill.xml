@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="8dp"
+        android:height="8dp"
+        android:gravity="center_vertical|start">
+        <shape android:shape="oval">
+            <solid android:color="@color/calendar_reminder_badge_bg" />
+        </shape>
+    </item>
+
+    <item
+        android:width="8dp"
+        android:height="8dp"
+        android:gravity="center_vertical|start"
+        android:left="12dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/calendar_bill_badge_bg" />
+        </shape>
+    </item>
+</layer-list>

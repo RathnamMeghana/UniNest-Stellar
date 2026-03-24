@@ -113,7 +113,10 @@ public class RoomTypeDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.e("API_CALL", "Network failure: " + t.getMessage());
-                Toast.makeText(RoomTypeDetailActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        RoomTypeDetailActivity.this,
+                        RoomTypeDetailActivity.this::addNewRoom
+                );
             }
         });
     }

@@ -1,21 +1,30 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 
+import com.applandeo.materialcalendarview.CalendarDay;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
 import com.example.uninest.R;
@@ -29,15 +38,18 @@ import com.example.uninest.model.Calendar;
 import com.example.uninest.model.CalendarUpdateRequest;
 import com.example.uninest.model.Recurrence;
 import com.example.uninest.model.User;
+import com.example.uninest.notifications.LocalNotificationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,12 +60,16 @@ public class TenantCalendarActivity extends AppCompatActivity {
     // UI Components
     private CalendarView calendarView;
     private LinearLayout weekViewContainer;
-    private FrameLayout btnToggleCalendar;
+    private View btnToggleCalendar;
     private ImageView imgToggleArrow;
     private TextView tvCurrentDateHeader;
+    private TextView tvInsightDate, tvInsightVisibleCount, tvInsightReminderCount, tvInsightOverdueCount;
+    private LinearLayout emptyStateCard;
+    private TextView tvEmptyTitle, tvEmptyBody;
 
     // Task Sections
     private LinearLayout containerChores, containerEvents, containerReminders;
+    private LinearLayout sectionChores, sectionEvents, sectionReminders;
     private TextView headerChores, headerEvents, headerReminders;
 
     // Filters
@@ -74,6 +90,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
     private List<BillsRequest> allBills = new ArrayList<>();
 
     private String highlightEventId;
+    private String highlightMessage;
 
     // State
     private boolean isCalendarExpanded = false; // Start collapsed
@@ -89,6 +106,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
         currentUserId = sessionManager.getUserId();
 
         highlightEventId = getIntent().getStringExtra("highlight_event_id");
+        highlightMessage = getIntent().getStringExtra(LocalNotificationHelper.EXTRA_HIGHLIGHT_MESSAGE);
         if (houseCode == null || currentUserId == null) {
             Toast.makeText(this, "Session Error. Please login again.", Toast.LENGTH_SHORT).show();
         }
@@ -125,12 +143,16 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
         updateDateHeader();
         highlightMonthViewDate(currentSelectedDate);
+        updateFilterAccessibilityState();
+        updateCalendarToggleAccessibility();
     }
 
     private void initViews() {
         calendarView = findViewById(R.id.calendarView);
         try {
             calendarView.setCalendarDayLayout(R.layout.item_custom_calendar_day);
+            calendarView.setSelectionBackground(R.drawable.bg_calendar_selector);
+            applyMonthViewTodayHighlight();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -140,10 +162,20 @@ public class TenantCalendarActivity extends AppCompatActivity {
         btnToggleCalendar = findViewById(R.id.btnToggleCalendar);
         imgToggleArrow = findViewById(R.id.imgToggleArrow);
         tvCurrentDateHeader = findViewById(R.id.tvCurrentDateHeader);
+        tvInsightDate = findViewById(R.id.tvInsightDate);
+        tvInsightVisibleCount = findViewById(R.id.tvInsightVisibleCount);
+        tvInsightReminderCount = findViewById(R.id.tvInsightReminderCount);
+        tvInsightOverdueCount = findViewById(R.id.tvInsightOverdueCount);
+        emptyStateCard = findViewById(R.id.emptyStateCard);
+        tvEmptyTitle = findViewById(R.id.tvEmptyTitle);
+        tvEmptyBody = findViewById(R.id.tvEmptyBody);
 
         containerChores = findViewById(R.id.containerChores);
         containerEvents = findViewById(R.id.containerEvents);
         containerReminders = findViewById(R.id.containerReminders);
+        sectionChores = findViewById(R.id.sectionChores);
+        sectionEvents = findViewById(R.id.sectionEvents);
+        sectionReminders = findViewById(R.id.sectionReminders);
 
         headerChores = findViewById(R.id.tvHeaderChores);
         headerEvents = findViewById(R.id.tvHeaderEvents);
@@ -153,6 +185,9 @@ public class TenantCalendarActivity extends AppCompatActivity {
         filterChores = findViewById(R.id.filterChores);
         filterEvents = findViewById(R.id.filterEvents);
         filterReminders = findViewById(R.id.filterReminders);
+
+        updateFilterAccessibilityState();
+        updateCalendarToggleAccessibility();
     }
 
     private void setupBottomNav() {
@@ -237,19 +272,33 @@ public class TenantCalendarActivity extends AppCompatActivity {
                             if (highlightEventId.equals(event.getId()) && event.getStartDate() != null) {
                                 java.util.Calendar selectedDate = java.util.Calendar.getInstance();
                                 selectedDate.setTime(event.getStartDate().toDate());
-                                currentSelectedDate = selectedDate;                                updateDateHeader();
+                                currentSelectedDate = selectedDate;
+                                updateDateHeader();
                                 displayTasksForDate(currentSelectedDate);
                                 setupWeekView();
                                 highlightMonthViewDate(currentSelectedDate);
-                                Toast.makeText(TenantCalendarActivity.this, "Opened related event", Toast.LENGTH_SHORT).show();                                break;
+                                Toast.makeText(
+                                        TenantCalendarActivity.this,
+                                        highlightMessage != null && !highlightMessage.trim().isEmpty()
+                                                ? highlightMessage
+                                                : "View events here",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                highlightEventId = null;
+                                highlightMessage = null;
+                                break;
                             }
-                        }}
+                        }
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<List<Calendar>> call, Throwable t) {
-                Toast.makeText(TenantCalendarActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        TenantCalendarActivity.this,
+                        TenantCalendarActivity.this::fetchRoommatesAndEvents
+                );
             }
         });
     }
@@ -260,18 +309,14 @@ public class TenantCalendarActivity extends AppCompatActivity {
             boolean include = false;
             String type = c.getType() != null ? c.getType() : "";
 
-            // If it's a Maintenance/Agent visit, show it to everyone in the house
-            if (type.equalsIgnoreCase("MAINTENANCE") || type.equalsIgnoreCase("REMINDER")) {
+            // Shared reminder-like items are visible to the whole house.
+            if (isTypeMatch(type, "REMINDER")) {
                 include = true;
-            }
-
-            else if (isTypeMatch(type, "CHORE")) {
+            } else if (isTypeMatch(type, "CHORE")) {
                 if (isUserMatch(c.getAssignedTo())) {
                     include = true;
                 }
-            }
-
-            else {
+            } else {
                 if (isUserMatch(c.getCreatedBy()) || isUserMatch(c.getAssignedTo())) {
                     include = true;
                 }
@@ -293,6 +338,9 @@ public class TenantCalendarActivity extends AppCompatActivity {
         boolean hasChores = false;
         boolean hasEvents = false;
         boolean hasReminders = false;
+        int visibleItemCount = 0;
+        int reminderItemCount = 0;
+        int overdueItemCount = 0;
 
         java.util.Calendar today = java.util.Calendar.getInstance();
         // Normalize today to start of day for accurate comparison
@@ -314,7 +362,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
             // --- 2. EVENT EXPIRY LOGIC ---
             // If it's an event and the end time has passed, skip it entirely
-            if (type.equalsIgnoreCase("EVENT")) {
+            if (isTypeMatch(type, "EVENT")) {
                 if (c.getEndDate() != null) {
                     if (c.getEndDate().toDate().getTime() < nowMillis) {
                         continue;
@@ -359,15 +407,22 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
             // --- 4. UI POPULATION ---
             if (isMatch && isTypeMatch(c.getType(), activeFilter)) {
+                boolean isOverdueChore = isTypeMatch(c.getType(), "CHORE")
+                        && selectedDate.before(today);
                 if (isTypeMatch(c.getType(), "CHORE")) {
-                    addCard(c, containerChores, false);
+                    addCard(c, containerChores, isOverdueChore);
                     hasChores = true;
+                    visibleItemCount++;
                 } else if (isTypeMatch(c.getType(), "EVENT")) {
                     addCard(c, containerEvents, false);
                     hasEvents = true;
+                    visibleItemCount++;
                 } else {
                     addCard(c, containerReminders, isOverdue);
                     hasReminders = true;
+                    visibleItemCount++;
+                    reminderItemCount++;
+                    if (isOverdue) overdueItemCount++;
                 }
             }
         }
@@ -385,19 +440,65 @@ public class TenantCalendarActivity extends AppCompatActivity {
                         if (isViewingToday) {
                             addBillCard(b, containerReminders);
                             hasReminders = true;
+                            visibleItemCount++;
+                            reminderItemCount++;
+                            overdueItemCount++;
                         }
                     } else if (isSameDay(billDue, selectedDate)) {
                         // Future/today bill: show on its due date
                         addBillCard(b, containerReminders);
                         hasReminders = true;
+                        visibleItemCount++;
+                        reminderItemCount++;
                     }
                 }
             }
         }
 
+        sectionChores.setVisibility(hasChores ? View.VISIBLE : View.GONE);
+        sectionEvents.setVisibility(hasEvents ? View.VISIBLE : View.GONE);
+        sectionReminders.setVisibility(hasReminders ? View.VISIBLE : View.GONE);
         headerChores.setVisibility(hasChores ? View.VISIBLE : View.GONE);
         headerEvents.setVisibility(hasEvents ? View.VISIBLE : View.GONE);
         headerReminders.setVisibility(hasReminders ? View.VISIBLE : View.GONE);
+
+        boolean hasAnyItems = hasChores || hasEvents || hasReminders;
+        emptyStateCard.setVisibility(hasAnyItems ? View.GONE : View.VISIBLE);
+        if (!hasAnyItems) {
+            tvEmptyTitle.setText(activeFilter.equals("ALL") ? "Nothing scheduled here" : "No " + activeFilter.toLowerCase(Locale.US) + " for this day");
+            tvEmptyBody.setText(getEmptyStateMessage(selectedDate));
+        }
+
+        updateOverviewPanel(selectedDate, visibleItemCount, reminderItemCount, overdueItemCount);
+    }
+
+    private void updateOverviewPanel(java.util.Calendar selectedDate, int visibleItemCount, int reminderItemCount, int overdueItemCount) {
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        SimpleDateFormat overviewFmt = new SimpleDateFormat("EEEE, MMM d", Locale.US);
+        String header = overviewFmt.format(selectedDate.getTime());
+        if (isSameDay(selectedDate, today)) {
+            header = "Today, " + new SimpleDateFormat("MMM d", Locale.US).format(selectedDate.getTime());
+        }
+        tvInsightDate.setText(header);
+        tvInsightVisibleCount.setText(String.valueOf(visibleItemCount));
+        tvInsightReminderCount.setText(String.valueOf(reminderItemCount));
+        tvInsightOverdueCount.setText(String.valueOf(overdueItemCount));
+    }
+
+    private String getEmptyStateMessage(java.util.Calendar selectedDate) {
+        SimpleDateFormat dateFmt = new SimpleDateFormat("MMMM d", Locale.US);
+        String formattedDate = dateFmt.format(selectedDate.getTime());
+
+        if ("CHORE".equals(activeFilter)) {
+            return "No chores are assigned for " + formattedDate + ". Try another day or switch back to All.";
+        }
+        if ("EVENT".equals(activeFilter)) {
+            return "No events are scheduled for " + formattedDate + ".";
+        }
+        if ("REMINDER".equals(activeFilter)) {
+            return "No reminders or bills need attention for " + formattedDate + ".";
+        }
+        return "No chores, events, or reminders are scheduled for " + formattedDate + ". Try another day.";
     }
 
     private void addBillCard(BillsRequest b, ViewGroup parent) {
@@ -408,18 +509,22 @@ public class TenantCalendarActivity extends AppCompatActivity {
         TextView extraInfo = view.findViewById(R.id.tvExtraInfo);
         TextView statusBadge = view.findViewById(R.id.popStatusBadge);
         com.google.android.material.button.MaterialButton btnMore = view.findViewById(R.id.btnViewMore);
+        applyCalendarActionPill(btnMore);
 
-        container.setBackgroundResource(R.drawable.bg_card_orange);
+        container.setBackgroundResource(R.drawable.bg_tenant_calendar_card_bill);
 
         title.setText(b.getTitle());
-        title.setTextColor(Color.BLACK);
         title.setTypeface(null, Typeface.BOLD);
 
 
         statusBadge.setVisibility(View.VISIBLE);
-        statusBadge.setText("BILL DUE");
-        statusBadge.setBackgroundResource(R.drawable.bg_status_pending);
-        statusBadge.setTextColor(Color.parseColor("#BF360C"));
+        statusBadge.setText("BILL");
+        applyCalendarStatusBadge(
+                statusBadge,
+                R.drawable.bg_tenant_calendar_status_bill,
+                R.color.calendar_bill_badge_bg,
+                R.color.app_text_primary
+        );
         statusBadge.setTypeface(null, Typeface.BOLD);
 
         // Calculate My Share
@@ -436,10 +541,15 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
         desc.setVisibility(View.VISIBLE);
         desc.setText(String.format(Locale.getDefault(), "You owe: €%.2f", myShare));
-        desc.setTextColor(Color.parseColor("#E65100"));
         desc.setTypeface(null, Typeface.BOLD);
-        desc.setTextSize(18f);
+        desc.setText(String.format(Locale.getDefault(), "You owe EUR %.2f", myShare));
+        desc.setTextSize(12f);
 
+
+        java.util.Calendar dueCalendar = parseIsoToCalendar(b.getDueDate());
+        String dueText = dueCalendar != null
+                ? new SimpleDateFormat("MMM d", Locale.US).format(dueCalendar.getTime())
+                : "Soon";
 
         String creator = roommateNamesMap.get(b.getCreatorId());
         if (currentUserId.equals(b.getCreatorId())) creator = "Me";
@@ -449,17 +559,29 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 "Total bill: €%.2f\nCreated by: %s",
                 b.getTotalAmount(),
                 (creator != null ? creator : "Unknown")));
-        extraInfo.setTextColor(Color.parseColor("#E65100"));
+        extraInfo.setText(String.format(Locale.getDefault(),
+                "Due %s  |  Total EUR %.2f  |  %s",
+                dueText,
+                b.getTotalAmount(),
+                (creator != null ? creator : "Unknown")));
+        applyCalendarCardTextColors(title, desc, extraInfo);
 
 
         btnMore.setText("View");
-
-        btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#E65100")));
-        btnMore.setTextColor(Color.WHITE);
+        btnMore.setContentDescription("Open bill details");
+        tintCalendarActionButton(btnMore, R.color.calendar_primary_dark, R.color.white);
 
         btnMore.setOnClickListener(v -> {
             startActivity(new Intent(this, TenantBillsActivity.class));
         });
+
+        container.setContentDescription(buildCardContentDescription(
+                "Bill reminder",
+                title.getText(),
+                extraInfo.getText(),
+                desc.getVisibility() == View.VISIBLE ? desc.getText() : null,
+                "Double tap to open bills."
+        ));
 
         parent.addView(view);
     }
@@ -473,18 +595,22 @@ public class TenantCalendarActivity extends AppCompatActivity {
         TextView extraInfo = view.findViewById(R.id.tvExtraInfo);
         TextView tvStatus = view.findViewById(R.id.popStatusBadge);
         com.google.android.material.button.MaterialButton btnMore = view.findViewById(R.id.btnViewMore);
+        applyCalendarActionPill(btnMore);
 
         title.setText(c.getTitle());
         String dVal = c.getDescription() != null ? c.getDescription() : "";
         desc.setText(dVal);
-        desc.setVisibility(View.GONE);
+        boolean hasDescription = !dVal.trim().isEmpty();
+        desc.setVisibility(hasDescription ? View.VISIBLE : View.GONE);
+        applyCalendarCardTextColors(title, desc, extraInfo);
 
         String type = c.getType() != null ? c.getType() : "";
+        boolean isBillItem = isBillCategory(type);
 
         if (isTypeMatch(type, "CHORE")) {
             // --- CHORE LOGIC ---
-            container.setBackgroundResource(R.drawable.bg_card_green);
-
+            container.setBackgroundResource(R.drawable.bg_tenant_calendar_card_chore);
+            desc.setVisibility(View.GONE);
             String creatorName = roommateNamesMap.get(c.getCreatedBy());
             if (isUserMatch(c.getCreatedBy())) creatorName = "Me";
             if (creatorName == null) creatorName = "Unknown";
@@ -493,29 +619,51 @@ public class TenantCalendarActivity extends AppCompatActivity {
             if (isUserMatch(c.getAssignedTo())) assigneeName = "Me";
             if (assigneeName == null) assigneeName = "Unassigned";
 
-            extraInfo.setText("Created by: " + creatorName + "\nAssigned to: " + assigneeName);
-            extraInfo.setTextColor(Color.parseColor("#1B5E20"));
+            extraInfo.setText("By " + creatorName + "  |  Assigned " + assigneeName);
             extraInfo.setVisibility(View.VISIBLE);
 
             String status = c.getStatus() != null ? c.getStatus() : "NOT_STARTED";
-            tvStatus.setText(formatStatus(status));
             tvStatus.setVisibility(View.VISIBLE);
 
-            if (status.equals("COMPLETED")) {
-                tvStatus.setBackgroundResource(R.drawable.bg_status_completed);
-                tvStatus.setTextColor(Color.parseColor("#2E7D32"));
+            if (isOverdue) {
+                tvStatus.setText("OVERDUE");
+                applyCalendarStatusBadge(
+                        tvStatus,
+                        R.drawable.bg_tenant_calendar_status_overdue_badge,
+                        R.color.calendar_overdue_badge_bg,
+                        R.color.calendar_overdue_badge_text
+                );
+            } else if (status.equals("COMPLETED")) {
+                tvStatus.setText(formatStatus(status));
+                applyCalendarStatusBadge(
+                        tvStatus,
+                        R.drawable.bg_tenant_calendar_status_chore_completed,
+                        R.color.calendar_chore_status_completed_bg,
+                        R.color.calendar_chore_status_completed_text
+                );
             } else if (status.equals("IN_PROGRESS")) {
-                tvStatus.setBackgroundResource(R.drawable.bg_status_progress);
-                tvStatus.setTextColor(Color.parseColor("#EF6C00"));
+                tvStatus.setText(formatStatus(status));
+                applyCalendarStatusBadge(
+                        tvStatus,
+                        R.drawable.bg_tenant_calendar_status_chore_progress,
+                        R.color.calendar_chore_status_progress_bg,
+                        R.color.calendar_chore_status_progress_text
+                );
             } else {
-                tvStatus.setBackgroundResource(R.drawable.bg_status_pending);
-                tvStatus.setTextColor(Color.parseColor("#C62828"));
+                tvStatus.setText(formatStatus(status));
+                applyCalendarStatusBadge(
+                        tvStatus,
+                        R.drawable.bg_tenant_calendar_status_chore_pending,
+                        R.color.calendar_chore_status_pending_bg,
+                        R.color.calendar_chore_status_pending_text
+                );
             }
 
             final String finalCreator = creatorName;
             final String finalAssignee = assigneeName;
+            btnMore.setVisibility(View.GONE);
 
-            btnMore.setOnClickListener(v -> {
+            container.setOnClickListener(v -> {
                 Intent intent = new Intent(TenantCalendarActivity.this, ChoreDetailActivity.class);
                 intent.putExtra("CHORE_ID", c.getRelatedChoreId());
                 intent.putExtra("HOUSE_CODE", houseCode);
@@ -536,14 +684,21 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
         } else if (isTypeMatch(type, "EVENT")) {
             // --- EVENT LOGIC ---
-            container.setBackgroundResource(R.drawable.bg_card_pink);
-            tvStatus.setVisibility(View.GONE);
+            container.setBackgroundResource(R.drawable.bg_tenant_calendar_card_event);
+            desc.setVisibility(View.GONE);
+            tvStatus.setVisibility(View.VISIBLE);
+            tvStatus.setText("EVENT");
+            applyCalendarStatusBadge(
+                    tvStatus,
+                    R.drawable.bg_tenant_calendar_status_event,
+                    R.color.calendar_event_badge_bg,
+                    R.color.calendar_text_inverse
+            );
             btnMore.setVisibility(View.GONE);
 
             if (c.getStartDate() != null) {
                 SimpleDateFormat timeFmt = new SimpleDateFormat("h:mm a", Locale.US);
                 extraInfo.setText(timeFmt.format(c.getStartDate().toDate()));
-                extraInfo.setTextColor(Color.parseColor("#C2185B"));
                 extraInfo.setVisibility(View.VISIBLE);
             }
 
@@ -551,37 +706,68 @@ public class TenantCalendarActivity extends AppCompatActivity {
             container.setOnClickListener(v -> showEventDetailsMiniModal(c));
         } else {
             // --- REMINDER / STICKY LOGIC ---
-            container.setBackgroundResource(R.drawable.bg_card_orange);
+            container.setBackgroundResource(isBillItem
+                    ? R.drawable.bg_tenant_calendar_card_bill
+                    : R.drawable.bg_tenant_calendar_card_reminder);
+            extraInfo.setTypeface(extraInfo.getTypeface(), Typeface.BOLD);
+            extraInfo.setTextSize(12f);
+            desc.setVisibility(View.GONE);
 
             // Show OVERDUE badge if the reminder is from a past date
             if (isOverdue && c.getStartDate() != null) {
+                container.setBackgroundResource(R.drawable.bg_tenant_calendar_card_overdue);
                 tvStatus.setVisibility(View.VISIBLE);
-                SimpleDateFormat overdueFmt = new SimpleDateFormat("MMM d", Locale.US);
-                tvStatus.setText("\u26A0\uFE0F Overdue since " + overdueFmt.format(c.getStartDate().toDate()));
-                tvStatus.setBackgroundResource(R.drawable.bg_status_overdue);
-                tvStatus.setTextColor(Color.parseColor("#D32F2F"));
+                tvStatus.setText("OVERDUE");
+                applyCalendarStatusBadge(
+                        tvStatus,
+                        R.drawable.bg_tenant_calendar_status_overdue_badge,
+                        R.color.calendar_overdue_badge_bg,
+                        R.color.calendar_overdue_badge_text
+                );
                 tvStatus.setTypeface(null, Typeface.BOLD);
-                tvStatus.setTextSize(12f);
+                tvStatus.setTextSize(11f);
                 int padH = (int) (10 * getResources().getDisplayMetrics().density);
-                int padV = (int) (4 * getResources().getDisplayMetrics().density);
+                int padV = (int) (3 * getResources().getDisplayMetrics().density);
                 tvStatus.setPadding(padH, padV, padH, padV);
             } else {
-                tvStatus.setVisibility(View.GONE);
+                tvStatus.setVisibility(View.VISIBLE);
+                tvStatus.setText(isBillItem ? "BILL" : "REMINDER");
+                applyCalendarStatusBadge(
+                        tvStatus,
+                        isBillItem ? R.drawable.bg_tenant_calendar_status_bill : R.drawable.bg_tenant_calendar_status_reminder,
+                        isBillItem ? R.color.calendar_bill_badge_bg : R.color.calendar_reminder_badge_bg,
+                        R.color.app_text_primary
+                );
             }
 
             // Transform the button into a "Done" action
             btnMore.setVisibility(View.VISIBLE);
             btnMore.setText("Done");
-            btnMore.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#E65100")));
-            btnMore.setTextColor(Color.WHITE);
+            btnMore.setContentDescription("Mark reminder as done");
+            tintCalendarActionButton(
+                    btnMore,
+                    R.color.calendar_primary_dark,
+                    R.color.white
+            );
+            btnMore.setStrokeWidth(0);
 
             if (c.getAmount() != null && c.getAmount() > 0) {
                 extraInfo.setText(String.format(Locale.US, "Amount: €%.2f", c.getAmount()));
-                extraInfo.setTextColor(Color.parseColor("#E65100"));
                 extraInfo.setVisibility(View.VISIBLE);
             } else {
                 extraInfo.setVisibility(View.GONE);
             }
+
+            SimpleDateFormat reminderFmt = new SimpleDateFormat("MMM d", Locale.US);
+            String dueLabel = c.getStartDate() != null
+                    ? ((isOverdue ? "Was due " : "Due ") + reminderFmt.format(c.getStartDate().toDate()))
+                    : (isOverdue ? "Overdue" : "Upcoming");
+            if (c.getAmount() != null && c.getAmount() > 0) {
+                extraInfo.setText(String.format(Locale.US, "%s  |  EUR %.2f", dueLabel, c.getAmount()));
+            } else {
+                extraInfo.setText(dueLabel);
+            }
+            extraInfo.setVisibility(View.VISIBLE);
 
             // Click logic to mark the reminder as completed
             btnMore.setOnClickListener(v -> markReminderAsDone(c));
@@ -589,6 +775,22 @@ public class TenantCalendarActivity extends AppCompatActivity {
             // Click the card to view details
             container.setOnClickListener(v -> showEventDetailsMiniModal(c));
         }
+
+        String actionHint = isTypeMatch(type, "CHORE")
+                ? "Double tap to view chore details."
+                : isTypeMatch(type, "EVENT")
+                ? "Double tap to view event details."
+                : isBillItem
+                ? "Double tap to view bill details."
+                : "Double tap to view reminder details.";
+        CharSequence badgeText = tvStatus.getVisibility() == View.VISIBLE ? tvStatus.getText() : null;
+        container.setContentDescription(buildCardContentDescription(
+                badgeText != null ? badgeText.toString() : type,
+                title.getText(),
+                extraInfo.getVisibility() == View.VISIBLE ? extraInfo.getText() : null,
+                desc.getVisibility() == View.VISIBLE ? desc.getText() : null,
+                actionHint
+        ));
 
         parent.addView(view);
     }
@@ -617,7 +819,10 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Calendar> call, Throwable t) {
-                Toast.makeText(TenantCalendarActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        TenantCalendarActivity.this,
+                        () -> markReminderAsDone(c)
+                );
             }
         });
     }
@@ -642,6 +847,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
         TextView tvTime = dialog.findViewById(R.id.popTime);
         TextView tvDesc = dialog.findViewById(R.id.popDesc);
         LinearLayout layoutAmount = dialog.findViewById(R.id.layoutAmount);
+        TextView tvAmountLabel = dialog.findViewById(R.id.popAmountLabel);
         TextView tvAmount = dialog.findViewById(R.id.popAmount);
         Button btnClose = dialog.findViewById(R.id.btnPopClose);
 
@@ -650,20 +856,55 @@ public class TenantCalendarActivity extends AppCompatActivity {
         // Type Badge
         String type = c.getType() != null ? c.getType() : "EVENT";
         tvTypeBadge.setText(type.toUpperCase());
-        if (type.contains("REMINDER") || type.contains("BILL") || type.contains("MAINTENANCE")) {
-            tvTypeBadge.setBackgroundResource(R.drawable.bg_status_pending);
-            tvTypeBadge.setTextColor(Color.parseColor("#E65100")); // Orange
+        if (isBillCategory(type)) {
+            applyCalendarStatusBadge(
+                    tvTypeBadge,
+                    R.drawable.bg_tenant_calendar_status_bill,
+                    R.color.calendar_bill_badge_bg,
+                    R.color.app_text_primary
+            );
+        } else if (type.contains("REMINDER") || type.contains("MAINTENANCE")) {
+            applyCalendarStatusBadge(
+                    tvTypeBadge,
+                    R.drawable.bg_tenant_calendar_status_reminder,
+                    R.color.calendar_reminder_badge_bg,
+                    R.color.app_text_primary
+            );
         } else {
-            tvTypeBadge.setBackgroundResource(R.drawable.bg_status_pending);
-            tvTypeBadge.setTextColor(Color.parseColor("#C62828")); // Pink/Red
+            applyCalendarStatusBadge(
+                    tvTypeBadge,
+                    R.drawable.bg_tenant_calendar_status_event,
+                    R.color.calendar_event_badge_bg,
+                    R.color.calendar_text_inverse
+            );
         }
 
         // Description
         if (c.getDescription() != null && !c.getDescription().isEmpty()) {
             tvDesc.setText(c.getDescription());
+            if (isTypeMatch(type, "REMINDER")) {
+                tvDesc.setTextSize(16f);
+                tvDesc.setTypeface(null, Typeface.BOLD);
+            } else {
+                tvDesc.setTextSize(14f);
+                tvDesc.setTypeface(null, Typeface.NORMAL);
+            }
         } else {
             tvDesc.setText("No description provided.");
             tvDesc.setTypeface(null, Typeface.ITALIC);
+            if (isTypeMatch(type, "REMINDER")) {
+                tvDesc.setTextSize(16f);
+            } else {
+                tvDesc.setTextSize(14f);
+            }
+        }
+
+        if (tvAmountLabel != null) {
+            int amountColorRes = isBillCategory(type)
+                    ? R.color.calendar_bill_text
+                    : R.color.calendar_reminder_text;
+            tvAmountLabel.setTextColor(ContextCompat.getColor(this, amountColorRes));
+            tvAmount.setTextColor(ContextCompat.getColor(this, amountColorRes));
         }
 
         // Date & Time logic
@@ -693,9 +934,106 @@ public class TenantCalendarActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void applyCalendarActionPill(com.google.android.material.button.MaterialButton button) {
+        if (button == null) {
+            return;
+        }
+
+        android.view.ViewGroup.LayoutParams layoutParams = button.getLayoutParams();
+        if (layoutParams != null) {
+            layoutParams.width = Math.round(dpToPx(84));
+            layoutParams.height = Math.round(dpToPx(28));
+            button.setLayoutParams(layoutParams);
+        }
+
+        button.setMinWidth(0);
+        button.setMinimumWidth(0);
+        button.setMinHeight(0);
+        button.setMinimumHeight(0);
+        button.setInsetTop(0);
+        button.setInsetBottom(0);
+        button.setCornerRadius(Math.round(dpToPx(14)));
+        button.setTypeface(button.getTypeface(), Typeface.BOLD);
+        button.setTextSize(12f);
+    }
+
+    private void applyCalendarCardTextColors(TextView... textViews) {
+        int textColor = ContextCompat.getColor(this, R.color.app_text_primary);
+        for (TextView textView : textViews) {
+            if (textView != null) {
+                textView.setTextColor(textColor);
+            }
+        }
+    }
+
+    private void applyCalendarStatusBadge(TextView badge,
+                                          int backgroundRes,
+                                          int darkModeBadgeColorRes,
+                                          int lightModeTextColorRes) {
+        if (badge == null) {
+            return;
+        }
+
+        badge.setBackgroundResource(backgroundRes);
+        boolean darkMode = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
+
+        if (darkMode) {
+            int badgeColor = ContextCompat.getColor(this, darkModeBadgeColorRes);
+            int darkText = ContextCompat.getColor(this, R.color.calendar_text_inverse);
+            int lightText = ContextCompat.getColor(this, R.color.white);
+            badge.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    badgeColor
+            ));
+            badge.setTextColor(ColorUtils.calculateContrast(darkText, badgeColor) >= 4.5
+                    ? darkText
+                    : lightText);
+        } else {
+            badge.setBackgroundTintList(null);
+            badge.setTextColor(ContextCompat.getColor(this, lightModeTextColorRes));
+        }
+    }
+
+    private void tintCalendarActionButton(com.google.android.material.button.MaterialButton button,
+                                          int backgroundColorRes,
+                                          int textColorRes) {
+        if (button == null) {
+            return;
+        }
+
+        int backgroundColor = ContextCompat.getColor(this, backgroundColorRes);
+        int preferredTextColor = ContextCompat.getColor(this, textColorRes);
+        button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(backgroundColor));
+        button.setTextColor(getReadableCalendarForeground(backgroundColor, preferredTextColor));
+    }
+
+    private int getReadableCalendarForeground(int backgroundColor, int preferredTextColor) {
+        if (ColorUtils.calculateContrast(preferredTextColor, backgroundColor) >= 4.5) {
+            return preferredTextColor;
+        }
+
+        int lightText = ContextCompat.getColor(this, R.color.white);
+        int darkText = ContextCompat.getColor(this, R.color.black);
+        return ColorUtils.calculateContrast(darkText, backgroundColor)
+                >= ColorUtils.calculateContrast(lightText, backgroundColor)
+                ? darkText
+                : lightText;
+    }
+
     private void updateDateHeader() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-        tvCurrentDateHeader.setText(sdf.format(currentSelectedDate.getTime()));
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        SimpleDateFormat selectedFmt = new SimpleDateFormat("EEE, MMM d", Locale.US);
+        SimpleDateFormat todayFmt = new SimpleDateFormat("MMM d", Locale.US);
+
+        if (isSameDay(currentSelectedDate, today)) {
+            tvCurrentDateHeader.setText("Today, " + todayFmt.format(currentSelectedDate.getTime()));
+            updateCalendarLabel("Viewing today");
+        } else {
+            tvCurrentDateHeader.setText(selectedFmt.format(currentSelectedDate.getTime()));
+            updateCalendarLabel("Viewing");
+        }
+
+        updateCalendarToggleAccessibility();
     }
 
     private void updateCalendarDots() {
@@ -730,10 +1068,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 }
             }
 
-            String simplifiedType = "";
-            if (isTypeMatch(rawType, "CHORE")) simplifiedType = "CHORE";
-            else if (isTypeMatch(rawType, "EVENT")) simplifiedType = "EVENT";
-            else if (isTypeMatch(rawType, "REMINDER")) simplifiedType = "REMINDER";
+            String simplifiedType = simplifyDotType(rawType);
 
             if (simplifiedType.isEmpty()) continue;
 
@@ -747,41 +1082,39 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 else if ("MONTHLY".equalsIgnoreCase(c.getRecurrence().getFrequency())) isMonthly = true;
             }
 
-            // For overdue reminders: skip the normal dot placement (will be added on today below)
-            boolean isReminderOverdue = false;
-            if (isTypeMatch(rawType, "REMINDER")) {
+            // Sticky reminder- and bill-style items move to today's dot once overdue.
+            boolean isStickyOverdue = false;
+            if (!isTypeMatch(rawType, "CHORE") && !isTypeMatch(rawType, "EVENT")) {
                 java.util.Calendar normalizedStart = java.util.Calendar.getInstance();
                 normalizedStart.setTime(c.getStartDate().toDate());
                 normalizedStart.set(java.util.Calendar.HOUR_OF_DAY, 0);
                 normalizedStart.set(java.util.Calendar.MINUTE, 0);
                 normalizedStart.set(java.util.Calendar.SECOND, 0);
                 normalizedStart.set(java.util.Calendar.MILLISECOND, 0);
-                isReminderOverdue = normalizedStart.before(today);
+                isStickyOverdue = normalizedStart.before(today);
             }
 
-            // Only add dots on original/recurring dates if NOT an overdue reminder
-            if (!isReminderOverdue) {
+            if (!isStickyOverdue) {
                 do {
                     String dateKey = sdf.format(eventDate.getTime());
                     if (!dailyEventsMap.containsKey(dateKey)) {
-                        dailyEventsMap.put(dateKey, new java.util.HashSet<>());
+                        dailyEventsMap.put(dateKey, new LinkedHashSet<>());
                         dateObjectMap.put(dateKey, (java.util.Calendar) eventDate.clone());
                     }
-                    dailyEventsMap.get(dateKey).add(simplifiedType);
+                    addDotType(dailyEventsMap.get(dateKey), simplifiedType);
 
                     if (isWeekly) eventDate.add(java.util.Calendar.DAY_OF_MONTH, 7);
                     else if (isMonthly) eventDate.add(java.util.Calendar.MONTH, 1);
                 } while ((isWeekly || isMonthly) && eventDate.before(limitDate));
             }
 
-            // STICKY REMINDERS: show dot ONLY on "Today" if overdue
-            if (isReminderOverdue) {
+            if (isStickyOverdue) {
                 String todayKey = sdf.format(today.getTime());
                 if (!dailyEventsMap.containsKey(todayKey)) {
-                    dailyEventsMap.put(todayKey, new java.util.HashSet<>());
+                    dailyEventsMap.put(todayKey, new LinkedHashSet<>());
                     dateObjectMap.put(todayKey, (java.util.Calendar) today.clone());
                 }
-                dailyEventsMap.get(todayKey).add("REMINDER");
+                addDotType(dailyEventsMap.get(todayKey), simplifiedType);
             }
         }
 
@@ -810,10 +1143,10 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 }
 
                 if (!dailyEventsMap.containsKey(dateKey)) {
-                    dailyEventsMap.put(dateKey, new java.util.HashSet<>());
+                    dailyEventsMap.put(dateKey, new LinkedHashSet<>());
                     dateObjectMap.put(dateKey, dotDate);
                 }
-                dailyEventsMap.get(dateKey).add("REMINDER");
+                addDotType(dailyEventsMap.get(dateKey), "BILL");
             }
         }
 
@@ -821,27 +1154,52 @@ public class TenantCalendarActivity extends AppCompatActivity {
         for (String dateKey : dailyEventsMap.keySet()) {
             java.util.Set<String> types = dailyEventsMap.get(dateKey);
             java.util.Calendar cal = dateObjectMap.get(dateKey);
-
-            boolean hasChore = types.contains("CHORE");
-            boolean hasEvent = types.contains("EVENT");
-            boolean hasReminder = types.contains("REMINDER");
-
-            int iconRes = 0;
-            if (activeFilter.equals("CHORE") && hasChore) iconRes = R.drawable.ic_dot_green;
-            else if (activeFilter.equals("EVENT") && hasEvent) iconRes = R.drawable.ic_dot_pink;
-            else if (activeFilter.equals("REMINDER") && hasReminder) iconRes = R.drawable.ic_dot_orange;
-            else {
-                if (hasChore && hasEvent && hasReminder) iconRes = R.drawable.ic_dots_all_three;
-                else if (hasChore && hasEvent) iconRes = R.drawable.ic_dots_green_pink;
-                else if (hasChore && hasReminder) iconRes = R.drawable.ic_dots_green_orange;
-                else if (hasEvent && hasReminder) iconRes = R.drawable.ic_dots_pink_orange;
-                else if (hasChore) iconRes = R.drawable.ic_dot_green;
-                else if (hasEvent) iconRes = R.drawable.ic_dot_pink;
-                else if (hasReminder) iconRes = R.drawable.ic_dot_orange;
+            Drawable dotDrawable = buildCalendarDotDrawable(types);
+            if (dotDrawable != null) {
+                mapEvents.add(new EventDay(cal, dotDrawable));
             }
-            if (iconRes != 0) mapEvents.add(new EventDay(cal, iconRes));
         }
         calendarView.setEvents(mapEvents);
+        applyMonthViewTodayHighlight();
+        highlightMonthViewDate(currentSelectedDate);
+    }
+
+    private void applyMonthViewTodayHighlight() {
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        today.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        today.set(java.util.Calendar.MINUTE, 0);
+        today.set(java.util.Calendar.SECOND, 0);
+        today.set(java.util.Calendar.MILLISECOND, 0);
+
+        CalendarDay todayDay = new CalendarDay(today);
+        todayDay.setBackgroundResource(R.drawable.bg_calendar_ring);
+        calendarView.setCalendarDays(java.util.Collections.singletonList(todayDay));
+    }
+
+    private void addDotType(Set<String> types, String dotType) {
+        if (types == null || dotType == null || dotType.isEmpty()) {
+            return;
+        }
+        types.add(dotType);
+    }
+
+    private String simplifyDotType(String rawType) {
+        if (rawType == null) {
+            return "";
+        }
+        if (isTypeMatch(rawType, "CHORE")) {
+            return "CHORE";
+        }
+        if (isTypeMatch(rawType, "EVENT")) {
+            return "EVENT";
+        }
+        if (isBillCategory(rawType)) {
+            return "BILL";
+        }
+        if (isTypeMatch(rawType, "REMINDER")) {
+            return "REMINDER";
+        }
+        return "";
     }
 
     // Helper to parse ISO Strings from Bills to Calendar objects
@@ -889,38 +1247,52 @@ public class TenantCalendarActivity extends AppCompatActivity {
             SimpleDateFormat sdfDay = new SimpleDateFormat("d", Locale.US);
             SimpleDateFormat sdfName = new SimpleDateFormat("EE", Locale.US);
 
-            tvName.setText(sdfName.format(cal.getTime()));
-            tvNumber.setText(sdfDay.format(cal.getTime()));
-
             boolean isSelected = isSameDay(cal, currentSelectedDate);
             boolean isToday = isSameDay(cal, today);
 
+            tvName.setText(isToday ? "Today" : sdfName.format(cal.getTime()));
+            tvNumber.setText(sdfDay.format(cal.getTime()));
+
             if (isSelected) {
                 tvNumber.setBackgroundResource(R.drawable.bg_calendar_selector);
-                tvNumber.setTextColor(Color.parseColor("#B792D9"));
+                tvNumber.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_inverse));
+                tvName.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_primary));
+                tvName.setTypeface(null, Typeface.BOLD);
             } else if (isToday) {
-                tvNumber.setBackgroundResource(0);
-                tvNumber.setTextColor(Color.parseColor("#E91E63"));
+                tvNumber.setBackgroundResource(R.drawable.bg_calendar_ring);
+                tvNumber.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_primary));
+                tvName.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_primary));
+                tvName.setTypeface(null, Typeface.BOLD);
             } else {
-                tvNumber.setBackgroundResource(0);
-                tvNumber.setTextColor(Color.BLACK);
+                tvNumber.setBackgroundResource(R.drawable.bg_tenant_calendar_day_outline);
+                tvNumber.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_primary));
+                tvName.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_secondary));
+                tvName.setTypeface(null, Typeface.NORMAL);
             }
 
-            int dotRes = getIconForDate(cal);
-            if (dotRes != 0) {
-                imgDot.setImageResource(dotRes);
+            Set<String> dotTypes = getDotTypesForDate(cal);
+            Drawable dotDrawable = buildCalendarDotDrawable(dotTypes);
+            if (dotDrawable != null) {
+                imgDot.setImageDrawable(dotDrawable);
                 imgDot.setVisibility(View.VISIBLE);
             } else {
                 imgDot.setVisibility(View.INVISIBLE);
             }
 
             java.util.Calendar clickedDay = (java.util.Calendar) cal.clone();
+            dayItem.setFocusable(true);
+            dayItem.setContentDescription(buildWeekDayContentDescription(
+                    clickedDay,
+                    isSelected,
+                    isToday,
+                    !dotTypes.isEmpty()
+            ));
             dayItem.setOnClickListener(v -> {
                 currentSelectedDate = clickedDay;
                 setupWeekView();
                 displayTasksForDate(currentSelectedDate);
                 updateDateHeader();
-                try { calendarView.setDate(clickedDay); } catch (Exception e) {}
+                highlightMonthViewDate(clickedDay);
             });
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
@@ -930,8 +1302,8 @@ public class TenantCalendarActivity extends AppCompatActivity {
         }
     }
 
-    private int getIconForDate(java.util.Calendar targetDate) {
-        boolean hasChore = false, hasEvent = false, hasReminder = false;
+    private Set<String> getDotTypesForDate(java.util.Calendar targetDate) {
+        Set<String> dotTypes = new LinkedHashSet<>();
 
         java.util.Calendar today = java.util.Calendar.getInstance();
         // Normalize today to the start of the day for accurate comparisons
@@ -955,7 +1327,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
             // --- 1. EVENT EXPIRY LOGIC ---
             // If it's an event and it has already ended, don't show the dot at all
-            if (type.equalsIgnoreCase("EVENT")) {
+            if (isTypeMatch(type, "EVENT")) {
                 if (c.getEndDate() != null && c.getEndDate().toDate().getTime() < nowMillis) {
                     continue;
                 }
@@ -993,95 +1365,217 @@ public class TenantCalendarActivity extends AppCompatActivity {
             }
 
             if (isMatch) {
-                if (isTypeMatch(type, "CHORE")) hasChore = true;
-                else if (isTypeMatch(type, "EVENT")) hasEvent = true;
-                else if (isTypeMatch(type, "REMINDER")) hasReminder = true;
+                addDotType(dotTypes, simplifyDotType(type));
             }
         }
 
-        // Handle External Bills (overdue bills only show dot on Today)
+        // Handle external bills with their own bill marker.
         if (activeFilter.equals("ALL") || activeFilter.equals("REMINDER")) {
             for (BillsRequest b : allBills) {
                 java.util.Calendar billDue = parseIsoToCalendar(b.getDueDate());
                 if (billDue != null) {
                     boolean isBillOverdue = billDue.before(today);
                     if (isBillOverdue) {
-                        if (isSameDay(targetDate, today)) hasReminder = true;
+                        if (isSameDay(targetDate, today)) addDotType(dotTypes, "BILL");
                     } else {
-                        if (isSameDay(billDue, targetDate)) hasReminder = true;
+                        if (isSameDay(billDue, targetDate)) addDotType(dotTypes, "BILL");
                     }
                 }
             }
         }
 
-        // Return the correct icon based on what was found for this specific date
-        if (activeFilter.equals("CHORE") && hasChore) return R.drawable.ic_dot_green;
-        if (activeFilter.equals("EVENT") && hasEvent) return R.drawable.ic_dot_pink;
-        if (activeFilter.equals("REMINDER") && hasReminder) return R.drawable.ic_dot_orange;
+        return dotTypes;
+    }
 
-        if (hasChore && hasEvent && hasReminder) return R.drawable.ic_dots_all_three;
-        if (hasChore && hasEvent) return R.drawable.ic_dots_green_pink;
-        if (hasChore && hasReminder) return R.drawable.ic_dots_green_orange;
-        if (hasEvent && hasReminder) return R.drawable.ic_dots_pink_orange;
-        if (hasChore) return R.drawable.ic_dot_green;
-        if (hasEvent) return R.drawable.ic_dot_pink;
-        if (hasReminder) return R.drawable.ic_dot_orange;
+    private Drawable buildCalendarDotDrawable(Set<String> dotTypes) {
+        if (dotTypes == null || dotTypes.isEmpty()) {
+            return null;
+        }
 
-        return 0;
+        List<Integer> colors = new ArrayList<>();
+        if (dotTypes.contains("CHORE")) {
+            colors.add(ContextCompat.getColor(this, R.color.calendar_dot_chore));
+        }
+        if (dotTypes.contains("EVENT")) {
+            colors.add(ContextCompat.getColor(this, R.color.calendar_dot_event));
+        }
+        if (dotTypes.contains("REMINDER") || dotTypes.contains("BILL")) {
+            colors.add(ContextCompat.getColor(this, R.color.calendar_dot_reminder));
+        }
+
+        if (colors.isEmpty()) {
+            return null;
+        }
+
+        int dotSize = Math.round(dpToPx(8));
+        int gap = Math.round(dpToPx(4));
+        int width = dotSize + ((colors.size() - 1) * (dotSize + gap));
+
+        Bitmap bitmap = Bitmap.createBitmap(width, dotSize, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        float radius = dotSize / 2f;
+
+        for (int i = 0; i < colors.size(); i++) {
+            paint.setColor(colors.get(i));
+            float centerX = radius + (i * (dotSize + gap));
+            canvas.drawCircle(centerX, radius, radius, paint);
+        }
+
+        BitmapDrawable drawable = new BitmapDrawable(getResources(), bitmap);
+        drawable.setBounds(0, 0, width, dotSize);
+        return drawable;
     }
 
     private void toggleCalendarMode() {
         if (isCalendarExpanded) {
-            calendarView.setVisibility(View.GONE);
-            weekViewContainer.setVisibility(View.VISIBLE);
-            imgToggleArrow.setImageResource(android.R.drawable.arrow_down_float);
+            collapseMonthCalendar();
         } else {
-            calendarView.setVisibility(View.VISIBLE);
-            weekViewContainer.setVisibility(View.GONE);
-            imgToggleArrow.setImageResource(android.R.drawable.arrow_up_float);
-            calendarView.post(() -> highlightMonthViewDate(currentSelectedDate));
+            expandMonthCalendar();
         }
         isCalendarExpanded = !isCalendarExpanded;
+        updateCalendarToggleAccessibility();
+    }
+
+    private void expandMonthCalendar() {
+        weekViewContainer.animate().cancel();
+        calendarView.animate().cancel();
+        highlightMonthViewDate(currentSelectedDate);
+
+        calendarView.setVisibility(View.VISIBLE);
+        calendarView.setAlpha(0f);
+        calendarView.setTranslationY(-dpToPx(8));
+        calendarView.setScaleY(0.985f);
+
+        imgToggleArrow.animate()
+                .rotation(180f)
+                .setDuration(160)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+
+        calendarView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if (calendarView.getViewTreeObserver().isAlive()) {
+                    calendarView.getViewTreeObserver().removeOnPreDrawListener(this);
+                }
+
+                weekViewContainer.animate()
+                        .alpha(0f)
+                        .translationY(dpToPx(6))
+                        .setDuration(90)
+                        .setInterpolator(new DecelerateInterpolator())
+                        .withEndAction(() -> {
+                            weekViewContainer.setVisibility(View.GONE);
+                            weekViewContainer.setAlpha(1f);
+                            weekViewContainer.setTranslationY(0f);
+                        })
+                        .start();
+
+                calendarView.animate()
+                        .alpha(1f)
+                        .translationY(0f)
+                        .scaleY(1f)
+                        .setDuration(140)
+                        .setInterpolator(new DecelerateInterpolator())
+                        .start();
+                return true;
+            }
+        });
+    }
+
+    private void collapseMonthCalendar() {
+        weekViewContainer.animate().cancel();
+        calendarView.animate().cancel();
+
+        if (calendarView.getVisibility() != View.VISIBLE) {
+            calendarView.setVisibility(View.GONE);
+            weekViewContainer.setVisibility(View.VISIBLE);
+            imgToggleArrow.setRotation(0f);
+            return;
+        }
+
+        calendarView.animate()
+                .alpha(0f)
+                .translationY(-dpToPx(8))
+                .scaleY(0.96f)
+                .setDuration(140)
+                .setInterpolator(new DecelerateInterpolator())
+                .withEndAction(() -> {
+                    calendarView.setVisibility(View.GONE);
+                    calendarView.setScaleY(1f);
+                    calendarView.setAlpha(1f);
+                    calendarView.setTranslationY(0f);
+                    weekViewContainer.setAlpha(0f);
+                    weekViewContainer.setTranslationY(dpToPx(6));
+                    weekViewContainer.setVisibility(View.VISIBLE);
+                    weekViewContainer.animate()
+                            .alpha(1f)
+                            .translationY(0f)
+                            .setDuration(140)
+                            .setInterpolator(new DecelerateInterpolator())
+                            .start();
+                })
+                .start();
+
+        imgToggleArrow.animate()
+                .rotation(0f)
+                .setDuration(140)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
     }
 
     private void highlightMonthViewDate(java.util.Calendar date) {
         try {
-            List<java.util.Calendar> selectedDates = new ArrayList<>();
-            selectedDates.add(date);
-            calendarView.setDate(date);
-            calendarView.setSelectedDates(selectedDates);
+            java.util.Calendar currentPage = calendarView.getCurrentPageDate();
+            boolean samePage = currentPage.get(java.util.Calendar.YEAR) == date.get(java.util.Calendar.YEAR)
+                    && currentPage.get(java.util.Calendar.MONTH) == date.get(java.util.Calendar.MONTH);
+
+            boolean sameSelected = false;
+            try {
+                java.util.Calendar selected = calendarView.getFirstSelectedDate();
+                sameSelected = isSameDay(selected, date);
+            } catch (Exception ignored) {}
+
+            if (samePage && sameSelected) {
+                return;
+            }
+
+            calendarView.setDate((java.util.Calendar) date.clone());
         } catch (Exception e) {}
     }
 
     private void setupFilters() {
         View.OnClickListener listener = v -> {
-            filterAll.setBackgroundResource(R.drawable.bg_pill_unselected);
-            filterChores.setBackgroundResource(R.drawable.bg_pill_unselected);
-            filterEvents.setBackgroundResource(R.drawable.bg_pill_unselected);
-            filterReminders.setBackgroundResource(R.drawable.bg_pill_unselected);
+            int defaultColor = ContextCompat.getColor(this, R.color.calendar_text_secondary);
+            filterAll.setBackgroundResource(R.drawable.bg_tenant_calendar_filter_neutral);
+            filterChores.setBackgroundResource(R.drawable.bg_tenant_calendar_filter_neutral);
+            filterEvents.setBackgroundResource(R.drawable.bg_tenant_calendar_filter_neutral);
+            filterReminders.setBackgroundResource(R.drawable.bg_tenant_calendar_filter_neutral);
 
-            filterAll.setTextColor(Color.BLACK);
-            filterChores.setTextColor(Color.BLACK);
-            filterEvents.setTextColor(Color.BLACK);
-            filterReminders.setTextColor(Color.BLACK);
+            filterAll.setTextColor(defaultColor);
+            filterChores.setTextColor(defaultColor);
+            filterEvents.setTextColor(defaultColor);
+            filterReminders.setTextColor(defaultColor);
 
             if (v == filterChores) {
                 activeFilter = "CHORE";
-                filterChores.setBackgroundResource(R.drawable.bg_pill_green);
-                filterChores.setTextColor(Color.WHITE);
+                filterChores.setBackgroundResource(R.drawable.bg_tenant_calendar_filter_chore);
+                filterChores.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_inverse));
             } else if (v == filterEvents) {
                 activeFilter = "EVENT";
-                filterEvents.setBackgroundResource(R.drawable.bg_pill_pink);
-                filterEvents.setTextColor(Color.WHITE);
+                filterEvents.setBackgroundResource(R.drawable.bg_tenant_calendar_filter_event);
+                filterEvents.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_inverse));
             } else if (v == filterReminders) {
                 activeFilter = "REMINDER";
-                filterReminders.setBackgroundResource(R.drawable.bg_pill_orange);
-                filterReminders.setTextColor(Color.WHITE);
+                filterReminders.setBackgroundResource(R.drawable.bg_tenant_calendar_filter_reminder);
+                filterReminders.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_inverse));
             } else {
                 activeFilter = "ALL";
-                filterAll.setBackgroundResource(R.drawable.bg_pill_purple);
-                filterAll.setTextColor(Color.WHITE);
+                filterAll.setBackgroundResource(R.drawable.bg_tenant_calendar_filter_all);
+                filterAll.setTextColor(ContextCompat.getColor(this, R.color.calendar_text_inverse));
             }
+            updateFilterAccessibilityState();
             updateCalendarDots();
             setupWeekView();
             displayTasksForDate(currentSelectedDate);
@@ -1102,6 +1596,82 @@ public class TenantCalendarActivity extends AppCompatActivity {
         return false;
     }
 
+    private boolean isBillCategory(String type) {
+        return type != null && type.toUpperCase(Locale.getDefault()).contains("BILL");
+    }
+
+    private void updateCalendarLabel(String value) {
+        TextView label = findViewById(R.id.tvCalendarLabel);
+        if (label != null) {
+            label.setText(value);
+        }
+    }
+
+    private void updateFilterAccessibilityState() {
+        updateFilterChip(filterAll, "All", "ALL".equals(activeFilter));
+        updateFilterChip(filterChores, "Chores", "CHORE".equals(activeFilter));
+        updateFilterChip(filterEvents, "Events", "EVENT".equals(activeFilter));
+        updateFilterChip(filterReminders, "Reminders", "REMINDER".equals(activeFilter));
+    }
+
+    private void updateFilterChip(TextView chip, String label, boolean selected) {
+        if (chip == null) {
+            return;
+        }
+
+        chip.setSelected(selected);
+        chip.setContentDescription(label + " filter" + (selected ? ", selected" : ""));
+    }
+
+    private void updateCalendarToggleAccessibility() {
+        if (btnToggleCalendar == null) {
+            return;
+        }
+
+        String dateLabel = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(currentSelectedDate.getTime());
+        String action = isCalendarExpanded ? "Collapse month calendar" : "Expand month calendar";
+        btnToggleCalendar.setContentDescription(action + ". Selected date " + dateLabel + ".");
+    }
+
+    private String buildCardContentDescription(String category, CharSequence title, CharSequence detail,
+                                               CharSequence description, String actionHint) {
+        StringBuilder builder = new StringBuilder();
+        if (category != null && !category.trim().isEmpty()) {
+            builder.append(category).append(". ");
+        }
+        if (title != null && title.length() > 0) {
+            builder.append(title).append(". ");
+        }
+        if (detail != null && detail.length() > 0) {
+            builder.append(detail).append(". ");
+        }
+        if (description != null && description.length() > 0) {
+            builder.append(description).append(". ");
+        }
+        if (actionHint != null && !actionHint.isEmpty()) {
+            builder.append(actionHint);
+        }
+        return builder.toString().trim();
+    }
+
+    private String buildWeekDayContentDescription(java.util.Calendar day,
+                                                  boolean isSelected,
+                                                  boolean isToday,
+                                                  boolean hasScheduledItems) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(day.getTime()));
+        if (isToday) {
+            builder.append(", today");
+        }
+        if (isSelected) {
+            builder.append(", selected");
+        }
+        if (hasScheduledItems) {
+            builder.append(", has scheduled items");
+        }
+        return builder.toString();
+    }
+
     private void makeHeaderBold(View view) {
         if (view instanceof ViewGroup) {
             ViewGroup vg = (ViewGroup) view;
@@ -1116,5 +1686,9 @@ public class TenantCalendarActivity extends AppCompatActivity {
     private boolean isSameDay(java.util.Calendar cal1, java.util.Calendar cal2) {
         return cal1.get(java.util.Calendar.DAY_OF_YEAR) == cal2.get(java.util.Calendar.DAY_OF_YEAR) &&
                 cal1.get(java.util.Calendar.YEAR) == cal2.get(java.util.Calendar.YEAR);
+    }
+
+    private float dpToPx(int dp) {
+        return dp * getResources().getDisplayMetrics().density;
     }
 }

@@ -18,6 +18,7 @@ import com.chaquo.python.android.AndroidPlatform;
 import com.example.uninest.R;
 import com.example.uninest.data.api.TicketApi;
 import com.example.uninest.model.Ticket;
+import com.example.uninest.utils.NetworkErrorDialog;
 
 import org.tensorflow.lite.Interpreter;
 
@@ -196,7 +197,10 @@ public class TicketPredictionActivity extends AppCompatActivity {
                         Toast.makeText(TicketPredictionActivity.this, "Maintenance has been notified.", Toast.LENGTH_LONG).show();
                         clearInputs();
                     } else {
-                        resultTextView.setText("Submission failed (Error: " + response.code() + ")");
+                        NetworkErrorDialog.show(
+                                TicketPredictionActivity.this,
+                                () -> sendToBackend(desc, bld, houseCode, rm, cat, prio)
+                        );
                     }
                 });
             }
@@ -205,7 +209,10 @@ public class TicketPredictionActivity extends AppCompatActivity {
             public void onFailure(Call<String> call, Throwable t) {
                 runOnUiThread(() -> {
                     predictButton.setEnabled(true);
-                    resultTextView.setText("Network error. Please check your connection.");
+                    NetworkErrorDialog.show(
+                            TicketPredictionActivity.this,
+                            () -> sendToBackend(desc, bld, houseCode, rm, cat, prio)
+                    );
                     Log.e(TAG, "Network Failure", t);
                 });
             }

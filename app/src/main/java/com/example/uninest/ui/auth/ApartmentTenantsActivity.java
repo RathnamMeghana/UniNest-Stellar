@@ -1,10 +1,7 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Intent;
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -18,12 +15,10 @@ import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.model.Room;
 import com.example.uninest.model.User;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.uninest.utils.AgentBottomNavHelper;
+import com.example.uninest.utils.DestructiveConfirmationDialog;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -114,7 +109,7 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
 
         setupHouseCodeDisplay();
 
-        setupBottomNav(R.id.nav_buildings);
+        AgentBottomNavHelper.setup(this, R.id.nav_buildings);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -122,6 +117,12 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             fetchRooms(houseCode); // This re-fetches and updates the counts dynamically
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AgentBottomNavHelper.syncSelected(this, R.id.nav_buildings);
     }
 
     private void setupHouseCodeDisplay() {
@@ -199,14 +200,22 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
 
             if (canDelete) {
                 card.setOnDeleteClickListener(v -> {
-                    AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                            .setTitle("Remove Tenant?")
-                            .setMessage("Are you sure you want to remove this tenant?")
-                            .setPositiveButton("Remove", (d, which) -> removeTenant(tenant.getEmail()))
-                            .setNegativeButton("Cancel", null)
-                            .show();
+                    String tenantName = tenant.getFullName() != null && !tenant.getFullName().trim().isEmpty()
+                            ? tenant.getFullName().trim()
+                            : "this tenant";
+                    String title = "this tenant".equals(tenantName)
+                            ? "Remove this tenant?"
+                            : "Remove " + tenantName + "?";
 
-                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.RED);
+                    DestructiveConfirmationDialog.show(
+                            this,
+                            "Remove tenant",
+                            title,
+                            "They will lose access to this apartment right away.",
+                            "They'll need a new invite or house code to join again.",
+                            "Remove tenant",
+                            () -> removeTenant(tenant.getEmail())
+                    );
                 });
             }
 
@@ -282,38 +291,13 @@ public class ApartmentTenantsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(ApartmentTenantsActivity.this, "Network error", Toast.LENGTH_SHORT).show();
                 Log.e("API_CALL", "Failed to remove tenant", t);
+                com.example.uninest.utils.NetworkErrorDialog.show(
+                        ApartmentTenantsActivity.this,
+                        () -> removeTenant(email)
+                );
             }
         });
     }
 
-    private void setupBottomNav(int selectedId) {
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
-        bottomNav.setSelectedItemId(selectedId);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            // Prevent reloading the same activity
-            if (itemId == selectedId) return true;
-
-            if (itemId == R.id.nav_tickets) {
-                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_buildings) {
-                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_profile) {
-                // startActivity(new Intent(this, LettingAgentProfileActivity.class));
-                // overridePendingTransition(0, 0);
-                return true;
-            }
-            return false;
-        });
-    }
 }

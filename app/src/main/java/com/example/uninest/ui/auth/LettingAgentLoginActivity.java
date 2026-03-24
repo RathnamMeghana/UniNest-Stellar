@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
 import com.example.uninest.data.api.ApiClient;
+import com.example.uninest.utils.NetworkErrorDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -86,7 +87,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(LettingAgentLoginActivity.this, "Password reset email sent!", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(LettingAgentLoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(LettingAgentLoginActivity.this, "We couldn't send the reset email right now.", Toast.LENGTH_LONG).show();
                         }
                     });
         });
@@ -115,7 +116,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                         }
                     } else {
                         resetLoginButton();
-                        Toast.makeText(this, "Auth Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "We couldn't sign you in. Check your details and try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -142,7 +143,12 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     runOnUiThread(() -> {
                         resetLoginButton();
-                        Toast.makeText(LettingAgentLoginActivity.this, "Backend Unreachable", Toast.LENGTH_LONG).show();
+                        NetworkErrorDialog.show(
+                                LettingAgentLoginActivity.this,
+                                "Something went wrong",
+                                "Check your connection and try again.",
+                                () -> sendTokenToBackendAndSyncRoles(user)
+                        );
                     });
                 }
 
@@ -153,6 +159,16 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                             if (refreshTask.isSuccessful()) {
                                 fetchUserProfile(user.getUid());
                             }
+                        });
+                    } else {
+                        runOnUiThread(() -> {
+                            resetLoginButton();
+                            NetworkErrorDialog.show(
+                                    LettingAgentLoginActivity.this,
+                                    "Something went wrong",
+                                    "Check your connection and try again.",
+                                    () -> sendTokenToBackendAndSyncRoles(user)
+                            );
                         });
                     }
                     response.close();
@@ -182,7 +198,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                     sessionManager.saveAgentSession(mAuth.getCurrentUser().getEmail(), role, company, fullName, profileImg);
                     runOnUiThread(() -> {
                         if ("1".equals(role)) {
-                            startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
+                            startActivity(new Intent(this, LettingAgentHomeActivity.class));
                             finish();
                         } else if ("2".equals(role)) {
                             Intent intent = new Intent(this, ApartmentTenantsActivity.class);
@@ -192,7 +208,7 @@ public class LettingAgentLoginActivity extends AppCompatActivity {
                         } else {
                             mAuth.signOut();
                             resetLoginButton();
-                            Toast.makeText(this, "Unauthorized Role", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "This account can't sign in here.", Toast.LENGTH_LONG).show();
                         }
                     });
                 })

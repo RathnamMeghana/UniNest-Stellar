@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="340dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_summary_chip"
-    android:backgroundTint="#FFFFFF"
+    android:background="@drawable/bg_tenant_calendar_dialog"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="22dp">
 
-    <!-- Header Area -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -17,100 +15,211 @@
             android:id="@+id/tvClearAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clear All"
-            android:textColor="#B792D9"
-            android:textStyle="bold"
-            android:textSize="14sp"
             android:layout_centerVertical="true"
-            android:padding="4dp"/>
+            android:fontFamily="@font/opensans_bold"
+            android:padding="4dp"
+            android:text="Clear all"
+            android:textColor="@color/calendar_primary_dark"
+            android:textSize="13sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Filter Options"
-            android:textColor="#2C3E50"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/opensans_bold"
+            android:text="Filter Tickets"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/btnClose"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_alignParentEnd="true"
+            android:contentDescription="Close filters"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
-            app:tint="#000" />
+            app:tint="@color/calendar_text_primary" />
     </RelativeLayout>
 
-    <!-- Sort By Section -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Sort By:"
-        android:textColor="#888888"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:fontFamily="@font/opensans_bold"
+        android:letterSpacing="0.08"
+        android:text="Sort by"
+        android:textAllCaps="true"
+        android:textColor="@color/calendar_primary_dark"
+        android:textSize="11sp" />
 
     <RadioGroup
         android:id="@+id/rgSort"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp">
-        <RadioButton android:id="@+id/rbBuilding" android:layout_width="match_parent" android:layout_height="48dp" android:text="Building" android:buttonTint="#B792D9" android:background="@drawable/bg_filter_item" android:layout_marginBottom="8dp" android:paddingStart="12dp"/>
-        <RadioButton android:id="@+id/rbPriority" android:layout_width="match_parent" android:layout_height="48dp" android:text="Priority" android:buttonTint="#B792D9" android:background="@drawable/bg_filter_item" android:layout_marginBottom="8dp" android:paddingStart="12dp"/>
-        <RadioButton android:id="@+id/rbDate" android:layout_width="match_parent" android:layout_height="48dp" android:text="Date" android:buttonTint="#B792D9" android:background="@drawable/bg_filter_item" android:paddingStart="12dp"/>
+
+        <RadioButton
+            android:id="@+id/rbBuilding"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_tenant_calendar_metric_soft"
+            android:buttonTint="@color/calendar_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="12dp"
+            android:text="Building"
+            android:textColor="@color/calendar_text_primary" />
+
+        <RadioButton
+            android:id="@+id/rbPriority"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_tenant_calendar_metric_soft"
+            android:buttonTint="@color/calendar_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="12dp"
+            android:text="Priority"
+            android:textColor="@color/calendar_text_primary" />
+
+        <RadioButton
+            android:id="@+id/rbDate"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_tenant_calendar_metric_soft"
+            android:buttonTint="@color/calendar_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="12dp"
+            android:text="Date"
+            android:textColor="@color/calendar_text_primary" />
     </RadioGroup>
 
-    <!-- Priority Filters -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Filter by Priority:"
-        android:textColor="#888888"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="22dp"
+        android:fontFamily="@font/opensans_bold"
+        android:letterSpacing="0.08"
+        android:text="Priority"
+        android:textAllCaps="true"
+        android:textColor="@color/calendar_primary_dark"
+        android:textSize="11sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:orientation="horizontal">
-        <TextView android:id="@+id/chipHigh" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="High" android:gravity="center" android:paddingVertical="10dp" android:background="@drawable/bg_chip_unselected" android:textColor="#C62828" android:layout_marginEnd="8dp"/>
-        <TextView android:id="@+id/chipMedium" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Medium" android:gravity="center" android:paddingVertical="10dp" android:background="@drawable/bg_chip_unselected" android:textColor="#EF6C00" android:layout_marginEnd="8dp"/>
-        <TextView android:id="@+id/chipLow" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Low" android:gravity="center" android:paddingVertical="10dp" android:background="@drawable/bg_chip_unselected" android:textColor="#2E7D32"/>
+
+        <TextView
+            android:id="@+id/chipHigh"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="High"
+            android:textColor="@color/chip_high_text"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/chipMedium"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="Medium"
+            android:textColor="@color/chip_medium_text"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/chipLow"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="Low"
+            android:textColor="@color/chip_low_text"
+            android:textSize="15sp" />
     </LinearLayout>
 
-    <!-- State Filters -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Filter by State:"
-        android:textColor="#888888"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="22dp"
+        android:fontFamily="@font/opensans_bold"
+        android:letterSpacing="0.08"
+        android:text="State"
+        android:textAllCaps="true"
+        android:textColor="@color/calendar_primary_dark"
+        android:textSize="11sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:orientation="horizontal">
-        <TextView android:id="@+id/stateRaised" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Raised" android:gravity="center" android:paddingVertical="10dp" android:background="@drawable/bg_chip_unselected" android:textColor="#C62828" android:layout_marginEnd="8dp"/>
-        <TextView android:id="@+id/stateProgress" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="In Progress" android:gravity="center" android:paddingVertical="10dp" android:background="@drawable/bg_chip_unselected" android:textColor="#EF6C00" android:layout_marginEnd="8dp"/>
-        <TextView android:id="@+id/stateSolved" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Solved" android:gravity="center" android:paddingVertical="10dp" android:background="@drawable/bg_chip_unselected" android:textColor="#2E7D32"/>
+
+        <TextView
+            android:id="@+id/stateRaised"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:text="Raised"
+            android:textColor="@color/ticket_raised_text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stateProgress"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:text="In Progress"
+            android:textColor="@color/ticket_progress_text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stateSolved"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:text="Solved"
+            android:textColor="@color/ticket_solved_text"
+            android:textSize="14sp" />
     </LinearLayout>
 
-    <!-- Deleted Tickets Toggle -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:orientation="horizontal"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/bg_tenant_calendar_metric_soft"
         android:gravity="center_vertical"
-        android:padding="12dp"
-        android:background="@drawable/bg_filter_item">
+        android:orientation="horizontal"
+        android:padding="14dp">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -121,16 +230,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Show Deleted"
-                android:textColor="#2C3E50"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:fontFamily="@font/opensans_bold"
+                android:text="Show deleted"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/opensans_regular"
                 android:text="Include tickets removed by tenants"
-                android:textColor="#888888"
+                android:textColor="@color/calendar_text_secondary"
                 android:textSize="11sp" />
         </LinearLayout>
 
@@ -138,19 +249,26 @@
             android:id="@+id/swDeleted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:thumbTint="#B792D9"
-            app:trackTint="#D1C4E9" />
+            app:thumbTint="@color/calendar_primary"
+            app:trackTint="@color/calendar_primary_soft" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSubmitFilter"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="#B792D9"
-        android:text="Apply Filters"
+        android:layout_height="46dp"
+        android:layout_marginTop="26dp"
+        android:background="@drawable/bg_tenant_calendar_action_primary"
+        android:fontFamily="@font/opensans_bold"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:minHeight="46dp"
+        android:text="Apply filters"
         android:textAllCaps="false"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        app:cornerRadius="30dp" />
+        android:textColor="@color/calendar_text_inverse"
+        android:textSize="14sp"
+        app:backgroundTint="@null"
+        app:cornerRadius="16dp"
+        app:elevation="0dp"
+        app:strokeWidth="0dp" />
 </LinearLayout>

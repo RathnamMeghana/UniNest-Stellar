@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <queries>
         <package android:name="com.google.android.gms" />
@@ -43,6 +45,9 @@
             android:exported="false" />
         <activity
             android:name=".ui.auth.Onboarding1Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LettingAgentHomeActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.LettingAgentBuildingsActivity"
@@ -109,6 +114,9 @@
             android:exported="false" />
         <activity
             android:name=".ui.auth.PrivacyPolicyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.AboutUsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.FAQActivity"
@@ -211,6 +219,20 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".notifications.ScheduledNotificationReceiver"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
 
     </application>
 

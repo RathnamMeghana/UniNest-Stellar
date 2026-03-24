@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +30,7 @@ public class ChoreDetailActivity extends AppCompatActivity {
     private EditText etActualTime;
     private Button btnUpdate;
     private TextView tvDueDate;
-    private ImageView btnBack;
+    private View btnBack;
 
     private String choreId, houseCode, currentUserId;
     private SessionManager sessionManager; // Add SessionManager
@@ -114,8 +113,12 @@ public class ChoreDetailActivity extends AppCompatActivity {
 
     private void setupStatusSpinner(String currentStatus) {
         String[] statuses = {"Not Started", "In Progress", "Completed"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, statuses);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                R.layout.item_calendar_spinner_selected,
+                statuses
+        );
+        adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         spinnerStatus.setAdapter(adapter);
 
         if (currentStatus != null) {
@@ -148,8 +151,12 @@ public class ChoreDetailActivity extends AppCompatActivity {
                         }
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ChoreDetailActivity.this, android.R.layout.simple_spinner_item, displayNames);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            ChoreDetailActivity.this,
+                            R.layout.item_calendar_spinner_selected,
+                            displayNames
+                    );
+                    adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
                     spinnerSwap.setAdapter(adapter);
                 }
             }
@@ -188,13 +195,13 @@ public class ChoreDetailActivity extends AppCompatActivity {
                     finish();
                 } else {
                     btnUpdate.setEnabled(true);
-                    btnUpdate.setText("Save Changes");
+                    btnUpdate.setText("Save updates");
                 }
             }
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 btnUpdate.setEnabled(true);
-                btnUpdate.setText("Save Changes");
+                btnUpdate.setText("Save updates");
             }
         });
     }

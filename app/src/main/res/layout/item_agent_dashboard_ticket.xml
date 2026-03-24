@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/cardTicketRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_tenant_ticket_card_raised"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTicketStateBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_tenant_ticket_status_raised"
+                android:fontFamily="@font/opensans_bold"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="Raised"
+                android:textColor="@color/ticket_raised_text"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvTicketPriorityChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_priority_chip"
+                android:fontFamily="@font/opensans_bold"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="High"
+                android:textColor="@color/chip_high_text"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/calendar_text_secondary" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTicketTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/opensans_bold"
+            android:maxLines="2"
+            android:text="Kitchen: Boiler"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tvTicketMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/opensans_regular"
+            android:maxLines="1"
+            android:text="Mourne View | Apt 4 | Raised by Leyla"
+            android:textColor="@color/calendar_text_secondary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvTicketSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/opensans_regular"
+            android:maxLines="2"
+            android:text="Waiting for review and schedule confirmation."
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvTicketSchedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_soft_badge"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:text="Needs first response"
+            android:textColor="@color/app_text_primary"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+</LinearLayout>

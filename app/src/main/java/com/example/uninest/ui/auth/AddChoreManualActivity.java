@@ -10,6 +10,7 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.ChoreAPI;
 import com.example.uninest.model.Chore;
+import com.example.uninest.utils.NetworkErrorDialog;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -75,7 +76,10 @@ public class AddChoreManualActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Chore> call, Throwable t) {
-                Toast.makeText(AddChoreManualActivity.this, "Network failure", Toast.LENGTH_SHORT).show();
+                NetworkErrorDialog.show(
+                        AddChoreManualActivity.this,
+                        AddChoreManualActivity.this::saveChore
+                );
             }
         });
     }

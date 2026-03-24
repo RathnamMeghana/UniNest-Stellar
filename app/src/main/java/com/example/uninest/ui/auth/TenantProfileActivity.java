@@ -12,18 +12,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
+import com.example.uninest.utils.ContactUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import android.net.Uri;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import android.provider.Settings;
 import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.uninest.utils.ImageUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -38,7 +40,10 @@ public class TenantProfileActivity extends AppCompatActivity {
 
 
     private ImageView ivProfileImage; // The big image in the header
+    private TextView tvUserName;
+    private TextView tvUserEmail;
     private Uri imageUri;
+    private String loadedProfileImageValue;
 
     // 1. Define the Image Picker Launcher
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
@@ -46,12 +51,15 @@ public class TenantProfileActivity extends AppCompatActivity {
             uri -> {
                 if (uri != null) {
                     imageUri = uri;
-                    // Update UI immediately
-                    ivProfileImage.setImageURI(uri);
-                    // Upload to Firebase
+                    Glide.with(this).load(uri).dontAnimate().circleCrop().into(ivProfileImage);
                     uploadImageToFirebase();
                 }
             }
+    );
+
+    private final ActivityResultLauncher<Intent> editNameLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> bindHeaderInfo()
     );
 
 
@@ -66,58 +74,57 @@ public class TenantProfileActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
 
         ivProfileImage = findViewById(R.id.ivProfileImage);
+        tvUserName = findViewById(R.id.tvUserName);
+        tvUserEmail = findViewById(R.id.tvUserEmail);
 
         initUI();
+        loadExistingProfileImage();
     }
     @Override
     protected void onResume() {
         super.onResume();
-        // This runs EVERY time you come back to this screen
-        refreshUserData();
-    }
-
-    private void refreshUserData() {
-        // 1. Update Name and Email from SessionManager
-        TextView tvName = findViewById(R.id.tvUserName);
-        TextView tvEmail = findViewById(R.id.tvUserEmail);
-
-        tvName.setText(sessionManager.getUserFullName());
-        tvEmail.setText(sessionManager.getUserEmail());
-
-        // 2. Load the latest Image (from Firestore or Session)
-        loadExistingProfileImage();
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        if (bottomNav != null && bottomNav.getSelectedItemId() != R.id.nav_profile) {
+            bottomNav.setSelectedItemId(R.id.nav_profile);
+        }
     }
 
     private void initUI() {
-        // Populate Header Info
-        TextView tvName = findViewById(R.id.tvUserName);
-        TextView tvEmail = findViewById(R.id.tvUserEmail);
-        tvName.setText(sessionManager.getUserFullName());
-        tvEmail.setText(sessionManager.getUserEmail());
+        bindHeaderInfo();
 
         // Setup Rows (Setting Labels and Icons)
         setupRow(R.id.rowEditName, "Change Account Name", R.drawable.ic_user);
         setupRow(R.id.rowEditPassword, "Change Password", R.drawable.ic_lock);
         setupRow(R.id.rowEditImage, "Change Profile Image", R.drawable.ic_camera);
+        setupRow(R.id.rowNotifications, "Notification Settings", R.drawable.ic_notifications_outline);
         setupRow(R.id.rowAbout, "About Us", R.drawable.ic_info);
         setupRow(R.id.rowFaq, "FAQs", R.drawable.ic_help);
         setupRow(R.id.rowPrivacy, "Privacy Policy", R.drawable.ic_shield);
+        setupRow(R.id.rowSupport, "Contact Support", R.drawable.ic_help);
         setupRow(R.id.rowDarkMode, "Dark Mode", R.drawable.ic_dark_mode);
 
         // Click Listeners
         // 2. Set listener for the Change Image row
         findViewById(R.id.rowEditImage).setOnClickListener(v -> mGetContent.launch("image/*"));
         findViewById(R.id.rowEditName).setOnClickListener(v ->
-                startActivity(new Intent(this, ChangeAccountNameActivity.class)));
+                editNameLauncher.launch(new Intent(this, ChangeAccountNameActivity.class)));
 
         findViewById(R.id.rowEditPassword).setOnClickListener(v ->
                 startActivity(new Intent(this, ChangePasswordActivity.class)));
+        findViewById(R.id.rowNotifications).setOnClickListener(v -> openNotificationSettings());
+
+        findViewById(R.id.rowAbout).setOnClickListener(v ->
+                startActivity(new Intent(this, AboutUsActivity.class)));
 
         findViewById(R.id.rowFaq).setOnClickListener(v ->
                 startActivity(new Intent(this, FAQActivity.class)));
 
         findViewById(R.id.rowPrivacy).setOnClickListener(v ->
                 startActivity(new Intent(this, PrivacyPolicyActivity.class)));
+
+        findViewById(R.id.rowSupport).setOnClickListener(v -> ContactUtils.emailSupport(this));
+        findViewById(R.id.rowEmergency).setOnClickListener(v -> ContactUtils.dialEmergency(this));
+        findViewById(R.id.btnCallEmergency).setOnClickListener(v -> ContactUtils.dialEmergency(this));
 
         findViewById(R.id.btnLogout).setOnClickListener(v -> handleLogout());
 
@@ -127,17 +134,15 @@ public class TenantProfileActivity extends AppCompatActivity {
         SwitchMaterial switchDark = darkModeRow.findViewById(R.id.itemSwitch);
 
 // Check current theme to set switch state initially
-        int currentMode = AppCompatDelegate.getDefaultNightMode();
-        switchDark.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
+        switchDark.setChecked(sessionManager.isDarkModeEnabled());
 
         switchDark.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sessionManager.setDarkModeEnabled(isChecked);
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
-            // Optional: Re-create activity to apply theme smoothly if needed
-            // recreate();
         });
 
 // Click listener to toggle switch when row is clicked
@@ -146,23 +151,42 @@ public class TenantProfileActivity extends AppCompatActivity {
         setupBottomNav();
     }
 
+    private void bindHeaderInfo() {
+        String fullName = sessionManager.getUserFullName();
+        String email = sessionManager.getUserEmail();
+
+        if (tvUserName != null && !String.valueOf(tvUserName.getText()).equals(fullName)) {
+            tvUserName.setText(fullName);
+        }
+
+        if (tvUserEmail != null && !String.valueOf(tvUserEmail.getText()).equals(email)) {
+            tvUserEmail.setText(email);
+        }
+    }
+
     private void loadExistingProfileImage() {
+        String cachedImage = sessionManager.getUserImage();
+        ImageUtils.loadProfileImageImmediate(ivProfileImage, cachedImage);
+        loadedProfileImageValue = ImageUtils.normalizeImageSource(cachedImage);
+        if (loadedProfileImageValue != null) {
+            return;
+        }
+
         String uid = mAuth.getCurrentUser().getUid();
 
         db.collection("users").document(uid).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String imageStr = documentSnapshot.getString("profileImageUrl");
                 if (imageStr != null && !imageStr.isEmpty()) {
-
-                    // If the string starts with "http", it's a URL. If not, it's Base64.
-                    if (imageStr.startsWith("http")) {
-                        Glide.with(this).load(imageStr).into(ivProfileImage);
-                    } else {
-                        // Decode Base64 string to image
-                        byte[] decodedString = Base64.decode(imageStr, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivProfileImage.setImageBitmap(decodedByte);
-                    }
+                    sessionManager.saveTenantSession(
+                            uid,
+                            sessionManager.getUserEmail(),
+                            sessionManager.getUserRole(),
+                            sessionManager.fetchHouseCode(),
+                            sessionManager.getUserFullName(),
+                            imageStr
+                    );
+                    applyProfileImage(imageStr);
                 }
             }
         });
@@ -196,6 +220,7 @@ public class TenantProfileActivity extends AppCompatActivity {
                                 sessionManager.getUserFullName(),
                                 base64Image // Save the new Base64 string here
                         );
+                        loadedProfileImageValue = ImageUtils.normalizeImageSource(base64Image);
                         Toast.makeText(this, "Profile Image Updated", Toast.LENGTH_SHORT).show();
                     });
 
@@ -203,6 +228,32 @@ public class TenantProfileActivity extends AppCompatActivity {
             Log.e("PROFILE_IMAGE", "Failed to encode image", e);
             Toast.makeText(this, "Encoding failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void applyProfileImage(String imageStr) {
+        String normalizedImage = ImageUtils.normalizeImageSource(imageStr);
+        if (normalizedImage == null) {
+            return;
+        }
+
+        if (normalizedImage.equals(loadedProfileImageValue)) {
+            return;
+        }
+
+        loadedProfileImageValue = normalizedImage;
+        ImageUtils.loadProfileImageImmediate(ivProfileImage, imageStr);
+    }
+
+    private void openNotificationSettings() {
+        Intent intent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        } else {
+            intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    .setData(Uri.fromParts("package", getPackageName(), null));
+        }
+        startActivity(intent);
     }
 
     private void setupRow(int layoutId, String label, int iconRes) {

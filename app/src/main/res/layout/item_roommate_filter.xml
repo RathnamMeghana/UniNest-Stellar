@@ -2,22 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:gravity="center"
-    android:padding="4dp"
-    android:layout_marginEnd="12dp">
+    android:layout_marginEnd="10dp"
+    android:orientation="vertical"
+    android:padding="2dp">
 
     <FrameLayout
         android:id="@+id/frameCircle"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:background="@drawable/bg_circle_outline">
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@drawable/bg_tasks_filter_circle"
+        android:padding="3dp">
 
         <ImageView
             android:id="@+id/imgProfile"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_profile_tenant" />
     </FrameLayout>
@@ -26,19 +29,23 @@
         android:id="@+id/tvRoommateName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/opensans_bold"
         android:text="Name"
-        android:layout_marginTop="4dp"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"/>
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/tvPoints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_task_points_chip"
+        android:fontFamily="@font/opensans_bold"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
         android:text="0 pts"
-        android:textSize="11sp"
-        android:textStyle="bold"
-        android:textColor="#FF8F00"
-        android:visibility="gone"/>
+        android:textColor="@color/task_points_text"
+        android:textSize="12sp"
+        android:visibility="gone" />
 </LinearLayout>

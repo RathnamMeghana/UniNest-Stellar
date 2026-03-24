@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.uninest.R;
 import com.example.uninest.SessionManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.uninest.utils.AgentBottomNavHelper;
+import com.example.uninest.utils.ImageUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -34,6 +36,7 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
 
     private ImageView ivProfileImage;
     private Uri imageUri;
+    private String loadedProfileImageValue;
 
     // Image Picker Launcher
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
@@ -41,7 +44,7 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
             uri -> {
                 if (uri != null) {
                     imageUri = uri;
-                    ivProfileImage.setImageURI(uri);
+                    Glide.with(this).load(uri).dontAnimate().circleCrop().into(ivProfileImage);
                     uploadImageToFirebase();
                 }
             }
@@ -73,6 +76,7 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
         // Set up Settings Rows using exact IDs from XML
         setupRow(R.id.rowEditPassword, "Change Password", R.drawable.ic_lock);
         setupRow(R.id.rowEditImage, "Change Profile Image", R.drawable.ic_camera);
+        setupRow(R.id.rowNotifications, "Notification Settings", R.drawable.ic_notifications_outline);
 
         setupRow(R.id.rowAbout, "About UniNest", R.drawable.ic_info);
         setupRow(R.id.rowFaq, "FAQ", R.drawable.ic_help);
@@ -88,6 +92,9 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
         findViewById(R.id.rowFaq).setOnClickListener(v -> {
             startActivity(new Intent(this, AgentFaqActivity.class));
         });
+        findViewById(R.id.rowAbout).setOnClickListener(v -> {
+            startActivity(new Intent(this, AboutUsActivity.class));
+        });
 
         findViewById(R.id.rowPrivacy).setOnClickListener(v -> {
             startActivity(new Intent(this, AgentPrivacyActivity.class));
@@ -96,41 +103,33 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
         findViewById(R.id.rowEditPassword).setOnClickListener(v -> {
             startActivity(new Intent(this, AgentChangePasswordActivity.class));
         });
+        findViewById(R.id.rowNotifications).setOnClickListener(v -> openNotificationSettings());
 
         // Logout
         findViewById(R.id.btnLogout).setOnClickListener(v -> handleLogout());
         
-        setupBottomNav(R.id.nav_profile);
+        AgentBottomNavHelper.setup(this, R.id.nav_profile);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AgentBottomNavHelper.syncSelected(this, R.id.nav_profile);
     }
 
     private void loadUserProfile() {
         if (mAuth.getCurrentUser() == null) return;
 
-        // Sync with Session FIRST to avoid wait
         String cachedImage = sessionManager.getUserImage();
         if (cachedImage != null && !cachedImage.isEmpty()) {
-            if (cachedImage.startsWith("http")) {
-                Glide.with(this).load(cachedImage).placeholder(R.drawable.ic_profile_tenant).into(ivProfileImage);
-            } else {
-                try {
-                    byte[] decodedString = Base64.decode(cachedImage, Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    ivProfileImage.setImageBitmap(decodedByte);
-                } catch (Exception e) {}
-            }
+            applyProfileImage(cachedImage);
         }
 
         db.collection("users").document(mAuth.getCurrentUser().getUid()).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String imageStr = documentSnapshot.getString("profileImageUrl");
                 if (imageStr != null && !imageStr.isEmpty()) {
-                    if (imageStr.startsWith("http")) {
-                        Glide.with(this).load(imageStr).into(ivProfileImage);
-                    } else {
-                        byte[] decodedString = Base64.decode(imageStr, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivProfileImage.setImageBitmap(decodedByte);
-                    }
+                    applyProfileImage(imageStr);
                 }
             }
         });
@@ -158,6 +157,7 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
                                 sessionManager.getUserFullName(),
                                 base64Image
                         );
+                        loadedProfileImageValue = ImageUtils.normalizeImageSource(base64Image);
                         Toast.makeText(this, "Profile Image Updated", Toast.LENGTH_SHORT).show();
                     });
 
@@ -165,6 +165,20 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
             Log.e("PROFILE_IMAGE", "Failed to encode image", e);
             Toast.makeText(this, "Encoding failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void applyProfileImage(String imageStr) {
+        String normalizedImage = ImageUtils.normalizeImageSource(imageStr);
+        if (normalizedImage == null) {
+            return;
+        }
+
+        if (normalizedImage.equals(loadedProfileImageValue)) {
+            return;
+        }
+
+        loadedProfileImageValue = normalizedImage;
+        ImageUtils.loadProfileImageImmediate(ivProfileImage, imageStr);
     }
 
     private void setupRow(int layoutId, String label, int iconRes) {
@@ -185,35 +199,16 @@ public class LettingAgentProfileActivity extends AppCompatActivity {
         finish();
     }
 
-    private void setupBottomNav(int selectedId) {
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
-        if (bottomNav == null) return;
-        
-        bottomNav.setSelectedItemId(selectedId);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == selectedId) return true;
-
-            if (itemId == R.id.nav_tickets) {
-                startActivity(new Intent(this, LettingAgentTicketsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            } else if (itemId == R.id.nav_buildings) {
-                startActivity(new Intent(this, LettingAgentBuildingsActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;}
-                else if (itemId == R.id.nav_notifications) {
-                    startActivity(new Intent(this, LettingAgentNotificationsActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-            } else if (itemId == R.id.nav_profile) {
-                return true;
-            }
-            return false;
-        });
+    private void openNotificationSettings() {
+        Intent intent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        } else {
+            intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    .setData(Uri.fromParts("package", getPackageName(), null));
+        }
+        startActivity(intent);
     }
+
 }
