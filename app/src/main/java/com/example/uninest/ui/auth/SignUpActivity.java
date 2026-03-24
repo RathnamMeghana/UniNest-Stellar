@@ -2,6 +2,7 @@ package com.example.uninest.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Patterns;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -50,7 +51,6 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         sessionManager = new SessionManager(this);
-        sessionManager.setFirstTimeSetupCompleted();
 
         actvCompanyName = findViewById(R.id.actvCompanyName);
         etCompanyEmail = findViewById(R.id.etCompanyEmail);
@@ -60,6 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
         tvLoginLink = findViewById(R.id.tvLoginLink);
 
         tvLoginLink.setOnClickListener(v -> {
+            sessionManager.setFirstTimeSetupCompleted();
             startActivity(new Intent(SignUpActivity.this, LettingAgentLoginActivity.class));
             finish();
         });
@@ -76,17 +77,25 @@ public class SignUpActivity extends AppCompatActivity {
         );
         adapter.setDropDownViewResource(R.layout.item_calendar_spinner_dropdown);
         actvCompanyName.setAdapter(adapter);
+        actvCompanyName.setThreshold(0);
+        actvCompanyName.setInputType(InputType.TYPE_NULL);
+        actvCompanyName.setOnClickListener(v -> actvCompanyName.showDropDown());
+        actvCompanyName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                actvCompanyName.showDropDown();
+            }
+        });
     }
 
     private void setupSignUpButton() {
         btnSignUp.setOnClickListener(v -> {
-            String company = actvCompanyName.getText().toString();
+            String company = actvCompanyName.getText().toString().trim();
             String email = etCompanyEmail.getText().toString().trim();
             String password = etPassword.getText().toString();
             String confirm = etConfirmPassword.getText().toString();
             int role = 1;
 
-            if (email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+            if (company.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -129,6 +138,7 @@ public class SignUpActivity extends AppCompatActivity {
                     db.collection("users").document(user.getUid())
                             .set(userMap)
                             .addOnSuccessListener(aVoid -> {
+                                sessionManager.setFirstTimeSetupCompleted();
                                 Toast.makeText(this, "Signup Successful!", Toast.LENGTH_SHORT).show();
 
                                 // Navigate immediately to login screen

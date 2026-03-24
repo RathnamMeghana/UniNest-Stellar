@@ -37,6 +37,8 @@ public class SplashActivity extends AppCompatActivity {
                 // AGENT APP ROUTING
                 if ("1".equals(role)) {
                     intent = new Intent(SplashActivity.this, LettingAgentHomeActivity.class);
+                } else if (sessionManager.isFirstTimeSetup()) {
+                    intent = new Intent(SplashActivity.this, SignUpActivity.class);
                 } else {
                     intent = new Intent(SplashActivity.this, LettingAgentLoginActivity.class);
                 }
