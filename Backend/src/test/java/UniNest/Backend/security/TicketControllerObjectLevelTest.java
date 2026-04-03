@@ -99,13 +99,18 @@ class TicketControllerObjectLevelTest {
         assertEquals(1, response.getBody().size());
     }
 
+
     @Test
     void getTicketsByLandlord_Success() throws ExecutionException, InterruptedException {
-        when(ticketService.getTicketsByLandlord("landlord123")).thenReturn(List.of(testTicket));
+        // Update the Mockito stub to expect two arguments
+        //  'true' as the default for agents to see all tickets
+        when(ticketService.getTicketsByLandlord("landlord123", true)).thenReturn(List.of(testTicket));
 
-        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord("landlord123");
+        // 2. Update the controller call to pass the second argument
+        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord("landlord123", true);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
     }
 
