@@ -222,15 +222,21 @@ public class TicketControllerTest {
     public void TestGetTicketsByLandlord_NotFound() throws ExecutionException, InterruptedException {
         // set up
         String landlordId = "empty_landlord";
-        when(ticketService.getTicketsByLandlord(landlordId)).thenReturn(List.of());
+        boolean includeDeleted = true;
 
+        // Update Mockito stub added second argument
+        when(ticketService.getTicketsByLandlord(landlordId, includeDeleted)).thenReturn(List.of());
 
-        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord(landlordId);
+        // Update Controller call added second argument
+        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord(landlordId, includeDeleted);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertTrue(response.getBody().isEmpty());
 
+        // Update Verification added second argument
+        verify(ticketService).getTicketsByLandlord(landlordId, includeDeleted);
     }
 
     @Test
