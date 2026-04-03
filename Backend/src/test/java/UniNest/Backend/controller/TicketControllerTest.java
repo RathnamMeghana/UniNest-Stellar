@@ -241,15 +241,22 @@ public class TicketControllerTest {
 
     @Test
     public void TestGetTicketsByLandlord_NotLandLord() throws ExecutionException, InterruptedException {
-        //set up
+        // set up
         String landlordId = "landlord123";
-        when(ticketService.getTicketsByLandlord(landlordId))
-                .thenThrow(new TicketServiceException("Firestore unavailable", null));
+        boolean includeDeleted = true;
 
-        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord(landlordId);
+        // Update the Mockito stub to expect two arguments
+        when(ticketService.getTicketsByLandlord(landlordId, includeDeleted))
+                .thenThrow(new TicketServiceException("Firestore unavailable", HttpStatus.INTERNAL_SERVER_ERROR));
+
+        //  Update the Controller call to pass two arguments
+        ResponseEntity<List<Ticket>> response = ticketController.getTicketsByLandlord(landlordId, includeDeleted);
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
+
+        // Verify the service call
+        verify(ticketService).getTicketsByLandlord(landlordId, includeDeleted);
     }
 }
