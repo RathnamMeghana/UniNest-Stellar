@@ -81,4 +81,27 @@ public class TicketSoftDelete {
                 .andExpect(content().string(org.hamcrest.Matchers.not(containsString("HIDDEN_ID_456"))));
     }
 
+    @Test
+    @WithMockUser(roles = "LETTINGAGENT")
+    @DisplayName("Soft Delete: Agent fetch includes deleted tickets when requested")
+    public void testSoftDelete_AgentCanSeeEverything() throws Exception {
+        Ticket active = new Ticket();
+        active.setId("ACTIVE_ID");
+
+        Ticket deleted = new Ticket();
+        deleted.setId("DELETED_ID");
+        deleted.setDeletedByTenant(true);
+
+        // Mock service to return BOTH because agent wants to see all
+        when(ticketService.getTicketsByLandlord(anyString(), eq(true)))
+                .thenReturn(List.of(active, deleted));
+
+        mockMvc.perform(get("/tickets/landlord")
+                        .param("id", "landlord123")
+                        .param("includeDeleted", "true"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("ACTIVE_ID")))
+                .andExpect(content().string(containsString("DELETED_ID")));
+    }
+
 }
