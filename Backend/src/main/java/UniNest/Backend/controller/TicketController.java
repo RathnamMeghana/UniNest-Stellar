@@ -151,10 +151,13 @@ public class TicketController {
 
     @PreAuthorize("hasRole('TENANT')")
     @DeleteMapping("/{ticketId}")
-    public ResponseEntity<String> softDeleteTicket(@PathVariable String ticketId,  Authentication auth) {
+    public ResponseEntity<String> softDeleteTicket(@PathVariable String ticketId, Authentication auth) {
         try {
             String result = ticketService.softDeleteTicket(ticketId, auth.getName());
             return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (UniNest.Backend.exception.TicketServiceException e) {
+            // Let our custom exception dictate the status (e.g., 403)
+            return new ResponseEntity<>(e.getMessage(), e.getStatus());
         } catch (Exception e) {
             log.error("Error soft deleting ticket: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

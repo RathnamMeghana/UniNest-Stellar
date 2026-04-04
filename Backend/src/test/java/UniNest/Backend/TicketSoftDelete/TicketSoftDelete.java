@@ -23,9 +23,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.Collections;
 
 @WebMvcTest(TicketController.class)
-@AutoConfigureMockMvc(addFilters = false) // THIS IS THE KEY FIX
+@AutoConfigureMockMvc(addFilters = false)
 public class TicketSoftDelete {
 
     @Autowired
@@ -104,4 +107,31 @@ public class TicketSoftDelete {
                 .andExpect(content().string(containsString("DELETED_ID")));
     }
 
+    @Test
+    @WithMockUser(roles = "TENANT", username = "hacker_user")
+    @DisplayName("Soft Delete: Reject deletion if user is not the ticket owner")
+    public void testSoftDelete_ForbiddenForNonOwner() throws Exception {
+        String ticketId = "T123";
+
+        // Mock the service to throw the 403 exception
+        when(ticketService.softDeleteTicket(eq(ticketId), eq("hacker_user")))
+                .thenThrow(new UniNest.Backend.exception.TicketServiceException(
+                        "You are not authorized to delete this ticket",
+                        org.springframework.http.HttpStatus.FORBIDDEN));
+
+        // Create a real Authentication object
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(
+                "hacker_user",
+                null,
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_TENANT"))
+        );
+
+        // Perform the request
+        mockMvc.perform(delete("/tickets/" + ticketId)
+                        .principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(content().string(containsString("not authorized")));
+    }
 }
