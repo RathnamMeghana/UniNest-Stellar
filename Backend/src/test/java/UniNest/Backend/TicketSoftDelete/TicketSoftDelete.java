@@ -134,4 +134,46 @@ public class TicketSoftDelete {
                 .andExpect(status().isForbidden())
                 .andExpect(content().string(containsString("not authorized")));
     }
+
+    @Test
+    @WithMockUser(roles = "TENANT", username = "valid_owner")
+    @DisplayName("Soft Delete: Execution success for ticket owner")
+    public void testSoftDelete_SuccessForOwner() throws Exception {
+        String ticketId = "T123";
+        String owner = "valid_owner";
+
+        // Mock the successful service call
+        when(ticketService.softDeleteTicket(eq(ticketId), eq(owner)))
+                .thenReturn("Ticket removed successfully");
+
+        // Create Authentication for the owner
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(
+                owner, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_TENANT")));
+
+        mockMvc.perform(delete("/tickets/" + ticketId)
+                        .principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("removed successfully")));
+    }
+    @Test
+    @WithMockUser(roles = "LETTINGAGENT")
+    @DisplayName("Soft Delete: Agent fetch excludes deleted tickets when includeDeleted is false")
+    public void testSoftDelete_AgentFilterFalse() throws Exception {
+        Ticket active = new Ticket();
+        active.setId("ACTIVE_ID");
+        active.setDeletedByTenant(false);
+
+        // Mock service to return ONLY active because agent requested includeDeleted=false
+        when(ticketService.getTicketsByLandlord(anyString(), eq(false)))
+                .thenReturn(List.of(active));
+
+        mockMvc.perform(get("/tickets/landlord")
+                        .param("id", "agent123")
+                        .param("includeDeleted", "false"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("ACTIVE_ID")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("DELETED_ID"))));
+    }
+
 }
