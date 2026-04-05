@@ -29,6 +29,12 @@ public class Ticket {
     private boolean deletedByTenant = false;
 
 
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public boolean isDeletedByTenant() { return deletedByTenant; }
+    public void setDeletedByTenant(boolean deletedByTenant) { this.deletedByTenant = deletedByTenant; }
+
     public void sanitize() {
         this.id = SanitizationUtil.sanitize(this.id);
         this.description = SanitizationUtil.sanitize(this.description);
