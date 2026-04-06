@@ -251,4 +251,41 @@ public class ApartmentService {
             throw new ApartmentServiceException("Failed to delete apartment", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public void updateApartmentName(String houseCode, String name) {
+        if (houseCode == null || houseCode.isBlank()) {
+            throw new IllegalArgumentException("Apartment code cannot be null or empty");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Apartment name cannot be empty");
+        }
+
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            DocumentReference apartmentRef = db.collection("apartments").document(houseCode);
+            var snapshot = apartmentRef.get().get();
+
+            if (!snapshot.exists()) {
+                throw new ApartmentServiceException("Apartment does not exist", HttpStatus.NOT_FOUND);
+            }
+
+            apartmentRef.update("name", name).get();
+            syncApartmentNameForTickets(db, houseCode, name);
+        } catch (ApartmentServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApartmentServiceException("Failed to update apartment name", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void syncApartmentNameForTickets(Firestore db, String houseCode, String apartmentName)
+            throws InterruptedException, ExecutionException {
+        ApiFuture<QuerySnapshot> ticketQuery = db.collection("tickets")
+                .whereEqualTo("apartmentId", houseCode)
+                .get();
+
+        for (QueryDocumentSnapshot ticketDoc : ticketQuery.get().getDocuments()) {
+            ticketDoc.getReference().update("apartmentName", apartmentName).get();
+        }
+    }
 }

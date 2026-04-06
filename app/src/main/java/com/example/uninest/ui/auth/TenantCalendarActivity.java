@@ -249,9 +249,10 @@ public class TenantCalendarActivity extends AppCompatActivity {
             public void onResponse(Call<List<BillsRequest>> call, Response<List<BillsRequest>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     allBills = response.body();
-                    updateCalendarDots(); // Refresh dots to show bill due dates
-                    displayTasksForDate(currentSelectedDate); // Refresh list
+                } else {
+                    allBills = new ArrayList<>();
                 }
+                refreshCalendarViews();
             }
             @Override public void onFailure(Call<List<BillsRequest>> call, Throwable t) {}
         });
@@ -264,9 +265,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     allEvents = response.body();
                     applyUserFilter();
-                    updateCalendarDots();
-                    setupWeekView();
-                    displayTasksForDate(currentSelectedDate);
+                    refreshCalendarViews();
                     if (highlightEventId != null && !highlightEventId.isBlank()) {
                         for (Calendar event : allEvents) {
                             if (highlightEventId.equals(event.getId()) && event.getStartDate() != null) {
@@ -301,6 +300,12 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 );
             }
         });
+    }
+
+    private void refreshCalendarViews() {
+        updateCalendarDots();
+        setupWeekView();
+        displayTasksForDate(currentSelectedDate);
     }
 
     private void applyUserFilter() {
@@ -413,6 +418,7 @@ public class TenantCalendarActivity extends AppCompatActivity {
                     addCard(c, containerChores, isOverdueChore);
                     hasChores = true;
                     visibleItemCount++;
+                    if (isOverdueChore) overdueItemCount++;
                 } else if (isTypeMatch(c.getType(), "EVENT")) {
                     addCard(c, containerEvents, false);
                     hasEvents = true;
@@ -518,14 +524,6 @@ public class TenantCalendarActivity extends AppCompatActivity {
 
 
         statusBadge.setVisibility(View.VISIBLE);
-        statusBadge.setText("BILL");
-        applyCalendarStatusBadge(
-                statusBadge,
-                R.drawable.bg_tenant_calendar_status_bill,
-                R.color.calendar_bill_badge_bg,
-                R.color.app_text_primary
-        );
-        statusBadge.setTypeface(null, Typeface.BOLD);
 
         // Calculate My Share
         double myShare = 0;
@@ -551,6 +549,52 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 ? new SimpleDateFormat("MMM d", Locale.US).format(dueCalendar.getTime())
                 : "Soon";
 
+        java.util.Calendar today = java.util.Calendar.getInstance();
+        today.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        today.set(java.util.Calendar.MINUTE, 0);
+        today.set(java.util.Calendar.SECOND, 0);
+        today.set(java.util.Calendar.MILLISECOND, 0);
+
+        boolean isOverdue = false;
+        boolean isDueToday = false;
+        if (dueCalendar != null) {
+            java.util.Calendar normalizedDue = (java.util.Calendar) dueCalendar.clone();
+            normalizedDue.set(java.util.Calendar.HOUR_OF_DAY, 0);
+            normalizedDue.set(java.util.Calendar.MINUTE, 0);
+            normalizedDue.set(java.util.Calendar.SECOND, 0);
+            normalizedDue.set(java.util.Calendar.MILLISECOND, 0);
+            isOverdue = normalizedDue.before(today);
+            isDueToday = isSameDay(normalizedDue, today);
+        }
+
+        if (isOverdue) {
+            container.setBackgroundResource(R.drawable.bg_tenant_calendar_card_overdue);
+            statusBadge.setText("OVERDUE");
+            applyCalendarStatusBadge(
+                    statusBadge,
+                    R.drawable.bg_tenant_calendar_status_overdue_badge,
+                    R.color.calendar_overdue_badge_bg,
+                    R.color.calendar_overdue_badge_text
+            );
+        } else if (isDueToday) {
+            statusBadge.setText("DUE TODAY");
+            applyCalendarStatusBadge(
+                    statusBadge,
+                    R.drawable.bg_tenant_bill_status_due,
+                    R.color.bill_due_badge_bg,
+                    R.color.bill_due_badge_text
+            );
+        } else {
+            statusBadge.setText("BILL");
+            applyCalendarStatusBadge(
+                    statusBadge,
+                    R.drawable.bg_tenant_calendar_status_bill,
+                    R.color.calendar_bill_badge_bg,
+                    R.color.app_text_primary
+            );
+        }
+        statusBadge.setTypeface(null, Typeface.BOLD);
+
         String creator = roommateNamesMap.get(b.getCreatorId());
         if (currentUserId.equals(b.getCreatorId())) creator = "Me";
 
@@ -559,11 +603,24 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 "Total bill: €%.2f\nCreated by: %s",
                 b.getTotalAmount(),
                 (creator != null ? creator : "Unknown")));
-        extraInfo.setText(String.format(Locale.getDefault(),
-                "Due %s  |  Total EUR %.2f  |  %s",
-                dueText,
-                b.getTotalAmount(),
-                (creator != null ? creator : "Unknown")));
+        if (isOverdue) {
+            extraInfo.setText(String.format(Locale.getDefault(),
+                    "Was due %s  |  Total EUR %.2f  |  %s",
+                    dueText,
+                    b.getTotalAmount(),
+                    (creator != null ? creator : "Unknown")));
+        } else if (isDueToday) {
+            extraInfo.setText(String.format(Locale.getDefault(),
+                    "Due today  |  Total EUR %.2f  |  %s",
+                    b.getTotalAmount(),
+                    (creator != null ? creator : "Unknown")));
+        } else {
+            extraInfo.setText(String.format(Locale.getDefault(),
+                    "Due %s  |  Total EUR %.2f  |  %s",
+                    dueText,
+                    b.getTotalAmount(),
+                    (creator != null ? creator : "Unknown")));
+        }
         applyCalendarCardTextColors(title, desc, extraInfo);
 
 
@@ -1149,7 +1206,6 @@ public class TenantCalendarActivity extends AppCompatActivity {
                 addDotType(dailyEventsMap.get(dateKey), "BILL");
             }
         }
-
 
         for (String dateKey : dailyEventsMap.keySet()) {
             java.util.Set<String> types = dailyEventsMap.get(dateKey);

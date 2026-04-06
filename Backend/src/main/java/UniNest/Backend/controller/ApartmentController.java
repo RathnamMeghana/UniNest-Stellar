@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import UniNest.Backend.dto.ApartmentRequests;
 import UniNest.Backend.dto.BulkApartmentWithRoomsRequest;
+import UniNest.Backend.dto.NameUpdateRequest;
 import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.exception.UserServiceException;
 import UniNest.Backend.model.Apartment;
@@ -138,5 +140,19 @@ public class ApartmentController {
     public ResponseEntity<String> deleteApartment(@PathVariable String houseCode) {
         apartmentService.deleteApartment(SanitizationUtil.sanitize(houseCode));
         return ResponseEntity.ok("Apartment deleted and tenants unassigned successfully");
+    }
+
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @PutMapping("/{houseCode}/name")
+    public ResponseEntity<String> updateApartmentName(
+            @PathVariable String houseCode,
+            @Valid @RequestBody NameUpdateRequest request
+    ) {
+        request.sanitize();
+        apartmentService.updateApartmentName(
+                SanitizationUtil.sanitize(houseCode),
+                request.getName()
+        );
+        return ResponseEntity.ok("Apartment name updated successfully");
     }
 }

@@ -2,11 +2,8 @@ package com.example.uninest.ui.auth;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,11 +19,9 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.BuildingApi;
 import com.example.uninest.model.BuildingRequest;
+import com.example.uninest.utils.ImageUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +41,7 @@ public class AddBuildingActivity extends AppCompatActivity {
                     result -> {
                         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                             selectedImageUri = result.getData().getData();
-                            Glide.with(this).load(selectedImageUri).into(imgPreview);
+                            Glide.with(this).load(selectedImageUri).fitCenter().into(imgPreview);
                         }
                     });
 
@@ -128,30 +123,7 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     private String convertImageToResizedBase64(Uri uri) {
         try {
-            InputStream is = getContentResolver().openInputStream(uri);
-            Bitmap original = BitmapFactory.decodeStream(is);
-
-            // RESIZE: Scale to max 400px width/height
-            // This prevents the ENAMETOOLONG crash and stays under 1MB limit
-            int maxSize = 400;
-            int width = original.getWidth();
-            int height = original.getHeight();
-
-            float bitmapRatio = (float) width / (float) height;
-            if (bitmapRatio > 1) {
-                width = maxSize;
-                height = (int) (width / bitmapRatio);
-            } else {
-                height = maxSize;
-                width = (int) (height * bitmapRatio);
-            }
-
-            Bitmap scaled = Bitmap.createScaledBitmap(original, width, height, true);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            scaled.compress(Bitmap.CompressFormat.JPEG, 30, baos); // 30% quality is plenty for a list
-            byte[] bytes = baos.toByteArray();
-
-            return Base64.encodeToString(bytes, Base64.DEFAULT);
+            return ImageUtils.encodeImageUriToBase64(this, uri, 640, 60);
         } catch (Exception e) {
             Log.e("IMAGE_ERROR", "Resizing failed", e);
             return null;
