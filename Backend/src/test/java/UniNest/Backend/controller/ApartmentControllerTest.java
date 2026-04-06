@@ -294,4 +294,19 @@ class ApartmentControllerTest {
 
         verify(apartmentService, times(1)).updateApartmentName("APT-123", "New name");
     }
+
+    @Test
+    @WithMockUser(roles = {"TENANT"})
+    @DisplayName("PUT /apartments/{houseCode}/name - Forbidden as Tenant")
+    void updateApartmentName_asTenant_shouldFail() throws Exception {
+        UniNest.Backend.dto.NameUpdateRequest updateRequest = new UniNest.Backend.dto.NameUpdateRequest();
+        updateRequest.setName("New name");
+        mockMvc.perform(put("/apartments/APT-123/name")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isForbidden());
+        verify(apartmentService, never()).updateApartmentName(anyString(), anyString());
+    }
+
 }
