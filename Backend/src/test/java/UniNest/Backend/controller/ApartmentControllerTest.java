@@ -277,4 +277,21 @@ class ApartmentControllerTest {
 
         verify(apartmentService, never()).deleteApartment(anyString());
     }
+
+    @Test
+    @WithMockUser(roles = {"LETTINGAGENT"})
+    @DisplayName("PUT /apartments/{houseCode}/name - Success as Agent")
+    void updateApartmentName_asAgent_success() throws Exception {
+        UniNest.Backend.dto.NameUpdateRequest updateRequest = new UniNest.Backend.dto.NameUpdateRequest();
+        updateRequest.setName("New name");
+
+        mockMvc.perform(put("/apartments/APT-123/name")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Apartment name updated successfully"));
+
+        verify(apartmentService, times(1)).updateApartmentName("APT-123", "New name");
+    }
 }
