@@ -1,6 +1,7 @@
 package UniNest.Backend.controller;
 
 import UniNest.Backend.dto.BuildingRequest;
+import UniNest.Backend.dto.NameUpdateRequest;
 import UniNest.Backend.model.Building;
 import UniNest.Backend.service.BuildingService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -68,5 +69,16 @@ public class BuildingController {
     public ResponseEntity<String> deleteBuilding(@PathVariable String id) {
         buildingService.deleteBuilding(SanitizationUtil.sanitize(id));
         return ResponseEntity.ok("Building and its apartments deleted successfully");
+    }
+
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @PutMapping("/{id}/name")
+    public ResponseEntity<String> updateBuildingName(
+            @PathVariable String id,
+            @Valid @RequestBody NameUpdateRequest request
+    ) {
+        request.sanitize();
+        buildingService.updateBuildingName(SanitizationUtil.sanitize(id), request.getName());
+        return ResponseEntity.ok("Building name updated successfully");
     }
 }

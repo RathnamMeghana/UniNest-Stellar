@@ -13,8 +13,10 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.BuildingApi;
 import com.example.uninest.model.Building;
+import com.example.uninest.model.NameUpdateRequest;
 import com.example.uninest.utils.AgentBottomNavHelper;
 import com.example.uninest.utils.DestructiveConfirmationDialog;
+import com.example.uninest.utils.NameEditDialog;
 import com.example.uninest.utils.NetworkErrorDialog;
 
 import java.util.List;
@@ -175,9 +177,45 @@ public class LettingAgentBuildingsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        card.setOnEditClickListener(v -> showBuildingRenameDialog(building));
         card.setOnDeleteClickListener(v -> showBuildingDeleteConfirmation(building));
 
         buildingList.addView(card);
+    }
+
+    private void showBuildingRenameDialog(Building building) {
+        String currentName = building.getName() != null ? building.getName().trim() : "";
+        NameEditDialog.show(
+                this,
+                "Update building",
+                "Rename building",
+                null,
+                currentName,
+                "Enter building name",
+                updatedName -> renameBuilding(building, updatedName)
+        );
+    }
+
+    private void renameBuilding(Building building, String updatedName) {
+        NameUpdateRequest request = new NameUpdateRequest();
+        request.setName(updatedName);
+
+        buildingApi.updateBuildingName(building.getId(), request).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(LettingAgentBuildingsActivity.this, "Building updated", Toast.LENGTH_SHORT).show();
+                    loadBuildingsFromApi();
+                } else {
+                    Toast.makeText(LettingAgentBuildingsActivity.this, "Failed to update building", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(LettingAgentBuildingsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showBuildingDeleteConfirmation(Building building) {

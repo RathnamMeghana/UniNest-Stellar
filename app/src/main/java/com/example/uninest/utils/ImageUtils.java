@@ -1,5 +1,7 @@
 package com.example.uninest.utils;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.BitmapShader;
+import android.graphics.Matrix;
+import android.net.Uri;
 import android.util.LruCache;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
@@ -14,15 +18,19 @@ import android.util.Log;
 import android.widget.ImageView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.exifinterface.media.ExifInterface;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.uninest.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ImageUtils {
+    private static final int MAX_RENDER_BITMAP_DIMENSION = 1600;
     private static final LruCache<String, Bitmap> IMAGE_BITMAP_CACHE = createImageBitmapCache();
     private static final ExecutorService IMAGE_EXECUTOR = Executors.newFixedThreadPool(2);
 
@@ -201,13 +209,11 @@ public class ImageUtils {
 
         IMAGE_EXECUTOR.execute(() -> {
             try {
-                Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                Bitmap decodedBitmap = getOrCreateBitmap(requestKey, imageBytes, false);
                 if (decodedBitmap == null) {
                     postErrorDrawable(imageView, requestKey, R.drawable.building_placeholder);
                     return;
                 }
-
-                IMAGE_BITMAP_CACHE.put(requestKey, decodedBitmap);
                 imageView.post(() -> {
                     if (hasMatchingPendingRequest(imageView, requestKey)) {
                         imageView.setImageBitmap(decodedBitmap);
@@ -240,8 +246,157 @@ public class ImageUtils {
                 .replaceAll("\\s+", "");
     }
 
+    public static String encodeImageUriToBase64(Context context, Uri uri, int maxDimension, int quality) {
+        Bitmap processedBitmap = decodeScaledBitmapFromUri(context, uri, maxDimension);
+        if (processedBitmap == null) {
+            return null;
+        }
+
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            boolean compressed = processedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            if (!compressed) {
+                return null;
+            }
+            return Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP);
+        } catch (Exception e) {
+            Log.e("IMAGE_UTILS", "Error encoding image from Uri: " + e.getMessage(), e);
+            return null;
+        }
+    }
+
     private static byte[] decodeBase64Image(String normalizedImage) {
         return Base64.decode(normalizedImage, Base64.DEFAULT);
+    }
+
+    private static Bitmap decodeScaledBitmapFromUri(Context context, Uri uri, int maxDimension) {
+        if (context == null || uri == null) {
+            return null;
+        }
+
+        ContentResolver resolver = context.getContentResolver();
+        BitmapFactory.Options boundsOptions = new BitmapFactory.Options();
+        boundsOptions.inJustDecodeBounds = true;
+
+        try (InputStream boundsStream = resolver.openInputStream(uri)) {
+            if (boundsStream == null) {
+                return null;
+            }
+            BitmapFactory.decodeStream(boundsStream, null, boundsOptions);
+        } catch (Exception e) {
+            Log.e("IMAGE_UTILS", "Error reading image bounds: " + e.getMessage(), e);
+            return null;
+        }
+
+        BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+        decodeOptions.inSampleSize = calculateInSampleSize(boundsOptions, maxDimension, maxDimension);
+        decodeOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+        Bitmap decodedBitmap;
+        try (InputStream decodeStream = resolver.openInputStream(uri)) {
+            if (decodeStream == null) {
+                return null;
+            }
+            decodedBitmap = BitmapFactory.decodeStream(decodeStream, null, decodeOptions);
+        } catch (Exception e) {
+            Log.e("IMAGE_UTILS", "Error decoding image from Uri: " + e.getMessage(), e);
+            return null;
+        }
+
+        if (decodedBitmap == null) {
+            return null;
+        }
+
+        Bitmap rotatedBitmap = applyExifRotationIfNeeded(resolver, uri, decodedBitmap);
+        return scaleBitmapDown(rotatedBitmap, maxDimension);
+    }
+
+    private static Bitmap applyExifRotationIfNeeded(ContentResolver resolver, Uri uri, Bitmap bitmap) {
+        int rotation = 0;
+        try (InputStream exifStream = resolver.openInputStream(uri)) {
+            if (exifStream != null) {
+                ExifInterface exifInterface = new ExifInterface(exifStream);
+                rotation = exifToDegrees(exifInterface.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL
+                ));
+            }
+        } catch (Exception e) {
+            Log.w("IMAGE_UTILS", "Unable to read EXIF orientation", e);
+        }
+
+        if (rotation == 0) {
+            return bitmap;
+        }
+
+        try {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotation);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(
+                    bitmap,
+                    0,
+                    0,
+                    bitmap.getWidth(),
+                    bitmap.getHeight(),
+                    matrix,
+                    true
+            );
+            if (rotatedBitmap != bitmap) {
+                bitmap.recycle();
+            }
+            return rotatedBitmap;
+        } catch (Exception e) {
+            Log.e("IMAGE_UTILS", "Error rotating bitmap: " + e.getMessage(), e);
+            return bitmap;
+        }
+    }
+
+    private static int exifToDegrees(int exifOrientation) {
+        switch (exifOrientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return 90;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return 180;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return 270;
+            default:
+                return 0;
+        }
+    }
+
+    private static Bitmap scaleBitmapDown(Bitmap source, int maxDimension) {
+        if (source == null || maxDimension <= 0) {
+            return source;
+        }
+
+        int width = source.getWidth();
+        int height = source.getHeight();
+        int largestDimension = Math.max(width, height);
+        if (largestDimension <= maxDimension) {
+            return source;
+        }
+
+        float scale = (float) maxDimension / (float) largestDimension;
+        int scaledWidth = Math.max(1, Math.round(width * scale));
+        int scaledHeight = Math.max(1, Math.round(height * scale));
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(source, scaledWidth, scaledHeight, true);
+        if (scaledBitmap != source) {
+            source.recycle();
+        }
+        return scaledBitmap;
+    }
+
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        int height = options.outHeight;
+        int width = options.outWidth;
+        int inSampleSize = 1;
+
+        while ((height / inSampleSize) > reqHeight || (width / inSampleSize) > reqWidth) {
+            inSampleSize *= 2;
+        }
+
+        return Math.max(1, inSampleSize);
     }
 
     private static boolean hasMatchingImageRequest(ImageView imageView, String requestKey) {
@@ -365,7 +520,7 @@ public class ImageUtils {
         }
 
         byte[] decodedBytes = decodeBase64Image(normalizedImage);
-        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+        Bitmap decodedBitmap = decodeSampledBitmap(decodedBytes, MAX_RENDER_BITMAP_DIMENSION);
         if (decodedBitmap == null) {
             return null;
         }
@@ -381,7 +536,7 @@ public class ImageUtils {
             return cachedBitmap;
         }
 
-        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        Bitmap decodedBitmap = decodeSampledBitmap(imageBytes, MAX_RENDER_BITMAP_DIMENSION);
         if (decodedBitmap == null) {
             return null;
         }
@@ -389,6 +544,27 @@ public class ImageUtils {
         Bitmap finalBitmap = circleCrop ? createCircleBitmap(decodedBitmap) : decodedBitmap;
         IMAGE_BITMAP_CACHE.put(requestKey, finalBitmap);
         return finalBitmap;
+    }
+
+    private static Bitmap decodeSampledBitmap(byte[] imageBytes, int maxDimension) {
+        if (imageBytes == null || imageBytes.length == 0) {
+            return null;
+        }
+
+        BitmapFactory.Options boundsOptions = new BitmapFactory.Options();
+        boundsOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, boundsOptions);
+
+        BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+        decodeOptions.inSampleSize = calculateInSampleSize(boundsOptions, maxDimension, maxDimension);
+        decodeOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, decodeOptions);
+        if (decodedBitmap == null) {
+            return null;
+        }
+
+        return scaleBitmapDown(decodedBitmap, maxDimension);
     }
 
     private static Bitmap createCircleBitmap(Bitmap source) {

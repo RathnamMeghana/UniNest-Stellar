@@ -6,6 +6,7 @@ import UniNest.Backend.exception.BuildingServiceException;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -174,6 +175,57 @@ public class BuildingService {
 
         } catch (Exception e) {
             throw new BuildingServiceException("Failed to delete building", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void updateBuildingName(String buildingId, String name) {
+        if (buildingId == null || buildingId.isBlank()) {
+            throw new IllegalArgumentException("Building id cannot be null or empty");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Building name cannot be empty");
+        }
+
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            DocumentReference buildingRef = db.collection("buildings").document(buildingId);
+            DocumentSnapshot snapshot = buildingRef.get().get();
+
+            if (!snapshot.exists()) {
+                throw new BuildingServiceException("Building does not exist", HttpStatus.NOT_FOUND);
+            }
+
+            buildingRef.update("name", name, "updatedAt", Timestamp.now()).get();
+            syncBuildingNameForTickets(db, buildingId, name);
+        } catch (BuildingServiceException e) {
+            throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BuildingServiceException("Process was interrupted", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (ExecutionException e) {
+            throw new BuildingServiceException("Failed to update building name", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void syncBuildingNameForTickets(Firestore db, String buildingId, String buildingName)
+            throws InterruptedException, ExecutionException {
+        ApiFuture<QuerySnapshot> apartmentQuery = db.collection("apartments")
+                .whereEqualTo("buildingId", buildingId)
+                .get();
+
+        for (QueryDocumentSnapshot apartmentDoc : apartmentQuery.get().getDocuments()) {
+            String houseCode = apartmentDoc.getString("code");
+            if (houseCode == null || houseCode.isBlank()) {
+                continue;
+            }
+
+            ApiFuture<QuerySnapshot> ticketQuery = db.collection("tickets")
+                    .whereEqualTo("apartmentId", houseCode)
+                    .get();
+
+            for (QueryDocumentSnapshot ticketDoc : ticketQuery.get().getDocuments()) {
+                ticketDoc.getReference().update("building", buildingName).get();
+            }
         }
     }
 }

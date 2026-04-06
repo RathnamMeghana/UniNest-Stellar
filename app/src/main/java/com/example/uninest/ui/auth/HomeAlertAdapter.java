@@ -71,9 +71,11 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
                 holder.itemView.getContext(),
                 isUrgentMeta(metaText) ? R.color.app_danger : R.color.app_text_secondary
         ));
-        holder.tvSubtitle.setText(detailFor(alert));
-        holder.tvTitle.setMaxLines(1);
-        holder.tvSubtitle.setVisibility(View.GONE);
+        String detailText = detailFor(alert);
+        boolean showSubtitle = shouldShowSubtitle(alert, detailText);
+        holder.tvSubtitle.setText(detailText);
+        holder.tvTitle.setMaxLines(showSubtitle ? 1 : 2);
+        holder.tvSubtitle.setVisibility(showSubtitle ? View.VISIBLE : View.GONE);
 
         holder.icon.setImageResource(palette.iconRes);
         holder.icon.setImageTintList(ColorStateList.valueOf(palette.accentColor));
@@ -142,8 +144,23 @@ public class HomeAlertAdapter extends RecyclerView.Adapter<HomeAlertAdapter.Aler
         description.append(palette.label).append(" alert. ");
         description.append(holder.tvTitle.getText()).append(". ");
         description.append(holder.tvMeta.getText()).append(". ");
-        description.append(holder.tvSubtitle.getText());
+        if (holder.tvSubtitle.getVisibility() == View.VISIBLE
+                && holder.tvSubtitle.getText() != null
+                && holder.tvSubtitle.getText().length() > 0) {
+            description.append(holder.tvSubtitle.getText());
+        }
         return description.toString().trim();
+    }
+
+    private boolean shouldShowSubtitle(HomeAlert alert, String detailText) {
+        if (detailText == null || detailText.trim().isEmpty()) {
+            return false;
+        }
+
+        String type = alert != null && alert.getType() != null
+                ? alert.getType().trim().toUpperCase(Locale.getDefault())
+                : "";
+        return "MESSAGE".equals(type);
     }
 
     private String formatMeta(HomeAlert alert) {

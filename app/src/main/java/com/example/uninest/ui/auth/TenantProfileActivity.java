@@ -1,10 +1,7 @@
 package com.example.uninest.ui.auth;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,9 +24,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.uninest.utils.ImageUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-
 
 public class TenantProfileActivity extends AppCompatActivity {
 
@@ -51,7 +45,12 @@ public class TenantProfileActivity extends AppCompatActivity {
             uri -> {
                 if (uri != null) {
                     imageUri = uri;
-                    Glide.with(this).load(uri).dontAnimate().circleCrop().into(ivProfileImage);
+                    Glide.with(this)
+                            .load(uri)
+                            .override(720, 720)
+                            .dontAnimate()
+                            .circleCrop()
+                            .into(ivProfileImage);
                     uploadImageToFirebase();
                 }
             }
@@ -196,22 +195,21 @@ public class TenantProfileActivity extends AppCompatActivity {
         if (imageUri == null) return;
 
         try {
-            // 1. Convert Image to Base64 (Same as your AddBuilding logic)
-            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            String base64Image = ImageUtils.encodeImageUriToBase64(this, imageUri, 720, 60);
+            if (base64Image == null) {
+                Toast.makeText(this, "Couldn't process that photo. Try a different image.", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            // Compress to 25% to keep the string small enough for Firestore
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 25, baos);
-            byte[] bytes = baos.toByteArray();
-            String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+            if (mAuth.getCurrentUser() == null) {
+                Toast.makeText(this, "Please sign in again to update your photo.", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            // 2. Save the Base64 string directly to Firestore
             String uid = mAuth.getCurrentUser().getUid();
             db.collection("users").document(uid)
                     .update("profileImageUrl", base64Image)
                     .addOnSuccessListener(aVoid -> {
-                        // Update the session so the new image is available everywhere immediately
                         sessionManager.saveTenantSession(
                                 uid,
                                 sessionManager.getUserEmail(),
@@ -222,11 +220,15 @@ public class TenantProfileActivity extends AppCompatActivity {
                         );
                         loadedProfileImageValue = ImageUtils.normalizeImageSource(base64Image);
                         Toast.makeText(this, "Profile Image Updated", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("PROFILE_IMAGE", "Failed to upload profile image", e);
+                        Toast.makeText(this, "Couldn't update your photo right now.", Toast.LENGTH_SHORT).show();
                     });
 
         } catch (Exception e) {
             Log.e("PROFILE_IMAGE", "Failed to encode image", e);
-            Toast.makeText(this, "Encoding failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Couldn't process that photo. Try a different image.", Toast.LENGTH_SHORT).show();
         }
     }
 

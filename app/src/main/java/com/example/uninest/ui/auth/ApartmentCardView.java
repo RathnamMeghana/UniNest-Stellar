@@ -13,6 +13,7 @@ public class ApartmentCardView extends FrameLayout {
     private TextView tvApartmentName;
     private TextView tvTenantInfo;
 
+    private OnClickListener editListener;
     private OnClickListener deleteListener;
     private OnClickListener notifyListener;
 
@@ -37,6 +38,10 @@ public class ApartmentCardView extends FrameLayout {
         tvApartmentName = findViewById(R.id.tvApartmentName);
         tvTenantInfo = findViewById(R.id.tvTenantInfo);
 
+        findViewById(R.id.btnEditApartment).setOnClickListener(v -> {
+            if (editListener != null) editListener.onClick(v);
+        });
+
         findViewById(R.id.btnDeleteApartment).setOnClickListener(v -> {
             if (deleteListener != null) deleteListener.onClick(v);
         });
@@ -44,6 +49,10 @@ public class ApartmentCardView extends FrameLayout {
         findViewById(R.id.btnNotifyApartment).setOnClickListener(v -> {
             if (notifyListener != null) notifyListener.onClick(v);
         });
+    }
+
+    public void setOnEditClickListener(OnClickListener listener) {
+        this.editListener = listener;
     }
 
     public void setOnDeleteClickListener(OnClickListener listener) {

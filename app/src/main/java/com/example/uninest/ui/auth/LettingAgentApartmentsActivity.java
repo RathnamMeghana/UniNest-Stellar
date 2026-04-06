@@ -14,9 +14,11 @@ import com.example.uninest.R;
 import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.ApartmentApi;
 import com.example.uninest.model.Apartment;
+import com.example.uninest.model.NameUpdateRequest;
 import com.example.uninest.SessionManager;
 import com.example.uninest.utils.AgentBottomNavHelper;
 import com.example.uninest.utils.DestructiveConfirmationDialog;
+import com.example.uninest.utils.NameEditDialog;
 import com.example.uninest.utils.NetworkErrorDialog;
 
 import java.util.List;
@@ -126,6 +128,7 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         card.setTenantInfo(occupied, capacity);
 
         card.setOnClickListener(v -> openApartmentTenants(apartment));
+        card.setOnEditClickListener(v -> showApartmentRenameDialog(apartment));
         card.setOnDeleteClickListener(v -> showApartmentDeleteConfirmation(apartment));
 
         card.setOnNotifyClickListener(v -> openApartmentNotifications(apartment));
@@ -199,6 +202,41 @@ public class LettingAgentApartmentsActivity extends AppCompatActivity {
         intent.putExtra("EXTRA_TOTAL_ROOMS", apartment.getTotalRooms());
 
         startActivity(intent);
+    }
+
+    private void showApartmentRenameDialog(Apartment apartment) {
+        String currentName = apartment.getName() != null ? apartment.getName().trim() : "";
+        NameEditDialog.show(
+                this,
+                "Update apartment",
+                "Rename apartment",
+                null,
+                currentName,
+                "Enter apartment name",
+                updatedName -> renameApartment(apartment, updatedName)
+        );
+    }
+
+    private void renameApartment(Apartment apartment, String updatedName) {
+        NameUpdateRequest request = new NameUpdateRequest();
+        request.setName(updatedName);
+
+        apartmentApi.updateApartmentName(apartment.getCode(), request).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(LettingAgentApartmentsActivity.this, "Apartment updated", Toast.LENGTH_SHORT).show();
+                    loadApartments();
+                } else {
+                    Toast.makeText(LettingAgentApartmentsActivity.this, "Failed to update apartment", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(LettingAgentApartmentsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

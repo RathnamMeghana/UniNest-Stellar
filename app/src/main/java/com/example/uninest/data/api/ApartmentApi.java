@@ -5,6 +5,7 @@ package com.example.uninest.data.api;
 import com.example.uninest.model.Apartment;
 import com.example.uninest.model.ApartmentRequest;
 import com.example.uninest.model.BulkApartmentRequest;
+import com.example.uninest.model.NameUpdateRequest;
 import com.example.uninest.model.Room;
 import com.example.uninest.model.User;
 
@@ -19,6 +20,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 
@@ -58,6 +60,9 @@ public interface ApartmentApi {
 
     @GET("/apartments/getByBuilding")
     Call<List<Apartment>> getApartmentsByBuilding(@Query("buildingId") String buildingId);
+
+    @PUT("apartments/{houseCode}/name")
+    Call<String> updateApartmentName(@Path("houseCode") String houseCode, @Body NameUpdateRequest request);
 
     @DELETE("apartments/{houseCode}")
     Call<Void> deleteApartment(@Path("houseCode") String houseCode);

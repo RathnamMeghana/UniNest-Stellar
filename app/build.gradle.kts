@@ -126,6 +126,7 @@ dependencies {
 
 
     implementation("com.google.firebase:firebase-messaging")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 
 
 
@@ -162,4 +163,15 @@ sentry {
     // this will upload your source code to Sentry to show it as part of the stack traces
     // disable if you don't want to expose your sources
     includeSourceContext.set(true)
+}
+
+val ideTestClassesCompatibility = tasks.register("testClasses") {
+    group = "verification"
+    description = "Compatibility task for IDEs that request :app:testClasses on Android application modules."
+    dependsOn(
+        "compileTenantDebugJavaWithJavac",
+        "compileAgentDebugJavaWithJavac",
+        "compileTenantDebugUnitTestSources",
+        "compileAgentDebugUnitTestSources"
+    )
 }
