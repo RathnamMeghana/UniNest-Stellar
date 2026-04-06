@@ -31,12 +31,19 @@ public class BuildingCardView extends FrameLayout {
         tvBuildingName = findViewById(R.id.tvBuildingName);
         tvApartmentInfo = findViewById(R.id.tvApartmentInfo);
         imgBuilding = findViewById(R.id.imgBuilding);
+        findViewById(R.id.btnEditBuilding).setOnClickListener(v -> {
+            if (editListener != null) editListener.onClick(v);
+        });
         findViewById(R.id.btnDeleteBuilding).setOnClickListener(v -> {
             if (deleteListener != null) deleteListener.onClick(v);
         });
     }
 
+    private OnClickListener editListener;
     private OnClickListener deleteListener;
+    public void setOnEditClickListener(OnClickListener listener) {
+        this.editListener = listener;
+    }
     public void setOnDeleteClickListener(OnClickListener listener) {
         this.deleteListener = listener;
     }
