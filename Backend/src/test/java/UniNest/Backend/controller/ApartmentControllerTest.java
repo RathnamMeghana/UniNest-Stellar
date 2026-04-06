@@ -309,4 +309,20 @@ class ApartmentControllerTest {
         verify(apartmentService, never()).updateApartmentName(anyString(), anyString());
     }
 
+    @Test
+    @WithMockUser(roles = {"LETTINGAGENT"})
+    @DisplayName("PUT /apartments/{houseCode}/name - Returns 404 when apartment missing")
+    void updateApartmentName_notFound() throws Exception {
+        UniNest.Backend.dto.NameUpdateRequest updateRequest = new UniNest.Backend.dto.NameUpdateRequest();
+        updateRequest.setName("Any Name");
+        doThrow(new ApartmentServiceException("Apartment does not exist", HttpStatus.NOT_FOUND))
+                .when(apartmentService).updateApartmentName(eq("NON-EXISTENT"), anyString());
+
+        mockMvc.perform(put("/apartments/NON-EXISTENT/name")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isNotFound());
+    }
+
 }
