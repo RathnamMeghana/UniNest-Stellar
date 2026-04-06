@@ -266,4 +266,15 @@ class ApartmentControllerTest {
 
         verify(apartmentService, times(1)).deleteApartment("APT-123");
     }
+
+    @Test
+    @WithMockUser(roles = {"TENANT"})
+    @DisplayName("DELETE /apartments/{houseCode} - Forbidden as Tenant")
+    void deleteApartment_asTenant_shouldFail() throws Exception {
+        mockMvc.perform(delete("/apartments/APT-123")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(apartmentService, never()).deleteApartment(anyString());
+    }
 }
