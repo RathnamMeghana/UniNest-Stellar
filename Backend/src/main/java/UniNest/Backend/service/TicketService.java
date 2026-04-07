@@ -529,4 +529,44 @@ public class TicketService {
             throw new TicketServiceException("Failed to delete ticket", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public String confirmVisitResolution(String ticketId, String tenantId) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            // Find the ticket
+            ApiFuture<QuerySnapshot> future = db.collection("tickets").whereEqualTo("id", ticketId).get();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+            if (documents.isEmpty()) {
+                throw new TicketNotFoundException("Ticket not found: " + ticketId);
+            }
+
+            QueryDocumentSnapshot ticketDoc = documents.get(0);
+            Ticket ticket = ticketDoc.toObject(Ticket.class);
+
+            // Ensure this tenant actually raised the ticket
+            if (!ticket.getUserId().equals(tenantId)) {
+                throw new TicketServiceException("Unauthorized: Only the tenant who raised the ticket can verify completion.", HttpStatus.FORBIDDEN);
+            }
+
+            // Update the status to RESOLVED
+            ticketDoc.getReference().update(
+                    "status", "RESOLVED",
+                    "updatedAt", Timestamp.now()
+            ).get();
+
+            // 4. Notify the Letting Agent
+            if (ticket.getLandlordId() != null) {
+                String title = "Repair Confirmed Done";
+                String body = "Tenant " + ticket.getUserName() + " has verified that the " + ticket.getCategory() + " issue is resolved.";
+
+                notificationService.sendToUsers(title, body, List.of(ticket.getLandlordId()), "AGENT_TICKETS", ticket.getId());
+            }
+
+            return "Visit confirmed and ticket marked as resolved.";
+
+        } catch (Exception e) {
+            throw new TicketServiceException("Verification failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
