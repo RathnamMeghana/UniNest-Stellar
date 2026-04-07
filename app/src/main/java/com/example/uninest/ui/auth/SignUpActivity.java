@@ -106,7 +106,8 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
             if (!isPasswordStrong(password)) {
-                Toast.makeText(this, "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character (@#$%^&+=!)", Toast.LENGTH_LONG).show();
+                etPassword.setError("Password too weak! Needs 8+ chars, Uppercase, Lowercase, Number and Special Char.");
+                etPassword.requestFocus();
                 return;
             }
 
@@ -151,7 +152,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
 
-                                // Optional: send token to backend asynchronously
+                                // send token to backend asynchronously
                                 user.getIdToken(true).addOnCompleteListener(tokenTask -> {
                                     if (tokenTask.isSuccessful()) {
                                         String idToken = tokenTask.getResult().getToken();
@@ -165,7 +166,7 @@ public class SignUpActivity extends AppCompatActivity {
                 });
     }
 
-    // Optional: asynchronous backend call, does not block navigation
+    // asynchronous backend call, does not block navigation
     private void sendTokenToBackend(String idToken) {
         OkHttpClient client = new OkHttpClient();
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -195,15 +196,13 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
     private boolean isPasswordStrong(String password) {
-        // Regex breakdown:
-
+        // Regex:
         // (?=.*[0-9])       # at least 1 number
         // (?=.*[a-z])       # at least 1 lower case letter
         // (?=.*[A-Z])       # at least 1 upper case letter
-        // (?=.*[@#$%^&+=!]) # at least 1  special character
+        // (?=.*[@#$%^&+=!]) # at least 1 special character
         // (?=\S+$)          # no whitespace allowed
         // .{8,}             # at least eight in length
-
         String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
         return password.matches(passwordPattern);
     }
