@@ -105,6 +105,11 @@ public class SignUpActivity extends AppCompatActivity {
                 return;
             }
 
+            if (!isPasswordStrong(password)) {
+                Toast.makeText(this, "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character (@#$%^&+=!)", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             if (!password.equals(confirm)) {
                 Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                 return;
@@ -188,5 +193,18 @@ public class SignUpActivity extends AppCompatActivity {
                 response.close(); // no navigation needed here
             }
         });
+    }
+    private boolean isPasswordStrong(String password) {
+        // Regex breakdown:
+
+        // (?=.*[0-9])       # at least 1 number
+        // (?=.*[a-z])       # at least 1 lower case letter
+        // (?=.*[A-Z])       # at least 1 upper case letter
+        // (?=.*[@#$%^&+=!]) # at least 1  special character
+        // (?=\S+$)          # no whitespace allowed
+        // .{8,}             # at least eight in length
+
+        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+        return password.matches(passwordPattern);
     }
 }
