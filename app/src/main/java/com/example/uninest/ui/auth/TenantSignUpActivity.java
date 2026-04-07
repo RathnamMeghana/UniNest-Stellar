@@ -92,6 +92,11 @@ public class TenantSignUpActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (!isPasswordStrong(password)) {
+                etTenantPassword.setError("Password must be 8+ characters, include Uppercase, Lowercase, Number, and Special characters");
+                etTenantPassword.requestFocus();
+                return;
+            }
 
             if (!password.equals(confirm)) {
                 Toast.makeText(TenantSignUpActivity.this,
@@ -134,7 +139,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
                                     sessionManager.saveTenantSession(uid, email, role, houseCode, fName.trim(), profileImg);
                                     //sessionManager.saveTenantSession(email, houseCode);
 
-                                    // ===== BACKEND SYNC SECTION =====
+
                                     user.getIdToken(true).addOnCompleteListener(tokenTask -> {
                                         if (!tokenTask.isSuccessful()) {
                                             Toast.makeText(this, "Failed to get token", Toast.LENGTH_SHORT).show();
@@ -190,7 +195,7 @@ public class TenantSignUpActivity extends AppCompatActivity {
                                             }
                                         });
                                     });
-                                    // ===== END BACKEND SYNC =====
+
 
                                 })
                                 .addOnFailureListener(e -> {
@@ -245,5 +250,17 @@ public class TenantSignUpActivity extends AppCompatActivity {
                     btnTenantSignUp.setText("Sign Up");
                     Toast.makeText(TenantSignUpActivity.this, "We couldn't verify that apartment right now. Check your internet and try again.", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private boolean isPasswordStrong(String password) {
+        // Regex:
+        // (?=.*[0-9])       # at least 1 number
+        // (?=.*[a-z])       # at least 1 lower case letter
+        // (?=.*[A-Z])       # at least 1 upper case letter
+        // (?=.*[@#$%^&+=!]) # at least 1 special character
+        // (?=\S+$)          # no whitespace allowed
+        // .{8,}             # at least eight in length
+        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+        return password.matches(passwordPattern);
     }
 }

@@ -106,7 +106,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
             if (!isPasswordStrong(password)) {
-                etPassword.setError("Password too weak! Needs 8+ chars, Uppercase, Lowercase, Number and Special Char.");
+                etPassword.setError("Password must be 8+ characters, include Uppercase, Lowercase, Number, and Special character.");
                 etPassword.requestFocus();
                 return;
             }
