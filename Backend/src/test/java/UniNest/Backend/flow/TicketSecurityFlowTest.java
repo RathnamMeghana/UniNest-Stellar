@@ -150,4 +150,30 @@ public class TicketSecurityFlowTest {
         verify(ticketService, times(1)).createTicket(any(Ticket.class));
     }
 
+    @Test
+    @WithMockUser(roles = "LETTINGAGENT")
+    @DisplayName("Agent attempting to confirm tenant visit returns 403 Forbidden")
+    public void confirmVisit_AsAgent_Forbidden() throws Exception {
+        // Letting Agents manage status via /status, NOT /confirm-visit
+        mockMvc.perform(put("/tickets/confirm-visit")
+                        .param("ticketId", "T123")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(ticketService, never()).confirmVisitResolution(anyString(), anyString());
+    }
+
+    @Test
+    @WithMockUser(roles = "TENANT")
+    @DisplayName("Tenant can access their own confirmation endpoint")
+    public void confirmVisit_AsTenant_Allowed() throws Exception {
+        when(ticketService.confirmVisitResolution(eq("T123"), anyString()))
+                .thenReturn("Visit confirmed");
+
+        mockMvc.perform(put("/tickets/confirm-visit")
+                        .param("ticketId", "T123")
+                        .with(csrf()))
+                .andExpect(status().isOk());
+    }
+
 }
