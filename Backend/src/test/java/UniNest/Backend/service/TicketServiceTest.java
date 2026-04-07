@@ -67,7 +67,7 @@ public class TicketServiceTest {
 
             setupMockFirestoreChain(mockTicket);
 
-            // "user-roommate-456" tries to mark it as done
+            // user-roommate-456 tries to mark it as done
             TicketServiceException ex = assertThrows(TicketServiceException.class, () -> {
                 ticketService.confirmVisitResolution("T123", "user-roommate-456");
             });
