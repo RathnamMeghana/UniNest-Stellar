@@ -3,6 +3,7 @@ package UniNest.Backend.controllerHandling;
 import UniNest.Backend.controller.ApartmentController;
 import UniNest.Backend.controller.GlobalExceptionHandler;
 import UniNest.Backend.dto.ApartmentRequests;
+import UniNest.Backend.dto.BulkApartmentWithRoomsRequest;
 import UniNest.Backend.dto.RoomRequests;
 import UniNest.Backend.exception.ApartmentServiceException;
 import UniNest.Backend.exception.TenantNotFoundException;
@@ -150,5 +151,20 @@ public class ApartmentControllerErrorHandlingTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.rentPrice").exists());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("POST /apartments/{houseCode}/addRoom - Should return 400 when label is empty")
+    public void addRoom_WhenValidationFails_Returns400() throws Exception {
+        RoomRequests invalidRoom = new RoomRequests();
+        invalidRoom.setType("Bedroom");
+        invalidRoom.setLabel("");
+
+        mockMvc.perform(post("/apartments/APT123/addRoom")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRoom)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.label").exists());
     }
 }
