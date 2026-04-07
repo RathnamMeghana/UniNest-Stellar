@@ -167,4 +167,54 @@ public class ApartmentControllerErrorHandlingTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.label").exists());
     }
+
+    @Test
+    @WithMockUser
+    @DisplayName("POST /apartments/bulkWithRooms - Should return 404 when landlord missing")
+    public void bulkWithRooms_WhenLandlordNotFound_Returns404() throws Exception {
+        BulkApartmentWithRoomsRequest request = new BulkApartmentWithRoomsRequest();
+        request.setLandlordId("ID");
+        request.setBuildingId("B1");
+        request.setApartmentCount(5);
+        request.setRoomTemplate(Collections.singletonMap("Kitchen", 1));
+
+        doThrow(new ApartmentServiceException("Landlord not found", HttpStatus.NOT_FOUND))
+                .when(apartmentService).createApartmentsWithRooms(any(BulkApartmentWithRoomsRequest.class));
+
+        mockMvc.perform(post("/apartments/bulkWithRooms")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Landlord not found")));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("POST /apartments/{houseCode}/addRoom - Should return 500 on unexpected exception")
+    public void addRoom_WhenServiceThrowsUnexpected_Returns500() throws Exception {
+        RoomRequests validRoom = new RoomRequests();
+        validRoom.setType("Studio");
+        validRoom.setLabel("Room 1");
+
+        when(roomService.addRoom(anyString(), any(RoomRequests.class)))
+                .thenThrow(new RuntimeException("Database timeout"));
+
+        mockMvc.perform(post("/apartments/APT123/addRoom")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validRoom)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string(containsString("Error adding room")));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("DELETE /apartments/{houseCode} - Should return 500 when deletion fails")
+    public void deleteApartment_WhenFailure_Returns500() throws Exception {
+        doThrow(new ApartmentServiceException("Failed to delete apartment", HttpStatus.INTERNAL_SERVER_ERROR))
+                .when(apartmentService).deleteApartment(anyString());
+
+        mockMvc.perform(delete("/apartments/APT-123"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string(containsString("Failed to delete apartment")));
+    }
 }
