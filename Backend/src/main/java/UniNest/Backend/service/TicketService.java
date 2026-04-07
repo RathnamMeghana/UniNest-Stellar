@@ -114,7 +114,8 @@ public class TicketService {
             ticket.setCreatedAt(time);
             ticket.setUpdatedAt(time);
 
-            db.collection("tickets").add(ticket).get();
+            //db.collection("tickets").add(ticket).get();
+            db.collection("tickets").document(ticket.getId()).set(ticket).get();
 
             if (ticket.getApartmentId() != null && !ticket.getApartmentId().isBlank()) {
                 List<String> agentIds = notificationService.getAgentUserIdsByHouseCode(ticket.getApartmentId());
@@ -356,6 +357,7 @@ public class TicketService {
 
             List<QueryDocumentSnapshot> docs = future.get().getDocuments();
 
+
             if (docs.isEmpty()) {
                 throw new TicketNotFoundException("Ticket not found: " + ticketId);
             }
@@ -410,7 +412,8 @@ public class TicketService {
                 String houseCode = ticket.getApartmentId() != null ? ticket.getApartmentId().trim() : null;
                 Timestamp visitTime = parseDateToTimestamp(arrivalDate);
 
-                DocumentReference calendarRef = db.collection("calendar_events").document();
+                //DocumentReference calendarRef = db.collection("calendar_events").document();
+                DocumentReference calendarRef = db.collection("calendar_events").document(ticketId);
                 String generatedId = calendarRef.getId();
 
                 Map<String, Object> calendarEntry = new HashMap<>();
@@ -498,7 +501,7 @@ public class TicketService {
         try {
             Firestore db = FirestoreClient.getFirestore();
 
-            // 1. Find the document where the 'id' field matches ticketId
+            // Find the document where the 'id' field matches ticketId
             ApiFuture<QuerySnapshot> future = db.collection("tickets")
                     .whereEqualTo("id", ticketId)
                     .get();
@@ -517,7 +520,7 @@ public class TicketService {
                 throw new TicketServiceException("You are not authorized to delete this ticket", HttpStatus.FORBIDDEN);
             }
 
-            // 3. Update the deletedByTenant flag
+            // Update the deletedByTenant flag
             doc.getReference().update(
                     "deletedByTenant", true,
                     "updatedAt", Timestamp.now()
@@ -533,38 +536,42 @@ public class TicketService {
     public String confirmVisitResolution(String ticketId, String tenantId) {
         try {
             Firestore db = FirestoreClient.getFirestore();
-            // Find the ticket
-            ApiFuture<QuerySnapshot> future = db.collection("tickets").whereEqualTo("id", ticketId).get();
-            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
-            if (documents.isEmpty()) {
+            DocumentReference ticketRef = db.collection("tickets").document(ticketId);
+            DocumentSnapshot ticketSnap = ticketRef.get().get();
+
+            if (!ticketSnap.exists()) {
                 throw new TicketNotFoundException("Ticket not found: " + ticketId);
             }
 
-            QueryDocumentSnapshot ticketDoc = documents.get(0);
-            Ticket ticket = ticketDoc.toObject(Ticket.class);
+            Ticket ticket = ticketSnap.toObject(Ticket.class);
 
-            // Ensure this tenant actually raised the ticket
-            if (!ticket.getUserId().equals(tenantId)) {
-                throw new TicketServiceException("Unauthorized: Only the tenant who raised the ticket can verify completion.", HttpStatus.FORBIDDEN);
+            if (ticket == null || !ticket.getUserId().equals(tenantId)) {
+                throw new TicketServiceException("Unauthorized", HttpStatus.FORBIDDEN);
             }
 
-            // Update the status to RESOLVED
-            ticketDoc.getReference().update(
-                    "status", "RESOLVED",
-                    "updatedAt", Timestamp.now()
-            ).get();
+            // Update Ticket
+            ticketRef.update("status", "RESOLVED", "updatedAt", Timestamp.now()).get();
 
-            // 4. Notify the Letting Agent
+            // Update Calendar
+            db.collection("calendar_events").document(ticketId).update("status", "RESOLVED").get();
+
+            // Notify Agent
             if (ticket.getLandlordId() != null) {
-                String title = "Repair Confirmed Done";
-                String body = "Tenant " + ticket.getUserName() + " has verified that the " + ticket.getCategory() + " issue is resolved.";
 
-                notificationService.sendToUsers(title, body, List.of(ticket.getLandlordId()), "AGENT_TICKETS", ticket.getId());
+                notificationService.sendToUsers(
+                        "Repair Verified",
+                        "Tenant confirmed completion for: " + ticket.getCategory(),
+                        List.of(ticket.getLandlordId()),
+                        "AGENT_TICKETS",
+                        ticket.getId()
+                );
             }
 
-            return "Visit confirmed and ticket marked as resolved.";
-
+            return "Visit confirmed and synced with calendar.";
+        } catch (TicketNotFoundException | TicketServiceException e) {
+            // Re-throw specific exceptions so GlobalExceptionHandler can see them
+            throw e;
         } catch (Exception e) {
             throw new TicketServiceException("Verification failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

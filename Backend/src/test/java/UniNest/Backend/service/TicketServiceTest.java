@@ -2,6 +2,7 @@ package UniNest.Backend.service;
 
 import UniNest.Backend.model.Ticket;
 import UniNest.Backend.exception.TicketServiceException;
+import UniNest.Backend.exception.TicketNotFoundException;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
@@ -14,6 +15,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.http.HttpStatus;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,28 +33,53 @@ public class TicketServiceTest {
 
     @Mock private Firestore firestore;
     @Mock private CollectionReference collectionReference;
-    @Mock private Query query;
-    @Mock private ApiFuture<QuerySnapshot> querySnapshotFuture;
-    @Mock private QuerySnapshot querySnapshot;
-    @Mock private QueryDocumentSnapshot documentSnapshot;
-    @Mock private DocumentReference documentReference;
+    @Mock private DocumentReference documentReference; // Target Document
+    @Mock private DocumentSnapshot documentSnapshot;   // Target Snapshot
+    @Mock private ApiFuture<DocumentSnapshot> documentSnapshotFuture;
     @Mock private NotificationService notificationService;
     @Mock private ApiFuture<WriteResult> writeResultFuture;
 
-    private void setupMockFirestoreChain(Ticket ticketToReturn) throws Exception {
-        // mock the static client inside the test methods to ensure it's active
-        when(firestore.collection("tickets")).thenReturn(collectionReference);
-        when(collectionReference.whereEqualTo(eq("id"), anyString())).thenReturn(query);
-        when(query.get()).thenReturn(querySnapshotFuture);
-        when(querySnapshotFuture.get()).thenReturn(querySnapshot);
+    /**
+     * Updated Helper to mock Direct Document Access (.document(id).get())
+     */
+    /**
+     * Updated Helper to mock Direct Document Access (.document(id).get())
+     */
+    private void setupMockFirestoreDirect(Ticket ticketToReturn, boolean exists) throws Exception {
+        when(firestore.collection(anyString())).thenReturn(collectionReference);
+        when(collectionReference.document(anyString())).thenReturn(documentReference);
+        when(documentReference.get()).thenReturn(documentSnapshotFuture);
+        when(documentSnapshotFuture.get()).thenReturn(documentSnapshot);
+        when(documentSnapshot.exists()).thenReturn(exists);
 
-        if (ticketToReturn != null) {
-            when(querySnapshot.getDocuments()).thenReturn(Collections.singletonList(documentSnapshot));
+        if (exists && ticketToReturn != null) {
             when(documentSnapshot.toObject(Ticket.class)).thenReturn(ticketToReturn);
-            when(documentSnapshot.getReference()).thenReturn(documentReference);
-            when(documentReference.update(anyString(), any(), anyString(), any())).thenReturn(writeResultFuture);
-        } else {
-            when(querySnapshot.getDocuments()).thenReturn(Collections.emptyList());
+
+            // Mock the  update for Ticket
+            when(documentReference.update(anyString(), any(), anyString(), any()))
+                    .thenReturn(writeResultFuture);
+
+            //  Mock the  update for Calendar
+            when(documentReference.update(anyString(), any()))
+                    .thenReturn(writeResultFuture);
+
+            // Ensure .get() on the update doesn't crash
+            when(writeResultFuture.get()).thenReturn(mock(WriteResult.class));
+        }
+    }
+
+    @Test
+    @DisplayName("Error: confirmVisit throws 404 if ticket ID is missing")
+    void confirmVisit_NotFound_ThrowsException() throws Exception {
+        try (MockedStatic<FirestoreClient> mockedClient = mockStatic(FirestoreClient.class)) {
+            mockedClient.when(FirestoreClient::getFirestore).thenReturn(firestore);
+
+            setupMockFirestoreDirect(null, false);
+
+            // This will now catch the TicketNotFoundException properly
+            assertThrows(TicketNotFoundException.class, () -> {
+                ticketService.confirmVisitResolution("MISSING_ID", "user-123");
+            });
         }
     }
 
@@ -63,47 +90,47 @@ public class TicketServiceTest {
             mockedClient.when(FirestoreClient::getFirestore).thenReturn(firestore);
 
             Ticket mockTicket = new Ticket();
-            mockTicket.setUserId("user-creator-123"); // real owner
+            mockTicket.setUserId("real-owner-123");
 
-            setupMockFirestoreChain(mockTicket);
+            // Setup: Ticket exists but user is different
+            setupMockFirestoreDirect(mockTicket, true);
 
-            // user-roommate-456 tries to mark it as done
+            // Execute as "hacker-456"
             TicketServiceException ex = assertThrows(TicketServiceException.class, () -> {
-                ticketService.confirmVisitResolution("T123", "user-roommate-456");
+                ticketService.confirmVisitResolution("T123", "hacker-456");
             });
 
-            assertTrue(ex.getMessage().contains("Unauthorized"), "Should contain unauthorized message");
+            assertTrue(ex.getMessage().contains("Unauthorized"));
             verify(documentReference, never()).update(anyString(), any(), anyString(), any());
         }
     }
 
     @Test
-    @DisplayName("confirmVisit successfully updates status and notifies agent")
+    @DisplayName("Handshake: confirmVisit successfully updates status and notifies agent")
     void confirmVisit_Success_TriggersNotification() throws Exception {
         try (MockedStatic<FirestoreClient> mockedClient = mockStatic(FirestoreClient.class)) {
             mockedClient.when(FirestoreClient::getFirestore).thenReturn(firestore);
-
             Ticket mockTicket = new Ticket();
             mockTicket.setId("T123");
             mockTicket.setUserId("tenant-123");
-            mockTicket.setUserName("Dan");
+            mockTicket.setUserName("Aoife");
             mockTicket.setLandlordId("agent-456");
-            mockTicket.setCategory("Heating");
+            mockTicket.setCategory("Leaks");
+            setupMockFirestoreDirect(mockTicket, true);
 
-            setupMockFirestoreChain(mockTicket);
-
+            // Execute
             ticketService.confirmVisitResolution("T123", "tenant-123");
-            // Verify status changed to RESOLVED
+
             verify(documentReference).update(eq("status"), eq("RESOLVED"), eq("updatedAt"), any());
 
-            // Verify the Agent Handshake Notification sent to Agent
             verify(notificationService).sendToUsers(
                     anyString(),
-                    contains("Dan"),
+                    contains("Leaks"),
                     eq(List.of("agent-456")),
                     eq("AGENT_TICKETS"),
                     eq("T123")
             );
         }
     }
+
 }
