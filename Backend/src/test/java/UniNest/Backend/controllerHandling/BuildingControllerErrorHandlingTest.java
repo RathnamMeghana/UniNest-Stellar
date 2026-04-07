@@ -20,10 +20,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import UniNest.Backend.dto.NameUpdateRequest;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.mockito.Mockito.doThrow;
 
 @WebMvcTest(controllers = {BuildingController.class, GlobalExceptionHandler.class})
 @AutoConfigureMockMvc(addFilters = false) // Bypasses security for unit testing error logic
@@ -78,7 +83,7 @@ public class BuildingControllerErrorHandlingTest {
                 .andExpect(content().string("Firestore connection failed"));
     }
 
-    // --- Tests for MethodArgumentNotValidException (Validation) ---
+    // Test for MethodArgumentNotValidException (Validation)
 
     @Test
     @DisplayName("POST /buildings/create - Should return 400 when request body is invalid")
@@ -95,8 +100,6 @@ public class BuildingControllerErrorHandlingTest {
                 .andExpect(jsonPath("$.name").exists())
                 .andExpect(jsonPath("$.addressLine1").exists());
     }
-
-    // --- Tests for Other API Endpoints Error Propagation ---
 
     @Test
     @DisplayName("GET /buildings/byLandlord - Should return 400 when landlordId is missing")
@@ -130,4 +133,67 @@ public class BuildingControllerErrorHandlingTest {
                 .andExpect(status().isInternalServerError()) // Now it will correctly receive the 500
                 .andExpect(content().string("Firestore rejected the write"));
     }
+
+    // Test for updateBuildingName
+
+    @Test
+    @DisplayName("PUT /buildings/{id}/name - Should return 400 when name is blank")
+    public void updateName_WhenValidationFails_Returns400() throws Exception {
+        // NameUpdateRequest has @NotBlank, so sending an empty string should fail
+        NameUpdateRequest invalidRequest = new NameUpdateRequest();
+        invalidRequest.setName("");
+
+        mockMvc.perform(put("/buildings/123/name")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.name").exists()); // Verifies the specific field error
+    }
+
+    @Test
+    @DisplayName("PUT /buildings/{id}/name - Should return 404 when building ID is invalid")
+    public void updateName_WhenBuildingNotFound_Returns404() throws Exception {
+        NameUpdateRequest validRequest = new NameUpdateRequest();
+        validRequest.setName("New Building Name");
+
+        // Mock the service to throw a 404
+        doThrow(new BuildingServiceException("Building does not exist", HttpStatus.NOT_FOUND))
+                .when(buildingService).updateBuildingName(eq("invalid-id"), anyString());
+
+        mockMvc.perform(put("/buildings/invalid-id/name")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validRequest)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Building does not exist"));
+    }
+
+    @Test
+    @DisplayName("PUT /buildings/{id}/name - Should return 500 when Firestore update fails")
+    public void updateName_WhenServiceFails_Returns500() throws Exception {
+        NameUpdateRequest validRequest = new NameUpdateRequest();
+        validRequest.setName("New Name");
+
+        doThrow(new BuildingServiceException("Failed to update building name", HttpStatus.INTERNAL_SERVER_ERROR))
+                .when(buildingService).updateBuildingName(anyString(), anyString());
+
+        mockMvc.perform(put("/buildings/123/name")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validRequest)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Failed to update building name"));
+    }
+
+
+    @Test
+    @DisplayName("DELETE /buildings/{id} - Should return 500 when recursive deletion fails")
+    public void deleteBuilding_WhenServiceFails_Returns500() throws Exception {
+        // Since deleteBuilding is void, we use doThrow
+        doThrow(new BuildingServiceException("Failed to delete building", HttpStatus.INTERNAL_SERVER_ERROR))
+                .when(buildingService).deleteBuilding(anyString());
+
+        mockMvc.perform(delete("/buildings/123"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Failed to delete building"));
+    }
+
 }

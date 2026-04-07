@@ -1,9 +1,13 @@
 package UniNest.Backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 // CRITICAL: Import csrf to handle POST/DELETE requests in tests
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -69,9 +73,8 @@ class ApartmentControllerTest {
     @MockBean
     private FirebaseTokenFilter firebaseTokenFilter;
 
-    // --------------------------------------------------------------------------------
+
     // SETUP: BYPASS THE FILTER
-    // --------------------------------------------------------------------------------
     @BeforeEach
     void setup() throws Exception {
         // This tells the Mock Filter to "allow" the request to pass through to the Controller
@@ -84,10 +87,9 @@ class ApartmentControllerTest {
         }).when(firebaseTokenFilter).doFilter(any(), any(), any());
     }
 
-    // --------------------------------------------------------------------------------
+
     // HELPER: CREATE VALID DATA
-    // --------------------------------------------------------------------------------
-    // We use this to avoid "400 Bad Request" errors caused by missing fields
+    // this to avoid "400 Bad Request" errors caused by missing fields
     private ApartmentRequests getValidApartmentRequest() {
         ApartmentRequests request = new ApartmentRequests();
         request.setName("Luxury Apartment");
@@ -101,11 +103,7 @@ class ApartmentControllerTest {
         return request;
     }
 
-    // ========================================================================
-    // TESTS: SECURITY & LOGIC
-    // ========================================================================
-
-    // 1. SUCCESS: Agent creates an Apartment
+    // Agent creates an Apartment
     @Test
     @WithMockUser(username = "agentUser", roles = {"LETTINGAGENT"})
 
@@ -123,11 +121,11 @@ class ApartmentControllerTest {
                 .andExpect(content().string("Apartment created"));
     }
 
-    // 2. SECURITY: Tenant tries to create Apartment (Should Fail)
+    // Tenant tries to create Apartment (Should Fail)
     @Test
     @WithMockUser(username = "sneakyTenant", roles = {"TENANT"})
     void createApartment_asTenant_shouldFail() throws Exception {
-        // We MUST send valid data, otherwise we get 400 (Bad Request) instead of 403 (Forbidden)
+        //  MUST send valid data, otherwise we get 400 (Bad Request) instead of 403 (Forbidden)
         ApartmentRequests request = getValidApartmentRequest();
 
         mockMvc.perform(post("/apartments/create")
@@ -137,7 +135,7 @@ class ApartmentControllerTest {
                 .andExpect(status().isForbidden()); // 403
     }
 
-    // 3. VALIDATION: Missing fields (Should be Bad Request)
+    //  Missing fields (Should be Bad Request)
     @Test
     @WithMockUser(username = "agentUser", roles = {"LETTINGAGENT"})
     void createApartment_validationError() throws Exception {
@@ -150,13 +148,10 @@ class ApartmentControllerTest {
                 .andExpect(status().isBadRequest()); // 400
     }
 
-    // 4. SUCCESS: Tenant Gets All Apartments
+    //  Tenant Gets All Apartments
     @Test
     @WithMockUser(username = "tenantUser", roles = {"TENANT"})
     void getAllApartments_asTenant_success() throws Exception {
-        // IF THIS FAILS WITH 403:
-        // Check your Controller. Does it say @PreAuthorize("hasRole('TENANT')")?
-        // If it only says "LETTINGAGENT", you must change your Controller or this test.
 
         Apartment apartment = new Apartment();
         apartment.setName("Apartment A");
@@ -169,7 +164,7 @@ class ApartmentControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Apartment A"));
     }
 
-    // 5. SUCCESS: Agent Adds Room
+    // Agent Adds Room
     @Test
     @WithMockUser(username = "agentUser", roles = {"LETTINGAGENT"})
     void addRoom_asAgent_success() throws Exception {
@@ -189,7 +184,7 @@ class ApartmentControllerTest {
                 .andExpect(content().string("Room added with ID: room123"));
     }
 
-    // 6. SECURITY: Tenant Adds Room (Should Fail)
+    // Tenant Adds Room Should Fail
     @Test
     @WithMockUser(username = "sneakyTenant", roles = {"TENANT"})
     void addRoom_asTenant_shouldFail() throws Exception {
@@ -204,7 +199,7 @@ class ApartmentControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    // 7. SUCCESS: Get Users
+    //  Get Users
     @Test
     @WithMockUser(username = "agentUser", roles = {"LETTINGAGENT"})
     void getUsersByApartment_success() throws Exception, UserServiceException {
@@ -236,29 +231,98 @@ class ApartmentControllerTest {
     @WithMockUser(roles = "LETTINGAGENT")
     @DisplayName("POST /apartments/bulkWithRooms - Should return 403 when landlord is invalid")
     public void bulkCreate_WhenLandlordInvalid_Returns403() throws Exception {
-        // 1. Create a request that is VALID at the DTO level
+        //  Create a request that is VALID at the DTO level
         // (passes @NotBlank and @NotEmpty)
         BulkApartmentWithRoomsRequest request = new BulkApartmentWithRoomsRequest();
         request.setLandlordId("INVALID_LANDLORD_ID");
-        request.setBuildingId("BUILDING_123"); // Required field
-        request.setApartmentCount(5);          // Required field
+        request.setBuildingId("BUILDING_123");
+        request.setApartmentCount(5);
 
         // Required field: roomTemplate
         java.util.Map<String, Integer> template = new java.util.HashMap<>();
         template.put("Bedroom", 2);
         request.setRoomTemplate(template);
 
-        // 2. Mock the service to throw the 403 error
-        // This will only be reached if the DTO passes validation
+        // Mock the service to throw the 403 error
+        // only be reached if the DTO passes validation
         doThrow(new ApartmentServiceException("User exists but is not authorized as a Landlord.", HttpStatus.FORBIDDEN))
                 .when(apartmentService).createApartmentsWithRooms(any(BulkApartmentWithRoomsRequest.class));
-
-        // 3. Perform the request
         mockMvc.perform(post("/apartments/bulkWithRooms")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andDo(print()) // Look at this output if it fails again
-                .andExpect(status().isForbidden()); // Now expects 403
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser(roles = {"LETTINGAGENT"})
+    @DisplayName("DELETE /apartments/{houseCode} - Success as Agent")
+    void deleteApartment_asAgent_success() throws Exception {
+        mockMvc.perform(delete("/apartments/APT-123")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Apartment deleted and tenants unassigned successfully"));
+
+        verify(apartmentService, times(1)).deleteApartment("APT-123");
+    }
+
+    @Test
+    @WithMockUser(roles = {"TENANT"})
+    @DisplayName("DELETE /apartments/{houseCode} - Forbidden as Tenant")
+    void deleteApartment_asTenant_shouldFail() throws Exception {
+        mockMvc.perform(delete("/apartments/APT-123")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(apartmentService, never()).deleteApartment(anyString());
+    }
+
+    @Test
+    @WithMockUser(roles = {"LETTINGAGENT"})
+    @DisplayName("PUT /apartments/{houseCode}/name - Success as Agent")
+    void updateApartmentName_asAgent_success() throws Exception {
+        UniNest.Backend.dto.NameUpdateRequest updateRequest = new UniNest.Backend.dto.NameUpdateRequest();
+        updateRequest.setName("New name");
+
+        mockMvc.perform(put("/apartments/APT-123/name")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Apartment name updated successfully"));
+
+        verify(apartmentService, times(1)).updateApartmentName("APT-123", "New name");
+    }
+
+    @Test
+    @WithMockUser(roles = {"TENANT"})
+    @DisplayName("PUT /apartments/{houseCode}/name - Forbidden as Tenant")
+    void updateApartmentName_asTenant_shouldFail() throws Exception {
+        UniNest.Backend.dto.NameUpdateRequest updateRequest = new UniNest.Backend.dto.NameUpdateRequest();
+        updateRequest.setName("New name");
+        mockMvc.perform(put("/apartments/APT-123/name")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isForbidden());
+        verify(apartmentService, never()).updateApartmentName(anyString(), anyString());
+    }
+
+    @Test
+    @WithMockUser(roles = {"LETTINGAGENT"})
+    @DisplayName("PUT /apartments/{houseCode}/name - Returns 404 when apartment missing")
+    void updateApartmentName_notFound() throws Exception {
+        UniNest.Backend.dto.NameUpdateRequest updateRequest = new UniNest.Backend.dto.NameUpdateRequest();
+        updateRequest.setName("Any Name");
+        doThrow(new ApartmentServiceException("Apartment does not exist", HttpStatus.NOT_FOUND))
+                .when(apartmentService).updateApartmentName(eq("NON-EXISTENT"), anyString());
+
+        mockMvc.perform(put("/apartments/NON-EXISTENT/name")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isNotFound());
+    }
+
 }

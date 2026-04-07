@@ -8,6 +8,7 @@ import UniNest.Backend.security.FirebaseTokenFilter;
 import UniNest.Backend.service.BuildingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,10 +23,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(controllers = BuildingController.class)
 @Import({SecurityConfig.class, GlobalExceptionHandler.class})
@@ -112,5 +116,37 @@ public class BuildingSecurityFlowTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @WithMockUser(roles = "TENANT")
+    @DisplayName("Security: Tenant attempting to delete a building returns 403 Forbidden")
+    public void deleteBuilding_AsTenant_Forbidden() throws Exception {
+        mockMvc.perform(delete("/buildings/BLDG-123")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
 
+        // Verify the destructive service method was never even called
+        verify(buildingService, never()).deleteBuilding(anyString());
+    }
+
+    @Test
+    @WithMockUser(roles = "TENANT")
+    @DisplayName("Security: Tenant attempting to rename a building returns 403 Forbidden")
+    public void updateName_AsTenant_Forbidden() throws Exception {
+        UniNest.Backend.dto.NameUpdateRequest updateRequest = new UniNest.Backend.dto.NameUpdateRequest();
+        updateRequest.setName("Malicious Rename");
+
+        mockMvc.perform(put("/buildings/BLDG-123/name")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "TENANT")
+    @DisplayName("Privacy: Tenant attempting to fetch all buildings returns 403 Forbidden")
+    public void getAllBuildings_AsTenant_Forbidden() throws Exception {
+        mockMvc.perform(get("/buildings/getAll"))
+                .andExpect(status().isForbidden());
+    }
 }
