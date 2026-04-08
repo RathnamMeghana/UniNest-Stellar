@@ -185,14 +185,23 @@
                         app:rippleColor="@color/calendar_primary_soft" />
                 </com.google.android.material.chip.ChipGroup>
 
-                <Spinner
+             <!--   <Spinner
                     android:id="@+id/spinnerTenants"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_tenant_calendar_spinner"
                     android:popupBackground="@drawable/bg_tenant_calendar_surface"
+                    android:visibility="gone" /> -->
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvTenantsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
                     android:visibility="gone" />
+
             </LinearLayout>
 
             <LinearLayout
