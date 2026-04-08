@@ -16,7 +16,6 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-
 public interface TicketApi {
     @POST("tickets/create")
     Call<String> createTicket(@Body Ticket ticket);
@@ -28,10 +27,7 @@ public interface TicketApi {
     Call<List<Ticket>> getTicketsByApartment(@Query("name") String houseCode);
 
     @GET("tickets/landlord")
-    Call<List<Ticket>> getTicketsByLandlord(
-            @Query("id") String landlordId,
-            @Query("includeDeleted") boolean includeDeleted
-    );
+    Call<List<Ticket>> getTicketsByLandlord(@Query("id") String landlordId, @Query("includeDeleted") boolean includeDeleted);
     @retrofit2.http.PUT("tickets/status")
     Call<String> updateStatus(@Body UpdateTicketStatusRequest body);
 
@@ -43,4 +39,7 @@ public interface TicketApi {
 
     @DELETE("tickets/{ticketId}")
     Call<String> softDeleteTicket(@Path("ticketId") String ticketId);
+
+    @PUT("tickets/confirm-visit")
+    Call<String> confirmVisit(@Query("ticketId") String ticketId);
 }

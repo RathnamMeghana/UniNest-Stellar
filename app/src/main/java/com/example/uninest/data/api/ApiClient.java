@@ -17,7 +17,9 @@ public class ApiClient {
     //private static final String BASE_URL = "http://192.168.1.89:8080/";
 
     // Make sure this is just the IP and Port
-//    public static final String BASE_URL = "http://127.0.0.1:8080/";
+
+    //public static final String BASE_URL = "http://192.168.1.90:8080/";
+
     public static final String BASE_URL = "https://uninest-backend-369284273825.europe-west1.run.app/";
     private static Retrofit retrofit;
 

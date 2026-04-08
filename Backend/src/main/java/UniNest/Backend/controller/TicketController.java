@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -150,13 +151,21 @@ public class TicketController {
     }
 
     @PreAuthorize("hasRole('TENANT')")
+    @PutMapping("/confirm-visit")
+    public String confirmVisit(@RequestParam String ticketId) {
+        // Extract tenant UID from SecurityContextHolder
+        String tenantId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ticketService.confirmVisitResolution(ticketId, tenantId);
+    }
+
+    @PreAuthorize("hasRole('TENANT')")
     @DeleteMapping("/{ticketId}")
     public ResponseEntity<String> softDeleteTicket(@PathVariable String ticketId, Authentication auth) {
         try {
             String result = ticketService.softDeleteTicket(ticketId, auth.getName());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (UniNest.Backend.exception.TicketServiceException e) {
-            // Let our custom exception dictate the status (e.g., 403)
+            // Let our custom exception dictate the status 403
             return new ResponseEntity<>(e.getMessage(), e.getStatus());
         } catch (Exception e) {
             log.error("Error soft deleting ticket: {}", e.getMessage());
