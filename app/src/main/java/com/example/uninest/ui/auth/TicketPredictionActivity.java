@@ -16,6 +16,7 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.example.uninest.R;
+import com.example.uninest.data.api.ApiClient;
 import com.example.uninest.data.api.TicketApi;
 import com.example.uninest.model.Ticket;
 import com.example.uninest.utils.NetworkErrorDialog;
@@ -33,9 +34,6 @@ import java.util.Scanner;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class TicketPredictionActivity extends AppCompatActivity {
 
@@ -43,11 +41,9 @@ public class TicketPredictionActivity extends AppCompatActivity {
     private String houseCode;
     //private String userId;
 
-    private static final String BASE_URL = "http://127.0.0.1:8080";
-
     // UI Components
     private TextView resultTextView;
-    private EditText descriptionEditText, buildingEditText, apartmentEditText;
+    private EditText descriptionEditText, buildingEditText;
     private Spinner roomSpinner, typeSpinner;
     private Button predictButton;
 
@@ -180,13 +176,7 @@ public class TicketPredictionActivity extends AppCompatActivity {
         ticket.setStatus("Open");
         ticket.setUserId("user_android_client");
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        TicketApi api = retrofit.create(TicketApi.class);
+        TicketApi api = ApiClient.getTicketApi();
         api.createTicket(ticket).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -221,7 +211,7 @@ public class TicketPredictionActivity extends AppCompatActivity {
 
     private void clearInputs() {
         descriptionEditText.setText("");
-        apartmentEditText.setText("");
+        buildingEditText.setText("");
     }
 
     // ================= ML INITIALIZATION =================
