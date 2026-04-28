@@ -1,0 +1,84 @@
+package UniNest.Backend.controller;
+
+import UniNest.Backend.dto.BuildingRequest;
+import UniNest.Backend.dto.NameUpdateRequest;
+import UniNest.Backend.model.Building;
+import UniNest.Backend.service.BuildingService;
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import UniNest.Backend.util.SanitizationUtil;
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/buildings")
+
+
+public class BuildingController {
+
+    @Autowired
+    private BuildingService buildingService;
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @PostMapping("/create")
+    public String createBuilding(@Valid @RequestBody BuildingRequest request) {
+        request.sanitize();
+        return buildingService.createBuilding(request);
+    }
+
+
+    //@PreAuthorize("hasRole('TENANT')")
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @GetMapping("/getAll")
+    public List<Building> getAllBuildings() {
+
+        return buildingService.getAllBuildings();
+    }
+
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @GetMapping("/byLandlord")
+    public List<Building> getBuildingsByLandlord(@RequestParam String landlordId) {
+        landlordId = SanitizationUtil.sanitize(landlordId);
+        return buildingService.getBuildingsByLandlord(landlordId);
+    }
+
+
+
+    @PreAuthorize("hasAnyRole('LETTINGAGENT', 'TENANT')")
+    @GetMapping("/{id}")
+    public ResponseEntity<Building> getBuildingById(@PathVariable String id) {
+        // 1. Sanitize
+        String cleanId = SanitizationUtil.sanitize(id);
+
+        // 2. Call service (Service already throws BuildingServiceException if not found)
+        Building building = buildingService.getBuildingById(cleanId);
+
+        // 3. Return success
+        return new ResponseEntity<>(building, HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBuilding(@PathVariable String id) {
+        buildingService.deleteBuilding(SanitizationUtil.sanitize(id));
+        return ResponseEntity.ok("Building and its apartments deleted successfully");
+    }
+
+    @PreAuthorize("hasRole('LETTINGAGENT')")
+    @PutMapping("/{id}/name")
+    public ResponseEntity<String> updateBuildingName(
+            @PathVariable String id,
+            @Valid @RequestBody NameUpdateRequest request
+    ) {
+        request.sanitize();
+        buildingService.updateBuildingName(SanitizationUtil.sanitize(id), request.getName());
+        return ResponseEntity.ok("Building name updated successfully");
+    }
+}

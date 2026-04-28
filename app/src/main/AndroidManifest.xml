@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <queries>
+        <package android:name="com.google.android.gms" />
+    </queries>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,22 +20,220 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.UniNest"
+        android:usesCleartextTraffic="true"
+        android:name=".UniNestApplication"
         tools:targetApi="31">
+
         <activity
-            android:name=".ui.auth.SignUpActivity"
+            android:name=".ui.auth.ChoreListActivity"
+            android:exported="false">
+
+        </activity>
+
+
+
+        <activity android:name=".ui.auth.AddChoreSmartActivity" android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.WelcomeActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.auth.LoginActivity"
+            android:name=".ui.auth.Onboarding3Activity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.auth.Onboarding2Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.Onboarding1Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LettingAgentHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LettingAgentBuildingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LettingAgentNotificationsActivity"
+            android:exported="false" />
+<!--                <activity-->
+<!--                    android:name=".ui.auth.TenantLoginActivity"-->
+<!--                    android:exported="false" />-->
+
+        <!--        <activity-->
+        <!--            android:name=".ui.auth.TicketPredictionActivity"-->
+        <!--            android:exported="false" />-->
+
+        <!--        <activity-->
+        <!--            android:name=".ui.auth.DisplayTicketsbyBuilding"-->
+        <!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".ui.auth.LettingAgentTicketsActivity"-->
+        <!--            android:exported="false" />-->
+
+
+        <activity
+            android:name=".ui.auth.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.auth.TenantLoginActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.auth.TenantSignUpActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.auth.SignUpActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.auth.LettingAgentLoginActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.auth.RoomTypeDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.TenantProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ChangeAccountNameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ChangePasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.PrivacyPolicyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.AboutUsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.FAQActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ChoreDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.SetupApartmentRoomsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LettingAgentTicketDetailsActivity"
+            android:exported="false" />
+
+
+        <activity
+            android:name=".ui.auth.TenantCardView"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.CreateTenantBillActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ViewAllTasksActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ApartmentTenantsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.AddCalendarEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.TenantBillsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.LettingAgentApartmentsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.AddApartmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.AddBuildingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.LettingAgentTicketsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.TenantHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.TenantCalendarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.RaiseTicketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.BulkApartmentWithRoomsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.LettingAgentProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.AgentFaqActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.AgentPrivacyActivity"
+            android:exported="false" />
+            
+        <activity
+            android:name=".ui.auth.AgentChangePasswordActivity"
+            android:exported="false" />
+
+        <!--        <activity-->
+        <!--            android:name=".ui.auth.LettingAgentLoginActivity"-->
+        <!--            android:exported="false">-->
+        <!--        </activity>-->
+
+        <activity
+            android:name=".ui.auth.TenantTicketsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- Paste your Android-specific DSN here -->
+        <meta-data android:name="io.sentry.dsn"
+            android:value="https://bc4297d9270fcaf5da22604cd4d894cb@o4510919425392640.ingest.de.sentry.io/4510919531102288" />
+
+
+        <service
+            android:name=".notifications.UniNestMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".notifications.ScheduledNotificationReceiver"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+
     </application>
 
 </manifest>

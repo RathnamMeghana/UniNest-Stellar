@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:layout_marginEnd="10dp"
+    android:orientation="vertical"
+    android:padding="2dp">
+
+    <FrameLayout
+        android:id="@+id/frameCircle"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@drawable/bg_tasks_filter_circle"
+        android:padding="3dp">
+
+        <ImageView
+            android:id="@+id/imgProfile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_tenant" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvRoommateName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/opensans_bold"
+        android:text="Name"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tvPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_task_points_chip"
+        android:fontFamily="@font/opensans_bold"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:text="0 pts"
+        android:textColor="@color/task_points_text"
+        android:textSize="12sp"
+        android:visibility="gone" />
+</LinearLayout>

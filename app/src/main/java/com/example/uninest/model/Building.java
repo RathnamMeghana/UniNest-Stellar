@@ -1,0 +1,72 @@
+package com.example.uninest.model;
+
+public class Building {
+    private String id;
+    private String name;
+    private String addressLine1;
+    private String city;
+    private String postcode;
+    private String country;
+    private String landlordId;
+    private Boolean active;
+    private String imageUrl;
+    private int apartmentCount;
+    private byte[] cachedImageBytes;
+
+
+
+    // Getters & setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getAddressLine1() { return addressLine1; }
+    public void setAddressLine1(String addressLine1) { this.addressLine1 = addressLine1; }
+
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+
+    public String getPostcode() { return postcode; }
+    public void setPostcode(String postcode) { this.postcode = postcode; }
+
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
+
+    public String getLandlordId() { return landlordId; }
+    public void setLandlordId(String landlordId) { this.landlordId = landlordId; }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public int getApartmentCount() { return apartmentCount; }
+    public void setApartmentCount(int apartmentCount) { this.apartmentCount = apartmentCount; }
+
+    public byte[] getCachedImageBytes() {
+        if (cachedImageBytes == null && imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                String cleanImage = imageUrl.replace("data:image/jpeg;base64,", "")
+                        .replace("data:image/png;base64,", "")
+                        .replace("data:image/jpg;base64,", "")
+                        .replaceAll("\\s+", "");
+                cachedImageBytes = android.util.Base64.decode(cleanImage, android.util.Base64.DEFAULT);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return cachedImageBytes;
+    }
+
+}

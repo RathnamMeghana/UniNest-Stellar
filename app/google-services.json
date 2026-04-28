@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "369284273825",
+    "project_id": "uninest-c8d4b",
+    "storage_bucket": "uninest-c8d4b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369284273825:android:a8afad5c886327161302e0",
+        "android_client_info": {
+          "package_name": "com.example.uninest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtlibCSeHhqiQhYKZecHPIANoaHBS94h4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369284273825:android:a8afad5c886327161302e1",
+        "android_client_info": {
+          "package_name": "com.example.uninest.tenant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtlibCSeHhqiQhYKZecHPIANoaHBS94h4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369284273825:android:a8afad5c886327161302e2",
+        "android_client_info": {
+          "package_name": "com.example.uninest.agent"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtlibCSeHhqiQhYKZecHPIANoaHBS94h4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

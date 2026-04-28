@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_tenant_calendar_surface"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvRoomInstanceLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/opensans_bold"
+        android:text="Bedroom 1"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/imgChevron"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"
+        android:rotation="-90"
+        android:src="@drawable/ic_calendar_chevron_down"
+        app:tint="@color/calendar_primary_dark" />
+
+</LinearLayout>

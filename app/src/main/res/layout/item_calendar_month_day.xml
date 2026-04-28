@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingVertical="4dp">
+
+    <TextView
+        android:id="@id/dayLabel"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/selector_calendar_ring"
+        android:fontFamily="@font/opensans_bold"
+        android:gravity="center"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@id/dayIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="8dp"
+        android:layout_marginTop="6dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter" />
+
+</LinearLayout>

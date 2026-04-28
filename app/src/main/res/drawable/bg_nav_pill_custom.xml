@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- SELECTED STATE -->
+    <item android:state_checked="true">
+        <layer-list>
+            <!--
+               1. gravity="center_horizontal" -> Stops horizontal stretching
+               2. gravity="top" -> Pins it to the top (where the icon is)
+               3. top="4dp" -> Pushes it down slightly to center over the icon
+            -->
+            <item android:gravity="center_horizontal|top" android:top="15dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/calendar_primary_dark"/>
+                    <corners android:radius="20dp"/> <!-- Round edges -->
+                    <size android:width="60dp" android:height="40dp"/> <!-- Fixed Pill Size -->
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+
+    <!-- UNSELECTED STATE (Transparent) -->
+    <item android:drawable="@android:color/transparent"/>
+</selector>

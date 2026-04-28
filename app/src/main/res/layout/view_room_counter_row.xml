@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_tenant_calendar_surface"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="14dp">
+
+    <TextView
+        android:id="@+id/tvRoomLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/opensans_bold"
+        android:text="Bedrooms"
+        android:textColor="@color/calendar_text_primary"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/layoutStepper"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_tenant_calendar_metric_soft"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <TextView
+            android:id="@+id/btnMinus"
+            android:layout_width="34dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_tenant_calendar_today_chip"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:text="-"
+            android:textColor="@color/calendar_today_chip_text"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvRoomCount"
+            android:layout_width="42dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_tenant_calendar_input"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:text="3"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/btnPlus"
+            android:layout_width="34dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_tenant_calendar_action_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:text="+"
+            android:textColor="@color/calendar_text_inverse"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</LinearLayout>

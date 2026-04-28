@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_tenant_calendar_screen">
+
+    <LinearLayout
+        android:id="@+id/fixedHeaderContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tenant_calendar_surface"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <FrameLayout
+                android:id="@+id/btnBack"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_tenant_calendar_metric_soft"
+                android:clickable="true"
+                android:contentDescription="Go back"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_back_arrow"
+                    app:tint="@color/calendar_primary_dark" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Planner"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_primary_dark"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/tvScreenTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="Add Entry"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="22sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/formScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fixedHeaderContainer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_tenant_calendar_surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Entry Setup"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_primary_dark"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:lineSpacingExtra="2dp"
+                    android:text="Choose what you want to add, then fill in just the details needed for that entry."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Entry Type"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <Spinner
+                    android:id="@+id/spinnerCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_spinner"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="40dp"
+                    android:popupBackground="@drawable/bg_tenant_calendar_dialog"
+                    android:spinnerMode="dropdown" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Title"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/etTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
+                    android:fontFamily="@font/opensans_regular"
+                    android:hint="e.g. Clean kitchen"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textColorHint="@color/calendar_text_secondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Description"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <EditText
+                    android:id="@+id/etDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
+                    android:fontFamily="@font/opensans_regular"
+                    android:gravity="top|start"
+                    android:hint="Add any useful detail..."
+                    android:inputType="textMultiLine"
+                    android:minHeight="108dp"
+                    android:padding="14dp"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textColorHint="@color/calendar_text_secondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Date"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/tvSelectDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
+                    android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+                    android:drawableTint="@color/calendar_primary_dark"
+                    android:fontFamily="@font/opensans_bold"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:text="Select date"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerChore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tenant_calendar_section_chore"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Chore Details"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_chore_text"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="Set assignment, difficulty, repeat rules, and where the task happens."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Assignment"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <Spinner
+                    android:id="@+id/spinnerAssignType"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_spinner"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="40dp"
+                    android:popupBackground="@drawable/bg_tenant_calendar_dialog"
+                    android:spinnerMode="dropdown" />
+
+                <LinearLayout
+                    android:id="@+id/containerAssignTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/opensans_bold"
+                        android:letterSpacing="0.05"
+                        android:text="Assign To"
+                        android:textAllCaps="true"
+                        android:textColor="@color/calendar_text_secondary"
+                        android:textSize="11sp" />
+
+                    <Spinner
+                        android:id="@+id/spinnerAssignedTo"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_tenant_calendar_spinner"
+                        android:gravity="center_vertical"
+                        android:paddingEnd="40dp"
+                        android:popupBackground="@drawable/bg_tenant_calendar_dialog"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:letterSpacing="0.05"
+                            android:text="Room"
+                            android:textAllCaps="true"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="11sp" />
+
+                        <EditText
+                            android:id="@+id/etRoom"
+                            android:layout_width="match_parent"
+                            android:layout_height="54dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_tenant_calendar_input"
+                            android:fontFamily="@font/opensans_regular"
+                            android:hint="Kitchen"
+                            android:paddingHorizontal="14dp"
+                            android:textColor="@color/calendar_text_primary"
+                            android:textColorHint="@color/calendar_text_secondary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:letterSpacing="0.05"
+                            android:text="Duration (mins)"
+                            android:textAllCaps="true"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="11sp" />
+
+                        <EditText
+                            android:id="@+id/etDuration"
+                            android:layout_width="match_parent"
+                            android:layout_height="54dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_tenant_calendar_input"
+                            android:fontFamily="@font/opensans_regular"
+                            android:hint="30"
+                            android:inputType="number"
+                            android:paddingHorizontal="14dp"
+                            android:textColor="@color/calendar_text_primary"
+                            android:textColorHint="@color/calendar_text_secondary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:letterSpacing="0.05"
+                            android:text="Difficulty"
+                            android:textAllCaps="true"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="11sp" />
+
+                        <EditText
+                            android:id="@+id/etDifficulty"
+                            android:layout_width="match_parent"
+                            android:layout_height="54dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_tenant_calendar_input"
+                            android:fontFamily="@font/opensans_regular"
+                            android:hint="1-5"
+                            android:inputType="number"
+                            android:paddingHorizontal="14dp"
+                            android:textColor="@color/calendar_text_primary"
+                            android:textColorHint="@color/calendar_text_secondary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_bold"
+                            android:letterSpacing="0.05"
+                            android:text="Repeat"
+                            android:textAllCaps="true"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="11sp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerFrequency"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_tenant_calendar_spinner"
+                            android:gravity="center_vertical"
+                            android:paddingEnd="40dp"
+                            android:popupBackground="@drawable/bg_tenant_calendar_dialog"
+                            android:spinnerMode="dropdown" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerEvent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tenant_calendar_section_event"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Event Timing"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_event_text"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="Add a scheduled time, or mark it as an all-day event."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Time"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/tvSelectTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_input"
+                    android:drawableEnd="@android:drawable/ic_menu_recent_history"
+                    android:drawableTint="@color/calendar_primary_dark"
+                    android:fontFamily="@font/opensans_bold"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:text="Select time"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="14sp" />
+
+                <CheckBox
+                    android:id="@+id/cbAllDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:buttonTint="@color/calendar_primary_dark"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="All day event"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerReminder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tenant_calendar_section_reminder"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Reminder Setup"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_reminder_text"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="Choose whether this entry is a bill, maintenance note, or general reminder."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.05"
+                    android:text="Reminder Type"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <Spinner
+                    android:id="@+id/spinnerReminderType"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_tenant_calendar_spinner"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="40dp"
+                    android:popupBackground="@drawable/bg_tenant_calendar_dialog"
+                    android:spinnerMode="dropdown" />
+
+                <LinearLayout
+                    android:id="@+id/containerAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/opensans_bold"
+                        android:letterSpacing="0.05"
+                        android:text="Amount (€)"
+                        android:textAllCaps="true"
+                        android:textColor="@color/calendar_text_secondary"
+                        android:textSize="11sp" />
+
+                    <EditText
+                        android:id="@+id/etAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_tenant_calendar_input"
+                        android:fontFamily="@font/opensans_regular"
+                        android:hint="0.00"
+                        android:inputType="numberDecimal"
+                        android:paddingHorizontal="14dp"
+                        android:textColor="@color/calendar_text_primary"
+                        android:textColorHint="@color/calendar_text_secondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/bg_tenant_calendar_action_primary"
+                android:fontFamily="@font/opensans_bold"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="Save Entry"
+                android:textAllCaps="false"
+                android:textColor="@color/calendar_text_inverse"
+                android:textSize="16sp"
+                app:backgroundTint="@null"
+                app:cornerRadius="18dp"
+                app:elevation="0dp"
+                app:strokeWidth="0dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/networkErrorState"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="28dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fixedHeaderContainer">
+
+        <FrameLayout
+            android:layout_width="126dp"
+            android:layout_height="126dp"
+            android:background="@drawable/bg_add_calendar_error_illustration"
+            android:padding="30dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_alert_calendar" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvNetworkErrorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:fontFamily="@font/opensans_bold"
+            android:text="Something went wrong"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/tvNetworkErrorBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/opensans_regular"
+            android:gravity="center"
+            android:text="Check your connection and try again."
+            android:textColor="@color/calendar_text_secondary"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRetryNetwork"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_tenant_calendar_action_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="28dp"
+            android:text="Try Again"
+            android:textAllCaps="false"
+            android:textColor="@color/calendar_text_inverse"
+            android:textSize="15sp"
+            app:backgroundTint="@null"
+            app:cornerRadius="18dp"
+            app:elevation="0dp"
+            app:strokeWidth="0dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,3 +13,54 @@
 .externalNativeBuild
 .cxx
 local.properties
+.serviceAccounts.json
+.Backend/src/main/resources/serviceAccountKey.json
+
+# Gradle build output
+**/build/
+.gradle/
+
+# IDE files
+.idea/
+*.iml
+
+# Firebase service account (NEVER commit)
+Backend/src/main/resources/serviceAccountKey.json
+Backend/build/resources/main/serviceAccountKey.json
+
+app/google-services.json
+
+# ================================
+# 🔹 ADDITIONAL IMPORTANT IGNORES
+# ================================
+
+.gradle-user-home/
+
+# Backend compiled output
+bin/
+out/
+*.class
+
+# Logs & temp
+logs/
+*.log
+*.tmp
+
+# Environment / secrets
+.env
+.env.*
+*.env
+
+# OS files
+Thumbs.db
+
+# Test outputs
+/test-output/
+/reports/
+
+# Node (just in case)
+node_modules/
+
+# Swap files
+*.swp
+*.swo

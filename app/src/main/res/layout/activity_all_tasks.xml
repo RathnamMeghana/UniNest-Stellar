@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_tenant_calendar_screen">
+
+    <LinearLayout
+        android:id="@+id/fixedHeaderContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tenant_calendar_surface"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:letterSpacing="0.08"
+                android:text="Planner"
+                android:textAllCaps="true"
+                android:textColor="@color/calendar_primary_dark"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvHeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/opensans_bold"
+                android:text="Tasks"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="23sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/opensans_regular"
+                android:text="Track one-time, weekly, monthly, and completed chores in one planner view."
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fixedHeaderContainer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="18dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_tenant_calendar_surface"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Filter by Roommate"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRoommateFilter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tenant_calendar_surface"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.08"
+                    android:text="Show"
+                    android:textAllCaps="true"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="11sp" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/filterSectionAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_tenant_calendar_filter_all"
+                            android:fontFamily="@font/opensans_bold"
+                            android:gravity="center"
+                            android:paddingHorizontal="16dp"
+                            android:text="All"
+                            android:textColor="@color/calendar_text_inverse"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/filterSectionOnce"
+                            android:layout_width="wrap_content"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                            android:fontFamily="@font/opensans_bold"
+                            android:gravity="center"
+                            android:paddingHorizontal="16dp"
+                            android:text="One-Time"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/filterSectionWeekly"
+                            android:layout_width="wrap_content"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                            android:fontFamily="@font/opensans_bold"
+                            android:gravity="center"
+                            android:paddingHorizontal="16dp"
+                            android:text="Weekly"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/filterSectionMonthly"
+                            android:layout_width="wrap_content"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                            android:fontFamily="@font/opensans_bold"
+                            android:gravity="center"
+                            android:paddingHorizontal="16dp"
+                            android:text="Monthly"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/filterSectionHistory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                            android:fontFamily="@font/opensans_bold"
+                            android:gravity="center"
+                            android:paddingHorizontal="16dp"
+                            android:text="Completed"
+                            android:textColor="@color/calendar_text_secondary"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/emptyStateCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_tenant_calendar_empty_state"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="18dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvEmptyTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="No tasks here yet"
+                    android:textColor="@color/calendar_text_primary"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/tvEmptyBody"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:gravity="center"
+                    android:text="Try another roommate or section."
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvHeaderOnce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/opensans_bold"
+                android:letterSpacing="0.06"
+                android:text="One-Time Tasks"
+                android:textAllCaps="true"
+                android:textColor="@color/calendar_primary_dark"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/containerOnce"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical" />
+
+            <TextView
+                android:id="@+id/tvHeaderWeekly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/opensans_bold"
+                android:letterSpacing="0.06"
+                android:text="Weekly Tasks"
+                android:textAllCaps="true"
+                android:textColor="@color/calendar_primary_dark"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/containerWeekly"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical" />
+
+            <TextView
+                android:id="@+id/tvHeaderMonthly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/opensans_bold"
+                android:letterSpacing="0.06"
+                android:text="Monthly Tasks"
+                android:textAllCaps="true"
+                android:textColor="@color/calendar_primary_dark"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/containerMonthly"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/layoutHistoryHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvHeaderHistory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/opensans_bold"
+                    android:letterSpacing="0.06"
+                    android:text="Completed History"
+                    android:textAllCaps="true"
+                    android:textColor="@color/task_card_completed_text"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnToggleHistory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_tenant_calendar_filter_neutral"
+                    android:fontFamily="@font/opensans_bold"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="14dp"
+                    android:text="Show completed"
+                    android:textAllCaps="false"
+                    android:textColor="@color/calendar_text_secondary"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="16dp"
+                    app:elevation="0dp"
+                    app:strokeWidth="0dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp"
+                android:orientation="vertical"
+                android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,30 @@
+steps:
+  # 1. Build the Python container image
+  # We use the subdirectory 'UniNestModels/ChoreScheduling' as the context
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/uninest-ai-service', 'UniNestModels/ChoreScheduling']
+
+  # 2. Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/uninest-ai-service']
+
+  # 3. Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'uninest-ai-service'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/uninest-ai-service'
+      - '--region'
+      - 'europe-west1'
+      - '--platform'
+      - 'managed'
+      - '--memory'
+      - '1Gi'
+      - '--allow-unauthenticated'
+
+# THE FIX: This forces the logs to the dashboard and stops the red error
+options:
+  logging: CLOUD_LOGGING_ONLY

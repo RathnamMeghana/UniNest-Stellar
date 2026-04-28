@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_tenant_calendar_dialog"
+    android:orientation="vertical"
+    android:padding="22dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvClearAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/opensans_bold"
+            android:padding="4dp"
+            android:text="Clear all"
+            android:textColor="@color/calendar_primary_dark"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/opensans_bold"
+            android:text="Filter Tickets"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="Close filters"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="@color/calendar_text_primary" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/opensans_bold"
+        android:letterSpacing="0.08"
+        android:text="Sort by"
+        android:textAllCaps="true"
+        android:textColor="@color/calendar_primary_dark"
+        android:textSize="11sp" />
+
+    <RadioGroup
+        android:id="@+id/rgSort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <RadioButton
+            android:id="@+id/rbBuilding"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_tenant_calendar_metric_soft"
+            android:buttonTint="@color/calendar_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="12dp"
+            android:text="Building"
+            android:textColor="@color/calendar_text_primary" />
+
+        <RadioButton
+            android:id="@+id/rbPriority"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_tenant_calendar_metric_soft"
+            android:buttonTint="@color/calendar_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="12dp"
+            android:text="Priority"
+            android:textColor="@color/calendar_text_primary" />
+
+        <RadioButton
+            android:id="@+id/rbDate"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_tenant_calendar_metric_soft"
+            android:buttonTint="@color/calendar_primary"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="12dp"
+            android:text="Date"
+            android:textColor="@color/calendar_text_primary" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:fontFamily="@font/opensans_bold"
+        android:letterSpacing="0.08"
+        android:text="Priority"
+        android:textAllCaps="true"
+        android:textColor="@color/calendar_primary_dark"
+        android:textSize="11sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/chipHigh"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="High"
+            android:textColor="@color/chip_high_text"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/chipMedium"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="Medium"
+            android:textColor="@color/chip_medium_text"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/chipLow"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="Low"
+            android:textColor="@color/chip_low_text"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:fontFamily="@font/opensans_bold"
+        android:letterSpacing="0.08"
+        android:text="State"
+        android:textAllCaps="true"
+        android:textColor="@color/calendar_primary_dark"
+        android:textSize="11sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/stateRaised"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:text="Raised"
+            android:textColor="@color/ticket_raised_text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stateProgress"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:text="In Progress"
+            android:textColor="@color/ticket_progress_text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/stateSolved"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_unselected"
+            android:fontFamily="@font/opensans_bold"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:text="Solved"
+            android:textColor="@color/ticket_solved_text"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/bg_tenant_calendar_metric_soft"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_bold"
+                android:text="Show deleted"
+                android:textColor="@color/calendar_text_primary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/opensans_regular"
+                android:text="Include tickets removed by tenants"
+                android:textColor="@color/calendar_text_secondary"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swDeleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/calendar_primary"
+            app:trackTint="@color/calendar_primary_soft" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmitFilter"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginTop="26dp"
+        android:background="@drawable/bg_tenant_calendar_action_primary"
+        android:fontFamily="@font/opensans_bold"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:minHeight="46dp"
+        android:text="Apply filters"
+        android:textAllCaps="false"
+        android:textColor="@color/calendar_text_inverse"
+        android:textSize="14sp"
+        app:backgroundTint="@null"
+        app:cornerRadius="16dp"
+        app:elevation="0dp"
+        app:strokeWidth="0dp" />
+</LinearLayout>

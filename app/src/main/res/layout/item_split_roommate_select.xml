@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cbRoommate"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_tenant_bill_roommate_option"
+    android:buttonTint="@color/calendar_primary_dark"
+    android:fontFamily="@font/opensans_regular"
+    android:minHeight="56dp"
+    android:paddingStart="14dp"
+    android:paddingTop="14dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="14dp"
+    android:text="Name"
+    android:textColor="@color/calendar_text_primary"
+    android:textSize="14sp" />

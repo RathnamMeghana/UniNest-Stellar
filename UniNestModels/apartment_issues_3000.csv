@@ -1,0 +1,3001 @@
+TicketID,ApartmentNumber,IssueDescription,Priority,DateReported,Status
+1,354,Clogged drain,Low,2025-02-26,Open
+2,156,Leaky faucet,Low,2025-01-12,In Progress
+3,292,No hot water,Medium,2025-08-12,In Progress
+4,358,Heater not working,Medium,2025-11-24,In Progress
+5,364,Heater not working,Medium,2025-08-28,In Progress
+6,271,No hot water,Low,2025-06-06,In Progress
+7,304,Mold in bathroom,Medium,2025-08-02,Open
+8,356,Faulty door lock,Low,2025-08-08,Closed
+9,243,Painting required,Medium,2025-06-16,In Progress
+10,225,Air conditioning not cooling,Low,2025-06-08,In Progress
+11,214,Noise complaint,Low,2025-11-20,Open
+12,284,Light fixture flickering,Low,2025-09-15,Open
+13,226,Pest control,High,2025-12-20,In Progress
+14,339,Broken window,Low,2025-12-11,Closed
+15,117,Light fixture flickering,High,2025-03-06,Open
+16,145,Roof leak,Low,2025-01-09,Closed
+17,102,Roof leak,High,2025-01-08,In Progress
+18,283,Broken window,Medium,2025-02-27,Open
+19,102,Clogged drain,Low,2025-10-22,In Progress
+20,256,Garage door malfunction,Low,2025-08-13,Closed
+21,222,No hot water,High,2025-06-05,Open
+22,273,Painting required,Medium,2025-08-29,Open
+23,212,Clogged drain,Medium,2025-05-27,In Progress
+24,151,Leaky faucet,Medium,2025-11-16,In Progress
+25,162,Pest control,Medium,2025-12-24,Open
+26,172,Mold in bathroom,High,2025-10-19,Closed
+27,108,Leaky faucet,Low,2025-12-03,Closed
+28,295,Leaky faucet,Low,2025-04-26,Closed
+29,311,Garage door malfunction,Low,2025-03-08,Closed
+30,372,Noise complaint,Low,2025-06-01,Open
+31,240,No hot water,Medium,2025-08-29,Open
+32,170,Roof leak,Medium,2025-02-08,Closed
+33,132,Leaky faucet,Medium,2025-03-15,Closed
+34,386,No hot water,Medium,2025-09-24,Open
+35,158,Painting required,Low,2025-10-04,Closed
+36,337,Leaky faucet,Low,2025-10-24,Closed
+37,286,Garage door malfunction,High,2025-10-22,In Progress
+38,232,Clogged drain,Medium,2025-06-12,Open
+39,137,No hot water,Medium,2025-04-18,Closed
+40,135,Pest control,Medium,2025-07-07,Closed
+41,134,No hot water,High,2025-03-15,Closed
+42,122,Light fixture flickering,Medium,2025-11-10,In Progress
+43,156,Air conditioning not cooling,Low,2025-05-13,Closed
+44,337,Pest control,Low,2025-01-16,In Progress
+45,381,Clogged drain,Low,2025-08-21,In Progress
+46,243,Roof leak,High,2025-10-29,Open
+47,136,Clogged drain,Medium,2025-12-31,Closed
+48,101,Air conditioning not cooling,High,2025-06-24,Closed
+49,278,Light fixture flickering,Low,2025-06-04,Closed
+50,110,Garage door malfunction,Medium,2025-02-14,In Progress
+51,364,Noise complaint,Low,2025-06-20,Open
+52,152,Leaky faucet,Low,2025-08-06,Closed
+53,156,Clogged drain,Low,2025-02-06,In Progress
+54,150,Pest control,Medium,2025-09-01,Open
+55,234,No hot water,Low,2025-11-18,In Progress
+56,311,No hot water,Low,2025-07-25,Open
+57,329,Mold in bathroom,Medium,2025-07-30,In Progress
+58,280,No hot water,Low,2025-05-28,Open
+59,170,Broken window,Low,2025-03-10,Open
+60,146,Light fixture flickering,Medium,2025-04-18,Closed
+61,357,Broken window,Medium,2025-01-15,Open
+62,121,Roof leak,Low,2025-08-15,In Progress
+63,196,Mold in bathroom,Medium,2025-03-01,Closed
+64,303,Leaky faucet,Low,2025-07-15,Closed
+65,320,Air conditioning not cooling,Medium,2025-01-14,In Progress
+66,326,Noise complaint,Low,2025-04-10,In Progress
+67,253,Doorbell not working,Low,2025-05-25,In Progress
+68,384,Noise complaint,Medium,2025-06-19,Open
+69,125,Noise complaint,High,2025-08-16,Closed
+70,187,Faulty door lock,Low,2025-03-19,Open
+71,246,Leaky faucet,Low,2025-05-24,Open
+72,226,Heater not working,Low,2025-01-28,In Progress
+73,155,Painting required,Medium,2025-07-09,Closed
+74,217,Garage door malfunction,Low,2025-06-19,In Progress
+75,198,Broken window,Medium,2025-10-21,Closed
+76,224,Pest control,Medium,2025-09-24,Open
+77,118,Doorbell not working,Medium,2025-08-13,In Progress
+78,291,Roof leak,Low,2025-11-21,Open
+79,166,Clogged drain,Medium,2025-01-21,In Progress
+80,116,Noise complaint,Medium,2025-04-10,Open
+81,216,Garage door malfunction,Low,2025-05-13,Closed
+82,359,No hot water,Low,2025-07-01,In Progress
+83,360,Clogged drain,Low,2025-02-17,In Progress
+84,214,Garage door malfunction,High,2025-08-04,Open
+85,161,Broken window,Low,2025-03-31,Closed
+86,212,Heater not working,High,2025-05-24,Open
+87,237,Pest control,Low,2025-05-13,Open
+88,252,Broken window,Low,2025-07-08,Closed
+89,180,Broken window,Medium,2025-06-13,Closed
+90,361,Mold in bathroom,Low,2025-06-11,In Progress
+91,105,Painting required,Low,2025-03-24,Closed
+92,128,Roof leak,High,2025-05-05,In Progress
+93,252,Broken window,Low,2025-08-12,Closed
+94,103,Air conditioning not cooling,Medium,2025-07-11,In Progress
+95,348,Roof leak,Low,2025-12-16,Closed
+96,292,Light fixture flickering,Medium,2025-07-18,Closed
+97,195,Doorbell not working,Low,2025-05-11,In Progress
+98,322,Mold in bathroom,Low,2025-08-26,Open
+99,270,Broken window,Medium,2025-09-09,Open
+100,206,Noise complaint,Low,2025-03-05,In Progress
+101,309,Garage door malfunction,Medium,2025-11-14,In Progress
+102,335,Broken window,Low,2025-05-23,Closed
+103,272,Heater not working,Low,2025-08-16,Closed
+104,318,Broken window,Medium,2025-12-29,Open
+105,330,Doorbell not working,High,2025-04-24,In Progress
+106,297,Light fixture flickering,Low,2025-02-03,Open
+107,340,Painting required,Low,2025-07-11,Closed
+108,236,Clogged drain,High,2025-12-12,Open
+109,206,Clogged drain,Medium,2025-01-14,Open
+110,242,Doorbell not working,Medium,2025-04-01,Open
+111,363,Broken window,Low,2025-08-30,In Progress
+112,397,Light fixture flickering,Medium,2025-10-30,Open
+113,282,Doorbell not working,Low,2025-04-02,Closed
+114,183,Air conditioning not cooling,Low,2025-12-28,Open
+115,236,Doorbell not working,Medium,2025-09-24,In Progress
+116,255,Air conditioning not cooling,High,2025-08-08,Closed
+117,329,Air conditioning not cooling,High,2025-11-29,Closed
+118,329,Noise complaint,Low,2025-04-04,In Progress
+119,334,Roof leak,Medium,2025-09-22,Closed
+120,234,Clogged drain,High,2025-10-17,Closed
+121,107,Leaky faucet,Medium,2025-08-31,In Progress
+122,323,Roof leak,Low,2025-08-18,Closed
+123,156,Heater not working,High,2025-08-06,In Progress
+124,112,No hot water,Low,2025-12-22,Open
+125,216,Air conditioning not cooling,Medium,2025-04-26,In Progress
+126,243,Faulty door lock,Low,2025-11-14,Open
+127,301,Heater not working,Low,2025-10-16,In Progress
+128,188,Doorbell not working,High,2025-05-05,Open
+129,244,Roof leak,Medium,2025-05-27,In Progress
+130,328,Leaky faucet,Low,2025-04-25,Closed
+131,288,Doorbell not working,High,2025-12-12,In Progress
+132,139,Pest control,Low,2025-09-24,In Progress
+133,395,Doorbell not working,Low,2025-09-27,Closed
+134,310,Heater not working,High,2025-04-20,In Progress
+135,180,Mold in bathroom,Low,2025-10-15,In Progress
+136,159,Mold in bathroom,Medium,2025-01-12,In Progress
+137,183,Noise complaint,High,2025-10-26,Closed
+138,242,Noise complaint,Medium,2025-07-03,Open
+139,228,Doorbell not working,High,2025-08-27,Open
+140,325,Broken window,Low,2025-05-16,Closed
+141,350,Garage door malfunction,Low,2025-07-19,Closed
+142,193,Leaky faucet,Low,2025-12-25,Closed
+143,358,Roof leak,Low,2025-08-22,In Progress
+144,224,Leaky faucet,Low,2025-08-06,In Progress
+145,295,Broken window,Medium,2025-02-02,In Progress
+146,231,Leaky faucet,Low,2025-03-26,Open
+147,327,Noise complaint,Medium,2025-05-17,Open
+148,139,Air conditioning not cooling,Low,2025-08-12,Open
+149,361,Clogged drain,Low,2025-10-18,Open
+150,206,Painting required,Medium,2025-11-27,Open
+151,161,Clogged drain,Medium,2025-07-23,In Progress
+152,260,Leaky faucet,Low,2025-02-11,In Progress
+153,201,Roof leak,High,2025-09-30,In Progress
+154,222,Faulty door lock,High,2025-04-15,In Progress
+155,262,Garage door malfunction,Low,2025-10-01,Closed
+156,203,Leaky faucet,Low,2025-03-01,In Progress
+157,370,Noise complaint,Low,2025-10-04,Closed
+158,131,Clogged drain,Medium,2025-07-24,In Progress
+159,247,Broken window,High,2025-06-12,Open
+160,175,Painting required,High,2025-02-08,Closed
+161,376,No hot water,Medium,2025-05-27,In Progress
+162,265,Faulty door lock,Medium,2025-11-23,Open
+163,287,Painting required,Medium,2025-08-23,In Progress
+164,327,Broken window,Medium,2025-11-22,Closed
+165,130,Mold in bathroom,Medium,2025-07-28,Closed
+166,261,Mold in bathroom,Low,2025-05-14,Open
+167,277,Mold in bathroom,Low,2025-11-26,Open
+168,289,No hot water,Low,2025-02-16,In Progress
+169,301,Painting required,Medium,2025-06-08,Closed
+170,331,Leaky faucet,Medium,2025-09-29,Closed
+171,274,Pest control,High,2025-11-12,In Progress
+172,218,Mold in bathroom,Low,2025-08-09,Open
+173,299,Clogged drain,Low,2025-06-04,Open
+174,360,Noise complaint,Low,2025-02-25,Open
+175,226,Painting required,Medium,2025-02-19,Closed
+176,376,Air conditioning not cooling,Low,2025-05-29,Open
+177,263,Light fixture flickering,Medium,2025-01-02,In Progress
+178,307,Faulty door lock,Low,2025-04-28,In Progress
+179,279,Doorbell not working,Low,2025-07-09,Closed
+180,364,Light fixture flickering,Low,2025-07-30,Closed
+181,323,Broken window,High,2025-06-26,Open
+182,340,Heater not working,Low,2025-02-23,Open
+183,110,Heater not working,Medium,2025-08-25,In Progress
+184,287,Pest control,High,2025-12-29,Open
+185,289,Leaky faucet,Low,2025-09-06,Open
+186,224,Clogged drain,High,2025-12-20,Closed
+187,240,Pest control,Medium,2025-12-29,In Progress
+188,321,Mold in bathroom,Medium,2025-09-13,Closed
+189,108,Roof leak,Low,2025-04-27,Closed
+190,133,Noise complaint,Medium,2025-03-14,Open
+191,337,Broken window,High,2025-03-21,Closed
+192,302,No hot water,High,2025-04-16,In Progress
+193,385,Painting required,Low,2025-12-19,Open
+194,307,Doorbell not working,Low,2025-12-22,In Progress
+195,205,Clogged drain,High,2025-04-24,Closed
+196,236,Pest control,Medium,2025-07-08,Open
+197,218,Light fixture flickering,Low,2025-12-09,In Progress
+198,345,Noise complaint,Low,2025-12-22,Open
+199,258,Mold in bathroom,Medium,2025-03-13,In Progress
+200,316,Light fixture flickering,High,2025-11-17,In Progress
+201,200,Doorbell not working,Medium,2025-08-03,In Progress
+202,373,Garage door malfunction,Low,2025-06-17,In Progress
+203,105,Painting required,Low,2025-03-26,In Progress
+204,261,Doorbell not working,Medium,2025-11-01,Closed
+205,103,Faulty door lock,Medium,2025-05-28,Closed
+206,314,Air conditioning not cooling,Medium,2025-11-28,Open
+207,254,Painting required,High,2025-01-02,Closed
+208,296,Air conditioning not cooling,Medium,2025-10-27,Open
+209,120,Doorbell not working,High,2025-04-21,Closed
+210,181,Broken window,Low,2025-08-15,Open
+211,385,Leaky faucet,Low,2025-12-29,In Progress
+212,338,Light fixture flickering,High,2025-10-17,Closed
+213,285,No hot water,Medium,2025-03-04,In Progress
+214,302,Air conditioning not cooling,Low,2025-08-15,In Progress
+215,242,Roof leak,High,2025-06-01,Open
+216,239,Noise complaint,High,2025-06-02,Closed
+217,331,Air conditioning not cooling,High,2025-02-10,In Progress
+218,360,No hot water,Medium,2025-09-29,Open
+219,258,Doorbell not working,Low,2025-01-18,Open
+220,315,Pest control,High,2025-08-08,Closed
+221,263,Clogged drain,Medium,2025-03-23,In Progress
+222,123,Mold in bathroom,Low,2025-06-03,Open
+223,275,Leaky faucet,Low,2025-03-12,Closed
+224,341,Leaky faucet,Low,2025-03-18,Closed
+225,280,No hot water,Low,2025-10-09,Open
+226,156,Pest control,Low,2025-04-19,Closed
+227,246,Garage door malfunction,High,2025-01-13,In Progress
+228,221,Light fixture flickering,High,2025-09-12,In Progress
+229,339,Noise complaint,Low,2025-11-07,In Progress
+230,146,Leaky faucet,Low,2025-12-05,Open
+231,114,Pest control,Low,2025-06-30,Closed
+232,364,Air conditioning not cooling,High,2025-08-04,In Progress
+233,154,Light fixture flickering,Low,2025-10-24,Open
+234,265,Garage door malfunction,Medium,2025-11-01,Open
+235,237,Leaky faucet,Low,2025-10-26,In Progress
+236,378,Heater not working,Medium,2025-09-07,In Progress
+237,228,Clogged drain,High,2025-02-12,Closed
+238,217,Air conditioning not cooling,Medium,2025-03-30,In Progress
+239,399,Faulty door lock,Low,2025-09-22,In Progress
+240,117,Painting required,Low,2025-10-01,Closed
+241,351,Mold in bathroom,Medium,2025-09-30,Closed
+242,300,Clogged drain,Low,2025-04-08,Open
+243,225,Broken window,Medium,2025-05-24,In Progress
+244,256,Broken window,High,2025-08-11,Open
+245,205,Air conditioning not cooling,Low,2025-12-15,Open
+246,240,Faulty door lock,High,2025-09-20,Open
+247,116,Noise complaint,Low,2025-03-22,In Progress
+248,313,Pest control,Low,2025-12-29,Open
+249,311,Roof leak,Low,2025-08-10,Open
+250,360,Faulty door lock,Low,2025-06-22,Open
+251,193,Garage door malfunction,Low,2025-08-07,Open
+252,200,Pest control,Low,2025-08-14,In Progress
+253,300,Broken window,High,2025-01-01,In Progress
+254,307,Pest control,Medium,2025-09-16,Closed
+255,259,Painting required,Medium,2025-09-17,In Progress
+256,227,Leaky faucet,Medium,2025-11-23,Closed
+257,225,Heater not working,Low,2025-02-18,Closed
+258,216,Broken window,Low,2025-12-29,In Progress
+259,198,Light fixture flickering,Low,2025-07-18,Open
+260,232,Clogged drain,Low,2025-07-25,In Progress
+261,140,No hot water,High,2025-07-25,In Progress
+262,222,No hot water,Low,2025-12-26,In Progress
+263,322,Clogged drain,Low,2025-02-25,In Progress
+264,353,Air conditioning not cooling,Low,2025-03-07,Open
+265,366,Leaky faucet,Low,2025-06-19,Closed
+266,256,Doorbell not working,High,2025-10-07,Open
+267,299,No hot water,Low,2025-08-12,Open
+268,394,Garage door malfunction,Medium,2025-03-05,Open
+269,205,Garage door malfunction,High,2025-08-05,In Progress
+270,231,Broken window,Medium,2025-06-22,Open
+271,228,Heater not working,Medium,2025-04-06,Open
+272,281,Mold in bathroom,Low,2025-10-29,Closed
+273,136,Pest control,High,2025-08-23,Open
+274,219,Garage door malfunction,Low,2025-03-01,Closed
+275,166,No hot water,Medium,2025-12-01,In Progress
+276,377,Noise complaint,Medium,2025-06-06,Open
+277,183,Pest control,Medium,2025-03-31,Closed
+278,315,Light fixture flickering,Low,2025-02-24,Open
+279,259,Doorbell not working,Low,2025-06-12,Open
+280,397,Leaky faucet,Medium,2025-01-23,In Progress
+281,301,Clogged drain,High,2025-08-06,Open
+282,270,Heater not working,Low,2025-01-10,Closed
+283,335,Painting required,Medium,2025-03-31,Closed
+284,107,Roof leak,Medium,2025-01-20,In Progress
+285,344,Clogged drain,Low,2025-03-26,Open
+286,285,Clogged drain,High,2025-01-19,In Progress
+287,254,Pest control,Low,2025-06-03,Open
+288,317,Garage door malfunction,High,2025-05-20,In Progress
+289,149,Noise complaint,High,2025-02-28,Open
+290,231,Heater not working,Medium,2025-08-20,In Progress
+291,131,Pest control,Low,2025-08-24,Open
+292,369,Air conditioning not cooling,Low,2025-03-19,Closed
+293,166,Roof leak,Low,2025-04-04,Closed
+294,214,Faulty door lock,Low,2025-08-29,Closed
+295,371,Faulty door lock,Low,2025-07-01,In Progress
+296,230,Mold in bathroom,Low,2025-01-30,Open
+297,359,Air conditioning not cooling,High,2025-02-15,In Progress
+298,183,Painting required,Medium,2025-05-15,Closed
+299,376,Light fixture flickering,Low,2025-01-02,In Progress
+300,393,Light fixture flickering,Low,2025-09-09,In Progress
+301,277,Faulty door lock,Low,2025-10-29,Closed
+302,338,Painting required,Low,2025-02-21,Closed
+303,350,Mold in bathroom,Medium,2025-01-12,In Progress
+304,148,Light fixture flickering,Low,2025-09-10,Open
+305,246,Garage door malfunction,Low,2025-01-22,Open
+306,229,Heater not working,Low,2025-03-15,Open
+307,133,No hot water,Medium,2025-11-30,In Progress
+308,219,Heater not working,Low,2025-07-12,In Progress
+309,373,Broken window,High,2025-11-20,Open
+310,254,No hot water,Low,2025-02-03,Open
+311,325,Noise complaint,Low,2025-02-21,In Progress
+312,262,Painting required,Low,2025-10-18,Closed
+313,267,Doorbell not working,Medium,2025-03-07,Open
+314,274,Leaky faucet,Low,2025-01-12,In Progress
+315,397,Clogged drain,Low,2025-02-14,In Progress
+316,150,Broken window,Low,2025-07-31,Closed
+317,216,Doorbell not working,Low,2025-11-03,Open
+318,136,No hot water,High,2025-02-07,In Progress
+319,375,Clogged drain,High,2025-02-18,Open
+320,319,Garage door malfunction,Low,2025-12-08,Closed
+321,285,Heater not working,Medium,2025-04-26,Closed
+322,149,Noise complaint,Low,2025-10-10,Closed
+323,204,Pest control,High,2025-05-07,In Progress
+324,330,Faulty door lock,High,2025-03-02,Closed
+325,230,Doorbell not working,Low,2025-09-07,Closed
+326,210,Doorbell not working,High,2025-11-18,Closed
+327,305,Heater not working,High,2025-09-27,In Progress
+328,148,Doorbell not working,Low,2025-02-06,In Progress
+329,275,Mold in bathroom,High,2025-08-05,In Progress
+330,389,No hot water,Low,2025-09-28,In Progress
+331,369,Clogged drain,High,2025-08-26,Open
+332,139,Doorbell not working,Low,2025-10-20,Closed
+333,199,Clogged drain,Low,2025-02-13,In Progress
+334,314,Broken window,Medium,2025-08-01,Open
+335,290,Broken window,Medium,2025-07-05,In Progress
+336,306,Broken window,Low,2025-07-24,Closed
+337,322,Broken window,Low,2025-10-25,Closed
+338,262,Faulty door lock,Medium,2025-10-11,In Progress
+339,131,Clogged drain,Low,2025-10-06,Open
+340,305,Mold in bathroom,Medium,2025-12-05,In Progress
+341,307,Mold in bathroom,High,2025-01-30,In Progress
+342,192,Faulty door lock,Medium,2025-04-22,Closed
+343,143,Heater not working,Medium,2025-06-18,Closed
+344,192,Doorbell not working,Medium,2025-04-18,Closed
+345,102,Doorbell not working,Medium,2025-05-18,Open
+346,220,Air conditioning not cooling,Low,2025-10-01,Closed
+347,373,Pest control,Medium,2025-10-26,Closed
+348,284,Painting required,High,2025-01-09,Closed
+349,178,Doorbell not working,Low,2025-07-02,In Progress
+350,368,Mold in bathroom,Medium,2025-06-28,In Progress
+351,204,Mold in bathroom,Low,2025-10-09,Closed
+352,358,Light fixture flickering,High,2025-09-15,Open
+353,397,Heater not working,High,2025-10-15,In Progress
+354,253,Doorbell not working,Low,2025-02-02,Closed
+355,276,Air conditioning not cooling,Medium,2025-06-07,Closed
+356,358,Noise complaint,Low,2025-03-30,Closed
+357,167,Noise complaint,Medium,2025-07-05,In Progress
+358,194,Pest control,Medium,2025-03-31,In Progress
+359,240,Broken window,High,2025-09-21,Open
+360,109,Light fixture flickering,Low,2025-10-17,Open
+361,358,Broken window,Medium,2025-05-30,Open
+362,399,Broken window,High,2025-09-12,Closed
+363,197,Heater not working,Low,2025-03-07,Closed
+364,154,Mold in bathroom,Low,2025-12-16,In Progress
+365,340,Broken window,High,2025-06-24,Closed
+366,152,Light fixture flickering,High,2025-10-04,Closed
+367,116,Faulty door lock,Low,2025-11-28,In Progress
+368,197,Garage door malfunction,Low,2025-04-02,Open
+369,103,No hot water,Medium,2025-03-03,In Progress
+370,277,Broken window,High,2025-10-30,Closed
+371,243,Doorbell not working,Medium,2025-11-17,In Progress
+372,281,Doorbell not working,Medium,2025-04-15,In Progress
+373,172,Pest control,Low,2025-02-27,In Progress
+374,326,Mold in bathroom,Low,2025-11-29,In Progress
+375,220,Clogged drain,Medium,2025-05-26,In Progress
+376,162,Mold in bathroom,Low,2025-08-09,Closed
+377,173,Roof leak,Medium,2025-03-12,Open
+378,160,Doorbell not working,Low,2025-07-01,Open
+379,318,Air conditioning not cooling,Low,2025-09-05,Open
+380,239,Air conditioning not cooling,Low,2025-04-13,In Progress
+381,177,No hot water,Low,2025-07-09,Open
+382,117,Broken window,Low,2025-05-23,In Progress
+383,108,Mold in bathroom,Low,2025-02-02,In Progress
+384,276,Painting required,Low,2025-07-10,Open
+385,296,Heater not working,Low,2025-12-30,In Progress
+386,179,Noise complaint,Low,2025-06-04,In Progress
+387,267,Noise complaint,Low,2025-10-20,In Progress
+388,188,Broken window,High,2025-02-27,Open
+389,392,Garage door malfunction,High,2025-12-02,Closed
+390,260,Broken window,Medium,2025-03-23,In Progress
+391,132,Mold in bathroom,Medium,2025-07-31,Open
+392,252,No hot water,Low,2025-11-22,In Progress
+393,324,Pest control,Low,2025-10-30,Closed
+394,300,Painting required,Low,2025-01-14,Closed
+395,347,Leaky faucet,Low,2025-01-15,Open
+396,349,Mold in bathroom,Medium,2025-10-25,In Progress
+397,278,Doorbell not working,Medium,2025-11-20,Open
+398,171,Pest control,Medium,2025-05-25,In Progress
+399,145,Pest control,Low,2025-09-12,Open
+400,386,No hot water,Medium,2025-02-16,In Progress
+401,147,Faulty door lock,Medium,2025-05-17,Open
+402,246,Garage door malfunction,High,2025-12-21,Closed
+403,236,Mold in bathroom,Low,2025-07-22,Closed
+404,390,Light fixture flickering,High,2025-12-28,In Progress
+405,349,Garage door malfunction,High,2025-05-21,Open
+406,390,Heater not working,High,2025-01-09,Open
+407,391,Noise complaint,Medium,2025-10-31,Open
+408,307,Faulty door lock,Low,2025-02-23,In Progress
+409,261,Painting required,Medium,2025-10-16,Open
+410,120,Pest control,High,2025-05-26,In Progress
+411,310,Broken window,Low,2025-10-23,In Progress
+412,345,Doorbell not working,Medium,2025-09-24,Closed
+413,392,Pest control,High,2025-10-04,Closed
+414,147,Noise complaint,Low,2025-01-01,Open
+415,292,Broken window,Low,2025-08-31,Open
+416,215,Mold in bathroom,Medium,2025-08-20,Closed
+417,233,Air conditioning not cooling,Medium,2025-12-08,In Progress
+418,358,Doorbell not working,Medium,2025-11-27,Open
+419,280,Noise complaint,High,2025-07-10,In Progress
+420,102,Roof leak,Medium,2025-03-02,Closed
+421,160,Garage door malfunction,Medium,2025-05-08,In Progress
+422,120,Clogged drain,Low,2025-02-14,Closed
+423,329,Pest control,High,2025-11-09,Closed
+424,151,Mold in bathroom,Medium,2025-11-03,Closed
+425,288,Leaky faucet,High,2025-12-13,Open
+426,216,Pest control,Medium,2025-07-10,Open
+427,166,Pest control,High,2025-11-13,Closed
+428,172,Air conditioning not cooling,Medium,2025-06-04,In Progress
+429,128,Air conditioning not cooling,High,2025-11-21,Open
+430,254,Light fixture flickering,High,2025-12-04,In Progress
+431,358,Garage door malfunction,High,2025-03-16,Closed
+432,400,No hot water,Medium,2025-10-07,Open
+433,333,Mold in bathroom,High,2025-05-05,In Progress
+434,299,Faulty door lock,High,2025-06-06,Closed
+435,373,Painting required,Medium,2025-08-17,Open
+436,215,Pest control,High,2025-02-09,Closed
+437,219,No hot water,Medium,2025-06-22,Closed
+438,377,Faulty door lock,Low,2025-10-14,Closed
+439,255,Leaky faucet,Low,2025-02-15,Open
+440,128,Mold in bathroom,High,2025-01-28,Closed
+441,287,Roof leak,Low,2025-10-29,Closed
+442,154,Noise complaint,Medium,2025-04-03,Closed
+443,249,Painting required,Low,2025-09-18,Closed
+444,172,Leaky faucet,High,2025-01-02,In Progress
+445,272,Broken window,Low,2025-06-22,Open
+446,146,Noise complaint,Low,2025-07-25,Open
+447,347,Noise complaint,Low,2025-05-20,Closed
+448,128,Heater not working,Low,2025-12-19,Closed
+449,347,Air conditioning not cooling,Low,2025-02-11,Open
+450,189,Noise complaint,Medium,2025-08-16,Open
+451,248,Broken window,Low,2025-08-19,Closed
+452,240,Heater not working,High,2025-06-27,Closed
+453,287,Faulty door lock,High,2025-12-01,Open
+454,259,Mold in bathroom,High,2025-09-21,Open
+455,376,Painting required,Low,2025-12-30,Open
+456,365,Garage door malfunction,Low,2025-02-19,Closed
+457,161,Mold in bathroom,Low,2025-02-21,Closed
+458,278,Pest control,Medium,2025-05-13,Open
+459,364,Clogged drain,High,2025-10-06,Closed
+460,183,Air conditioning not cooling,Low,2025-07-10,In Progress
+461,344,Roof leak,Low,2025-01-08,Open
+462,167,Garage door malfunction,Medium,2025-10-29,Closed
+463,108,Clogged drain,Low,2025-12-22,Closed
+464,271,Clogged drain,Low,2025-05-05,Open
+465,146,Faulty door lock,High,2025-08-02,In Progress
+466,341,Light fixture flickering,Medium,2025-02-03,In Progress
+467,300,Leaky faucet,Low,2025-02-04,Closed
+468,262,Air conditioning not cooling,Low,2025-11-03,Open
+469,151,Air conditioning not cooling,Medium,2025-02-21,In Progress
+470,313,Mold in bathroom,High,2025-09-04,In Progress
+471,357,Heater not working,Low,2025-11-10,In Progress
+472,256,Faulty door lock,Medium,2025-02-12,Closed
+473,106,Noise complaint,Low,2025-10-09,Open
+474,328,Air conditioning not cooling,Low,2025-05-27,In Progress
+475,158,Clogged drain,High,2025-07-31,In Progress
+476,379,Clogged drain,Medium,2025-01-05,In Progress
+477,288,Heater not working,High,2025-04-13,Open
+478,228,Faulty door lock,Low,2025-12-03,Open
+479,133,Pest control,Medium,2025-12-20,Closed
+480,371,Noise complaint,High,2025-01-20,Closed
+481,344,Roof leak,High,2025-10-20,Closed
+482,381,Mold in bathroom,Medium,2025-10-14,Closed
+483,265,Clogged drain,Medium,2025-05-25,Open
+484,175,Clogged drain,Low,2025-05-17,Closed
+485,102,Light fixture flickering,Low,2025-10-20,Closed
+486,372,Roof leak,Medium,2025-08-12,Open
+487,400,Broken window,Low,2025-02-09,Open
+488,149,Painting required,High,2025-01-03,In Progress
+489,361,Doorbell not working,Low,2025-01-06,Open
+490,204,Pest control,Medium,2025-05-24,In Progress
+491,214,Heater not working,Medium,2025-05-17,In Progress
+492,292,Mold in bathroom,High,2025-06-13,Closed
+493,209,Noise complaint,Medium,2025-05-08,Open
+494,262,Pest control,Medium,2025-12-18,Closed
+495,249,Heater not working,Low,2025-11-28,In Progress
+496,341,Garage door malfunction,Low,2025-07-21,In Progress
+497,293,Leaky faucet,Low,2025-08-25,Open
+498,348,Broken window,Medium,2025-09-07,Open
+499,297,Leaky faucet,High,2025-07-10,In Progress
+500,396,Noise complaint,Low,2025-05-01,Closed
+501,307,Light fixture flickering,Low,2025-04-05,Closed
+502,340,No hot water,Low,2025-07-12,Closed
+503,127,Painting required,Medium,2025-03-13,Closed
+504,188,Heater not working,Low,2025-03-07,Closed
+505,177,Clogged drain,Low,2025-02-02,Closed
+506,294,Doorbell not working,Low,2025-06-30,Open
+507,156,Faulty door lock,Medium,2025-04-08,Open
+508,366,Broken window,Low,2025-11-16,Closed
+509,393,Roof leak,Medium,2025-08-10,Closed
+510,196,No hot water,Medium,2025-08-11,In Progress
+511,400,Noise complaint,Low,2025-10-02,Closed
+512,117,Roof leak,High,2025-01-07,Closed
+513,252,No hot water,Low,2025-11-17,In Progress
+514,196,Heater not working,Low,2025-09-29,Closed
+515,217,Mold in bathroom,Medium,2025-11-17,In Progress
+516,204,Mold in bathroom,Low,2025-05-05,In Progress
+517,308,Clogged drain,Medium,2025-06-09,Open
+518,124,Leaky faucet,Low,2025-09-11,Closed
+519,391,Broken window,Low,2025-04-24,In Progress
+520,189,Broken window,Medium,2025-08-25,In Progress
+521,363,Mold in bathroom,Low,2025-07-06,In Progress
+522,380,Roof leak,Medium,2025-11-28,In Progress
+523,116,No hot water,Low,2025-10-28,Closed
+524,375,Noise complaint,Low,2025-10-04,In Progress
+525,364,Painting required,Low,2025-11-23,Closed
+526,130,Clogged drain,Low,2025-04-09,In Progress
+527,191,Roof leak,Medium,2025-02-16,Open
+528,232,Garage door malfunction,Low,2025-06-09,Open
+529,288,Mold in bathroom,High,2025-06-13,In Progress
+530,340,Clogged drain,Low,2025-04-20,In Progress
+531,149,Pest control,Low,2025-11-17,In Progress
+532,139,Heater not working,High,2025-02-22,In Progress
+533,350,Mold in bathroom,Low,2025-03-20,Closed
+534,270,Painting required,Low,2025-04-17,Closed
+535,139,Roof leak,Low,2025-01-06,Closed
+536,163,Heater not working,Low,2025-12-31,Closed
+537,395,Leaky faucet,Low,2025-11-22,Closed
+538,276,Mold in bathroom,Medium,2025-05-08,Closed
+539,397,Clogged drain,High,2025-07-31,Open
+540,201,Faulty door lock,Low,2025-04-29,In Progress
+541,218,Faulty door lock,Low,2025-09-15,In Progress
+542,338,Clogged drain,Low,2025-10-05,Closed
+543,398,Pest control,Medium,2025-01-16,In Progress
+544,360,Pest control,High,2025-08-18,Closed
+545,187,Mold in bathroom,Medium,2025-03-27,In Progress
+546,157,Faulty door lock,High,2025-08-26,Open
+547,275,No hot water,High,2025-07-25,Closed
+548,139,Clogged drain,High,2025-04-25,Closed
+549,281,Heater not working,Low,2025-08-09,In Progress
+550,306,Painting required,Low,2025-08-07,In Progress
+551,189,Painting required,Low,2025-10-16,Open
+552,364,Garage door malfunction,Medium,2025-06-29,Closed
+553,350,Broken window,High,2025-08-21,Open
+554,212,Garage door malfunction,Low,2025-05-22,Closed
+555,200,Roof leak,Low,2025-09-18,In Progress
+556,290,Clogged drain,Low,2025-04-06,Open
+557,362,Light fixture flickering,Low,2025-03-07,Open
+558,126,Pest control,Low,2025-07-26,Open
+559,153,No hot water,High,2025-04-24,In Progress
+560,136,Faulty door lock,Low,2025-11-13,In Progress
+561,375,Faulty door lock,High,2025-07-19,Closed
+562,308,Mold in bathroom,Low,2025-09-22,In Progress
+563,359,Pest control,Low,2025-08-14,Open
+564,207,Leaky faucet,Low,2025-02-27,Closed
+565,159,Air conditioning not cooling,High,2025-12-29,Closed
+566,361,Light fixture flickering,Low,2025-12-07,Open
+567,365,Noise complaint,Medium,2025-05-29,Open
+568,109,Doorbell not working,Low,2025-03-27,In Progress
+569,366,Heater not working,Low,2025-10-01,Closed
+570,128,Clogged drain,Low,2025-07-11,Closed
+571,302,Noise complaint,Low,2025-05-13,In Progress
+572,235,Mold in bathroom,High,2025-11-24,In Progress
+573,148,Doorbell not working,Medium,2025-07-22,Open
+574,247,Faulty door lock,Low,2025-12-27,In Progress
+575,172,Pest control,Low,2025-06-21,Open
+576,110,Heater not working,Medium,2025-07-23,Open
+577,324,Leaky faucet,High,2025-05-04,Closed
+578,253,Garage door malfunction,High,2025-06-15,In Progress
+579,114,Roof leak,Medium,2025-07-30,Open
+580,334,Roof leak,Low,2025-03-24,Open
+581,146,Roof leak,High,2025-01-12,In Progress
+582,385,Painting required,Low,2025-11-15,In Progress
+583,232,Faulty door lock,Medium,2025-09-24,In Progress
+584,176,Leaky faucet,Medium,2025-12-28,Open
+585,208,Pest control,Low,2025-04-21,In Progress
+586,375,Doorbell not working,Medium,2025-06-11,In Progress
+587,396,Leaky faucet,Low,2025-06-11,Open
+588,255,Light fixture flickering,Low,2025-09-18,Closed
+589,269,Broken window,Low,2025-09-22,Open
+590,357,Painting required,High,2025-01-01,Open
+591,118,Light fixture flickering,Low,2025-05-24,In Progress
+592,231,Heater not working,Low,2025-10-17,Closed
+593,345,Garage door malfunction,Low,2025-01-25,In Progress
+594,184,Doorbell not working,Low,2025-04-18,Open
+595,235,Air conditioning not cooling,Medium,2025-04-27,Closed
+596,357,Doorbell not working,Low,2025-03-20,In Progress
+597,375,Broken window,Low,2025-12-15,In Progress
+598,235,Faulty door lock,Low,2025-12-07,Open
+599,229,Garage door malfunction,Low,2025-04-17,Closed
+600,337,Pest control,Low,2025-07-15,Open
+601,120,Roof leak,Medium,2025-10-16,Closed
+602,318,Pest control,Low,2025-08-31,Open
+603,330,Air conditioning not cooling,Medium,2025-11-05,Closed
+604,316,Garage door malfunction,Medium,2025-08-15,Closed
+605,252,Noise complaint,Low,2025-12-06,Closed
+606,397,Roof leak,Medium,2025-05-15,Closed
+607,199,Light fixture flickering,Low,2025-06-30,In Progress
+608,199,Light fixture flickering,Medium,2025-07-09,Closed
+609,149,Clogged drain,Low,2025-10-12,Closed
+610,177,Noise complaint,Low,2025-06-15,Open
+611,382,Roof leak,Low,2025-02-24,Closed
+612,188,Air conditioning not cooling,Low,2025-09-24,Closed
+613,342,Broken window,Medium,2025-03-22,Closed
+614,130,Painting required,Medium,2025-09-21,Open
+615,338,Faulty door lock,Medium,2025-10-26,Open
+616,132,Mold in bathroom,Low,2025-03-27,In Progress
+617,220,Heater not working,Low,2025-02-27,In Progress
+618,393,Mold in bathroom,Low,2025-07-03,In Progress
+619,356,Broken window,Low,2025-08-18,In Progress
+620,320,Doorbell not working,Low,2025-06-22,Open
+621,329,Pest control,Medium,2025-08-16,In Progress
+622,245,Light fixture flickering,Medium,2025-04-10,In Progress
+623,212,Faulty door lock,Low,2025-05-11,Open
+624,321,Leaky faucet,High,2025-10-21,Open
+625,238,Air conditioning not cooling,High,2025-04-20,Open
+626,137,Mold in bathroom,Low,2025-08-07,In Progress
+627,353,Air conditioning not cooling,Low,2025-03-10,Closed
+628,382,Garage door malfunction,High,2025-01-14,In Progress
+629,274,Clogged drain,Medium,2025-04-15,In Progress
+630,332,Doorbell not working,Medium,2025-03-12,Closed
+631,343,Air conditioning not cooling,Low,2025-07-24,Open
+632,253,Roof leak,Low,2025-05-01,In Progress
+633,115,Air conditioning not cooling,Low,2025-07-10,In Progress
+634,251,Garage door malfunction,Low,2025-03-06,Closed
+635,102,Clogged drain,Medium,2025-07-15,Open
+636,207,Air conditioning not cooling,Low,2025-12-31,In Progress
+637,188,Doorbell not working,Medium,2025-03-17,In Progress
+638,112,Faulty door lock,Medium,2025-02-22,In Progress
+639,281,Pest control,Low,2025-07-19,Closed
+640,149,Heater not working,Low,2025-03-27,Closed
+641,390,Light fixture flickering,Low,2025-05-20,Closed
+642,119,Doorbell not working,Medium,2025-09-13,In Progress
+643,155,Leaky faucet,Low,2025-11-18,Open
+644,181,Broken window,Medium,2025-10-28,In Progress
+645,210,Leaky faucet,Medium,2025-08-13,In Progress
+646,131,Clogged drain,Low,2025-03-05,Closed
+647,306,Air conditioning not cooling,Medium,2025-05-22,In Progress
+648,202,Mold in bathroom,High,2025-04-18,Closed
+649,308,Noise complaint,Medium,2025-09-17,Closed
+650,133,Roof leak,Low,2025-03-21,Closed
+651,352,Broken window,Low,2025-03-17,Closed
+652,356,Heater not working,High,2025-03-07,Open
+653,340,Air conditioning not cooling,Low,2025-02-21,Open
+654,339,Faulty door lock,Low,2025-12-22,In Progress
+655,275,Broken window,Low,2025-09-21,In Progress
+656,161,No hot water,High,2025-09-17,Closed
+657,256,Faulty door lock,Low,2025-04-17,In Progress
+658,388,Heater not working,Medium,2025-04-05,Closed
+659,242,Roof leak,Medium,2025-09-10,In Progress
+660,263,Clogged drain,Low,2025-11-21,Open
+661,188,Heater not working,Low,2025-01-05,Open
+662,144,Clogged drain,High,2025-07-12,Closed
+663,341,Heater not working,Low,2025-05-06,Open
+664,320,Light fixture flickering,Low,2025-05-19,Open
+665,167,Painting required,Low,2025-06-29,In Progress
+666,228,Pest control,Low,2025-10-27,Closed
+667,241,Clogged drain,Low,2025-09-30,Open
+668,368,Roof leak,Low,2025-10-11,Open
+669,245,Leaky faucet,Low,2025-07-26,In Progress
+670,294,Clogged drain,Medium,2025-06-05,Open
+671,331,Light fixture flickering,Medium,2025-09-28,In Progress
+672,163,Noise complaint,Low,2025-05-28,Closed
+673,147,Air conditioning not cooling,Medium,2025-08-23,Closed
+674,327,Broken window,Low,2025-03-25,In Progress
+675,207,Broken window,Low,2025-04-09,Closed
+676,231,Garage door malfunction,High,2025-04-15,Closed
+677,324,Broken window,High,2025-08-30,Closed
+678,294,Noise complaint,Medium,2025-10-13,Open
+679,322,Leaky faucet,High,2025-10-12,Open
+680,316,Noise complaint,Medium,2025-05-13,Open
+681,372,Doorbell not working,Low,2025-06-28,Open
+682,275,Painting required,Low,2025-10-29,Open
+683,262,Roof leak,Low,2025-07-11,Closed
+684,165,Noise complaint,High,2025-11-24,Open
+685,245,Light fixture flickering,Medium,2025-03-11,Closed
+686,131,Roof leak,Low,2025-12-18,Open
+687,273,Painting required,Low,2025-11-06,Open
+688,177,Garage door malfunction,Low,2025-09-04,In Progress
+689,129,Clogged drain,Medium,2025-08-23,Open
+690,219,No hot water,Medium,2025-07-30,Closed
+691,337,Painting required,Medium,2025-08-07,Closed
+692,284,Roof leak,Medium,2025-04-10,In Progress
+693,358,Broken window,High,2025-06-18,Open
+694,278,Roof leak,Low,2025-06-15,In Progress
+695,372,Air conditioning not cooling,Low,2025-07-01,Closed
+696,132,No hot water,High,2025-05-07,Open
+697,105,Clogged drain,Medium,2025-09-30,Open
+698,332,Air conditioning not cooling,Medium,2025-04-22,In Progress
+699,254,Mold in bathroom,Low,2025-03-08,In Progress
+700,238,Painting required,Medium,2025-07-12,Closed
+701,380,Light fixture flickering,Low,2025-06-04,In Progress
+702,339,Heater not working,Medium,2025-09-27,Open
+703,127,Broken window,Low,2025-06-17,In Progress
+704,127,Roof leak,High,2025-03-19,In Progress
+705,343,Heater not working,High,2025-09-09,Open
+706,189,Clogged drain,Low,2025-01-30,In Progress
+707,191,Air conditioning not cooling,Low,2025-02-20,In Progress
+708,325,Garage door malfunction,Medium,2025-04-27,Open
+709,114,Painting required,Low,2025-07-31,In Progress
+710,294,Heater not working,Low,2025-02-25,Open
+711,308,Light fixture flickering,Low,2025-06-27,Closed
+712,222,Doorbell not working,Medium,2025-06-24,In Progress
+713,339,Heater not working,High,2025-05-03,Closed
+714,187,Garage door malfunction,Medium,2025-02-11,Open
+715,396,No hot water,Medium,2025-08-09,Closed
+716,328,Mold in bathroom,High,2025-01-28,In Progress
+717,181,Doorbell not working,Low,2025-08-31,Closed
+718,218,Noise complaint,Low,2025-05-24,Open
+719,108,Noise complaint,High,2025-11-02,Closed
+720,274,Faulty door lock,Low,2025-07-08,In Progress
+721,271,Garage door malfunction,Medium,2025-07-12,In Progress
+722,322,Leaky faucet,Medium,2025-03-14,Open
+723,143,Garage door malfunction,High,2025-06-07,In Progress
+724,342,Faulty door lock,Medium,2025-12-06,Open
+725,354,Painting required,Medium,2025-11-09,In Progress
+726,284,Heater not working,Medium,2025-06-20,Closed
+727,228,Pest control,Low,2025-05-11,Open
+728,323,Roof leak,High,2025-05-12,Open
+729,347,Pest control,Low,2025-04-17,Closed
+730,225,No hot water,Low,2025-12-30,Closed
+731,261,Noise complaint,Low,2025-03-01,In Progress
+732,396,Doorbell not working,High,2025-03-25,In Progress
+733,250,Heater not working,Medium,2025-03-22,Closed
+734,381,Painting required,High,2025-10-20,Closed
+735,350,Leaky faucet,Low,2025-04-16,In Progress
+736,177,Garage door malfunction,High,2025-06-07,Open
+737,184,Faulty door lock,Low,2025-08-17,Closed
+738,206,No hot water,Low,2025-11-03,Closed
+739,392,Pest control,Low,2025-12-06,In Progress
+740,206,Leaky faucet,Low,2025-08-20,In Progress
+741,259,Doorbell not working,High,2025-12-08,Open
+742,317,Pest control,High,2025-09-10,Open
+743,196,Air conditioning not cooling,Low,2025-04-08,Closed
+744,310,Roof leak,High,2025-11-08,Closed
+745,287,No hot water,Low,2025-06-25,Open
+746,144,Painting required,Low,2025-10-22,Closed
+747,243,Heater not working,Medium,2025-11-01,Closed
+748,359,Painting required,Low,2025-06-14,Open
+749,227,Roof leak,Medium,2025-12-18,In Progress
+750,118,No hot water,Medium,2025-05-31,Closed
+751,114,Light fixture flickering,Medium,2025-04-29,Closed
+752,145,Doorbell not working,High,2025-02-20,Closed
+753,318,Faulty door lock,High,2025-06-27,Closed
+754,121,Garage door malfunction,Low,2025-12-09,Closed
+755,149,Pest control,Low,2025-09-01,Closed
+756,210,Leaky faucet,Medium,2025-06-20,Closed
+757,311,Broken window,Low,2025-01-17,Closed
+758,170,No hot water,Medium,2025-01-17,Open
+759,298,Heater not working,Medium,2025-06-27,Closed
+760,319,Faulty door lock,Low,2025-06-25,In Progress
+761,214,Painting required,Medium,2025-06-28,Closed
+762,355,Leaky faucet,Medium,2025-07-19,Closed
+763,179,Light fixture flickering,Medium,2025-11-16,Open
+764,395,Light fixture flickering,Medium,2025-05-19,Open
+765,259,Pest control,Low,2025-05-07,Closed
+766,237,Light fixture flickering,Medium,2025-08-09,Closed
+767,322,Pest control,Low,2025-05-26,Open
+768,292,Heater not working,Medium,2025-01-11,Closed
+769,125,Mold in bathroom,Low,2025-03-04,Closed
+770,129,Noise complaint,Medium,2025-05-02,Open
+771,274,Broken window,Low,2025-09-19,In Progress
+772,386,Garage door malfunction,Low,2025-06-02,In Progress
+773,195,Leaky faucet,Low,2025-10-15,Open
+774,383,Air conditioning not cooling,High,2025-04-11,Open
+775,154,Heater not working,Medium,2025-09-24,Closed
+776,311,Light fixture flickering,High,2025-06-04,In Progress
+777,216,Painting required,Low,2025-09-25,Closed
+778,316,Light fixture flickering,Medium,2025-05-23,In Progress
+779,333,Roof leak,Medium,2025-06-26,Closed
+780,270,Light fixture flickering,Low,2025-10-15,Open
+781,127,Noise complaint,Low,2025-03-09,In Progress
+782,138,Clogged drain,Medium,2025-04-01,Closed
+783,253,Air conditioning not cooling,Medium,2025-11-27,Open
+784,128,Noise complaint,Low,2025-04-08,Open
+785,170,Leaky faucet,Medium,2025-07-17,Closed
+786,258,Broken window,Low,2025-10-27,In Progress
+787,305,Roof leak,Medium,2025-03-23,In Progress
+788,368,Broken window,Low,2025-08-04,Closed
+789,164,Heater not working,Medium,2025-05-19,Closed
+790,383,Air conditioning not cooling,Low,2025-02-21,Closed
+791,143,Broken window,Medium,2025-01-17,Closed
+792,244,Heater not working,Medium,2025-06-02,Open
+793,185,No hot water,Medium,2025-08-11,Open
+794,229,Garage door malfunction,High,2025-08-14,Closed
+795,383,Broken window,High,2025-12-31,In Progress
+796,281,Garage door malfunction,Medium,2025-09-28,Open
+797,156,Mold in bathroom,Low,2025-05-08,Closed
+798,342,Broken window,Low,2025-09-14,In Progress
+799,161,Leaky faucet,Low,2025-09-15,Open
+800,102,Roof leak,Low,2025-04-30,In Progress
+801,304,Painting required,Medium,2025-09-25,Open
+802,354,Clogged drain,High,2025-11-25,Closed
+803,190,Clogged drain,Low,2025-12-05,In Progress
+804,384,Garage door malfunction,Medium,2025-01-07,Open
+805,264,Heater not working,Medium,2025-08-11,Closed
+806,287,Air conditioning not cooling,Low,2025-03-22,Open
+807,367,Faulty door lock,Low,2025-12-26,Open
+808,345,No hot water,Low,2025-02-27,In Progress
+809,266,Clogged drain,High,2025-08-31,Open
+810,105,Faulty door lock,Medium,2025-10-17,Open
+811,161,Mold in bathroom,Low,2025-09-14,Open
+812,339,Broken window,Low,2025-01-10,Closed
+813,293,Faulty door lock,Low,2025-03-27,In Progress
+814,118,Heater not working,Low,2025-07-08,In Progress
+815,328,Faulty door lock,Medium,2025-03-10,Open
+816,309,Garage door malfunction,Low,2025-05-31,Closed
+817,278,Air conditioning not cooling,Medium,2025-11-01,In Progress
+818,357,Heater not working,Low,2025-07-03,Open
+819,323,Air conditioning not cooling,High,2025-01-22,Open
+820,160,Garage door malfunction,High,2025-10-15,In Progress
+821,291,Noise complaint,Low,2025-09-29,In Progress
+822,179,Mold in bathroom,High,2025-07-01,In Progress
+823,144,Faulty door lock,High,2025-10-20,Closed
+824,146,Leaky faucet,High,2025-01-04,In Progress
+825,151,Pest control,Medium,2025-09-29,Open
+826,208,Faulty door lock,Low,2025-01-05,Closed
+827,218,Broken window,Low,2025-09-05,Open
+828,308,Air conditioning not cooling,Low,2025-04-12,Open
+829,369,Painting required,Low,2025-10-14,Closed
+830,102,Light fixture flickering,Low,2025-05-28,Open
+831,306,Broken window,Medium,2025-03-30,In Progress
+832,383,Heater not working,Medium,2025-11-04,Open
+833,368,Heater not working,Low,2025-02-07,In Progress
+834,231,Clogged drain,Low,2025-05-26,Closed
+835,227,Clogged drain,Low,2025-01-29,Open
+836,181,Garage door malfunction,Low,2025-03-18,Closed
+837,135,Pest control,High,2025-05-06,Closed
+838,333,Mold in bathroom,Low,2025-06-30,In Progress
+839,277,Mold in bathroom,Low,2025-03-31,In Progress
+840,351,Clogged drain,Low,2025-04-29,Closed
+841,268,Pest control,Low,2025-12-11,In Progress
+842,293,Painting required,Medium,2025-06-04,Closed
+843,146,Clogged drain,High,2025-05-18,In Progress
+844,245,Roof leak,Low,2025-10-14,Closed
+845,174,Mold in bathroom,Medium,2025-12-03,In Progress
+846,265,Pest control,Medium,2025-02-09,Closed
+847,396,Garage door malfunction,High,2025-05-13,Closed
+848,378,Painting required,Low,2025-01-25,Closed
+849,380,Doorbell not working,Low,2025-01-22,Open
+850,151,Roof leak,Low,2025-05-08,In Progress
+851,274,Painting required,Medium,2025-06-16,Open
+852,189,Faulty door lock,High,2025-06-22,Open
+853,122,Garage door malfunction,High,2025-03-20,In Progress
+854,390,Mold in bathroom,Low,2025-04-03,Closed
+855,333,Light fixture flickering,Medium,2025-03-30,Open
+856,317,Broken window,Medium,2025-05-28,In Progress
+857,361,Mold in bathroom,Medium,2025-03-02,In Progress
+858,246,Painting required,Medium,2025-04-30,In Progress
+859,110,Air conditioning not cooling,Low,2025-10-05,Open
+860,195,Air conditioning not cooling,High,2025-05-09,Open
+861,193,Light fixture flickering,Low,2025-07-18,Open
+862,321,Pest control,Low,2025-02-06,Open
+863,181,Heater not working,High,2025-01-16,In Progress
+864,320,Painting required,Low,2025-03-17,Closed
+865,179,No hot water,Low,2025-12-27,In Progress
+866,382,Mold in bathroom,Low,2025-10-03,Open
+867,271,Faulty door lock,Low,2025-06-17,Open
+868,385,Garage door malfunction,Low,2025-02-14,Open
+869,292,Faulty door lock,High,2025-09-13,Closed
+870,113,Garage door malfunction,Low,2025-09-26,In Progress
+871,253,Faulty door lock,Medium,2025-09-30,In Progress
+872,278,Noise complaint,Low,2025-05-03,Open
+873,373,Leaky faucet,Low,2025-06-29,In Progress
+874,307,Mold in bathroom,Low,2025-10-31,In Progress
+875,213,Mold in bathroom,High,2025-07-28,In Progress
+876,391,No hot water,Medium,2025-07-06,Closed
+877,180,Light fixture flickering,Medium,2025-01-14,Closed
+878,139,Faulty door lock,Low,2025-10-23,In Progress
+879,249,Painting required,High,2025-03-24,Open
+880,243,Heater not working,Low,2025-09-02,Closed
+881,193,Painting required,High,2025-11-07,Open
+882,212,Heater not working,High,2025-11-25,Open
+883,362,Roof leak,Low,2025-04-23,In Progress
+884,276,Clogged drain,Low,2025-08-01,Open
+885,325,Clogged drain,High,2025-12-25,In Progress
+886,325,Painting required,Low,2025-07-20,Open
+887,328,No hot water,Low,2025-08-18,In Progress
+888,306,Light fixture flickering,High,2025-04-11,In Progress
+889,292,Faulty door lock,Medium,2025-04-23,Closed
+890,215,Mold in bathroom,Low,2025-01-01,Closed
+891,326,Roof leak,Medium,2025-03-08,Closed
+892,142,Mold in bathroom,Low,2025-03-31,In Progress
+893,394,Air conditioning not cooling,Low,2025-03-19,Open
+894,244,Noise complaint,Medium,2025-03-24,In Progress
+895,366,Air conditioning not cooling,Low,2025-04-30,Open
+896,335,Broken window,Low,2025-11-11,In Progress
+897,151,Noise complaint,Medium,2025-02-21,Open
+898,271,Air conditioning not cooling,High,2025-03-30,In Progress
+899,285,Light fixture flickering,Low,2025-10-12,In Progress
+900,385,Clogged drain,High,2025-01-03,Open
+901,272,Painting required,Medium,2025-04-10,Open
+902,224,Mold in bathroom,Medium,2025-01-14,Open
+903,332,Light fixture flickering,Low,2025-06-12,In Progress
+904,351,Roof leak,Low,2025-06-14,Open
+905,210,Broken window,Medium,2025-04-09,In Progress
+906,292,Pest control,Low,2025-05-27,Open
+907,155,Noise complaint,Low,2025-02-10,In Progress
+908,229,Roof leak,Medium,2025-10-19,Open
+909,397,Broken window,Medium,2025-09-22,Closed
+910,268,Doorbell not working,High,2025-03-04,In Progress
+911,310,Painting required,Medium,2025-09-24,Open
+912,202,Air conditioning not cooling,Low,2025-03-29,Closed
+913,304,Garage door malfunction,Low,2025-02-07,Open
+914,360,Heater not working,Low,2025-03-14,In Progress
+915,191,No hot water,High,2025-03-08,In Progress
+916,331,Noise complaint,Medium,2025-07-27,In Progress
+917,176,Heater not working,Low,2025-02-03,In Progress
+918,315,Noise complaint,Low,2025-11-23,Closed
+919,334,Broken window,Medium,2025-09-04,Open
+920,279,Leaky faucet,Low,2025-02-27,In Progress
+921,295,No hot water,High,2025-06-18,Closed
+922,207,Clogged drain,Low,2025-07-18,Open
+923,225,Mold in bathroom,High,2025-06-06,Open
+924,238,Air conditioning not cooling,Medium,2025-04-25,Open
+925,245,Air conditioning not cooling,High,2025-11-20,In Progress
+926,266,Air conditioning not cooling,Low,2025-01-21,Open
+927,312,Garage door malfunction,High,2025-03-27,Open
+928,205,Painting required,Medium,2025-01-30,In Progress
+929,253,Heater not working,High,2025-08-06,Open
+930,283,Doorbell not working,High,2025-10-31,Open
+931,112,Leaky faucet,Low,2025-02-03,In Progress
+932,285,Broken window,Low,2025-03-06,In Progress
+933,279,Broken window,Low,2025-06-23,Open
+934,238,Noise complaint,Medium,2025-10-19,Open
+935,319,Doorbell not working,Low,2025-05-20,Open
+936,132,Doorbell not working,Medium,2025-12-15,Open
+937,183,Heater not working,Medium,2025-11-04,Closed
+938,342,Light fixture flickering,High,2025-05-19,In Progress
+939,165,Faulty door lock,Low,2025-02-20,Closed
+940,248,Broken window,Low,2025-06-23,Closed
+941,272,Faulty door lock,Low,2025-04-20,Open
+942,163,No hot water,High,2025-08-06,Open
+943,254,No hot water,Medium,2025-07-23,Closed
+944,312,Painting required,Low,2025-11-10,Open
+945,183,Faulty door lock,Low,2025-09-12,Open
+946,318,Heater not working,Low,2025-02-21,In Progress
+947,192,Air conditioning not cooling,Low,2025-02-01,In Progress
+948,165,Doorbell not working,Low,2025-04-21,In Progress
+949,148,Painting required,Low,2025-05-03,Closed
+950,396,Leaky faucet,Low,2025-04-13,Closed
+951,354,Pest control,Medium,2025-05-10,Closed
+952,396,Pest control,Medium,2025-01-28,In Progress
+953,161,Light fixture flickering,Medium,2025-12-31,Open
+954,293,Light fixture flickering,Medium,2025-04-17,Closed
+955,156,Noise complaint,High,2025-05-09,In Progress
+956,384,Noise complaint,Low,2025-06-19,Closed
+957,301,Broken window,Low,2025-09-03,Open
+958,133,Faulty door lock,Low,2025-12-05,Closed
+959,247,Heater not working,Medium,2025-11-08,Open
+960,356,Air conditioning not cooling,High,2025-09-17,Open
+961,150,Mold in bathroom,High,2025-05-24,In Progress
+962,123,Noise complaint,Medium,2025-03-10,Open
+963,247,Leaky faucet,Low,2025-06-24,Closed
+964,121,Broken window,Low,2025-04-09,Open
+965,297,Painting required,Low,2025-11-11,In Progress
+966,392,Pest control,Low,2025-03-06,Closed
+967,294,Light fixture flickering,Medium,2025-04-23,Open
+968,229,Mold in bathroom,Medium,2025-10-18,In Progress
+969,201,Leaky faucet,High,2025-12-15,In Progress
+970,318,Clogged drain,Medium,2025-02-26,Closed
+971,367,Garage door malfunction,Low,2025-03-30,Open
+972,136,Painting required,High,2025-04-11,In Progress
+973,293,No hot water,Low,2025-06-12,In Progress
+974,211,Garage door malfunction,Low,2025-05-21,Closed
+975,240,Faulty door lock,High,2025-06-28,Open
+976,219,Pest control,High,2025-10-17,Open
+977,254,Air conditioning not cooling,Low,2025-01-14,In Progress
+978,141,Pest control,Medium,2025-09-27,Open
+979,135,Doorbell not working,High,2025-06-16,Closed
+980,253,Roof leak,High,2025-12-09,Closed
+981,160,Mold in bathroom,Medium,2025-10-11,In Progress
+982,259,No hot water,High,2025-07-18,Closed
+983,326,Light fixture flickering,Medium,2025-12-18,In Progress
+984,299,Heater not working,Medium,2025-03-18,In Progress
+985,351,Faulty door lock,Low,2025-09-04,Open
+986,206,Mold in bathroom,Low,2025-07-04,Closed
+987,189,Leaky faucet,Low,2025-01-30,Closed
+988,336,Doorbell not working,Medium,2025-08-23,In Progress
+989,383,Painting required,High,2025-07-29,In Progress
+990,187,Painting required,Low,2025-01-27,Open
+991,272,Broken window,Low,2025-04-25,Open
+992,259,Broken window,Low,2025-11-22,Closed
+993,271,No hot water,Medium,2025-12-30,Closed
+994,317,Clogged drain,High,2025-07-21,Closed
+995,152,Noise complaint,Medium,2025-10-08,Open
+996,378,Garage door malfunction,Low,2025-03-12,Closed
+997,124,No hot water,Medium,2025-07-09,Closed
+998,258,Leaky faucet,Medium,2025-09-14,In Progress
+999,164,Clogged drain,High,2025-02-22,Open
+1000,389,Broken window,Low,2025-12-29,Closed
+1001,134,Roof leak,Medium,2025-01-10,Closed
+1002,259,Light fixture flickering,Low,2025-09-23,Closed
+1003,112,No hot water,Low,2025-09-30,Open
+1004,332,Garage door malfunction,Medium,2025-10-07,Closed
+1005,210,Air conditioning not cooling,Low,2025-12-15,Closed
+1006,326,Roof leak,High,2025-06-10,Closed
+1007,117,No hot water,Low,2025-01-06,In Progress
+1008,115,No hot water,Low,2025-02-22,Closed
+1009,233,Painting required,Low,2025-02-14,Open
+1010,175,Leaky faucet,Low,2025-11-20,Closed
+1011,323,Noise complaint,Medium,2025-06-26,In Progress
+1012,399,Garage door malfunction,Low,2025-03-23,In Progress
+1013,368,Doorbell not working,Medium,2025-08-26,Closed
+1014,371,Mold in bathroom,High,2025-06-03,Closed
+1015,114,Broken window,Low,2025-12-11,Open
+1016,290,Light fixture flickering,Low,2025-09-17,Open
+1017,255,Garage door malfunction,Medium,2025-10-17,In Progress
+1018,108,Light fixture flickering,High,2025-12-26,Open
+1019,284,Doorbell not working,Low,2025-05-10,In Progress
+1020,390,Noise complaint,Low,2025-02-07,Open
+1021,102,No hot water,Low,2025-10-09,Open
+1022,140,Clogged drain,Medium,2025-08-07,Closed
+1023,191,Pest control,Medium,2025-07-05,Closed
+1024,314,No hot water,Low,2025-11-06,Closed
+1025,375,Noise complaint,Low,2025-11-03,Open
+1026,282,Light fixture flickering,Medium,2025-04-18,Open
+1027,356,Pest control,High,2025-06-14,Closed
+1028,299,Doorbell not working,Low,2025-07-31,Open
+1029,143,Painting required,Low,2025-02-06,In Progress
+1030,347,Noise complaint,Low,2025-02-01,In Progress
+1031,106,Light fixture flickering,Medium,2025-04-12,Closed
+1032,165,Leaky faucet,Medium,2025-08-11,Closed
+1033,106,Mold in bathroom,Low,2025-08-13,Open
+1034,305,No hot water,Low,2025-01-21,Open
+1035,184,Mold in bathroom,Low,2025-11-19,In Progress
+1036,356,Light fixture flickering,Medium,2025-08-11,Closed
+1037,330,Heater not working,Low,2025-03-05,In Progress
+1038,119,No hot water,Low,2025-04-01,Closed
+1039,155,Broken window,Low,2025-03-09,In Progress
+1040,348,Air conditioning not cooling,Medium,2025-12-06,Open
+1041,326,Garage door malfunction,Low,2025-06-05,Open
+1042,268,Painting required,Low,2025-10-01,Closed
+1043,246,Broken window,Low,2025-02-26,In Progress
+1044,258,Mold in bathroom,Low,2025-06-26,Open
+1045,324,No hot water,Low,2025-01-12,Closed
+1046,346,Pest control,Low,2025-12-25,Open
+1047,224,Air conditioning not cooling,High,2025-02-18,Closed
+1048,253,Roof leak,Medium,2025-11-03,In Progress
+1049,382,Garage door malfunction,Medium,2025-12-05,In Progress
+1050,117,Noise complaint,Low,2025-07-08,Open
+1051,288,Doorbell not working,Low,2025-06-14,Closed
+1052,174,Air conditioning not cooling,Medium,2025-04-25,In Progress
+1053,116,Painting required,High,2025-03-07,Closed
+1054,212,Painting required,Low,2025-06-22,Open
+1055,143,Heater not working,Low,2025-07-24,Closed
+1056,332,Painting required,Low,2025-10-12,In Progress
+1057,272,Clogged drain,Low,2025-06-21,In Progress
+1058,352,Heater not working,Medium,2025-11-18,Open
+1059,177,Noise complaint,Low,2025-02-20,Open
+1060,264,Heater not working,Low,2025-06-03,Open
+1061,255,No hot water,Low,2025-06-20,In Progress
+1062,269,Leaky faucet,Medium,2025-01-03,In Progress
+1063,251,Light fixture flickering,High,2025-04-28,Closed
+1064,383,No hot water,High,2025-02-15,Closed
+1065,226,Heater not working,Medium,2025-08-04,Open
+1066,274,Noise complaint,Low,2025-02-04,Open
+1067,121,Faulty door lock,Low,2025-02-10,Open
+1068,157,Noise complaint,Low,2025-04-27,In Progress
+1069,350,Pest control,Medium,2025-11-13,Open
+1070,153,Noise complaint,Low,2025-01-16,Open
+1071,190,Doorbell not working,Medium,2025-05-24,Open
+1072,262,Garage door malfunction,Medium,2025-12-22,Closed
+1073,308,Broken window,Low,2025-05-16,Closed
+1074,336,Roof leak,High,2025-03-15,Open
+1075,183,Roof leak,Low,2025-03-09,Open
+1076,354,Faulty door lock,High,2025-12-06,Open
+1077,144,Doorbell not working,Low,2025-04-26,Open
+1078,245,Pest control,Low,2025-02-19,In Progress
+1079,351,Clogged drain,High,2025-06-24,Closed
+1080,194,Leaky faucet,Low,2025-03-18,Open
+1081,252,Faulty door lock,Low,2025-06-07,Closed
+1082,281,Heater not working,High,2025-02-24,In Progress
+1083,252,Light fixture flickering,Low,2025-02-07,In Progress
+1084,303,Doorbell not working,Medium,2025-12-28,Closed
+1085,268,Doorbell not working,Low,2025-12-16,In Progress
+1086,275,Faulty door lock,Low,2025-07-03,Open
+1087,248,Doorbell not working,Low,2025-03-22,Open
+1088,121,No hot water,Low,2025-08-17,Closed
+1089,311,No hot water,Low,2025-03-20,Open
+1090,279,Painting required,Medium,2025-04-06,Closed
+1091,397,Painting required,High,2025-01-06,Closed
+1092,260,Faulty door lock,Low,2025-04-09,Open
+1093,297,Broken window,Medium,2025-08-10,Open
+1094,288,Leaky faucet,Low,2025-08-14,Open
+1095,291,No hot water,Low,2025-03-19,Closed
+1096,135,Garage door malfunction,Medium,2025-12-23,In Progress
+1097,271,Air conditioning not cooling,Medium,2025-05-05,Open
+1098,327,Broken window,Medium,2025-01-19,In Progress
+1099,168,Clogged drain,Low,2025-05-31,Closed
+1100,217,Air conditioning not cooling,Low,2025-11-21,In Progress
+1101,333,Garage door malfunction,High,2025-03-22,In Progress
+1102,245,No hot water,Medium,2025-12-25,In Progress
+1103,330,Mold in bathroom,Low,2025-07-30,Closed
+1104,189,Doorbell not working,Low,2025-08-20,In Progress
+1105,121,Leaky faucet,Low,2025-02-28,Closed
+1106,182,Noise complaint,Medium,2025-07-23,Open
+1107,223,Light fixture flickering,Low,2025-08-02,Closed
+1108,276,Pest control,Medium,2025-10-13,Closed
+1109,146,Mold in bathroom,Low,2025-10-17,Closed
+1110,218,Leaky faucet,Medium,2025-10-21,In Progress
+1111,202,Faulty door lock,Medium,2025-06-30,In Progress
+1112,251,Air conditioning not cooling,Low,2025-11-22,Closed
+1113,335,Light fixture flickering,Medium,2025-11-08,Open
+1114,322,Heater not working,Low,2025-01-08,In Progress
+1115,244,Clogged drain,Low,2025-08-20,Closed
+1116,304,Painting required,Medium,2025-01-17,Open
+1117,338,No hot water,Low,2025-02-11,Closed
+1118,150,Mold in bathroom,High,2025-07-24,In Progress
+1119,150,Roof leak,High,2025-01-26,Closed
+1120,275,No hot water,Medium,2025-01-19,In Progress
+1121,303,Light fixture flickering,High,2025-07-09,Closed
+1122,155,Pest control,High,2025-08-21,In Progress
+1123,328,Heater not working,Low,2025-06-22,Closed
+1124,395,Pest control,Low,2025-10-21,Open
+1125,379,No hot water,Medium,2025-12-01,Open
+1126,231,Roof leak,Low,2025-10-21,Closed
+1127,151,Doorbell not working,Low,2025-08-06,Closed
+1128,349,Air conditioning not cooling,Medium,2025-11-01,In Progress
+1129,233,Heater not working,Medium,2025-06-24,Open
+1130,213,Noise complaint,High,2025-07-15,Open
+1131,114,Pest control,High,2025-04-25,In Progress
+1132,242,Heater not working,Low,2025-04-08,Open
+1133,284,Faulty door lock,Low,2025-11-28,Closed
+1134,316,No hot water,Low,2025-02-14,Closed
+1135,298,Noise complaint,Medium,2025-01-15,Closed
+1136,359,Garage door malfunction,Medium,2025-01-19,In Progress
+1137,343,Mold in bathroom,Low,2025-03-07,Open
+1138,240,Painting required,Low,2025-03-29,Closed
+1139,189,Pest control,High,2025-09-28,In Progress
+1140,268,No hot water,Low,2025-01-27,Open
+1141,135,Mold in bathroom,Low,2025-06-12,Closed
+1142,345,Mold in bathroom,High,2025-05-16,In Progress
+1143,337,Roof leak,High,2025-08-13,Open
+1144,167,Pest control,Low,2025-04-22,In Progress
+1145,110,Garage door malfunction,Low,2025-09-20,Open
+1146,341,Light fixture flickering,Medium,2025-07-15,Open
+1147,321,Broken window,Medium,2025-12-23,Closed
+1148,169,Heater not working,Medium,2025-04-11,Open
+1149,386,Broken window,Medium,2025-04-27,Open
+1150,363,Broken window,High,2025-10-30,Closed
+1151,256,Garage door malfunction,Low,2025-04-06,In Progress
+1152,281,Garage door malfunction,Low,2025-08-10,Open
+1153,104,Noise complaint,Low,2025-06-02,In Progress
+1154,203,Air conditioning not cooling,Medium,2025-07-04,In Progress
+1155,258,Garage door malfunction,Low,2025-08-15,In Progress
+1156,298,Painting required,High,2025-02-16,In Progress
+1157,400,Light fixture flickering,High,2025-11-24,In Progress
+1158,117,Clogged drain,Medium,2025-11-20,Closed
+1159,148,Noise complaint,Low,2025-11-19,Open
+1160,391,Garage door malfunction,Low,2025-11-25,Open
+1161,185,Painting required,High,2025-10-12,Open
+1162,222,Doorbell not working,High,2025-01-15,In Progress
+1163,330,Pest control,Low,2025-02-11,In Progress
+1164,113,Leaky faucet,Low,2025-01-16,Closed
+1165,148,Roof leak,Low,2025-01-18,In Progress
+1166,105,Heater not working,Medium,2025-04-02,In Progress
+1167,196,Clogged drain,Low,2025-01-13,Closed
+1168,309,Noise complaint,Medium,2025-01-22,In Progress
+1169,204,Faulty door lock,High,2025-03-04,Closed
+1170,256,Clogged drain,Medium,2025-12-13,In Progress
+1171,125,Clogged drain,Medium,2025-12-05,Closed
+1172,169,Noise complaint,Low,2025-11-26,Closed
+1173,320,Broken window,Low,2025-04-24,Closed
+1174,394,Light fixture flickering,Medium,2025-12-16,In Progress
+1175,389,Garage door malfunction,Low,2025-07-26,In Progress
+1176,387,Heater not working,High,2025-08-30,Open
+1177,310,Broken window,High,2025-11-20,Closed
+1178,105,Painting required,High,2025-11-09,Open
+1179,320,No hot water,Medium,2025-12-02,Closed
+1180,207,Garage door malfunction,Low,2025-12-18,Closed
+1181,282,Broken window,Low,2025-01-26,Open
+1182,220,Pest control,Low,2025-04-13,In Progress
+1183,240,Light fixture flickering,High,2025-08-23,Closed
+1184,176,No hot water,Low,2025-01-12,Open
+1185,151,Clogged drain,Low,2025-09-17,Open
+1186,282,No hot water,Low,2025-04-23,Closed
+1187,346,Heater not working,Low,2025-04-05,In Progress
+1188,135,No hot water,Medium,2025-07-23,In Progress
+1189,112,Painting required,Low,2025-07-04,In Progress
+1190,113,Pest control,Low,2025-02-11,In Progress
+1191,154,Painting required,High,2025-06-27,In Progress
+1192,368,Broken window,Low,2025-04-25,Closed
+1193,221,Roof leak,High,2025-03-11,Closed
+1194,318,Doorbell not working,Low,2025-01-23,In Progress
+1195,201,Heater not working,Low,2025-03-11,Open
+1196,345,Light fixture flickering,High,2025-04-25,Closed
+1197,360,Leaky faucet,Low,2025-09-24,In Progress
+1198,114,Faulty door lock,Low,2025-10-01,Open
+1199,374,Heater not working,High,2025-02-03,In Progress
+1200,198,Heater not working,High,2025-12-08,In Progress
+1201,390,Air conditioning not cooling,Low,2025-08-01,Open
+1202,359,Broken window,High,2025-09-19,Closed
+1203,122,Pest control,Medium,2025-12-28,Open
+1204,326,Garage door malfunction,High,2025-03-09,Open
+1205,371,Doorbell not working,Medium,2025-09-11,Open
+1206,355,Roof leak,Low,2025-10-30,Closed
+1207,323,Roof leak,Low,2025-12-17,In Progress
+1208,198,Doorbell not working,Low,2025-03-28,Open
+1209,231,Leaky faucet,Medium,2025-07-16,In Progress
+1210,224,Doorbell not working,Low,2025-07-31,Open
+1211,342,Painting required,Medium,2025-04-23,Open
+1212,235,Leaky faucet,Low,2025-06-25,Open
+1213,279,Leaky faucet,High,2025-01-15,Closed
+1214,239,Garage door malfunction,Medium,2025-11-25,Closed
+1215,265,Broken window,Medium,2025-10-16,Open
+1216,324,Mold in bathroom,Low,2025-02-10,Open
+1217,180,Clogged drain,High,2025-04-19,Open
+1218,364,Doorbell not working,High,2025-02-04,Closed
+1219,155,Broken window,Medium,2025-05-31,Closed
+1220,125,Noise complaint,Low,2025-07-18,Closed
+1221,284,Light fixture flickering,Low,2025-07-12,In Progress
+1222,140,Broken window,Low,2025-01-22,In Progress
+1223,125,Clogged drain,Medium,2025-01-19,Open
+1224,257,No hot water,Low,2025-06-01,Open
+1225,168,No hot water,Medium,2025-07-14,In Progress
+1226,161,Light fixture flickering,High,2025-07-09,In Progress
+1227,323,Pest control,Low,2025-05-26,Closed
+1228,105,Noise complaint,Medium,2025-02-21,Open
+1229,285,Doorbell not working,High,2025-06-13,Closed
+1230,369,Light fixture flickering,Low,2025-03-30,Closed
+1231,300,Doorbell not working,Medium,2025-01-17,Closed
+1232,303,Garage door malfunction,Low,2025-10-15,Open
+1233,325,Noise complaint,Low,2025-10-07,In Progress
+1234,282,Heater not working,Low,2025-06-11,Closed
+1235,105,Noise complaint,Low,2025-03-16,In Progress
+1236,391,Mold in bathroom,Low,2025-05-27,In Progress
+1237,319,Air conditioning not cooling,Medium,2025-09-08,Open
+1238,254,Noise complaint,Medium,2025-06-13,Closed
+1239,296,Faulty door lock,Medium,2025-07-16,Open
+1240,226,Roof leak,Medium,2025-11-23,Open
+1241,391,Noise complaint,Medium,2025-03-15,Closed
+1242,254,Doorbell not working,Low,2025-10-28,Open
+1243,390,Garage door malfunction,Medium,2025-02-28,In Progress
+1244,173,Garage door malfunction,Low,2025-09-24,In Progress
+1245,149,Painting required,Medium,2025-02-13,Open
+1246,126,Garage door malfunction,High,2025-03-27,Open
+1247,202,Heater not working,Low,2025-11-11,In Progress
+1248,217,Garage door malfunction,Medium,2025-10-22,Open
+1249,380,Noise complaint,Low,2025-01-13,Closed
+1250,396,Noise complaint,Medium,2025-12-03,In Progress
+1251,291,Air conditioning not cooling,High,2025-07-16,Open
+1252,163,Broken window,Low,2025-10-09,Closed
+1253,178,Heater not working,Low,2025-01-19,In Progress
+1254,194,Faulty door lock,Low,2025-06-26,Open
+1255,324,Painting required,Low,2025-03-18,Open
+1256,315,Doorbell not working,Low,2025-02-28,Open
+1257,111,No hot water,High,2025-02-23,Open
+1258,250,Faulty door lock,Low,2025-01-13,Closed
+1259,119,Heater not working,Medium,2025-03-06,In Progress
+1260,259,No hot water,Low,2025-01-13,Open
+1261,331,Painting required,Low,2025-10-29,In Progress
+1262,359,Leaky faucet,Medium,2025-12-05,Open
+1263,181,Painting required,Medium,2025-07-06,Closed
+1264,350,Broken window,Low,2025-09-21,In Progress
+1265,270,Pest control,Low,2025-02-04,In Progress
+1266,196,Mold in bathroom,High,2025-09-15,Closed
+1267,287,Clogged drain,Low,2025-03-17,In Progress
+1268,237,Noise complaint,Low,2025-05-20,Closed
+1269,103,Air conditioning not cooling,Low,2025-03-24,Open
+1270,214,Air conditioning not cooling,Low,2025-02-26,Closed
+1271,134,Air conditioning not cooling,Low,2025-11-09,Closed
+1272,347,Faulty door lock,Low,2025-11-15,In Progress
+1273,196,Roof leak,Low,2025-01-28,In Progress
+1274,234,Light fixture flickering,Low,2025-12-14,Closed
+1275,193,Air conditioning not cooling,Low,2025-04-12,In Progress
+1276,136,Clogged drain,Low,2025-05-23,In Progress
+1277,385,Roof leak,Low,2025-09-20,Open
+1278,251,Light fixture flickering,Medium,2025-10-27,Open
+1279,291,Clogged drain,Low,2025-05-04,In Progress
+1280,160,No hot water,Low,2025-06-08,In Progress
+1281,323,Air conditioning not cooling,High,2025-07-21,Open
+1282,332,Mold in bathroom,Low,2025-05-31,Open
+1283,213,Mold in bathroom,Medium,2025-04-21,Closed
+1284,179,Broken window,High,2025-06-27,Closed
+1285,332,Broken window,Low,2025-09-04,Closed
+1286,295,Mold in bathroom,Medium,2025-08-18,Closed
+1287,382,Mold in bathroom,Low,2025-03-16,Closed
+1288,397,Light fixture flickering,Low,2025-03-09,In Progress
+1289,395,Faulty door lock,Medium,2025-01-06,Closed
+1290,311,Clogged drain,Low,2025-03-04,Closed
+1291,210,Noise complaint,Low,2025-03-06,In Progress
+1292,242,Light fixture flickering,High,2025-12-09,In Progress
+1293,112,No hot water,High,2025-09-20,Closed
+1294,343,Leaky faucet,Low,2025-11-01,Closed
+1295,139,Broken window,Low,2025-12-04,Closed
+1296,221,Heater not working,Low,2025-05-11,In Progress
+1297,330,Faulty door lock,Medium,2025-01-02,Closed
+1298,388,Clogged drain,High,2025-10-22,In Progress
+1299,186,Broken window,Low,2025-10-02,Closed
+1300,169,Doorbell not working,Medium,2025-09-06,Closed
+1301,285,Garage door malfunction,Low,2025-09-17,In Progress
+1302,102,Doorbell not working,Medium,2025-11-16,Open
+1303,270,Clogged drain,Low,2025-09-22,Open
+1304,281,Painting required,High,2025-04-23,Closed
+1305,198,Mold in bathroom,Low,2025-12-07,In Progress
+1306,114,Painting required,Medium,2025-01-10,In Progress
+1307,353,Broken window,Medium,2025-11-30,In Progress
+1308,192,Clogged drain,Low,2025-08-22,Open
+1309,237,Mold in bathroom,High,2025-08-17,Closed
+1310,288,Roof leak,Low,2025-10-02,Closed
+1311,199,Roof leak,Low,2025-04-19,In Progress
+1312,167,Pest control,Low,2025-04-12,In Progress
+1313,171,Air conditioning not cooling,Low,2025-05-31,Open
+1314,243,Pest control,High,2025-01-05,Closed
+1315,267,Faulty door lock,Medium,2025-03-21,Open
+1316,324,Doorbell not working,High,2025-04-22,Closed
+1317,248,Heater not working,Low,2025-07-23,Closed
+1318,391,Garage door malfunction,Low,2025-11-20,In Progress
+1319,156,Noise complaint,High,2025-04-27,In Progress
+1320,162,Mold in bathroom,Low,2025-10-24,Closed
+1321,203,Roof leak,High,2025-06-18,In Progress
+1322,185,Mold in bathroom,High,2025-10-22,Closed
+1323,110,Noise complaint,Medium,2025-02-19,Closed
+1324,253,Painting required,Medium,2025-04-19,In Progress
+1325,110,Doorbell not working,High,2025-01-28,Open
+1326,306,Air conditioning not cooling,Medium,2025-03-29,Open
+1327,301,Pest control,High,2025-04-23,Closed
+1328,189,Garage door malfunction,High,2025-04-20,In Progress
+1329,172,Painting required,Low,2025-04-28,Open
+1330,134,No hot water,High,2025-10-07,Closed
+1331,223,Pest control,Low,2025-02-20,Open
+1332,303,Noise complaint,High,2025-10-02,Open
+1333,185,Painting required,Low,2025-01-15,Closed
+1334,358,Heater not working,Medium,2025-09-06,In Progress
+1335,331,Painting required,Low,2025-07-12,In Progress
+1336,354,Roof leak,Low,2025-12-11,Open
+1337,204,Broken window,High,2025-09-07,Open
+1338,302,Noise complaint,Low,2025-07-04,Closed
+1339,164,Leaky faucet,High,2025-07-03,In Progress
+1340,112,Mold in bathroom,Low,2025-11-08,In Progress
+1341,380,Mold in bathroom,High,2025-06-22,Closed
+1342,286,Light fixture flickering,High,2025-01-30,Closed
+1343,218,Doorbell not working,Low,2025-12-17,Open
+1344,146,Pest control,Low,2025-07-11,In Progress
+1345,269,Faulty door lock,Low,2025-01-12,Closed
+1346,187,Pest control,Low,2025-02-07,Open
+1347,182,Clogged drain,Low,2025-02-11,In Progress
+1348,297,Doorbell not working,Low,2025-05-28,Closed
+1349,263,Doorbell not working,High,2025-10-05,Closed
+1350,181,Broken window,Low,2025-03-26,Open
+1351,374,Air conditioning not cooling,High,2025-03-12,Open
+1352,189,Faulty door lock,Low,2025-05-12,Open
+1353,270,No hot water,High,2025-02-23,Open
+1354,152,Mold in bathroom,Low,2025-06-06,Closed
+1355,258,Clogged drain,Low,2025-06-11,Open
+1356,275,Broken window,Low,2025-08-07,In Progress
+1357,368,Mold in bathroom,Medium,2025-04-18,Closed
+1358,333,Noise complaint,High,2025-02-26,In Progress
+1359,143,Noise complaint,Medium,2025-01-15,Closed
+1360,372,Clogged drain,High,2025-07-02,Closed
+1361,119,Painting required,Low,2025-10-11,In Progress
+1362,116,Doorbell not working,Medium,2025-09-02,In Progress
+1363,121,Faulty door lock,Low,2025-09-06,In Progress
+1364,282,Roof leak,Low,2025-12-02,Closed
+1365,391,Leaky faucet,Low,2025-05-18,Open
+1366,387,Doorbell not working,High,2025-08-10,Closed
+1367,289,Pest control,Low,2025-08-01,In Progress
+1368,222,Heater not working,Low,2025-05-06,Closed
+1369,248,Roof leak,Low,2025-08-13,Open
+1370,155,Leaky faucet,Medium,2025-05-30,Closed
+1371,107,Faulty door lock,Medium,2025-10-28,Closed
+1372,295,Light fixture flickering,High,2025-08-30,Open
+1373,185,Mold in bathroom,Low,2025-07-29,Closed
+1374,366,Pest control,Low,2025-04-25,In Progress
+1375,143,Light fixture flickering,Low,2025-06-07,Open
+1376,213,Pest control,Low,2025-03-02,Closed
+1377,132,Pest control,High,2025-12-29,Closed
+1378,275,Air conditioning not cooling,Low,2025-05-25,In Progress
+1379,199,Clogged drain,Low,2025-11-26,Closed
+1380,108,Heater not working,Medium,2025-08-14,Open
+1381,196,Clogged drain,Medium,2025-11-03,In Progress
+1382,309,Leaky faucet,Low,2025-07-09,In Progress
+1383,120,Leaky faucet,High,2025-01-24,In Progress
+1384,108,Roof leak,Medium,2025-09-22,Open
+1385,204,No hot water,Low,2025-03-28,Open
+1386,305,Leaky faucet,Low,2025-04-16,Closed
+1387,172,Garage door malfunction,Low,2025-03-28,Closed
+1388,130,No hot water,Medium,2025-05-13,In Progress
+1389,380,Painting required,Low,2025-12-29,In Progress
+1390,213,Faulty door lock,Low,2025-07-27,Open
+1391,385,Light fixture flickering,Low,2025-08-03,In Progress
+1392,233,Heater not working,Low,2025-09-15,Open
+1393,361,Heater not working,Low,2025-03-28,Closed
+1394,313,Painting required,High,2025-03-11,Closed
+1395,291,Garage door malfunction,Medium,2025-03-03,Closed
+1396,261,Light fixture flickering,Low,2025-02-01,Open
+1397,216,Garage door malfunction,High,2025-11-03,Closed
+1398,313,Light fixture flickering,High,2025-11-18,In Progress
+1399,175,Painting required,Low,2025-07-21,Open
+1400,293,Mold in bathroom,High,2025-11-13,Closed
+1401,373,Roof leak,Low,2025-08-27,Closed
+1402,335,Clogged drain,Medium,2025-06-20,In Progress
+1403,257,Clogged drain,Low,2025-01-29,Open
+1404,388,No hot water,Low,2025-01-25,Closed
+1405,308,Noise complaint,Low,2025-01-07,In Progress
+1406,299,Pest control,Medium,2025-09-21,Open
+1407,112,No hot water,High,2025-07-21,Closed
+1408,354,Broken window,Medium,2025-11-21,In Progress
+1409,329,Garage door malfunction,Medium,2025-04-14,Open
+1410,128,Faulty door lock,Medium,2025-07-16,Closed
+1411,143,Mold in bathroom,Medium,2025-10-12,In Progress
+1412,198,Garage door malfunction,Medium,2025-04-06,Open
+1413,214,Noise complaint,Low,2025-10-17,In Progress
+1414,262,Doorbell not working,Low,2025-06-10,Open
+1415,343,Pest control,Low,2025-10-21,Open
+1416,101,Light fixture flickering,Medium,2025-05-05,Open
+1417,357,Garage door malfunction,High,2025-08-16,In Progress
+1418,323,Clogged drain,Low,2025-03-18,Closed
+1419,330,Leaky faucet,Low,2025-09-20,In Progress
+1420,269,Noise complaint,High,2025-09-10,In Progress
+1421,102,Mold in bathroom,High,2025-04-21,Closed
+1422,271,Heater not working,Low,2025-10-12,Closed
+1423,372,Air conditioning not cooling,Low,2025-12-06,In Progress
+1424,321,Roof leak,Low,2025-04-10,In Progress
+1425,181,Mold in bathroom,Low,2025-05-12,Closed
+1426,168,Painting required,Low,2025-03-18,In Progress
+1427,192,Air conditioning not cooling,Medium,2025-04-17,In Progress
+1428,279,Noise complaint,Low,2025-10-10,Open
+1429,229,Broken window,Low,2025-08-27,In Progress
+1430,107,Light fixture flickering,Medium,2025-09-12,Closed
+1431,335,Doorbell not working,Medium,2025-08-22,Closed
+1432,229,Leaky faucet,Medium,2025-08-18,Open
+1433,243,Noise complaint,Low,2025-04-10,Closed
+1434,262,Leaky faucet,High,2025-04-01,In Progress
+1435,254,Noise complaint,Medium,2025-01-12,In Progress
+1436,324,No hot water,Low,2025-11-26,Open
+1437,254,Mold in bathroom,Low,2025-07-06,In Progress
+1438,327,Painting required,Low,2025-12-06,In Progress
+1439,270,Mold in bathroom,Medium,2025-09-23,In Progress
+1440,257,Light fixture flickering,Low,2025-02-03,In Progress
+1441,236,Roof leak,High,2025-03-22,Open
+1442,144,Doorbell not working,Low,2025-02-11,In Progress
+1443,105,Faulty door lock,High,2025-03-06,In Progress
+1444,215,Mold in bathroom,Low,2025-05-04,Closed
+1445,254,Light fixture flickering,Low,2025-12-08,Open
+1446,332,Garage door malfunction,Low,2025-07-04,Open
+1447,208,Roof leak,High,2025-03-06,Open
+1448,338,Doorbell not working,Medium,2025-04-09,In Progress
+1449,240,Clogged drain,High,2025-11-16,Open
+1450,337,Heater not working,Medium,2025-01-11,In Progress
+1451,164,Roof leak,High,2025-10-29,Closed
+1452,281,Roof leak,Low,2025-05-25,In Progress
+1453,164,Clogged drain,Medium,2025-11-10,Closed
+1454,101,Pest control,Low,2025-04-09,In Progress
+1455,258,Mold in bathroom,High,2025-11-27,In Progress
+1456,386,Painting required,Low,2025-08-12,Closed
+1457,302,Mold in bathroom,Low,2025-10-13,Open
+1458,326,Noise complaint,Low,2025-03-08,Closed
+1459,193,Noise complaint,Medium,2025-11-11,Open
+1460,391,Broken window,Low,2025-10-26,In Progress
+1461,274,Doorbell not working,Low,2025-03-18,In Progress
+1462,155,No hot water,Medium,2025-09-21,Open
+1463,200,Leaky faucet,Low,2025-03-15,Closed
+1464,181,Mold in bathroom,High,2025-08-22,Closed
+1465,186,Leaky faucet,High,2025-06-04,In Progress
+1466,140,Faulty door lock,High,2025-11-11,In Progress
+1467,309,Heater not working,Medium,2025-12-04,Open
+1468,240,Clogged drain,High,2025-06-23,Closed
+1469,346,Light fixture flickering,Low,2025-07-25,Closed
+1470,137,Doorbell not working,Medium,2025-10-31,Closed
+1471,242,Heater not working,Low,2025-10-18,Closed
+1472,225,Heater not working,Low,2025-05-31,Open
+1473,160,Noise complaint,Medium,2025-03-25,In Progress
+1474,363,No hot water,Low,2025-05-05,In Progress
+1475,261,No hot water,Medium,2025-09-11,Closed
+1476,248,Air conditioning not cooling,High,2025-01-08,Open
+1477,270,Garage door malfunction,Medium,2025-01-06,In Progress
+1478,227,Air conditioning not cooling,Medium,2025-11-23,Closed
+1479,195,Light fixture flickering,Low,2025-08-27,Open
+1480,274,Painting required,Low,2025-01-27,Closed
+1481,212,Garage door malfunction,Low,2025-12-29,In Progress
+1482,334,Faulty door lock,Medium,2025-11-08,Closed
+1483,172,No hot water,Low,2025-07-02,Open
+1484,354,Garage door malfunction,Low,2025-08-22,Open
+1485,315,Faulty door lock,Low,2025-03-25,Open
+1486,266,Faulty door lock,High,2025-10-19,Closed
+1487,284,Mold in bathroom,Low,2025-02-21,Open
+1488,238,Pest control,Medium,2025-05-14,In Progress
+1489,351,Mold in bathroom,High,2025-12-18,Open
+1490,172,Leaky faucet,Medium,2025-01-23,Open
+1491,400,Faulty door lock,Low,2025-12-29,Closed
+1492,349,Heater not working,Medium,2025-04-30,In Progress
+1493,126,Roof leak,High,2025-09-06,In Progress
+1494,348,Air conditioning not cooling,Low,2025-05-29,Closed
+1495,216,Doorbell not working,Low,2025-03-27,Closed
+1496,116,Roof leak,Low,2025-02-13,In Progress
+1497,162,Doorbell not working,Medium,2025-09-17,Open
+1498,207,Air conditioning not cooling,Medium,2025-11-15,Open
+1499,341,Broken window,Low,2025-10-11,Closed
+1500,181,Air conditioning not cooling,Medium,2025-03-06,In Progress
+1501,222,Doorbell not working,High,2025-06-19,Closed
+1502,368,Air conditioning not cooling,Low,2025-05-31,In Progress
+1503,131,Faulty door lock,Medium,2025-04-10,Closed
+1504,289,No hot water,Medium,2025-01-28,In Progress
+1505,192,Air conditioning not cooling,Medium,2025-07-27,Open
+1506,322,Mold in bathroom,Medium,2025-07-03,In Progress
+1507,313,Noise complaint,Medium,2025-01-18,In Progress
+1508,398,Air conditioning not cooling,Low,2025-05-01,In Progress
+1509,289,Noise complaint,High,2025-06-01,In Progress
+1510,209,Broken window,Low,2025-02-03,Closed
+1511,240,Mold in bathroom,Medium,2025-06-06,In Progress
+1512,357,Roof leak,Low,2025-02-07,In Progress
+1513,138,Doorbell not working,Low,2025-12-12,Open
+1514,206,Light fixture flickering,High,2025-06-26,In Progress
+1515,333,Clogged drain,Medium,2025-04-21,Open
+1516,192,Heater not working,Low,2025-11-04,Closed
+1517,400,Air conditioning not cooling,Low,2025-12-20,In Progress
+1518,226,Noise complaint,Low,2025-12-19,In Progress
+1519,202,Broken window,Low,2025-03-19,Closed
+1520,262,Painting required,Medium,2025-06-12,In Progress
+1521,290,Mold in bathroom,Low,2025-04-18,Open
+1522,154,Heater not working,High,2025-03-12,Closed
+1523,131,Painting required,Medium,2025-05-15,Closed
+1524,128,Leaky faucet,Medium,2025-03-22,Open
+1525,363,Doorbell not working,High,2025-04-12,In Progress
+1526,322,Noise complaint,Medium,2025-03-19,Open
+1527,226,Mold in bathroom,High,2025-09-27,Closed
+1528,377,Garage door malfunction,Medium,2025-10-30,Closed
+1529,367,Painting required,Low,2025-11-08,In Progress
+1530,357,Clogged drain,Medium,2025-10-14,Closed
+1531,191,Heater not working,Low,2025-12-29,Closed
+1532,222,Clogged drain,Low,2025-02-10,Closed
+1533,296,Garage door malfunction,Medium,2025-02-26,Closed
+1534,184,Broken window,High,2025-11-20,In Progress
+1535,141,Doorbell not working,High,2025-07-03,Open
+1536,190,Air conditioning not cooling,Low,2025-05-27,Closed
+1537,237,Pest control,Medium,2025-11-28,In Progress
+1538,143,Roof leak,Low,2025-02-09,Open
+1539,381,Clogged drain,Low,2025-09-20,Open
+1540,307,Leaky faucet,High,2025-08-28,Open
+1541,161,Roof leak,Low,2025-08-02,Closed
+1542,378,Pest control,High,2025-01-23,In Progress
+1543,144,Faulty door lock,Low,2025-07-21,Open
+1544,347,Faulty door lock,High,2025-08-07,Closed
+1545,115,Roof leak,High,2025-03-14,Closed
+1546,246,Leaky faucet,High,2025-09-01,Closed
+1547,294,Painting required,High,2025-03-11,Closed
+1548,233,Garage door malfunction,Low,2025-10-20,In Progress
+1549,391,Mold in bathroom,Low,2025-05-26,Open
+1550,237,Light fixture flickering,Medium,2025-11-15,In Progress
+1551,303,Heater not working,Medium,2025-02-15,Closed
+1552,250,Air conditioning not cooling,Low,2025-11-04,In Progress
+1553,223,Heater not working,Medium,2025-06-14,Closed
+1554,208,Air conditioning not cooling,Low,2025-11-11,Closed
+1555,192,Painting required,Medium,2025-08-18,Closed
+1556,221,Broken window,Medium,2025-02-16,Closed
+1557,327,Mold in bathroom,Low,2025-07-27,Open
+1558,118,Painting required,Medium,2025-07-23,In Progress
+1559,272,Doorbell not working,High,2025-03-03,Open
+1560,249,Light fixture flickering,Low,2025-05-01,In Progress
+1561,366,Heater not working,Medium,2025-05-21,Closed
+1562,295,Light fixture flickering,High,2025-12-04,In Progress
+1563,102,Clogged drain,Low,2025-10-21,In Progress
+1564,372,Garage door malfunction,Low,2025-12-29,Closed
+1565,258,Garage door malfunction,Low,2025-01-13,In Progress
+1566,387,Faulty door lock,Low,2025-09-01,In Progress
+1567,359,Garage door malfunction,Low,2025-11-15,Open
+1568,224,Air conditioning not cooling,Low,2025-09-25,In Progress
+1569,369,Heater not working,High,2025-11-02,Open
+1570,357,Noise complaint,Medium,2025-11-18,Closed
+1571,339,Doorbell not working,Low,2025-03-07,Open
+1572,198,Heater not working,Low,2025-09-17,Open
+1573,348,Painting required,Low,2025-01-27,Closed
+1574,365,Mold in bathroom,Low,2025-01-01,Open
+1575,388,Air conditioning not cooling,Low,2025-09-26,Closed
+1576,129,No hot water,Low,2025-09-30,In Progress
+1577,207,Pest control,Low,2025-04-14,In Progress
+1578,351,Leaky faucet,High,2025-05-06,In Progress
+1579,112,Heater not working,Medium,2025-09-09,Closed
+1580,250,Garage door malfunction,Low,2025-10-09,Open
+1581,339,No hot water,Medium,2025-07-31,Open
+1582,165,Leaky faucet,High,2025-07-10,Open
+1583,329,Clogged drain,Low,2025-10-07,In Progress
+1584,267,Air conditioning not cooling,Low,2025-11-08,Closed
+1585,297,Pest control,Low,2025-06-12,Closed
+1586,159,Broken window,Medium,2025-12-09,In Progress
+1587,149,Faulty door lock,High,2025-12-29,In Progress
+1588,125,Clogged drain,High,2025-04-12,In Progress
+1589,112,No hot water,Medium,2025-09-10,In Progress
+1590,224,Garage door malfunction,High,2025-06-29,Open
+1591,276,Heater not working,Low,2025-08-14,Closed
+1592,103,Roof leak,Medium,2025-12-17,Closed
+1593,107,No hot water,Medium,2025-02-16,Open
+1594,313,Leaky faucet,Medium,2025-11-25,Closed
+1595,218,Heater not working,Low,2025-04-22,Closed
+1596,131,Mold in bathroom,Low,2025-01-10,Closed
+1597,399,Air conditioning not cooling,Medium,2025-08-22,Open
+1598,115,Roof leak,Low,2025-07-15,Closed
+1599,144,Leaky faucet,Medium,2025-09-27,Open
+1600,353,Painting required,High,2025-08-03,Closed
+1601,233,Broken window,Medium,2025-12-08,Closed
+1602,191,Faulty door lock,Low,2025-01-02,Closed
+1603,322,Mold in bathroom,Low,2025-07-21,In Progress
+1604,317,Pest control,High,2025-10-24,Open
+1605,334,Heater not working,Medium,2025-04-12,Open
+1606,296,Mold in bathroom,Medium,2025-04-27,Open
+1607,132,Air conditioning not cooling,Low,2025-12-26,Open
+1608,109,Mold in bathroom,Low,2025-04-05,Closed
+1609,339,Noise complaint,Low,2025-02-18,In Progress
+1610,214,Light fixture flickering,Low,2025-08-29,In Progress
+1611,252,Doorbell not working,Medium,2025-12-21,In Progress
+1612,374,Mold in bathroom,Low,2025-09-01,In Progress
+1613,390,No hot water,Low,2025-02-07,Closed
+1614,106,Air conditioning not cooling,Low,2025-11-16,Closed
+1615,270,Pest control,Medium,2025-04-27,In Progress
+1616,373,Noise complaint,Low,2025-04-06,In Progress
+1617,333,No hot water,Low,2025-02-13,In Progress
+1618,278,Painting required,Medium,2025-03-02,Open
+1619,197,Broken window,High,2025-04-01,Open
+1620,169,Garage door malfunction,Low,2025-04-10,Open
+1621,217,Mold in bathroom,Medium,2025-06-15,In Progress
+1622,303,Noise complaint,High,2025-10-10,Open
+1623,201,No hot water,Low,2025-08-16,Open
+1624,276,Pest control,High,2025-05-18,Open
+1625,125,Light fixture flickering,High,2025-10-15,Open
+1626,205,Faulty door lock,Low,2025-10-23,In Progress
+1627,222,Garage door malfunction,Medium,2025-10-03,Closed
+1628,126,Clogged drain,Low,2025-01-07,Open
+1629,177,Pest control,Low,2025-07-13,In Progress
+1630,112,Faulty door lock,High,2025-10-12,Closed
+1631,149,Painting required,Low,2025-01-26,Closed
+1632,180,Heater not working,Low,2025-09-23,In Progress
+1633,191,Noise complaint,Medium,2025-02-16,In Progress
+1634,304,Faulty door lock,High,2025-05-29,Closed
+1635,372,Roof leak,Medium,2025-02-06,Closed
+1636,244,Garage door malfunction,Medium,2025-04-10,Open
+1637,234,Mold in bathroom,Low,2025-10-01,In Progress
+1638,377,Clogged drain,High,2025-12-02,Closed
+1639,317,Faulty door lock,Low,2025-10-07,Closed
+1640,195,Pest control,Low,2025-07-16,Closed
+1641,383,Heater not working,Medium,2025-05-09,In Progress
+1642,355,Roof leak,High,2025-03-10,Closed
+1643,353,Clogged drain,Low,2025-04-03,In Progress
+1644,248,Mold in bathroom,Low,2025-02-05,Open
+1645,191,Heater not working,Low,2025-10-26,Open
+1646,193,Roof leak,Medium,2025-01-08,Closed
+1647,197,Clogged drain,Low,2025-02-05,In Progress
+1648,127,Noise complaint,Low,2025-06-02,Open
+1649,201,Leaky faucet,Medium,2025-06-13,In Progress
+1650,193,Light fixture flickering,High,2025-04-15,Closed
+1651,320,Broken window,High,2025-08-15,Closed
+1652,111,Broken window,High,2025-12-19,Open
+1653,369,Doorbell not working,Low,2025-01-29,Closed
+1654,215,Broken window,Medium,2025-07-07,Open
+1655,203,Pest control,Low,2025-10-26,In Progress
+1656,230,Doorbell not working,High,2025-11-11,Open
+1657,213,Leaky faucet,Medium,2025-03-18,Open
+1658,366,Doorbell not working,Medium,2025-12-06,Open
+1659,385,Leaky faucet,Low,2025-03-25,In Progress
+1660,208,Noise complaint,High,2025-02-07,Closed
+1661,350,Leaky faucet,High,2025-09-09,In Progress
+1662,306,No hot water,Low,2025-07-08,In Progress
+1663,396,Light fixture flickering,High,2025-03-16,Open
+1664,112,Leaky faucet,Medium,2025-04-17,Open
+1665,175,Broken window,High,2025-02-17,Open
+1666,191,Clogged drain,Low,2025-06-30,Closed
+1667,338,Air conditioning not cooling,Medium,2025-07-01,In Progress
+1668,129,No hot water,Medium,2025-11-23,In Progress
+1669,219,Mold in bathroom,High,2025-03-29,In Progress
+1670,334,Roof leak,Medium,2025-06-02,Closed
+1671,210,Pest control,Low,2025-06-24,In Progress
+1672,306,Faulty door lock,Low,2025-05-31,Open
+1673,282,Doorbell not working,Low,2025-04-03,Open
+1674,241,Air conditioning not cooling,High,2025-07-19,In Progress
+1675,390,Air conditioning not cooling,Low,2025-06-23,In Progress
+1676,375,Air conditioning not cooling,Medium,2025-11-03,Open
+1677,275,Garage door malfunction,Medium,2025-01-26,Closed
+1678,290,Heater not working,Low,2025-02-17,Closed
+1679,231,Painting required,Medium,2025-03-21,Open
+1680,395,Painting required,Medium,2025-07-25,In Progress
+1681,224,No hot water,Medium,2025-12-25,Closed
+1682,233,Heater not working,High,2025-05-02,Open
+1683,158,Broken window,Low,2025-12-09,Open
+1684,343,Clogged drain,Low,2025-01-06,Open
+1685,101,No hot water,Low,2025-12-15,Closed
+1686,196,Pest control,Low,2025-06-10,In Progress
+1687,374,Clogged drain,Low,2025-04-12,Open
+1688,316,Pest control,Medium,2025-08-29,Closed
+1689,277,Pest control,Medium,2025-05-01,Open
+1690,286,Noise complaint,Low,2025-09-26,Open
+1691,266,Pest control,Low,2025-07-23,Closed
+1692,354,Clogged drain,Medium,2025-06-08,Closed
+1693,261,Leaky faucet,Medium,2025-10-17,Closed
+1694,298,Mold in bathroom,Medium,2025-07-17,In Progress
+1695,206,No hot water,High,2025-04-30,In Progress
+1696,157,Painting required,Low,2025-03-28,Closed
+1697,126,Roof leak,High,2025-10-05,Closed
+1698,201,Leaky faucet,Low,2025-06-12,Open
+1699,180,Leaky faucet,Low,2025-01-23,Closed
+1700,319,Roof leak,Medium,2025-09-09,Closed
+1701,183,No hot water,Low,2025-09-03,Closed
+1702,266,Broken window,Low,2025-10-08,Open
+1703,280,Mold in bathroom,Low,2025-10-17,In Progress
+1704,117,Doorbell not working,Low,2025-05-06,Open
+1705,291,Clogged drain,Low,2025-05-10,Closed
+1706,375,Mold in bathroom,Low,2025-01-05,In Progress
+1707,160,Broken window,Low,2025-07-08,Open
+1708,198,Garage door malfunction,Low,2025-07-15,Closed
+1709,310,Painting required,Low,2025-09-04,In Progress
+1710,339,Mold in bathroom,Low,2025-05-31,Open
+1711,281,Garage door malfunction,Medium,2025-12-27,Closed
+1712,207,Air conditioning not cooling,Low,2025-09-04,In Progress
+1713,259,Heater not working,Low,2025-03-18,In Progress
+1714,165,Air conditioning not cooling,Low,2025-12-02,In Progress
+1715,313,Light fixture flickering,High,2025-07-23,In Progress
+1716,355,No hot water,Low,2025-06-12,In Progress
+1717,219,Roof leak,Low,2025-06-18,Closed
+1718,172,Doorbell not working,Low,2025-08-31,In Progress
+1719,344,Faulty door lock,High,2025-05-31,In Progress
+1720,230,Painting required,Low,2025-05-29,Open
+1721,260,Broken window,Medium,2025-04-11,In Progress
+1722,396,Garage door malfunction,High,2025-04-11,Closed
+1723,362,Faulty door lock,Medium,2025-06-03,Closed
+1724,160,Painting required,High,2025-01-10,In Progress
+1725,303,Noise complaint,Medium,2025-04-03,Closed
+1726,343,Painting required,Medium,2025-06-28,Open
+1727,288,Clogged drain,Low,2025-11-29,Open
+1728,289,Pest control,Low,2025-02-06,Open
+1729,228,Mold in bathroom,Medium,2025-11-29,In Progress
+1730,331,Pest control,Low,2025-04-18,In Progress
+1731,133,Garage door malfunction,High,2025-01-14,Closed
+1732,288,Garage door malfunction,Low,2025-08-13,Open
+1733,358,Mold in bathroom,Low,2025-05-17,In Progress
+1734,132,No hot water,Low,2025-02-13,In Progress
+1735,351,Painting required,High,2025-03-18,Closed
+1736,207,Heater not working,Low,2025-02-03,Open
+1737,138,Doorbell not working,Low,2025-12-06,Open
+1738,398,Heater not working,High,2025-05-11,In Progress
+1739,381,Light fixture flickering,Low,2025-12-18,In Progress
+1740,117,Air conditioning not cooling,Low,2025-09-25,Closed
+1741,131,Painting required,High,2025-05-11,In Progress
+1742,326,Noise complaint,Medium,2025-11-18,Open
+1743,389,Light fixture flickering,High,2025-11-21,Open
+1744,241,Heater not working,Low,2025-06-20,In Progress
+1745,376,Pest control,Medium,2025-06-30,In Progress
+1746,200,Mold in bathroom,Low,2025-08-29,Open
+1747,288,Noise complaint,Low,2025-05-18,Closed
+1748,342,Broken window,Medium,2025-04-13,Open
+1749,231,Roof leak,Low,2025-07-20,Closed
+1750,371,Pest control,Low,2025-09-18,In Progress
+1751,335,Heater not working,Low,2025-10-08,Open
+1752,321,Heater not working,Medium,2025-07-18,Open
+1753,369,No hot water,High,2025-03-04,Closed
+1754,354,Broken window,Medium,2025-07-28,Open
+1755,245,No hot water,Low,2025-02-19,In Progress
+1756,192,Roof leak,Medium,2025-07-12,Closed
+1757,301,Heater not working,High,2025-03-25,In Progress
+1758,161,Air conditioning not cooling,Low,2025-07-05,Open
+1759,118,Leaky faucet,Low,2025-08-19,Open
+1760,201,Heater not working,Medium,2025-09-24,Closed
+1761,261,Air conditioning not cooling,Medium,2025-11-24,Open
+1762,359,Clogged drain,Low,2025-02-07,Closed
+1763,232,Noise complaint,Low,2025-07-11,Closed
+1764,352,Air conditioning not cooling,High,2025-08-07,In Progress
+1765,237,Clogged drain,High,2025-03-01,Open
+1766,310,Roof leak,Low,2025-01-25,Closed
+1767,361,Pest control,High,2025-02-12,In Progress
+1768,260,Light fixture flickering,Low,2025-09-05,Closed
+1769,290,Painting required,Low,2025-04-28,Open
+1770,305,Painting required,High,2025-07-07,Open
+1771,298,Mold in bathroom,Low,2025-03-31,In Progress
+1772,179,Painting required,High,2025-03-05,Closed
+1773,116,Noise complaint,High,2025-09-06,In Progress
+1774,178,No hot water,Low,2025-08-14,Closed
+1775,181,Heater not working,Medium,2025-03-03,Open
+1776,187,Noise complaint,Low,2025-02-20,Closed
+1777,285,Mold in bathroom,Low,2025-08-28,Open
+1778,109,Garage door malfunction,Medium,2025-07-10,Closed
+1779,128,Roof leak,Low,2025-09-28,Closed
+1780,327,Noise complaint,Medium,2025-02-25,In Progress
+1781,245,Broken window,Low,2025-11-02,Closed
+1782,389,Mold in bathroom,High,2025-01-26,Closed
+1783,350,Broken window,Low,2025-09-08,In Progress
+1784,362,Faulty door lock,Low,2025-09-25,Closed
+1785,321,Mold in bathroom,Medium,2025-09-08,In Progress
+1786,324,No hot water,Medium,2025-03-30,In Progress
+1787,172,Roof leak,Low,2025-09-14,In Progress
+1788,282,Broken window,High,2025-05-27,In Progress
+1789,252,Garage door malfunction,High,2025-07-10,In Progress
+1790,243,Doorbell not working,Medium,2025-04-01,In Progress
+1791,264,Garage door malfunction,Low,2025-06-11,Open
+1792,139,Noise complaint,Low,2025-05-27,Open
+1793,168,Garage door malfunction,Low,2025-03-06,In Progress
+1794,265,Garage door malfunction,High,2025-01-26,In Progress
+1795,327,Doorbell not working,Low,2025-10-22,Closed
+1796,229,Clogged drain,Low,2025-05-22,In Progress
+1797,155,Noise complaint,Low,2025-04-15,In Progress
+1798,244,Doorbell not working,Medium,2025-06-16,Open
+1799,128,Broken window,Low,2025-06-02,In Progress
+1800,168,Painting required,Low,2025-02-27,Closed
+1801,306,No hot water,Low,2025-12-11,Open
+1802,244,Leaky faucet,Low,2025-06-19,Closed
+1803,330,Heater not working,Medium,2025-08-01,Closed
+1804,337,Air conditioning not cooling,Low,2025-04-26,Open
+1805,222,Air conditioning not cooling,Low,2025-06-15,Closed
+1806,307,Faulty door lock,Low,2025-10-20,In Progress
+1807,172,Clogged drain,Low,2025-01-09,Closed
+1808,378,Painting required,High,2025-01-26,Closed
+1809,161,Garage door malfunction,High,2025-05-03,Open
+1810,344,Air conditioning not cooling,Medium,2025-12-27,In Progress
+1811,191,Heater not working,Low,2025-03-19,Closed
+1812,212,Mold in bathroom,High,2025-11-01,Open
+1813,247,Painting required,Low,2025-02-26,In Progress
+1814,276,Light fixture flickering,Low,2025-10-06,Open
+1815,395,Clogged drain,Low,2025-09-02,In Progress
+1816,308,Mold in bathroom,Low,2025-03-07,Closed
+1817,366,No hot water,Low,2025-12-02,Open
+1818,121,Noise complaint,Low,2025-09-13,Closed
+1819,219,Pest control,Low,2025-05-17,Open
+1820,126,Leaky faucet,Low,2025-02-18,Closed
+1821,130,Painting required,High,2025-12-01,In Progress
+1822,164,Pest control,Low,2025-12-11,Open
+1823,161,No hot water,Low,2025-08-09,Open
+1824,369,Pest control,Medium,2025-05-23,In Progress
+1825,346,Pest control,Low,2025-10-03,Open
+1826,309,Noise complaint,Low,2025-12-18,In Progress
+1827,254,No hot water,Medium,2025-01-27,Open
+1828,327,Leaky faucet,Low,2025-06-29,Open
+1829,362,Leaky faucet,High,2025-08-06,In Progress
+1830,363,Leaky faucet,Medium,2025-06-05,In Progress
+1831,214,No hot water,Low,2025-02-09,Closed
+1832,105,Noise complaint,High,2025-10-29,In Progress
+1833,119,Heater not working,High,2025-12-29,Open
+1834,226,Heater not working,High,2025-12-25,In Progress
+1835,231,Leaky faucet,High,2025-03-27,Closed
+1836,365,Broken window,Medium,2025-11-17,Open
+1837,288,Roof leak,Medium,2025-05-05,Closed
+1838,215,Light fixture flickering,Low,2025-07-29,In Progress
+1839,360,Painting required,Medium,2025-12-13,Closed
+1840,161,Roof leak,Medium,2025-06-05,Closed
+1841,284,Noise complaint,High,2025-07-28,In Progress
+1842,237,Roof leak,Medium,2025-09-05,Closed
+1843,194,Garage door malfunction,Low,2025-06-15,In Progress
+1844,295,Garage door malfunction,Low,2025-01-08,Closed
+1845,308,Faulty door lock,Low,2025-06-12,Open
+1846,172,Air conditioning not cooling,Medium,2025-01-21,In Progress
+1847,136,Heater not working,Low,2025-11-21,In Progress
+1848,256,Garage door malfunction,Low,2025-08-22,Closed
+1849,323,Broken window,Medium,2025-05-29,Closed
+1850,187,Air conditioning not cooling,Medium,2025-07-17,In Progress
+1851,107,Garage door malfunction,Low,2025-08-19,In Progress
+1852,375,Mold in bathroom,High,2025-03-10,Closed
+1853,293,Heater not working,Low,2025-10-19,Closed
+1854,349,Pest control,Low,2025-08-27,Closed
+1855,259,Broken window,Low,2025-04-06,Open
+1856,167,Painting required,Low,2025-11-02,Closed
+1857,353,No hot water,High,2025-02-11,Closed
+1858,167,Leaky faucet,High,2025-03-09,Open
+1859,200,Leaky faucet,Low,2025-05-04,In Progress
+1860,198,Light fixture flickering,Low,2025-10-08,In Progress
+1861,302,Broken window,Low,2025-05-06,Closed
+1862,118,Garage door malfunction,Low,2025-04-06,Open
+1863,281,Leaky faucet,High,2025-02-23,Open
+1864,140,Heater not working,Low,2025-03-21,Open
+1865,204,Painting required,Low,2025-06-30,Open
+1866,149,No hot water,Low,2025-03-27,Closed
+1867,267,No hot water,Medium,2025-08-11,Open
+1868,291,Pest control,Medium,2025-12-16,Closed
+1869,216,Clogged drain,Low,2025-08-23,In Progress
+1870,199,Air conditioning not cooling,High,2025-01-15,Closed
+1871,351,Painting required,Low,2025-10-01,Open
+1872,126,Air conditioning not cooling,Medium,2025-09-22,In Progress
+1873,118,Roof leak,Low,2025-10-11,In Progress
+1874,195,Noise complaint,Low,2025-01-29,Closed
+1875,362,Mold in bathroom,Low,2025-12-05,Closed
+1876,201,Pest control,High,2025-03-08,Closed
+1877,107,Noise complaint,High,2025-01-05,Closed
+1878,169,Doorbell not working,Medium,2025-01-14,Closed
+1879,128,Air conditioning not cooling,Low,2025-10-12,In Progress
+1880,132,Doorbell not working,Low,2025-01-03,In Progress
+1881,390,Broken window,Low,2025-10-17,In Progress
+1882,120,Light fixture flickering,Low,2025-01-27,Open
+1883,318,Roof leak,High,2025-01-20,Open
+1884,250,No hot water,Low,2025-06-27,Open
+1885,258,Air conditioning not cooling,Low,2025-03-16,Closed
+1886,376,Broken window,Medium,2025-12-26,Open
+1887,166,Painting required,Low,2025-10-25,Open
+1888,221,Faulty door lock,High,2025-02-24,In Progress
+1889,340,Clogged drain,High,2025-07-28,Open
+1890,212,Faulty door lock,Low,2025-05-02,Closed
+1891,238,Pest control,Low,2025-06-15,In Progress
+1892,224,Broken window,High,2025-04-27,Closed
+1893,269,Broken window,Low,2025-12-31,Open
+1894,394,Doorbell not working,Low,2025-01-14,In Progress
+1895,140,Clogged drain,High,2025-05-23,In Progress
+1896,351,No hot water,Medium,2025-04-06,Closed
+1897,285,Light fixture flickering,Medium,2025-07-11,In Progress
+1898,324,Noise complaint,Low,2025-03-26,In Progress
+1899,201,Roof leak,High,2025-08-31,Closed
+1900,379,Pest control,Low,2025-11-12,In Progress
+1901,342,No hot water,High,2025-06-14,Open
+1902,176,Leaky faucet,Low,2025-10-06,Open
+1903,167,Leaky faucet,High,2025-02-03,Closed
+1904,300,Pest control,Low,2025-03-16,Open
+1905,387,Faulty door lock,Low,2025-01-20,In Progress
+1906,273,Heater not working,Low,2025-09-16,Open
+1907,375,Roof leak,Low,2025-02-22,Closed
+1908,271,Mold in bathroom,Medium,2025-02-02,Open
+1909,328,Roof leak,Medium,2025-07-26,Open
+1910,342,Broken window,High,2025-07-14,In Progress
+1911,307,Roof leak,Low,2025-05-02,Open
+1912,132,No hot water,High,2025-09-29,In Progress
+1913,257,Leaky faucet,Low,2025-07-30,Open
+1914,110,Doorbell not working,Medium,2025-04-18,Closed
+1915,251,No hot water,Low,2025-08-11,Open
+1916,296,Mold in bathroom,Medium,2025-08-25,Closed
+1917,264,Leaky faucet,Low,2025-06-15,Closed
+1918,288,Roof leak,Low,2025-12-27,Closed
+1919,162,Air conditioning not cooling,Medium,2025-09-23,In Progress
+1920,209,No hot water,High,2025-08-18,Open
+1921,338,Clogged drain,High,2025-01-15,In Progress
+1922,125,Light fixture flickering,Low,2025-11-06,Open
+1923,265,Broken window,Low,2025-09-20,Open
+1924,165,Clogged drain,Medium,2025-06-25,Open
+1925,113,Doorbell not working,Low,2025-09-18,Open
+1926,214,Mold in bathroom,Low,2025-02-22,Open
+1927,298,Clogged drain,Low,2025-11-16,In Progress
+1928,364,Air conditioning not cooling,High,2025-03-18,In Progress
+1929,227,Heater not working,Medium,2025-10-19,Closed
+1930,209,Painting required,High,2025-05-13,Closed
+1931,330,Pest control,Low,2025-01-09,Closed
+1932,274,Light fixture flickering,Medium,2025-09-22,Open
+1933,362,Painting required,Low,2025-02-02,Open
+1934,312,Air conditioning not cooling,High,2025-10-10,In Progress
+1935,253,Noise complaint,Low,2025-06-06,In Progress
+1936,256,Faulty door lock,Low,2025-05-17,In Progress
+1937,343,Pest control,Low,2025-07-09,Open
+1938,386,Pest control,Low,2025-12-10,Closed
+1939,380,No hot water,Low,2025-02-04,Closed
+1940,226,Faulty door lock,High,2025-12-09,Closed
+1941,338,No hot water,Medium,2025-06-07,In Progress
+1942,133,Pest control,High,2025-10-22,Closed
+1943,375,No hot water,Low,2025-10-02,Open
+1944,358,Clogged drain,Low,2025-03-18,Closed
+1945,225,Leaky faucet,High,2025-12-05,In Progress
+1946,305,Doorbell not working,Medium,2025-06-15,In Progress
+1947,354,Heater not working,Low,2025-02-08,Closed
+1948,110,Doorbell not working,Low,2025-11-19,Closed
+1949,388,Leaky faucet,Low,2025-07-30,Open
+1950,319,Leaky faucet,Medium,2025-12-13,In Progress
+1951,365,Mold in bathroom,Medium,2025-07-03,Open
+1952,170,Heater not working,Medium,2025-01-21,Open
+1953,347,Light fixture flickering,Low,2025-05-07,Open
+1954,184,Air conditioning not cooling,Medium,2025-04-24,Closed
+1955,287,Noise complaint,High,2025-08-19,In Progress
+1956,177,Leaky faucet,Medium,2025-05-02,In Progress
+1957,391,Broken window,Low,2025-05-03,Closed
+1958,168,Clogged drain,Low,2025-06-26,In Progress
+1959,353,Mold in bathroom,High,2025-05-18,In Progress
+1960,253,Heater not working,Medium,2025-06-08,Closed
+1961,188,Light fixture flickering,Low,2025-04-02,Open
+1962,266,Light fixture flickering,Medium,2025-03-10,Open
+1963,204,Broken window,Low,2025-06-29,Closed
+1964,387,Noise complaint,Low,2025-06-28,In Progress
+1965,357,Leaky faucet,Low,2025-04-28,Closed
+1966,156,No hot water,Medium,2025-01-19,Open
+1967,164,Mold in bathroom,Medium,2025-04-04,In Progress
+1968,252,Pest control,High,2025-07-31,Open
+1969,113,Heater not working,Low,2025-06-22,Open
+1970,107,Painting required,Low,2025-08-26,Open
+1971,272,Faulty door lock,High,2025-04-02,Closed
+1972,388,Light fixture flickering,Medium,2025-04-20,Open
+1973,203,Garage door malfunction,Medium,2025-03-15,Closed
+1974,130,Faulty door lock,Low,2025-05-21,In Progress
+1975,136,Painting required,Medium,2025-09-24,Open
+1976,185,Clogged drain,Medium,2025-12-02,Open
+1977,264,Roof leak,Medium,2025-03-03,Closed
+1978,367,Mold in bathroom,Medium,2025-06-04,Open
+1979,273,Faulty door lock,Low,2025-05-16,Open
+1980,196,Noise complaint,Low,2025-10-21,In Progress
+1981,389,Noise complaint,Medium,2025-05-22,Open
+1982,265,Pest control,Low,2025-07-20,In Progress
+1983,285,Clogged drain,Low,2025-12-14,Open
+1984,365,Noise complaint,Low,2025-04-29,Open
+1985,319,Light fixture flickering,Medium,2025-01-01,Open
+1986,138,Faulty door lock,High,2025-10-31,In Progress
+1987,309,Garage door malfunction,Medium,2025-03-21,Open
+1988,158,Roof leak,Low,2025-05-29,Closed
+1989,262,Broken window,Low,2025-09-13,Open
+1990,185,Light fixture flickering,Medium,2025-01-20,Closed
+1991,138,Pest control,Medium,2025-03-24,Open
+1992,350,Mold in bathroom,High,2025-06-05,In Progress
+1993,362,Air conditioning not cooling,High,2025-04-04,Open
+1994,298,Mold in bathroom,Low,2025-10-16,In Progress
+1995,184,No hot water,Low,2025-07-23,In Progress
+1996,158,Leaky faucet,Low,2025-07-17,Closed
+1997,127,Doorbell not working,Low,2025-02-02,Open
+1998,293,Broken window,Medium,2025-10-25,Closed
+1999,226,Light fixture flickering,High,2025-07-13,Closed
+2000,297,Painting required,Low,2025-08-18,Open
+2001,122,Garage door malfunction,High,2025-09-20,In Progress
+2002,276,Light fixture flickering,High,2025-01-01,In Progress
+2003,376,Mold in bathroom,Low,2025-04-09,Open
+2004,262,Noise complaint,Medium,2025-03-15,Closed
+2005,356,Mold in bathroom,Low,2025-04-26,Open
+2006,159,Pest control,High,2025-02-07,In Progress
+2007,372,Painting required,Low,2025-10-22,In Progress
+2008,254,Mold in bathroom,Low,2025-05-21,Open
+2009,128,Broken window,Medium,2025-07-02,In Progress
+2010,170,Pest control,Medium,2025-01-21,Open
+2011,388,Noise complaint,Low,2025-04-26,Open
+2012,145,Mold in bathroom,Medium,2025-03-10,Open
+2013,204,Light fixture flickering,Medium,2025-07-01,In Progress
+2014,169,Air conditioning not cooling,Low,2025-09-27,Open
+2015,376,Leaky faucet,Low,2025-10-29,Open
+2016,172,Doorbell not working,Low,2025-01-24,Closed
+2017,370,Painting required,Medium,2025-11-28,Open
+2018,218,Faulty door lock,High,2025-06-29,Closed
+2019,208,Leaky faucet,High,2025-02-09,In Progress
+2020,362,Air conditioning not cooling,Medium,2025-01-16,Open
+2021,267,Broken window,Low,2025-12-03,Open
+2022,205,Roof leak,Medium,2025-03-03,Open
+2023,152,Leaky faucet,Low,2025-04-15,Open
+2024,354,Faulty door lock,Low,2025-06-03,Closed
+2025,194,No hot water,Medium,2025-11-10,Open
+2026,165,Air conditioning not cooling,High,2025-12-31,Closed
+2027,155,Air conditioning not cooling,Low,2025-10-13,Open
+2028,141,Heater not working,Low,2025-12-26,In Progress
+2029,222,Heater not working,Medium,2025-08-04,Closed
+2030,142,Heater not working,High,2025-07-23,Closed
+2031,167,Pest control,High,2025-09-25,In Progress
+2032,299,Painting required,Low,2025-05-13,Closed
+2033,386,No hot water,High,2025-08-21,Open
+2034,177,Heater not working,Low,2025-07-24,Open
+2035,117,Painting required,Medium,2025-10-21,Closed
+2036,242,Faulty door lock,Medium,2025-07-25,Closed
+2037,132,Clogged drain,Low,2025-10-20,In Progress
+2038,273,Garage door malfunction,Medium,2025-06-21,In Progress
+2039,296,No hot water,High,2025-03-27,Closed
+2040,204,Broken window,Low,2025-11-22,Closed
+2041,305,Faulty door lock,Medium,2025-10-05,Closed
+2042,282,Mold in bathroom,High,2025-03-11,Open
+2043,289,Pest control,Medium,2025-02-26,In Progress
+2044,266,Broken window,Low,2025-03-29,Open
+2045,376,Leaky faucet,Medium,2025-05-10,Closed
+2046,157,Light fixture flickering,Low,2025-02-18,Open
+2047,180,Doorbell not working,Medium,2025-03-07,In Progress
+2048,346,Faulty door lock,Low,2025-08-15,Closed
+2049,389,Painting required,Low,2025-01-06,Closed
+2050,286,Broken window,Low,2025-07-16,In Progress
+2051,369,Faulty door lock,High,2025-08-24,In Progress
+2052,308,Roof leak,Low,2025-05-31,Closed
+2053,389,Roof leak,Medium,2025-05-16,Open
+2054,162,Light fixture flickering,Medium,2025-08-09,In Progress
+2055,319,Air conditioning not cooling,Medium,2025-11-29,Closed
+2056,235,Roof leak,Medium,2025-06-01,Closed
+2057,162,Roof leak,High,2025-08-11,Closed
+2058,354,Heater not working,Low,2025-11-15,Closed
+2059,291,Garage door malfunction,High,2025-03-05,Open
+2060,173,Pest control,Medium,2025-05-09,In Progress
+2061,308,Mold in bathroom,Low,2025-09-22,Closed
+2062,221,Doorbell not working,Medium,2025-05-06,Open
+2063,161,Leaky faucet,High,2025-12-24,In Progress
+2064,214,Doorbell not working,Medium,2025-03-13,Closed
+2065,220,Garage door malfunction,Medium,2025-10-08,Closed
+2066,385,Light fixture flickering,Low,2025-11-29,Closed
+2067,344,Air conditioning not cooling,Low,2025-06-06,In Progress
+2068,276,Faulty door lock,High,2025-05-16,Closed
+2069,373,Air conditioning not cooling,Low,2025-07-27,In Progress
+2070,200,Noise complaint,Low,2025-04-18,Closed
+2071,342,No hot water,High,2025-02-09,In Progress
+2072,323,Light fixture flickering,Medium,2025-01-12,In Progress
+2073,197,Air conditioning not cooling,Medium,2025-05-01,Open
+2074,303,Garage door malfunction,Medium,2025-08-30,Open
+2075,326,Clogged drain,Low,2025-12-11,Open
+2076,185,No hot water,Medium,2025-07-22,In Progress
+2077,145,Leaky faucet,Low,2025-12-22,In Progress
+2078,134,Faulty door lock,Medium,2025-08-02,Closed
+2079,341,Garage door malfunction,Medium,2025-06-10,In Progress
+2080,219,Doorbell not working,Medium,2025-09-11,In Progress
+2081,290,Roof leak,Low,2025-07-16,Open
+2082,186,Pest control,Medium,2025-02-06,Open
+2083,365,Painting required,High,2025-01-16,Closed
+2084,392,Leaky faucet,Medium,2025-12-10,Closed
+2085,173,Faulty door lock,High,2025-05-18,Closed
+2086,183,Heater not working,Low,2025-09-29,Open
+2087,361,Doorbell not working,Medium,2025-03-10,Closed
+2088,133,Clogged drain,Low,2025-08-14,In Progress
+2089,129,Painting required,Low,2025-08-06,Closed
+2090,333,Noise complaint,High,2025-07-24,Closed
+2091,342,Broken window,Medium,2025-11-29,Open
+2092,218,No hot water,High,2025-06-27,In Progress
+2093,157,Pest control,Medium,2025-10-28,Open
+2094,386,Light fixture flickering,Low,2025-01-27,Open
+2095,117,Doorbell not working,Low,2025-11-25,Closed
+2096,371,Air conditioning not cooling,High,2025-05-25,Open
+2097,215,Light fixture flickering,Low,2025-06-12,In Progress
+2098,173,Garage door malfunction,Low,2025-07-01,In Progress
+2099,375,Pest control,High,2025-04-01,Open
+2100,190,Faulty door lock,Low,2025-01-15,Closed
+2101,189,Air conditioning not cooling,High,2025-04-02,In Progress
+2102,101,Doorbell not working,Low,2025-08-12,In Progress
+2103,182,Clogged drain,Low,2025-12-04,In Progress
+2104,124,Roof leak,Medium,2025-04-19,In Progress
+2105,238,Noise complaint,Low,2025-07-05,In Progress
+2106,201,Doorbell not working,Low,2025-09-23,Open
+2107,378,Broken window,Low,2025-04-12,Open
+2108,185,Leaky faucet,Low,2025-09-19,In Progress
+2109,113,Doorbell not working,Medium,2025-01-25,In Progress
+2110,218,Mold in bathroom,Low,2025-07-23,In Progress
+2111,160,Garage door malfunction,Medium,2025-01-20,Closed
+2112,289,Painting required,High,2025-01-01,In Progress
+2113,178,Noise complaint,High,2025-06-29,Closed
+2114,272,Noise complaint,Medium,2025-08-18,In Progress
+2115,345,Faulty door lock,Medium,2025-11-22,In Progress
+2116,301,Broken window,Medium,2025-02-07,Closed
+2117,214,Broken window,Medium,2025-09-21,In Progress
+2118,185,Heater not working,High,2025-01-25,In Progress
+2119,239,Roof leak,Low,2025-04-27,Closed
+2120,288,Clogged drain,Medium,2025-11-30,In Progress
+2121,209,Air conditioning not cooling,Low,2025-04-28,Closed
+2122,305,Air conditioning not cooling,Low,2025-01-07,Closed
+2123,104,Clogged drain,High,2025-09-06,In Progress
+2124,336,Mold in bathroom,Low,2025-05-06,Open
+2125,136,Garage door malfunction,Low,2025-10-31,Open
+2126,197,Light fixture flickering,Low,2025-05-21,In Progress
+2127,253,Broken window,High,2025-03-18,In Progress
+2128,177,Clogged drain,Medium,2025-09-24,In Progress
+2129,148,Mold in bathroom,High,2025-11-05,Open
+2130,179,Broken window,Low,2025-05-19,Closed
+2131,396,Leaky faucet,Low,2025-01-08,Closed
+2132,225,Faulty door lock,Medium,2025-10-29,Closed
+2133,147,Mold in bathroom,High,2025-07-15,Closed
+2134,230,Faulty door lock,Low,2025-03-10,In Progress
+2135,365,Faulty door lock,Low,2025-05-01,Closed
+2136,309,Noise complaint,Low,2025-01-07,Open
+2137,214,Broken window,Medium,2025-08-01,Open
+2138,253,Air conditioning not cooling,Low,2025-04-24,In Progress
+2139,248,Pest control,Low,2025-07-07,Open
+2140,315,Light fixture flickering,Low,2025-03-01,Open
+2141,135,Air conditioning not cooling,High,2025-06-18,In Progress
+2142,153,Leaky faucet,Low,2025-09-30,Open
+2143,272,Roof leak,Low,2025-01-30,Closed
+2144,232,Mold in bathroom,High,2025-09-07,Closed
+2145,367,Doorbell not working,Medium,2025-01-10,Open
+2146,380,Noise complaint,Low,2025-06-14,Closed
+2147,281,Doorbell not working,Medium,2025-06-29,In Progress
+2148,182,Mold in bathroom,Low,2025-03-15,Open
+2149,308,Leaky faucet,Medium,2025-10-30,Closed
+2150,281,Leaky faucet,Low,2025-12-29,Open
+2151,196,Garage door malfunction,Medium,2025-05-30,Closed
+2152,188,Pest control,High,2025-01-14,Closed
+2153,346,Broken window,Low,2025-03-02,Closed
+2154,195,Mold in bathroom,Medium,2025-10-05,Closed
+2155,364,Doorbell not working,Low,2025-08-23,Open
+2156,122,Heater not working,Low,2025-10-02,Closed
+2157,346,Light fixture flickering,Low,2025-12-26,In Progress
+2158,271,Garage door malfunction,Low,2025-07-13,In Progress
+2159,175,Clogged drain,Low,2025-11-08,Closed
+2160,110,Heater not working,Low,2025-10-01,In Progress
+2161,379,Mold in bathroom,Low,2025-04-19,Closed
+2162,202,Mold in bathroom,Low,2025-05-07,Open
+2163,312,Mold in bathroom,Low,2025-09-03,Closed
+2164,124,Light fixture flickering,Low,2025-04-29,Open
+2165,179,Doorbell not working,Medium,2025-03-27,Closed
+2166,399,Garage door malfunction,High,2025-04-01,Closed
+2167,112,Doorbell not working,Low,2025-10-21,In Progress
+2168,222,Pest control,High,2025-10-17,Open
+2169,229,Leaky faucet,Low,2025-12-12,In Progress
+2170,168,Clogged drain,Medium,2025-05-22,Open
+2171,112,Light fixture flickering,Low,2025-11-09,Closed
+2172,112,Doorbell not working,Low,2025-02-22,Open
+2173,197,Doorbell not working,Low,2025-05-05,Open
+2174,247,Doorbell not working,High,2025-10-04,Closed
+2175,317,Heater not working,Low,2025-05-02,In Progress
+2176,113,Heater not working,Medium,2025-04-05,Closed
+2177,301,Noise complaint,Low,2025-02-14,Open
+2178,158,Leaky faucet,Medium,2025-02-27,Closed
+2179,179,No hot water,Low,2025-08-29,Closed
+2180,292,Painting required,High,2025-08-11,In Progress
+2181,156,Clogged drain,Medium,2025-05-20,Closed
+2182,220,Painting required,Low,2025-08-06,Closed
+2183,342,Faulty door lock,Low,2025-08-27,Open
+2184,141,Air conditioning not cooling,Low,2025-07-04,In Progress
+2185,263,Noise complaint,High,2025-04-20,In Progress
+2186,340,Roof leak,Low,2025-08-08,Closed
+2187,298,Pest control,Low,2025-01-25,Closed
+2188,231,Faulty door lock,Medium,2025-08-14,Closed
+2189,262,No hot water,Low,2025-11-03,Open
+2190,145,Leaky faucet,Low,2025-04-07,Closed
+2191,291,Faulty door lock,High,2025-05-12,Closed
+2192,219,No hot water,Medium,2025-07-25,Open
+2193,386,Mold in bathroom,Medium,2025-02-25,In Progress
+2194,262,Leaky faucet,Low,2025-04-11,Open
+2195,181,Air conditioning not cooling,Low,2025-05-09,Closed
+2196,323,Heater not working,Low,2025-11-29,Closed
+2197,378,Air conditioning not cooling,Low,2025-05-08,Open
+2198,116,Doorbell not working,Medium,2025-12-03,Open
+2199,324,Noise complaint,Medium,2025-05-28,Open
+2200,353,Faulty door lock,Low,2025-02-26,In Progress
+2201,386,Faulty door lock,Low,2025-03-06,Closed
+2202,354,Noise complaint,High,2025-11-10,Open
+2203,116,No hot water,Medium,2025-03-20,In Progress
+2204,358,Air conditioning not cooling,Low,2025-10-31,Closed
+2205,193,Roof leak,Medium,2025-02-27,In Progress
+2206,385,Air conditioning not cooling,Low,2025-04-04,Open
+2207,231,Mold in bathroom,Medium,2025-07-08,Closed
+2208,318,Noise complaint,Low,2025-11-25,Open
+2209,247,Painting required,Low,2025-06-12,In Progress
+2210,324,Broken window,Low,2025-10-07,Closed
+2211,150,Heater not working,Low,2025-10-02,Open
+2212,253,Light fixture flickering,Low,2025-07-22,Closed
+2213,184,Light fixture flickering,Low,2025-12-26,Open
+2214,390,Garage door malfunction,Medium,2025-01-24,In Progress
+2215,351,Pest control,Low,2025-07-10,Closed
+2216,203,No hot water,Low,2025-07-22,Open
+2217,240,Doorbell not working,Low,2025-02-18,Open
+2218,106,Noise complaint,Medium,2025-05-03,Open
+2219,383,Roof leak,Low,2025-08-12,In Progress
+2220,172,Doorbell not working,High,2025-04-24,Closed
+2221,264,Doorbell not working,Low,2025-07-18,Open
+2222,240,Garage door malfunction,Medium,2025-04-25,Open
+2223,262,Pest control,Low,2025-11-14,Open
+2224,266,Broken window,Low,2025-05-20,Open
+2225,106,No hot water,High,2025-11-02,Closed
+2226,256,Clogged drain,Low,2025-09-11,Closed
+2227,218,Air conditioning not cooling,Low,2025-11-22,Closed
+2228,347,Heater not working,Low,2025-04-02,Open
+2229,105,Clogged drain,Low,2025-08-02,Closed
+2230,152,Air conditioning not cooling,Medium,2025-05-19,Open
+2231,341,Heater not working,High,2025-04-19,Closed
+2232,114,Leaky faucet,Low,2025-10-02,In Progress
+2233,180,Broken window,High,2025-12-05,In Progress
+2234,385,Faulty door lock,High,2025-12-06,In Progress
+2235,381,Painting required,Medium,2025-11-01,Closed
+2236,132,Mold in bathroom,High,2025-08-16,Closed
+2237,276,Clogged drain,Low,2025-10-13,In Progress
+2238,173,Mold in bathroom,High,2025-10-10,Open
+2239,227,Garage door malfunction,Low,2025-02-22,In Progress
+2240,314,Heater not working,Low,2025-02-02,Open
+2241,232,Mold in bathroom,Low,2025-05-27,Closed
+2242,110,Pest control,Medium,2025-12-01,Open
+2243,187,Pest control,Medium,2025-07-19,Open
+2244,226,Clogged drain,Low,2025-02-21,Open
+2245,246,Doorbell not working,Low,2025-04-20,Open
+2246,344,Noise complaint,Medium,2025-03-31,Closed
+2247,360,Air conditioning not cooling,Low,2025-01-15,Closed
+2248,120,No hot water,Low,2025-08-14,Closed
+2249,204,Clogged drain,Medium,2025-07-21,Open
+2250,228,Roof leak,Medium,2025-04-28,Open
+2251,150,Air conditioning not cooling,Low,2025-03-29,Closed
+2252,380,Garage door malfunction,Low,2025-06-08,Closed
+2253,291,Leaky faucet,Low,2025-11-13,Open
+2254,136,Broken window,Low,2025-08-05,Open
+2255,283,Faulty door lock,Low,2025-01-09,Closed
+2256,353,Faulty door lock,Low,2025-03-06,In Progress
+2257,173,Broken window,Medium,2025-08-15,In Progress
+2258,319,Painting required,Low,2025-04-24,Open
+2259,289,Painting required,Low,2025-03-14,In Progress
+2260,162,Mold in bathroom,Low,2025-03-30,Closed
+2261,344,Air conditioning not cooling,Medium,2025-08-27,Open
+2262,289,Air conditioning not cooling,Medium,2025-03-09,Closed
+2263,300,Leaky faucet,Medium,2025-10-12,In Progress
+2264,233,Faulty door lock,Low,2025-10-12,In Progress
+2265,392,Noise complaint,Low,2025-05-22,In Progress
+2266,343,Broken window,Low,2025-02-12,In Progress
+2267,206,Doorbell not working,Low,2025-03-04,Closed
+2268,398,Air conditioning not cooling,High,2025-07-04,Open
+2269,355,Doorbell not working,Low,2025-03-21,In Progress
+2270,120,Clogged drain,Low,2025-02-18,Closed
+2271,186,No hot water,Medium,2025-12-09,Closed
+2272,118,Clogged drain,Low,2025-07-22,Closed
+2273,391,Pest control,High,2025-01-12,In Progress
+2274,388,Doorbell not working,Medium,2025-05-28,Closed
+2275,347,Noise complaint,Medium,2025-09-28,In Progress
+2276,321,Faulty door lock,High,2025-06-18,Closed
+2277,331,Clogged drain,High,2025-10-21,Closed
+2278,381,Light fixture flickering,High,2025-04-28,Open
+2279,229,Roof leak,Low,2025-11-22,Closed
+2280,210,No hot water,Low,2025-09-30,Closed
+2281,373,No hot water,Medium,2025-09-14,Open
+2282,163,Broken window,Medium,2025-09-12,Open
+2283,175,Painting required,Low,2025-12-29,Closed
+2284,356,Painting required,Medium,2025-07-15,Open
+2285,232,Doorbell not working,Low,2025-05-09,In Progress
+2286,221,Mold in bathroom,Low,2025-09-22,Closed
+2287,249,Clogged drain,Low,2025-01-23,Open
+2288,302,Painting required,Medium,2025-12-13,In Progress
+2289,217,Pest control,Low,2025-11-02,In Progress
+2290,336,Heater not working,Low,2025-12-02,Closed
+2291,260,Roof leak,High,2025-03-19,Closed
+2292,121,Pest control,High,2025-03-15,Closed
+2293,313,Faulty door lock,High,2025-08-15,In Progress
+2294,350,Air conditioning not cooling,Medium,2025-05-11,Open
+2295,248,Painting required,High,2025-05-17,In Progress
+2296,336,Air conditioning not cooling,Low,2025-04-27,Closed
+2297,187,Light fixture flickering,Low,2025-12-17,Open
+2298,279,Air conditioning not cooling,High,2025-02-21,Open
+2299,275,Clogged drain,Low,2025-03-31,Open
+2300,104,Air conditioning not cooling,Medium,2025-12-27,In Progress
+2301,268,Light fixture flickering,High,2025-12-01,Open
+2302,318,Garage door malfunction,High,2025-08-11,Open
+2303,263,Faulty door lock,Medium,2025-03-25,Closed
+2304,122,Garage door malfunction,Low,2025-05-18,Closed
+2305,201,Pest control,Low,2025-12-02,Open
+2306,230,No hot water,Low,2025-03-29,Closed
+2307,212,Air conditioning not cooling,High,2025-07-01,In Progress
+2308,313,Clogged drain,Low,2025-09-29,In Progress
+2309,314,Air conditioning not cooling,Low,2025-11-30,In Progress
+2310,341,Faulty door lock,High,2025-05-21,In Progress
+2311,104,Light fixture flickering,Medium,2025-04-02,In Progress
+2312,389,Leaky faucet,Medium,2025-07-19,In Progress
+2313,269,Faulty door lock,Low,2025-11-24,Open
+2314,227,Clogged drain,Low,2025-04-04,In Progress
+2315,222,Pest control,Medium,2025-03-28,Closed
+2316,143,Mold in bathroom,Medium,2025-06-22,Closed
+2317,321,Light fixture flickering,High,2025-03-04,Open
+2318,197,Faulty door lock,Medium,2025-05-19,Closed
+2319,179,No hot water,Low,2025-11-20,Open
+2320,301,Air conditioning not cooling,Low,2025-10-30,In Progress
+2321,290,Doorbell not working,Low,2025-12-13,In Progress
+2322,302,Faulty door lock,Low,2025-10-03,Open
+2323,215,Faulty door lock,Medium,2025-12-04,Open
+2324,386,Leaky faucet,Low,2025-01-20,In Progress
+2325,386,Doorbell not working,Low,2025-03-27,Open
+2326,191,Clogged drain,High,2025-04-25,Closed
+2327,197,Clogged drain,High,2025-11-20,Open
+2328,206,Clogged drain,High,2025-07-10,In Progress
+2329,334,Noise complaint,Low,2025-12-01,Closed
+2330,209,Clogged drain,Medium,2025-04-12,Closed
+2331,219,Noise complaint,Medium,2025-03-18,Open
+2332,324,No hot water,Low,2025-03-29,Closed
+2333,392,Painting required,Medium,2025-07-17,Open
+2334,120,Mold in bathroom,Low,2025-05-05,In Progress
+2335,226,No hot water,Medium,2025-05-30,In Progress
+2336,283,Broken window,High,2025-11-27,In Progress
+2337,194,Noise complaint,Low,2025-02-15,Closed
+2338,279,Painting required,Low,2025-09-12,Open
+2339,126,Clogged drain,Low,2025-10-30,In Progress
+2340,257,Leaky faucet,Medium,2025-09-24,In Progress
+2341,344,Heater not working,Low,2025-10-18,Open
+2342,210,Garage door malfunction,Low,2025-01-17,Closed
+2343,176,Faulty door lock,High,2025-08-25,In Progress
+2344,271,Mold in bathroom,Low,2025-03-25,Open
+2345,144,Mold in bathroom,Low,2025-07-20,Closed
+2346,222,Heater not working,Low,2025-05-08,In Progress
+2347,163,Doorbell not working,Medium,2025-09-07,In Progress
+2348,199,Mold in bathroom,Low,2025-12-04,In Progress
+2349,370,Heater not working,Low,2025-09-11,Closed
+2350,345,No hot water,Medium,2025-08-06,Closed
+2351,322,Heater not working,Medium,2025-10-15,In Progress
+2352,400,Noise complaint,Low,2025-12-30,In Progress
+2353,395,Noise complaint,Medium,2025-05-18,In Progress
+2354,190,Noise complaint,High,2025-10-11,In Progress
+2355,266,Mold in bathroom,Low,2025-11-22,In Progress
+2356,306,Painting required,Medium,2025-08-20,In Progress
+2357,264,Air conditioning not cooling,Low,2025-05-16,Open
+2358,360,Painting required,High,2025-02-23,In Progress
+2359,192,Clogged drain,Low,2025-05-26,Open
+2360,202,Leaky faucet,Low,2025-07-23,In Progress
+2361,167,Doorbell not working,Low,2025-03-07,Open
+2362,314,Doorbell not working,Medium,2025-08-23,In Progress
+2363,396,No hot water,Low,2025-09-01,Closed
+2364,142,Mold in bathroom,Low,2025-02-07,In Progress
+2365,168,Clogged drain,Low,2025-01-05,Closed
+2366,142,Leaky faucet,Low,2025-12-07,In Progress
+2367,109,Air conditioning not cooling,Medium,2025-08-13,Open
+2368,323,Doorbell not working,High,2025-12-27,In Progress
+2369,322,Roof leak,Low,2025-11-09,In Progress
+2370,331,Air conditioning not cooling,Low,2025-01-20,Closed
+2371,286,Light fixture flickering,High,2025-09-10,Open
+2372,160,No hot water,High,2025-11-09,Open
+2373,396,Faulty door lock,Low,2025-08-20,Closed
+2374,303,Heater not working,High,2025-08-10,Open
+2375,334,Heater not working,High,2025-02-15,Closed
+2376,271,Mold in bathroom,High,2025-08-18,Closed
+2377,277,Pest control,Medium,2025-10-11,In Progress
+2378,328,Pest control,Medium,2025-11-30,Closed
+2379,233,Air conditioning not cooling,Medium,2025-07-19,Closed
+2380,317,Light fixture flickering,Low,2025-11-13,Closed
+2381,171,Painting required,Low,2025-10-19,In Progress
+2382,164,Clogged drain,Low,2025-12-09,Open
+2383,339,Air conditioning not cooling,High,2025-01-22,Closed
+2384,107,Clogged drain,High,2025-03-31,Open
+2385,119,No hot water,High,2025-10-19,Open
+2386,128,Pest control,Low,2025-12-05,Closed
+2387,169,Noise complaint,High,2025-06-10,In Progress
+2388,260,Pest control,Low,2025-03-02,Open
+2389,277,Faulty door lock,Low,2025-12-23,Closed
+2390,321,Painting required,High,2025-04-22,Closed
+2391,360,Heater not working,High,2025-09-17,In Progress
+2392,212,Light fixture flickering,Low,2025-11-18,Open
+2393,144,No hot water,Low,2025-04-03,Open
+2394,166,Pest control,Low,2025-05-18,In Progress
+2395,244,No hot water,Low,2025-09-06,In Progress
+2396,357,Broken window,Low,2025-10-30,Open
+2397,294,Light fixture flickering,Medium,2025-12-08,In Progress
+2398,121,Mold in bathroom,Medium,2025-06-17,Open
+2399,183,Roof leak,Low,2025-12-12,In Progress
+2400,103,No hot water,High,2025-09-09,Closed
+2401,138,Painting required,Medium,2025-04-26,Open
+2402,238,Clogged drain,High,2025-02-06,Closed
+2403,235,Mold in bathroom,Low,2025-04-28,Closed
+2404,331,Heater not working,Low,2025-11-07,Open
+2405,261,Painting required,High,2025-01-07,In Progress
+2406,308,Leaky faucet,Low,2025-08-19,Open
+2407,389,Leaky faucet,Low,2025-05-05,Open
+2408,172,No hot water,Medium,2025-05-19,In Progress
+2409,294,Clogged drain,High,2025-05-04,Open
+2410,255,Mold in bathroom,Medium,2025-12-07,In Progress
+2411,309,Mold in bathroom,High,2025-12-03,Open
+2412,353,Leaky faucet,Low,2025-03-03,In Progress
+2413,263,Faulty door lock,Medium,2025-11-04,Open
+2414,128,Noise complaint,Medium,2025-07-14,In Progress
+2415,249,Painting required,Medium,2025-07-10,In Progress
+2416,126,Painting required,Low,2025-01-28,In Progress
+2417,241,Broken window,High,2025-03-19,Open
+2418,210,Painting required,Medium,2025-05-03,Open
+2419,212,Noise complaint,Medium,2025-09-27,Open
+2420,329,Mold in bathroom,High,2025-01-19,Closed
+2421,177,Clogged drain,Low,2025-02-28,Open
+2422,133,Doorbell not working,Medium,2025-11-14,In Progress
+2423,359,Garage door malfunction,Low,2025-05-02,Closed
+2424,267,Broken window,Low,2025-10-28,In Progress
+2425,101,Broken window,High,2025-05-27,In Progress
+2426,309,Broken window,Medium,2025-06-10,Open
+2427,258,Pest control,Low,2025-12-23,Closed
+2428,343,Doorbell not working,Low,2025-10-31,Closed
+2429,103,Pest control,Medium,2025-01-28,In Progress
+2430,383,Leaky faucet,High,2025-10-14,Open
+2431,260,Doorbell not working,Low,2025-08-15,Open
+2432,259,Garage door malfunction,Medium,2025-10-27,Closed
+2433,199,Pest control,Low,2025-02-20,Closed
+2434,247,Painting required,Low,2025-01-14,Open
+2435,354,Leaky faucet,Low,2025-03-31,Open
+2436,368,Air conditioning not cooling,Low,2025-05-10,In Progress
+2437,161,Air conditioning not cooling,Low,2025-12-12,In Progress
+2438,200,Broken window,High,2025-09-08,Open
+2439,357,Pest control,Low,2025-04-07,In Progress
+2440,396,Broken window,High,2025-12-02,Closed
+2441,273,Faulty door lock,Low,2025-05-13,In Progress
+2442,350,Air conditioning not cooling,Low,2025-05-11,Open
+2443,204,Heater not working,High,2025-09-21,Closed
+2444,242,Garage door malfunction,Low,2025-07-26,In Progress
+2445,139,Noise complaint,Low,2025-11-10,Open
+2446,296,Painting required,High,2025-12-10,Open
+2447,190,Garage door malfunction,Low,2025-08-16,Open
+2448,360,Roof leak,High,2025-09-03,In Progress
+2449,378,Roof leak,Medium,2025-04-10,Open
+2450,224,Faulty door lock,Medium,2025-10-10,In Progress
+2451,292,Doorbell not working,Medium,2025-11-17,In Progress
+2452,148,Garage door malfunction,Low,2025-03-05,In Progress
+2453,244,Broken window,Low,2025-08-27,Closed
+2454,346,No hot water,Low,2025-09-20,Open
+2455,184,Clogged drain,Low,2025-03-22,In Progress
+2456,397,Roof leak,High,2025-11-10,Open
+2457,242,Broken window,High,2025-03-26,Open
+2458,316,Doorbell not working,High,2025-04-30,Open
+2459,256,Faulty door lock,Medium,2025-05-05,In Progress
+2460,105,Faulty door lock,Medium,2025-06-16,In Progress
+2461,190,Garage door malfunction,Medium,2025-12-28,Closed
+2462,278,Heater not working,Low,2025-03-09,Closed
+2463,361,Pest control,Low,2025-10-21,Closed
+2464,115,Faulty door lock,Medium,2025-12-20,Closed
+2465,274,Noise complaint,High,2025-03-07,In Progress
+2466,288,No hot water,Low,2025-01-05,In Progress
+2467,155,Faulty door lock,Medium,2025-03-05,Closed
+2468,139,Faulty door lock,Low,2025-04-10,Open
+2469,392,Pest control,Low,2025-05-17,Open
+2470,302,Noise complaint,Medium,2025-12-14,In Progress
+2471,130,Faulty door lock,Medium,2025-09-17,Open
+2472,114,Garage door malfunction,Medium,2025-03-28,Closed
+2473,111,No hot water,Medium,2025-05-11,In Progress
+2474,388,Mold in bathroom,High,2025-05-09,Open
+2475,351,Air conditioning not cooling,Low,2025-07-29,Closed
+2476,353,Light fixture flickering,Low,2025-06-27,Open
+2477,340,Pest control,Medium,2025-06-30,In Progress
+2478,311,Light fixture flickering,Low,2025-05-13,Open
+2479,306,Noise complaint,Medium,2025-10-29,Open
+2480,102,Light fixture flickering,Low,2025-10-30,In Progress
+2481,189,Mold in bathroom,High,2025-01-24,Open
+2482,158,Pest control,Low,2025-10-10,In Progress
+2483,230,Noise complaint,Low,2025-09-27,Closed
+2484,367,Mold in bathroom,Low,2025-01-12,Open
+2485,311,Faulty door lock,Medium,2025-08-01,In Progress
+2486,243,Mold in bathroom,Medium,2025-08-23,In Progress
+2487,388,Heater not working,Medium,2025-07-13,Open
+2488,220,Pest control,Low,2025-10-29,Closed
+2489,172,Air conditioning not cooling,Medium,2025-01-13,Open
+2490,158,Leaky faucet,Medium,2025-04-16,In Progress
+2491,131,Broken window,Low,2025-08-06,In Progress
+2492,118,Leaky faucet,Medium,2025-04-30,Open
+2493,263,No hot water,Low,2025-08-16,Closed
+2494,154,Air conditioning not cooling,Low,2025-05-10,Closed
+2495,191,Doorbell not working,Low,2025-10-14,Open
+2496,268,Painting required,Low,2025-05-09,Open
+2497,331,Faulty door lock,High,2025-05-16,In Progress
+2498,182,Roof leak,High,2025-10-05,In Progress
+2499,102,Broken window,Low,2025-12-17,Open
+2500,400,Clogged drain,Low,2025-10-13,Closed
+2501,321,Broken window,Low,2025-11-20,In Progress
+2502,199,Mold in bathroom,Medium,2025-05-10,Closed
+2503,121,Painting required,Low,2025-04-18,Open
+2504,272,No hot water,Medium,2025-10-10,Open
+2505,196,Painting required,Low,2025-09-04,Closed
+2506,156,Garage door malfunction,Low,2025-08-05,Open
+2507,309,Garage door malfunction,Low,2025-08-31,In Progress
+2508,123,Clogged drain,High,2025-02-08,Open
+2509,374,Noise complaint,Low,2025-02-08,In Progress
+2510,366,Faulty door lock,Medium,2025-06-27,Open
+2511,140,Roof leak,Low,2025-02-24,In Progress
+2512,313,Painting required,Low,2025-05-29,Open
+2513,243,Garage door malfunction,Low,2025-01-10,In Progress
+2514,155,Painting required,Low,2025-04-16,In Progress
+2515,216,Doorbell not working,Low,2025-08-10,Closed
+2516,210,Leaky faucet,Low,2025-07-09,Closed
+2517,206,Pest control,Low,2025-01-24,Open
+2518,185,Garage door malfunction,Medium,2025-04-03,In Progress
+2519,281,Faulty door lock,High,2025-08-18,Closed
+2520,157,Mold in bathroom,Medium,2025-10-06,Open
+2521,353,Clogged drain,High,2025-10-24,Closed
+2522,242,Light fixture flickering,Low,2025-12-10,In Progress
+2523,372,Faulty door lock,High,2025-06-15,Closed
+2524,230,Faulty door lock,Medium,2025-11-14,In Progress
+2525,110,Pest control,High,2025-12-26,Open
+2526,160,Leaky faucet,Low,2025-09-16,In Progress
+2527,394,Clogged drain,Medium,2025-01-22,Open
+2528,307,Clogged drain,Low,2025-04-19,In Progress
+2529,169,Garage door malfunction,Low,2025-10-15,In Progress
+2530,236,Clogged drain,Medium,2025-01-13,Closed
+2531,379,Mold in bathroom,Medium,2025-01-26,Closed
+2532,119,Clogged drain,Low,2025-03-28,In Progress
+2533,168,Mold in bathroom,Low,2025-08-22,Closed
+2534,259,Heater not working,Low,2025-05-14,In Progress
+2535,353,Air conditioning not cooling,Low,2025-12-27,Closed
+2536,196,Roof leak,High,2025-08-08,Closed
+2537,352,No hot water,Low,2025-03-23,Open
+2538,254,Air conditioning not cooling,Low,2025-12-22,Closed
+2539,347,Mold in bathroom,High,2025-02-02,Open
+2540,307,Faulty door lock,Low,2025-11-27,In Progress
+2541,267,Clogged drain,Low,2025-08-14,Closed
+2542,163,Roof leak,Low,2025-11-03,Closed
+2543,311,Noise complaint,Low,2025-09-01,In Progress
+2544,350,Painting required,Low,2025-05-17,Closed
+2545,298,Light fixture flickering,Low,2025-02-14,Closed
+2546,271,Heater not working,Low,2025-04-04,Open
+2547,360,Clogged drain,Low,2025-12-18,In Progress
+2548,311,Noise complaint,Medium,2025-01-23,Closed
+2549,212,Broken window,Medium,2025-11-06,Closed
+2550,192,Doorbell not working,Medium,2025-04-21,Open
+2551,353,Roof leak,High,2025-11-20,Closed
+2552,375,Faulty door lock,Low,2025-01-25,In Progress
+2553,111,Air conditioning not cooling,Low,2025-09-15,Closed
+2554,279,Clogged drain,Low,2025-12-24,Open
+2555,323,Pest control,Low,2025-02-20,Open
+2556,251,Noise complaint,Low,2025-09-11,Closed
+2557,217,Pest control,High,2025-01-24,In Progress
+2558,130,No hot water,Low,2025-11-17,In Progress
+2559,374,Pest control,High,2025-09-07,Closed
+2560,390,Painting required,Medium,2025-08-02,Open
+2561,318,Clogged drain,Low,2025-08-06,In Progress
+2562,245,Broken window,Low,2025-10-10,Closed
+2563,386,Faulty door lock,Low,2025-01-05,Closed
+2564,315,Light fixture flickering,Medium,2025-07-06,Open
+2565,382,Doorbell not working,Low,2025-07-03,Open
+2566,254,Noise complaint,Low,2025-12-11,Closed
+2567,234,Roof leak,High,2025-09-04,Closed
+2568,208,Mold in bathroom,Medium,2025-07-18,Open
+2569,319,Leaky faucet,Low,2025-06-28,Open
+2570,346,Doorbell not working,Medium,2025-12-31,In Progress
+2571,361,Broken window,High,2025-09-09,Open
+2572,274,Painting required,Low,2025-03-07,Open
+2573,228,Mold in bathroom,Low,2025-05-01,Closed
+2574,114,Clogged drain,Medium,2025-11-03,Closed
+2575,185,Clogged drain,High,2025-05-29,In Progress
+2576,183,Heater not working,Medium,2025-12-25,Open
+2577,300,Mold in bathroom,Low,2025-08-30,Closed
+2578,272,Light fixture flickering,Low,2025-05-26,In Progress
+2579,286,Roof leak,Low,2025-12-06,Closed
+2580,228,Broken window,Low,2025-10-22,Open
+2581,301,Painting required,Medium,2025-07-14,Open
+2582,273,Heater not working,Low,2025-04-04,In Progress
+2583,391,Roof leak,Low,2025-07-13,In Progress
+2584,282,Light fixture flickering,Low,2025-11-17,Closed
+2585,217,Broken window,Medium,2025-12-01,In Progress
+2586,174,Heater not working,Low,2025-04-10,Open
+2587,335,Air conditioning not cooling,Low,2025-03-27,Closed
+2588,160,Noise complaint,Low,2025-04-29,Closed
+2589,315,Broken window,Low,2025-08-05,Open
+2590,397,Noise complaint,Medium,2025-12-14,In Progress
+2591,243,Pest control,High,2025-01-20,Closed
+2592,377,Heater not working,Medium,2025-09-01,In Progress
+2593,370,Painting required,Medium,2025-11-27,In Progress
+2594,233,Mold in bathroom,Low,2025-09-27,Closed
+2595,367,Pest control,Medium,2025-12-21,In Progress
+2596,361,Heater not working,Low,2025-09-30,Open
+2597,246,Air conditioning not cooling,Low,2025-06-20,Open
+2598,188,Garage door malfunction,High,2025-11-30,In Progress
+2599,292,Air conditioning not cooling,Low,2025-03-04,Closed
+2600,268,Doorbell not working,Low,2025-12-17,Closed
+2601,126,Roof leak,Low,2025-02-21,Open
+2602,359,Pest control,Low,2025-11-02,In Progress
+2603,246,Painting required,Low,2025-09-30,Open
+2604,188,Clogged drain,Low,2025-02-01,In Progress
+2605,227,Roof leak,High,2025-04-18,Open
+2606,135,Painting required,High,2025-05-23,Open
+2607,184,Noise complaint,Low,2025-12-03,Open
+2608,252,Clogged drain,High,2025-12-13,Open
+2609,242,Heater not working,Medium,2025-08-10,In Progress
+2610,187,Mold in bathroom,Low,2025-06-21,In Progress
+2611,304,Pest control,Medium,2025-04-15,Open
+2612,364,Leaky faucet,Medium,2025-09-07,In Progress
+2613,224,Faulty door lock,High,2025-05-02,In Progress
+2614,330,Roof leak,Medium,2025-11-06,In Progress
+2615,345,Broken window,Low,2025-12-09,In Progress
+2616,156,Clogged drain,Medium,2025-01-17,Open
+2617,141,Clogged drain,Low,2025-08-02,Open
+2618,341,Light fixture flickering,Low,2025-05-23,Open
+2619,168,Noise complaint,Medium,2025-05-27,Open
+2620,160,Heater not working,High,2025-09-27,Closed
+2621,319,Noise complaint,Low,2025-12-17,Open
+2622,192,Painting required,Medium,2025-12-03,In Progress
+2623,162,Clogged drain,High,2025-04-28,Closed
+2624,198,Light fixture flickering,Medium,2025-03-07,Open
+2625,394,Mold in bathroom,Low,2025-04-29,In Progress
+2626,371,Heater not working,Low,2025-05-11,Open
+2627,169,Leaky faucet,Low,2025-01-06,In Progress
+2628,285,Faulty door lock,Low,2025-05-06,Closed
+2629,182,Clogged drain,Medium,2025-10-08,Open
+2630,149,Heater not working,Medium,2025-09-27,Open
+2631,379,Faulty door lock,High,2025-08-24,Open
+2632,171,Leaky faucet,Medium,2025-03-13,Closed
+2633,247,Faulty door lock,Low,2025-04-22,Open
+2634,340,Faulty door lock,Medium,2025-03-28,Open
+2635,141,Mold in bathroom,Low,2025-11-01,Open
+2636,306,Faulty door lock,Medium,2025-02-24,Open
+2637,141,Noise complaint,Low,2025-08-05,Closed
+2638,395,No hot water,Low,2025-07-07,Open
+2639,185,Leaky faucet,Low,2025-06-15,Open
+2640,224,Noise complaint,Low,2025-01-11,Closed
+2641,146,Broken window,High,2025-01-03,Open
+2642,213,Roof leak,High,2025-12-19,In Progress
+2643,360,Doorbell not working,Low,2025-04-15,In Progress
+2644,361,Clogged drain,Medium,2025-12-22,Closed
+2645,124,Doorbell not working,High,2025-09-03,Open
+2646,128,Doorbell not working,Medium,2025-09-02,In Progress
+2647,359,Broken window,Low,2025-11-28,Open
+2648,390,Painting required,Medium,2025-07-01,Closed
+2649,271,Pest control,Low,2025-06-25,Closed
+2650,195,Air conditioning not cooling,Low,2025-04-12,Open
+2651,350,Painting required,High,2025-05-17,Open
+2652,191,Air conditioning not cooling,Low,2025-02-01,Closed
+2653,170,Light fixture flickering,High,2025-10-11,Open
+2654,248,Faulty door lock,Low,2025-09-16,Open
+2655,232,Clogged drain,Low,2025-02-15,Open
+2656,312,No hot water,Low,2025-01-15,Open
+2657,268,Painting required,High,2025-11-18,Closed
+2658,239,Painting required,Medium,2025-02-04,Closed
+2659,110,Roof leak,Low,2025-12-04,Closed
+2660,312,No hot water,Medium,2025-03-11,Closed
+2661,347,Pest control,High,2025-11-14,Closed
+2662,320,Mold in bathroom,Low,2025-11-15,In Progress
+2663,232,Heater not working,Medium,2025-12-19,Closed
+2664,387,Doorbell not working,Medium,2025-11-08,Closed
+2665,373,Painting required,Low,2025-07-14,In Progress
+2666,196,Faulty door lock,Low,2025-09-06,Closed
+2667,372,Mold in bathroom,High,2025-04-12,Open
+2668,221,Air conditioning not cooling,Low,2025-05-04,In Progress
+2669,343,Doorbell not working,Medium,2025-06-15,In Progress
+2670,373,Roof leak,Low,2025-11-06,In Progress
+2671,284,Pest control,High,2025-07-19,Open
+2672,217,Garage door malfunction,Low,2025-10-22,Open
+2673,108,Garage door malfunction,Medium,2025-06-08,Open
+2674,227,Noise complaint,Medium,2025-07-16,In Progress
+2675,345,Heater not working,Low,2025-05-23,In Progress
+2676,217,Heater not working,Medium,2025-09-08,In Progress
+2677,173,Roof leak,Low,2025-09-24,In Progress
+2678,192,Air conditioning not cooling,Medium,2025-11-22,In Progress
+2679,296,Faulty door lock,Low,2025-07-06,In Progress
+2680,113,Air conditioning not cooling,Low,2025-09-13,In Progress
+2681,190,Doorbell not working,High,2025-02-12,In Progress
+2682,378,Painting required,Low,2025-07-22,Open
+2683,329,Heater not working,Medium,2025-09-22,Closed
+2684,331,Noise complaint,Low,2025-11-16,Closed
+2685,268,Roof leak,Low,2025-12-29,Closed
+2686,267,Painting required,Medium,2025-12-12,Closed
+2687,130,No hot water,High,2025-01-06,Closed
+2688,136,Heater not working,Low,2025-04-12,In Progress
+2689,293,Faulty door lock,Low,2025-06-10,In Progress
+2690,236,Mold in bathroom,Medium,2025-12-30,Closed
+2691,135,Heater not working,Low,2025-05-06,Closed
+2692,378,Clogged drain,Low,2025-12-20,Open
+2693,241,Painting required,Low,2025-05-14,Open
+2694,342,No hot water,Medium,2025-08-29,Open
+2695,188,Air conditioning not cooling,Low,2025-07-04,Closed
+2696,183,No hot water,High,2025-07-09,Open
+2697,238,No hot water,Low,2025-01-11,Closed
+2698,143,No hot water,Medium,2025-01-01,Open
+2699,263,Leaky faucet,High,2025-02-03,Closed
+2700,315,Leaky faucet,High,2025-05-15,Open
+2701,290,Doorbell not working,Medium,2025-09-23,In Progress
+2702,395,Garage door malfunction,Medium,2025-05-07,Closed
+2703,304,Air conditioning not cooling,High,2025-05-12,Closed
+2704,145,No hot water,Low,2025-07-04,Closed
+2705,280,Noise complaint,Low,2025-06-23,Open
+2706,384,Leaky faucet,Medium,2025-09-19,Open
+2707,351,Leaky faucet,Low,2025-01-10,Open
+2708,322,Light fixture flickering,Low,2025-10-26,In Progress
+2709,304,Heater not working,Low,2025-04-21,Open
+2710,142,No hot water,Low,2025-10-05,Closed
+2711,185,Heater not working,Low,2025-10-28,In Progress
+2712,319,Painting required,High,2025-10-23,Closed
+2713,349,Light fixture flickering,Medium,2025-08-26,Open
+2714,165,Noise complaint,Medium,2025-10-26,Closed
+2715,271,Broken window,High,2025-07-16,Open
+2716,261,Heater not working,Medium,2025-07-07,Open
+2717,212,Leaky faucet,Low,2025-01-18,In Progress
+2718,117,Heater not working,High,2025-04-08,Open
+2719,102,Light fixture flickering,Low,2025-07-20,In Progress
+2720,221,Air conditioning not cooling,Low,2025-06-10,Open
+2721,192,Mold in bathroom,Low,2025-05-29,Open
+2722,238,Light fixture flickering,Medium,2025-08-10,In Progress
+2723,285,Pest control,Medium,2025-09-14,In Progress
+2724,108,Garage door malfunction,Low,2025-09-18,In Progress
+2725,186,Air conditioning not cooling,High,2025-02-03,Open
+2726,153,Noise complaint,Low,2025-09-29,In Progress
+2727,314,Light fixture flickering,Low,2025-03-08,Open
+2728,340,Faulty door lock,Medium,2025-03-17,Open
+2729,243,Pest control,Low,2025-04-21,Closed
+2730,134,Leaky faucet,Low,2025-11-25,Open
+2731,155,Faulty door lock,High,2025-03-18,Closed
+2732,174,Broken window,Medium,2025-07-14,In Progress
+2733,386,Faulty door lock,High,2025-06-29,Open
+2734,314,Mold in bathroom,Low,2025-01-02,Open
+2735,127,Garage door malfunction,Low,2025-04-21,Closed
+2736,207,Pest control,High,2025-01-09,In Progress
+2737,123,Roof leak,Low,2025-09-20,Closed
+2738,210,Pest control,Low,2025-06-09,Closed
+2739,148,Faulty door lock,Low,2025-01-24,Open
+2740,360,Pest control,Medium,2025-07-19,In Progress
+2741,305,Heater not working,Low,2025-03-26,Open
+2742,251,Faulty door lock,Medium,2025-08-11,In Progress
+2743,277,Doorbell not working,Low,2025-01-07,Open
+2744,328,Faulty door lock,Medium,2025-11-13,Open
+2745,309,Doorbell not working,Medium,2025-03-17,Open
+2746,131,Painting required,Low,2025-01-14,Closed
+2747,394,Leaky faucet,Medium,2025-02-16,Open
+2748,320,Broken window,Low,2025-04-24,In Progress
+2749,351,Light fixture flickering,High,2025-08-19,Closed
+2750,396,Painting required,Low,2025-08-31,Open
+2751,155,No hot water,Medium,2025-07-01,Closed
+2752,327,Light fixture flickering,Low,2025-09-02,Open
+2753,116,Faulty door lock,Low,2025-07-22,Closed
+2754,385,Leaky faucet,Medium,2025-07-20,Closed
+2755,130,Roof leak,Low,2025-01-03,In Progress
+2756,149,Pest control,Low,2025-04-24,Closed
+2757,266,Clogged drain,High,2025-03-09,In Progress
+2758,357,Leaky faucet,Low,2025-06-13,In Progress
+2759,191,Mold in bathroom,Low,2025-12-15,Closed
+2760,206,Light fixture flickering,High,2025-03-05,Closed
+2761,239,Clogged drain,Low,2025-03-25,Open
+2762,107,Noise complaint,Low,2025-08-25,In Progress
+2763,305,Broken window,Low,2025-07-22,Open
+2764,249,Mold in bathroom,Low,2025-11-08,Open
+2765,132,Pest control,Low,2025-09-11,Open
+2766,137,Roof leak,Medium,2025-02-06,Open
+2767,330,Broken window,High,2025-10-21,In Progress
+2768,145,Noise complaint,Low,2025-10-20,Open
+2769,367,Light fixture flickering,Medium,2025-07-05,Closed
+2770,344,Doorbell not working,High,2025-02-01,Open
+2771,233,Pest control,Low,2025-09-09,Open
+2772,303,Air conditioning not cooling,Medium,2025-06-23,Closed
+2773,176,No hot water,Low,2025-09-15,In Progress
+2774,266,Heater not working,Medium,2025-09-27,In Progress
+2775,352,Pest control,Low,2025-10-24,In Progress
+2776,163,Noise complaint,Medium,2025-04-08,Open
+2777,194,Doorbell not working,High,2025-03-14,In Progress
+2778,346,Painting required,Low,2025-08-07,Closed
+2779,213,Painting required,Low,2025-09-17,Open
+2780,148,Leaky faucet,Low,2025-09-27,In Progress
+2781,209,Garage door malfunction,High,2025-11-01,Closed
+2782,217,Clogged drain,Medium,2025-04-25,In Progress
+2783,355,No hot water,High,2025-08-14,In Progress
+2784,309,Light fixture flickering,Medium,2025-03-19,In Progress
+2785,240,Garage door malfunction,Low,2025-10-01,Closed
+2786,339,Noise complaint,Medium,2025-02-12,In Progress
+2787,104,Leaky faucet,Low,2025-07-01,Closed
+2788,331,Mold in bathroom,Low,2025-01-21,Closed
+2789,209,Garage door malfunction,Medium,2025-10-06,Closed
+2790,288,Doorbell not working,Medium,2025-01-28,Closed
+2791,254,No hot water,High,2025-08-24,In Progress
+2792,248,Noise complaint,High,2025-04-01,Open
+2793,293,Painting required,Medium,2025-02-27,Open
+2794,113,No hot water,Medium,2025-11-27,In Progress
+2795,107,Broken window,Low,2025-05-22,Closed
+2796,345,Leaky faucet,Medium,2025-05-27,Closed
+2797,208,Doorbell not working,Medium,2025-08-04,In Progress
+2798,369,Heater not working,Low,2025-06-18,Open
+2799,247,Heater not working,Low,2025-03-17,Closed
+2800,317,Air conditioning not cooling,Medium,2025-10-15,Open
+2801,111,Garage door malfunction,Low,2025-07-25,Open
+2802,334,Broken window,Low,2025-03-30,Closed
+2803,339,No hot water,Low,2025-06-04,In Progress
+2804,107,Light fixture flickering,Medium,2025-01-23,Open
+2805,138,Doorbell not working,Medium,2025-06-25,In Progress
+2806,266,Clogged drain,Low,2025-12-10,Closed
+2807,112,Noise complaint,High,2025-05-12,Open
+2808,142,Doorbell not working,Medium,2025-03-27,Closed
+2809,304,Air conditioning not cooling,High,2025-10-13,Closed
+2810,130,Heater not working,Low,2025-10-20,Closed
+2811,192,Air conditioning not cooling,Low,2025-11-10,Closed
+2812,202,Faulty door lock,High,2025-01-14,Closed
+2813,329,Broken window,High,2025-11-15,In Progress
+2814,171,Garage door malfunction,High,2025-05-27,Closed
+2815,302,Clogged drain,Medium,2025-03-01,Closed
+2816,139,Noise complaint,Low,2025-03-27,Closed
+2817,375,Doorbell not working,High,2025-08-24,In Progress
+2818,160,Leaky faucet,Medium,2025-06-01,Open
+2819,355,Faulty door lock,Medium,2025-04-14,In Progress
+2820,276,Faulty door lock,Medium,2025-10-30,Open
+2821,272,Broken window,Low,2025-04-23,Open
+2822,204,Noise complaint,Low,2025-10-03,In Progress
+2823,180,Faulty door lock,Medium,2025-12-15,In Progress
+2824,361,Heater not working,High,2025-05-22,In Progress
+2825,106,Noise complaint,High,2025-04-27,Closed
+2826,112,Broken window,Low,2025-07-22,Closed
+2827,213,No hot water,Low,2025-06-03,Closed
+2828,345,Broken window,High,2025-12-17,In Progress
+2829,201,Garage door malfunction,Medium,2025-11-03,Closed
+2830,134,Noise complaint,Low,2025-09-09,Closed
+2831,286,Faulty door lock,Medium,2025-08-30,Open
+2832,215,Garage door malfunction,Low,2025-10-22,Open
+2833,214,Mold in bathroom,High,2025-07-02,Closed
+2834,133,Heater not working,Medium,2025-06-25,Open
+2835,349,Leaky faucet,Medium,2025-05-18,Closed
+2836,142,Broken window,Medium,2025-03-16,Open
+2837,355,Broken window,Low,2025-06-10,Closed
+2838,386,Pest control,Low,2025-05-29,Closed
+2839,259,No hot water,High,2025-08-21,In Progress
+2840,229,Clogged drain,Medium,2025-02-22,Closed
+2841,122,Heater not working,Low,2025-05-10,Closed
+2842,205,Pest control,Medium,2025-06-11,In Progress
+2843,274,Painting required,Medium,2025-02-01,In Progress
+2844,179,Doorbell not working,Medium,2025-12-30,Open
+2845,130,Heater not working,Low,2025-10-22,Closed
+2846,397,Heater not working,Medium,2025-03-11,Closed
+2847,305,No hot water,Low,2025-08-12,In Progress
+2848,301,Heater not working,Low,2025-07-25,Closed
+2849,298,Air conditioning not cooling,High,2025-11-02,In Progress
+2850,124,Leaky faucet,Low,2025-11-09,In Progress
+2851,248,Clogged drain,Medium,2025-03-17,Open
+2852,117,Clogged drain,Low,2025-04-09,Closed
+2853,304,Air conditioning not cooling,Low,2025-03-01,Open
+2854,297,No hot water,High,2025-10-11,In Progress
+2855,369,Clogged drain,Medium,2025-09-18,In Progress
+2856,342,Pest control,Low,2025-10-17,Open
+2857,362,Clogged drain,Low,2025-03-22,Closed
+2858,223,Air conditioning not cooling,Low,2025-05-04,Closed
+2859,354,Clogged drain,Low,2025-06-10,In Progress
+2860,168,Pest control,Medium,2025-03-20,Open
+2861,156,Garage door malfunction,Medium,2025-07-31,Open
+2862,236,Doorbell not working,High,2025-05-12,Open
+2863,311,Garage door malfunction,Medium,2025-07-23,Closed
+2864,320,Heater not working,Low,2025-08-25,Closed
+2865,256,Doorbell not working,Medium,2025-04-18,In Progress
+2866,316,Garage door malfunction,Low,2025-07-20,In Progress
+2867,159,Roof leak,Medium,2025-12-02,Closed
+2868,202,Broken window,Medium,2025-12-06,Closed
+2869,232,Light fixture flickering,Low,2025-02-10,Closed
+2870,272,Light fixture flickering,Medium,2025-03-02,Open
+2871,299,Light fixture flickering,Low,2025-09-30,Closed
+2872,121,Pest control,High,2025-06-07,Closed
+2873,382,Doorbell not working,Medium,2025-08-25,Closed
+2874,127,No hot water,Low,2025-08-01,Closed
+2875,101,Heater not working,Low,2025-07-15,Open
+2876,371,Painting required,Low,2025-08-06,In Progress
+2877,388,Pest control,Low,2025-09-03,Open
+2878,314,Heater not working,Medium,2025-02-14,Open
+2879,359,Roof leak,Low,2025-04-02,In Progress
+2880,153,Clogged drain,Medium,2025-07-12,Open
+2881,312,Garage door malfunction,Low,2025-02-25,Closed
+2882,273,Air conditioning not cooling,Medium,2025-09-26,Closed
+2883,188,Doorbell not working,Low,2025-11-05,Open
+2884,354,Light fixture flickering,Medium,2025-05-02,Closed
+2885,154,Faulty door lock,High,2025-01-10,Open
+2886,174,Pest control,Low,2025-11-25,In Progress
+2887,242,Mold in bathroom,High,2025-10-27,In Progress
+2888,328,Faulty door lock,Medium,2025-02-22,Closed
+2889,370,Leaky faucet,Low,2025-08-02,Open
+2890,281,Heater not working,Low,2025-01-01,Open
+2891,224,Noise complaint,Low,2025-03-15,In Progress
+2892,320,Noise complaint,Low,2025-03-28,Open
+2893,395,Heater not working,Low,2025-09-09,Open
+2894,310,Heater not working,Medium,2025-10-13,In Progress
+2895,146,Air conditioning not cooling,Low,2025-12-14,Closed
+2896,126,Light fixture flickering,Low,2025-03-16,In Progress
+2897,259,Pest control,High,2025-12-01,In Progress
+2898,114,Light fixture flickering,High,2025-08-20,Open
+2899,366,Clogged drain,Medium,2025-12-15,Open
+2900,154,Noise complaint,Medium,2025-03-03,Open
+2901,363,Light fixture flickering,Low,2025-01-21,Closed
+2902,103,Noise complaint,Low,2025-10-15,In Progress
+2903,196,Roof leak,High,2025-08-29,Closed
+2904,170,Pest control,High,2025-10-06,In Progress
+2905,230,Pest control,Medium,2025-11-21,Closed
+2906,258,Broken window,Medium,2025-04-11,In Progress
+2907,153,Painting required,Medium,2025-01-26,In Progress
+2908,358,Doorbell not working,Low,2025-01-18,Closed
+2909,345,Broken window,High,2025-05-12,Closed
+2910,374,Air conditioning not cooling,Medium,2025-06-02,In Progress
+2911,348,Leaky faucet,High,2025-06-12,Closed
+2912,201,Broken window,Medium,2025-06-10,In Progress
+2913,308,Faulty door lock,Low,2025-05-11,In Progress
+2914,221,Noise complaint,Low,2025-10-15,In Progress
+2915,348,Heater not working,Medium,2025-05-30,Open
+2916,172,Light fixture flickering,Low,2025-09-01,Open
+2917,249,Faulty door lock,Low,2025-01-08,In Progress
+2918,266,Light fixture flickering,Low,2025-02-09,Open
+2919,375,Faulty door lock,Low,2025-10-13,In Progress
+2920,218,Roof leak,High,2025-04-26,Closed
+2921,216,Leaky faucet,Medium,2025-12-05,Open
+2922,222,Air conditioning not cooling,Low,2025-01-09,Open
+2923,272,Noise complaint,High,2025-11-16,Open
+2924,145,Air conditioning not cooling,High,2025-02-10,Closed
+2925,133,Faulty door lock,Low,2025-09-28,In Progress
+2926,365,Air conditioning not cooling,High,2025-09-24,Closed
+2927,362,Mold in bathroom,High,2025-12-24,In Progress
+2928,269,Garage door malfunction,Medium,2025-06-30,In Progress
+2929,308,Noise complaint,Medium,2025-04-15,Open
+2930,190,Roof leak,Medium,2025-11-02,Open
+2931,289,Heater not working,Medium,2025-01-05,Open
+2932,198,Pest control,High,2025-08-29,Open
+2933,299,Broken window,Low,2025-01-10,Closed
+2934,307,Clogged drain,Low,2025-08-22,Closed
+2935,191,Painting required,Medium,2025-07-04,Closed
+2936,192,Pest control,Low,2025-12-09,Closed
+2937,356,Doorbell not working,Medium,2025-10-26,In Progress
+2938,103,Heater not working,Low,2025-12-14,Closed
+2939,226,Leaky faucet,Medium,2025-11-20,In Progress
+2940,306,Mold in bathroom,Low,2025-05-31,Closed
+2941,144,Garage door malfunction,Low,2025-03-16,Closed
+2942,287,Painting required,Medium,2025-07-27,Closed
+2943,240,Faulty door lock,Low,2025-11-23,In Progress
+2944,355,Noise complaint,High,2025-06-21,Closed
+2945,135,Noise complaint,Low,2025-07-31,In Progress
+2946,317,Mold in bathroom,Low,2025-06-29,In Progress
+2947,312,Doorbell not working,Low,2025-02-03,In Progress
+2948,284,Mold in bathroom,Low,2025-10-13,Closed
+2949,240,Clogged drain,Low,2025-04-13,Closed
+2950,137,Faulty door lock,High,2025-06-06,Closed
+2951,371,Roof leak,Medium,2025-02-16,Open
+2952,110,Noise complaint,Low,2025-05-06,In Progress
+2953,104,Faulty door lock,Low,2025-07-14,Open
+2954,388,Garage door malfunction,Low,2025-06-20,Open
+2955,304,Roof leak,High,2025-04-06,In Progress
+2956,104,No hot water,Medium,2025-07-26,In Progress
+2957,211,Painting required,High,2025-03-18,Open
+2958,392,Roof leak,Low,2025-06-04,In Progress
+2959,304,Heater not working,Medium,2025-07-18,Open
+2960,165,Garage door malfunction,High,2025-06-14,Closed
+2961,270,Leaky faucet,Low,2025-04-09,Open
+2962,103,Leaky faucet,Low,2025-07-31,Closed
+2963,172,Air conditioning not cooling,Low,2025-08-17,Closed
+2964,344,Light fixture flickering,Low,2025-08-17,Open
+2965,212,Heater not working,High,2025-05-29,In Progress
+2966,198,Garage door malfunction,Low,2025-08-23,In Progress
+2967,167,Leaky faucet,Low,2025-12-27,Open
+2968,360,Faulty door lock,Low,2025-12-26,Open
+2969,192,Leaky faucet,High,2025-03-11,Open
+2970,331,Pest control,Medium,2025-08-25,In Progress
+2971,103,No hot water,Low,2025-01-22,Closed
+2972,150,Garage door malfunction,Low,2025-05-30,Closed
+2973,220,Garage door malfunction,Medium,2025-03-31,Closed
+2974,186,Pest control,Medium,2025-06-25,In Progress
+2975,136,Leaky faucet,Low,2025-06-29,Open
+2976,292,Broken window,High,2025-11-18,Closed
+2977,150,Doorbell not working,High,2025-08-17,In Progress
+2978,145,Broken window,Low,2025-08-24,Open
+2979,345,Roof leak,Medium,2025-11-02,In Progress
+2980,105,Pest control,Low,2025-07-21,Open
+2981,130,Leaky faucet,Medium,2025-05-29,Open
+2982,328,Roof leak,Low,2025-06-18,Open
+2983,251,Mold in bathroom,Low,2025-06-14,Open
+2984,359,Roof leak,Medium,2025-07-21,Closed
+2985,246,Faulty door lock,High,2025-02-12,In Progress
+2986,377,Broken window,High,2025-11-10,Open
+2987,224,Mold in bathroom,Low,2025-11-17,In Progress
+2988,220,Heater not working,High,2025-01-30,Open
+2989,342,Roof leak,High,2025-11-25,Open
+2990,112,Broken window,High,2025-06-07,Closed
+2991,346,Light fixture flickering,Low,2025-07-12,In Progress
+2992,333,Clogged drain,High,2025-02-17,In Progress
+2993,108,No hot water,Medium,2025-01-04,Closed
+2994,151,Light fixture flickering,Medium,2025-11-05,Open
+2995,201,Pest control,Medium,2025-02-05,Closed
+2996,123,Light fixture flickering,Low,2025-05-09,In Progress
+2997,268,No hot water,Low,2025-11-28,Closed
+2998,391,Leaky faucet,Low,2025-01-15,Open
+2999,250,Light fixture flickering,High,2025-11-06,In Progress
+3000,294,Air conditioning not cooling,Low,2025-11-08,In Progress

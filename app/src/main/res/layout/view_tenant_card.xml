@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_tenant_calendar_surface"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <FrameLayout
+        android:layout_width="58dp"
+        android:layout_height="58dp"
+        android:background="@drawable/bg_profile_avatar_ring"
+        android:padding="3dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgTenantAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_tenant"
+            app:shapeAppearanceOverlay="@style/CircleImage"
+            app:strokeWidth="0dp" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTenantName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/opensans_bold"
+            android:text="Maya Smith"
+            android:textColor="@color/calendar_text_primary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvRoomLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_tenant_calendar_today_chip"
+            android:fontFamily="@font/opensans_bold"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
+            android:text="Room"
+            android:textColor="@color/calendar_today_chip_text"
+            android:textSize="11sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnDeleteTenant"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_agent_delete_outline"
+        android:fontFamily="@font/opensans_bold"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:text="Remove"
+        android:textAllCaps="false"
+        android:textColor="@color/calendar_status_overdue_text"
+        android:textSize="12sp"
+        app:backgroundTint="@null"
+        app:cornerRadius="14dp" />
+
+</LinearLayout>

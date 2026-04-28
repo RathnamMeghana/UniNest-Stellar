@@ -7,17 +7,27 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+        google()
         mavenCentral()
         gradlePluginPortal()
+        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+
+
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+    //repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
+
     }
 }
 
 rootProject.name = "UniNest"
 include(":app")
+include(":Backend")
+project(":Backend").projectDir = file("Backend")
+
+
